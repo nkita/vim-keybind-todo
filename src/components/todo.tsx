@@ -1,99 +1,99 @@
 'use client'
-import { useState, useRef, createRef, RefObject, useEffect, forwardRef, InputHTMLAttributes, MouseEvent, ChangeEvent, } from "react"
-import { useHotkeys, useRecordHotkeys } from "react-hotkeys-hook"
+import { useState, MouseEvent, ChangeEvent, } from "react"
+import { useHotkeys, } from "react-hotkeys-hook"
+import { useForm } from "react-hook-form"
 export const Todo = () => {
     const [key, setKey] = useState("")
     const [todos, setTodos] = useState(['apple', 'banana', 'orange', 'lemon', 'grape'])
-    const todosRefs = useRef<RefObject<HTMLButtonElement>[]>([])
-    const todosInputRefs = useRef<RefObject<HTMLInputElement>[]>([])
     const [currentFocus, setCurrentFocus] = useState<number>(0)
     const [mode, setMode] = useState('normal')
-    const [keys, { start, stop, isRecording }] = useRecordHotkeys()
-
-    useEffect(() => {
-        todos.forEach((_, index) => {
-            todosRefs.current[index] = createRef<HTMLButtonElement>()
-            todosInputRefs.current[index] = createRef<HTMLInputElement>()
-        })
-        return () => { }
-    }, [todos])
+    const [log, setLog] = useState("")
+    const { register, setFocus } = useForm()
     const enabled = {
         normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false },
         edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true },
+        command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true },
         always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true }
     }
     /**
      * Normal mode
      */
-    // check press key name
-    useHotkeys('*', (e) => {
-        setKey(e.key)
-    }, enabled.always)
-
     // move to up 
-    useHotkeys(['k', 'ArrowUp'], (e) => {
+    useHotkeys(['k', 'ArrowUp', 'ctrl+p'], (e) => {
+        e.preventDefault()
         setKey(e.key)
-        if (mode !== "edit" && 0 < currentFocus) setFocus(currentFocus - 1)
+        if (mode !== "edit" && 0 < currentFocus) setFocus(`text-${currentFocus - 1}`)
     }, enabled.normal)
 
     // move to down
-    useHotkeys(['j', 'ArrowDown'], (e) => {
+    useHotkeys(['j', 'ArrowDown', 'ctrl+n'], (e) => {
+        e.preventDefault()
         setKey(e.key)
-        if (mode !== "edit" && currentFocus < todos.length - 1) setFocus(currentFocus + 1)
+        if (mode !== "edit" && currentFocus < todos.length - 1) setFocus(`text-${currentFocus + 1}`)
+        e.preventDefault()
     }, enabled.normal)
 
     // change mode to edit
-    useHotkeys(['e', 'Enter'], (e) => {
-        setKey(e.key)
+    useHotkeys(['Enter'], (e) => {
+        e.preventDefault()
         setMode('edit')
-        const _ref = todosInputRefs.current[currentFocus].current
-        if (_ref) {
-            _ref.focus()
-            const end = _ref.value.length
-            _ref.setSelectionRange(end, end)
-            // preventDeafultしておかないと、そのままinputエリアに文字が入力されてしまうため
-            e.preventDefault()
-        }
+        setFocus(`edit-${currentFocus}`, { shouldSelect: true })
+        // preventDeafultしておかないと、そのままinputエリアに文字が入力されてしまうため
     }, enabled.normal)
 
-    // Insert a task  
-    useHotkeys(['i'], (e) => {
-        setKey(e.key)
-    }, enabled.normal)
 
-    // Insert a task to Top
-    useHotkeys(['shift+i'], (e) => {
+    // change command mode
+    useHotkeys(':', (e) => {
+        e.preventDefault()
+        setMode('command')
         setKey(e.key)
-        alert("shift+i")
     }, enabled.normal)
 
     /**
      * Edit mode
      */
     // change mode to normal 
-    useHotkeys(['Esc'], (e) => {
-        setKey(e.key)
+    useHotkeys(['Esc', 'Enter'], (e) => {
+        e.preventDefault()
+        setFocus(`text-${currentFocus}`)
         setMode('normal')
-        const _ref = todosRefs.current[currentFocus].current
-        if (_ref) _ref.focus()
     }, enabled.edit)
 
 
-    const handleTodoChange = (e: ChangeEvent) => {
-        todosInputRefs.current[currentFocus].current?.focus()
-        const val = todosInputRefs.current[currentFocus].current?.value
+    /**
+     * Command Mode 
+     */
+    useHotkeys('*', (e) => {
+        e.preventDefault()
+        if (!['Enter', 'Escape'].includes(e.key)) setKey(key + e.key)
+    }, enabled.command)
+
+    useHotkeys(['Enter'], (e) => {
+        e.preventDefault()
+        setLog(`Not found command:${key}`)
+        setMode('normal')
+    }, enabled.command)
+
+    useHotkeys('Esc', (e) => {
+        e.preventDefault()
+        setMode('normal')
+    }, enabled.command)
+
+
+
+    const handleTodoChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const val = e.target?.value
         if (val) {
             setTodos(todos.map((t, i) => i === currentFocus ? val : t))
         }
     }
 
     const handleFocus = (index: number) => setCurrentFocus(index)
-    const setFocus = (index: number) => todosRefs.current[index].current?.focus()
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
     const handleTodoMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(); // マウスダウンイベントの伝搬を停止
     const handleBlur = () => {
         setMode('normal')
-        setFocus(currentFocus)
+        setFocus(`text-${currentFocus}`)
     }
     return (
         <div className="flex flex-col w-full h-screen" id="main" onMouseDown={handleMainMouseDown}>
@@ -104,9 +104,9 @@ export const Todo = () => {
                             <div className={`overflow-hidden  ${!(currentFocus === index && mode === "edit") ? "w-full" : "w-0"}`}>
                                 <button
                                     className={`focus:bg-blue-500 w-full text-left truncate`}
-                                    ref={todosRefs.current[index]}
                                     onFocus={_ => handleFocus(index)}
                                     autoFocus={currentFocus === index}
+                                    {...register(`text-${index}`)}
                                 >
                                     {t}
                                 </button>
@@ -115,7 +115,10 @@ export const Todo = () => {
                                 <input
                                     tabIndex={-1}
                                     className={`focus:bg-gray-300 truncate w-full`}
-                                    type="text" defaultValue={t} ref={todosInputRefs.current[index]} onChange={handleTodoChange} onBlur={handleBlur} />
+                                    type="text" defaultValue={t}
+                                    {...register(`edit-${index}`)}
+                                    onChange={handleTodoChange}
+                                    onBlur={handleBlur} />
                             </div>
                         </div>
                     )
@@ -125,25 +128,7 @@ export const Todo = () => {
             <span>press:{key}</span>
             <span>current index:{currentFocus}</span>
             <span>current mode:{mode}</span>
+            <span>current log:{log}</span>
         </div >
     )
 }
-
-
-
-export interface InputProps
-    extends InputHTMLAttributes<HTMLInputElement> { }
-const Input = forwardRef<HTMLInputElement, InputProps>(
-    ({ className, type, ...props }, ref) => {
-        return (
-            <input
-                type={type}
-                className={className}
-                ref={ref}
-                {...props}
-            />
-        )
-    }
-)
-Input.displayName = "Input"
-

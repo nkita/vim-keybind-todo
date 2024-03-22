@@ -37,7 +37,7 @@ export const Todo = () => {
     useHotkeys(['Enter'], (e) => {
         e.preventDefault()
         setMode('edit')
-        setFocus(`edit-${currentFocus}`, { shouldSelect: true })
+        setFocus(`edit-${currentFocus}`)
         // preventDeafultしておかないと、そのままinputエリアに文字が入力されてしまうため
     }, enabled.normal)
 
@@ -55,8 +55,10 @@ export const Todo = () => {
     // change mode to normal 
     useHotkeys(['Esc', 'Enter'], (e) => {
         e.preventDefault()
-        setFocus(`text-${currentFocus}`)
-        setMode('normal')
+        if (!e.isComposing) {
+            setFocus(`text-${currentFocus}`)
+            setMode('normal')
+        }
     }, enabled.edit)
 
 
@@ -118,6 +120,7 @@ export const Todo = () => {
                                     type="text" defaultValue={t}
                                     {...register(`edit-${index}`)}
                                     onChange={handleTodoChange}
+                                    onFocus={e => e.currentTarget.setSelectionRange(t.length, t.length)}
                                     onBlur={handleBlur} />
                             </div>
                         </div>

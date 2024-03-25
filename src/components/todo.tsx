@@ -30,9 +30,11 @@ export const Todo = () => {
         if (mode === 'edit') setFocus(`edit-${todos[currentIndex].id}`)
         if (mode === 'normal') setFocus(`text-${todos[currentIndex].id}`)
     }, [todos, mode, currentIndex, setFocus])
-    /**
+    /*******************
+     * 
      * Normal mode
-     */
+     * 
+     *******************/
     // move to up 
     useHotkeys(['k', 'ArrowUp', 'ctrl+p'], (e) => {
         e.preventDefault()
@@ -94,35 +96,40 @@ export const Todo = () => {
         setKey(e.key)
     }, enabled.normal)
 
-    /**
+    /*******************
+     * 
      * Edit mode
-     */
-    // change mode to normal 
+     * 
+     *******************/
+    // change to normal mode
     useHotkeys(['Esc', 'Enter'], (e) => {
         e.preventDefault()
         if (!e.isComposing) setMode('normal')
     }, enabled.edit)
 
 
-    /**
-     * Command Mode 
-     */
+    /*******************
+     * 
+     * Command mode
+     * 
+     *******************/
     useHotkeys('*', (e) => {
         e.preventDefault()
-        if (!['Enter', 'Escape'].includes(e.key)) setKey(key + e.key)
+        if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setKey(key + e.key)
     }, enabled.command)
 
     useHotkeys(['Enter'], (e) => {
         e.preventDefault()
         setLog(`Not found command:${key}`)
         setMode('normal')
+        setKey("")
     }, enabled.command)
 
     useHotkeys('Esc', (e) => {
         e.preventDefault()
         setMode('normal')
+        setKey("")
     }, enabled.command)
-
 
 
     const handleTodoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -135,51 +142,73 @@ export const Todo = () => {
         }
     }
 
-
-
     const handleFocus = (index: number) => setCurrentIndex(index)
-    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
+    // const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
+    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
     const handleTodoMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(); // マウスダウンイベントの伝搬を停止
     const handleBlur = () => {
         setMode('normal')
         setFocus(`text-${todos[currentIndex].id}`)
     }
     return (
-        <div className="flex flex-col w-full h-screen" id="main" onMouseDown={handleMainMouseDown}>
-            <div onMouseDown={handleTodoMouseDown}>
-                {todos.map((t, index) => {
-                    return (
-                        <div key={t.id} className="flex border">
-                            <div className={`overflow-hidden focus-within:bg-blue-500  ${!(currentIndex === index && mode === "edit") ? "w-full" : "w-0"}`}>
-                                <button
-                                    className={`w-full text-left truncate`}
-                                    onFocus={_ => handleFocus(index)}
-                                    autoFocus={currentIndex === index}
-                                    {...register(`text-${t.id}`)}
-                                >
-                                    {t.text}
-                                </button>
-                            </div>
-                            <div className={`overflow-hidden ${currentIndex === index && mode === "edit" ? "w-full" : "w-0"}`}>
-                                <input
-                                    tabIndex={-1}
-                                    className={`focus:bg-gray-300 truncate w-full`}
-                                    type="text"
-                                    placeholder="please input your task"
-                                    {...register(`edit-${t.id}`, { value: t.text })}
-                                    onChange={handleTodoChange}
-                                    onFocus={e => e.currentTarget.setSelectionRange(t.text.length, t.text.length)}
-                                    onBlur={handleBlur} />
-                            </div>
-                        </div>
-                    )
-                    // }
-                })}
+        <div className="flex flex-col h-screen justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
+            <div className="flex flex-col ">
+                <div className="flex justify-between">
+                    <div onMouseDown={handleTodoMouseDown} className="w-full truncate">
+                        {todos.map((t, index) => {
+                            return (
+                                <div key={t.id} className="flex border">
+                                    <div className={`overflow-hidden focus-within:bg-blue-500  ${!(currentIndex === index && mode === "edit") ? "w-full" : "w-0"}`}>
+                                        <button
+                                            className={`w-full text-left truncate`}
+                                            onFocus={_ => handleFocus(index)}
+                                            autoFocus={currentIndex === index}
+                                            {...register(`text-${t.id}`)}
+                                        >
+                                            {t.text}
+                                        </button>
+                                    </div>
+                                    <div className={`overflow-hidden ${currentIndex === index && mode === "edit" ? "w-full" : "w-0"}`}>
+                                        <input
+                                            tabIndex={-1}
+                                            className={`focus:bg-gray-300 truncate w-full`}
+                                            type="text"
+                                            placeholder="please input your task"
+                                            {...register(`edit-${t.id}`, { value: t.text })}
+                                            onChange={handleTodoChange}
+                                            onFocus={e => e.currentTarget.setSelectionRange(t.text.length, t.text.length)}
+                                            onBlur={handleBlur} />
+                                    </div>
+                                </div>
+                            )
+                            // }
+                        })}
+                    </div>
+                    <div className="border bg-gray-200 w-full h-full">
+                        <ul>
+                            <li>id: {todos[currentIndex].id}</li>
+                            <li>isCompletion: {todos[currentIndex].isCompletion}</li>
+                            <li>priority: {todos[currentIndex].priority}</li>
+                            <li>completionDate: {todos[currentIndex].completionDate}</li>
+                            <li>creationDate: {todos[currentIndex].creationDate}</li>
+                            <li>text: {todos[currentIndex].text}</li>
+                            <li>project: {todos[currentIndex].project}</li>
+                            <li>context: {todos[currentIndex].context}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="bg-sky-300 ">
+                    <div className="flex flex-wrap">
+                        Usage space
+                    </div>
+                </div>
             </div>
-            <span>press:{key}</span>
-            <span>current index:{currentIndex}</span>
-            <span>current mode:{mode}</span>
-            <span>current log:{log}</span>
-        </div >
+            <div className="flex gap-3 p-3 bg-black text-white">
+                <span>press:{key}</span>
+                <span>current index:{currentIndex}</span>
+                <span>current mode:{mode}</span>
+                <span>current log:{log}</span>
+            </div>
+        </div>
     )
 }

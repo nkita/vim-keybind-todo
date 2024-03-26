@@ -2,6 +2,7 @@
 import { useState, MouseEvent, ChangeEvent, useEffect, } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
+import { keymap } from './config'
 interface Todo {
     id: number,
     isCompletion?: boolean
@@ -36,58 +37,57 @@ export const Todo = () => {
      * 
      *******************/
     // move to up 
-    useHotkeys(['k', 'ArrowUp', 'ctrl+p'], (e) => {
+    useHotkeys(keymap['up'].keys, (e) => {
         e.preventDefault()
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
-    }, enabled.normal)
+    }, enabled[keymap['up'].mode])
 
     // move to down
-    useHotkeys(['j', 'ArrowDown', 'ctrl+n'], (e) => {
+    useHotkeys(keymap['down'].keys, (e) => {
         e.preventDefault()
         if (currentIndex < todos.length - 1) setCurrentIndex(currentIndex + 1)
-    }, enabled.normal)
+    }, enabled[keymap['down'].mode])
 
     // insert task 
-    useHotkeys(['i'], (e) => {
+    useHotkeys(keymap['insert'].keys, (e) => {
         e.preventDefault()
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: Todo) => t.id)) + 1
         setTodos([...todos.slice(0, currentIndex), { id: newId, text: "" }, ...todos.slice(currentIndex)])
         setMode('edit')
-    }, enabled.normal)
+    }, enabled[keymap['insert'].mode])
 
     // add task to Top
-    useHotkeys(['shift+i'], (e) => {
+    useHotkeys(keymap['insertTop'].keys, (e) => {
         e.preventDefault()
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: Todo) => t.id)) + 1
         setTodos([{ id: newId, text: "" }, ...todos])
         setCurrentIndex(0)
         setMode('edit')
-    }, enabled.normal)
+    }, enabled[keymap['insertTop'].mode])
 
     // append task 
-    useHotkeys(['a'], (e) => {
+    useHotkeys(keymap['append'].keys, (e) => {
         e.preventDefault()
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: Todo) => t.id)) + 1
         setTodos([...todos.slice(0, currentIndex + 1), { id: newId, text: "" }, ...todos.slice(currentIndex + 1)])
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, enabled.normal)
+    }, enabled[keymap['append'].mode])
 
     // append task to bottom
-    useHotkeys(['shift+a'], (e) => {
+    useHotkeys(keymap['appendBottom'].keys, (e) => {
         e.preventDefault()
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: Todo) => t.id)) + 1
         setTodos([...todos, { id: newId, text: "" }])
         setCurrentIndex(todos.length)
         setMode('edit')
-    }, enabled.normal)
+    }, enabled[keymap['appendBottom'].mode])
 
     // change to edit mode
-    useHotkeys(['Enter'], (e) => {
+    useHotkeys(keymap['editMode'].keys, (e) => {
         e.preventDefault()
         setMode('edit')
-    }, enabled.normal)
-
+    }, enabled[keymap['editMode'].mode])
 
     // change command mode
     useHotkeys(':', (e) => {
@@ -102,11 +102,10 @@ export const Todo = () => {
      * 
      *******************/
     // change to normal mode
-    useHotkeys(['Esc', 'Enter'], (e) => {
+    useHotkeys(keymap['normalMode'].keys, (e) => {
         e.preventDefault()
         if (!e.isComposing) setMode('normal')
-    }, enabled.edit)
-
+    }, enabled[keymap['normalMode'].mode])
 
     /*******************
      * 
@@ -197,9 +196,20 @@ export const Todo = () => {
                         </ul>
                     </div>
                 </div>
-                <div className="bg-sky-300 ">
-                    <div className="flex flex-wrap">
-                        Usage space
+                <div className="bg-sky-300 py-2 px-2">
+                    Usage space
+                    <div className="grid grid-cols-4 gap-4 b">
+                        {
+                            Object.entries(keymap).map(([key, value]) => {
+                                if (value.mode === mode) {
+                                    return (
+                                        <div key={key} className="flex gap-2">
+                                            {value.description}:{value.keys.map(k => <kbd key={k} className="px-2 py-0.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg">{k}</kbd>)}
+                                        </div>
+                                    )
+                                }
+                            })
+                        }
                     </div>
                 </div>
             </div>

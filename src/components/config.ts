@@ -42,7 +42,7 @@ export const keymap: Keymap = {
         description: "タスクを一番上に追加"
     },
     appendBottom: {
-        keys: ['shift-a',],
+        keys: ['shift+a',],
         mode: "normal",
         description: "タスクを一番下に追加"
     },

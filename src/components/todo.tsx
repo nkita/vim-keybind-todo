@@ -3,6 +3,7 @@ import { useState, MouseEvent, ChangeEvent, useEffect, } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from './config'
+import { dispKey } from "@/libs/dispkeyname"
 interface Todo {
     id: number,
     isCompletion?: boolean
@@ -204,7 +205,7 @@ export const Todo = () => {
                                 if (value.mode === mode) {
                                     return (
                                         <div key={key} className="flex gap-2">
-                                            {value.description}:{value.keys.map(k => <kbd key={k} className="px-2 py-0.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg">{k}</kbd>)}
+                                            {value.keys.map(k => <kbd key={k} className="px-2 py-0.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg">{dispKey(k)}</kbd>)}:{value.description}
                                         </div>
                                     )
                                 }

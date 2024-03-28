@@ -10,6 +10,7 @@ export type Keymap = {
     insert: KeymapItem;
     insertTop: KeymapItem;
     appendBottom: KeymapItem;
+    completion: KeymapItem;
     append: KeymapItem;
     editMode: KeymapItem;
     normalMode: KeymapItem;
@@ -29,31 +30,36 @@ export const keymap: Keymap = {
     insert: {
         keys: ['i',],
         mode: "normal",
-        description: "タスクを前に追加"
+        description: "タスク追加（前）"
     },
     append: {
         keys: ['a',],
         mode: "normal",
-        description: "タスクを後ろに追加"
+        description: "タスク追加（後）"
     },
     insertTop: {
         keys: ['shift+i',],
         mode: "normal",
-        description: "タスクを一番上に追加"
+        description: "タスク追加（一番上）"
     },
     appendBottom: {
         keys: ['shift+a',],
         mode: "normal",
-        description: "タスクを一番下に追加"
+        description: "タスク追加（一番下）"
+    },
+    completion: {
+        keys: ['x'],
+        mode: "normal",
+        description: "完了・未完了"
     },
     editMode: {
         keys: ['Enter',],
         mode: "normal",
-        description: "エディットモードに変更"
+        description: "編集"
     },
     normalMode: {
         keys: ['Enter', 'Esc'],
         mode: "edit",
-        description: "ノーマルモードに変更"
+        description: "戻る"
     },
 }

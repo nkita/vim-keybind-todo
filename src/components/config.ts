@@ -12,7 +12,8 @@ export type Keymap = {
     appendBottom: KeymapItem;
     completion: KeymapItem;
     append: KeymapItem;
-    editMode: KeymapItem;
+    editTextMode: KeymapItem;
+    editPriorityMode: KeymapItem;
     normalMode: KeymapItem;
 };
 
@@ -52,10 +53,15 @@ export const keymap: Keymap = {
         mode: "normal",
         description: "完了・未完了"
     },
-    editMode: {
+    editTextMode: {
         keys: ['Enter',],
         mode: "normal",
-        description: "編集"
+        description: "タスクを編集"
+    },
+    editPriorityMode: {
+        keys: ['p',],
+        mode: "normal",
+        description: "優先度を編集"
     },
     normalMode: {
         keys: ['Enter', 'Esc'],

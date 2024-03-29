@@ -9,9 +9,10 @@ import { todoFunc } from "@/libs/todo"
 import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
     const [key, setKey] = useState("")
-    const [todos, setTodos] = useState<TodoProps[]>([{ id: 0, text: 'new task1' }])
+    const [todos, setTodos] = useState<TodoProps[]>([{ id: 0, text: 'new task1', priority: 'A' }])
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [mode, setMode] = useState('normal')
+    const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const { register, setFocus, getValues } = useForm()
     const enabled = {
@@ -21,9 +22,9 @@ export const Todo = () => {
         always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true }
     }
     useEffect(() => {
-        if (mode === 'edit') setFocus(`edit-${todos[currentIndex].id}`)
-        if (mode === 'normal') setFocus(`text-${todos[currentIndex].id}`)
-    }, [todos, mode, currentIndex, setFocus])
+        if (mode === 'edit') setFocus(`edit-${prefix}-${todos[currentIndex].id}`, { shouldSelect: true })
+        if (mode === 'normal') setFocus(`${prefix}-${todos[currentIndex].id}`)
+    }, [todos, mode, prefix, currentIndex, setFocus])
     /*******************
      * 
      * Normal mode
@@ -73,10 +74,17 @@ export const Todo = () => {
     }, enabled[keymap['appendBottom'].mode])
 
     // change to edit mode
-    useHotkeys(keymap['editMode'].keys, (e) => {
+    useHotkeys(keymap['editTextMode'].keys, (e) => {
         e.preventDefault()
         setMode('edit')
-    }, enabled[keymap['editMode'].mode])
+    }, enabled[keymap['editTextMode'].mode])
+
+    // change to edit mode
+    useHotkeys(keymap['editPriorityMode'].keys, (e) => {
+        e.preventDefault()
+        setPrefix('priority')
+        setMode('edit')
+    }, enabled[keymap['editPriorityMode'].mode])
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
@@ -112,10 +120,10 @@ export const Todo = () => {
             const replace = {
                 id: todos[currentIndex].id,
                 isCompletion: todos[currentIndex].isCompletion,
-                priority: todos[currentIndex].priority,
+                priority: getValues(`edit-priority-${todos[currentIndex].id}`).toUpperCase(),
                 completionDate: todos[currentIndex].completionDate,
                 creationDate: todos[currentIndex].creationDate,
-                text: getValues(`edit-${todos[currentIndex].id}`),
+                text: getValues(`edit-text-${todos[currentIndex].id}`),
                 project: todos[currentIndex].project,
                 context: todos[currentIndex].context
             }
@@ -125,6 +133,7 @@ export const Todo = () => {
             } else {
                 setTodos(todoFunc.modify(todos, replace))
             }
+            setPrefix('text')
             setMode('normal')
         }
     }, enabled[keymap['normalMode'].mode])
@@ -149,6 +158,7 @@ export const Todo = () => {
     useHotkeys('Esc', (e) => {
         e.preventDefault()
         setMode('normal')
+        setPrefix('text')
         setKey("")
     }, enabled.command)
 
@@ -178,39 +188,33 @@ export const Todo = () => {
                     <div onMouseDown={handleTodoMouseDown} className="w-3/4 overflow-auto">
                         {todos.map((t, index) => {
                             return (
-                                <div key={t.id} className="flex border-b truncate">
-                                    <div className={`overflow-hidden focus-within:bg-blue-50  ${!(currentIndex === index && mode === "edit") ? "w-full" : "w-0"}`}>
-                                        <div className={`flex gap-1`}>
-                                            <span className="w-[15px] px-1 h-[15px]">{t.isCompletion ? "x" : ""}</span>
-                                            <button
-                                                className={`w-full text-left truncate outline-none`}
-                                                onFocus={_ => handleFocus(index)}
-                                                autoFocus={currentIndex === index}
-                                                {...register(`text-${t.id}`)}
-                                            >
-                                                <span className={`${t.isCompletion ? "line-through text-gray-600" : ""}`}>
-                                                    {t.text}
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div className={`overflow-hidden focus-within:bg-gray-100 focus-within:font-medium ${currentIndex === index && mode === "edit" ? "w-full" : "w-0"}`}>
-                                        <div className="flex gap-1">
-                                            <span className="w-[15px] px-1 h-[15px]">{t.isCompletion ? "x" : ""}</span>
-                                            <input
-                                                tabIndex={-1}
-                                                className={`outline-none bg-gray-100 truncate w-full ${t.isCompletion ? "line-through" : ""}`}
-                                                type="text"
-                                                placeholder="please input your task"
-                                                {...register(`edit-${t.id}`, { value: t.text })}
-                                                // onChange={handleTodoChange}
-                                                onFocus={e => e.currentTarget.setSelectionRange(t.text.length, t.text.length)}
-                                                onBlur={handleBlur} />
-                                        </div>
-                                    </div>
+                                <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100">
+                                    <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
+                                    <Item
+                                        t={t}
+                                        index={index}
+                                        currentIndex={currentIndex}
+                                        prefix={"priority"}
+                                        currentPrefix={prefix}
+                                        mode={mode}
+                                        width="w-[25px]"
+                                        label={t.priority ? `(${t.priority})` : ""}
+                                        handleBlur={handleBlur}
+                                        handleFocus={handleFocus}
+                                        register={register} />
+                                    <Item
+                                        t={t}
+                                        index={index}
+                                        currentIndex={currentIndex}
+                                        prefix={"text"}
+                                        currentPrefix={prefix}
+                                        mode={mode}
+                                        label={t.text}
+                                        handleBlur={handleBlur}
+                                        handleFocus={handleFocus}
+                                        register={register} />
                                 </div>
                             )
-                            // }
                         })}
                     </div>
                     <div className="border bg-gray-200 w-1/4 h-full break-words">
@@ -218,12 +222,12 @@ export const Todo = () => {
                             <ul>
                                 {/* <li>id: {todos[currentIndex].id}</li> */}
                                 {/* <li>isCompletion: {todos[currentIndex].isCompletion ? "完了" : "未完了"}</li> */}
-                                <li>priority: {todos[currentIndex].priority}</li>
+                                <li>priority(A&gt;Z):{todos[currentIndex].priority}</li>
                                 <li>completionDate: {todos[currentIndex].completionDate}</li>
                                 <li>creationDate: {todos[currentIndex].creationDate}</li>
                                 <li>text: {todos[currentIndex].text}</li>
-                                <li>project: {todos[currentIndex].project}</li>
-                                <li>context: {todos[currentIndex].context}</li>
+                                <li>+project: {todos[currentIndex].project}</li>
+                                <li>@context: {todos[currentIndex].context}</li>
                             </ul>
                         </div>
                         <div>
@@ -257,5 +261,63 @@ export const Todo = () => {
                 </div>
             </div>
         </div>
+    )
+}
+
+
+const Item = (
+    {
+        t,
+        index,
+        mode,
+        currentIndex,
+        prefix,
+        currentPrefix,
+        width = '',
+        height = '',
+        label,
+        handleFocus,
+        handleBlur,
+        register
+    }: {
+        t: TodoProps
+        index: number
+        currentIndex: number
+        prefix: "text" | "priority"
+        currentPrefix: string
+        mode: string
+        width?: string
+        height?: string
+        label: string | undefined
+        handleFocus: (index: number) => void
+        handleBlur: () => void
+        register: any
+    }
+) => {
+    return (
+        <>
+            <div className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "w-0"}`}>
+                <button
+                    className={`w-full text-left truncate outline-none`}
+                    onFocus={_ => handleFocus(index)}
+                    autoFocus={currentIndex === index}
+                    {...register(`${prefix}-${t.id}`)}
+                >
+                    <span className={`${t.isCompletion ? "line-through text-gray-600" : ""}`}>
+                        {label}
+                    </span>
+                </button>
+            </div>
+            <div className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "w-0"}`}>
+                <input
+                    tabIndex={-1}
+                    className={`w-full text-left truncate outline-none bg-transparent focus:bg-gray-100`}
+                    type="text"
+                    maxLength={prefix === 'priority' ? 1 : -1}
+                    {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
+                    // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
+                    onBlur={handleBlur} />
+            </div >
+        </>
     )
 }

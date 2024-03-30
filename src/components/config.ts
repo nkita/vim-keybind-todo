@@ -14,6 +14,8 @@ export type Keymap = {
     append: KeymapItem;
     editTextMode: KeymapItem;
     editPriorityMode: KeymapItem;
+    editProjectMode: KeymapItem;
+    editContextMode: KeymapItem;
     normalMode: KeymapItem;
 };
 
@@ -62,6 +64,16 @@ export const keymap: Keymap = {
         keys: ['p',],
         mode: "normal",
         description: "優先度を編集"
+    },
+    editProjectMode: {
+        keys: ['0'],
+        mode: "normal",
+        description: "プロジェクトを編集"
+    },
+    editContextMode: {
+        keys: ['@',],
+        mode: "normal",
+        description: "コンテキストを編集"
     },
     normalMode: {
         keys: ['Enter', 'Esc'],

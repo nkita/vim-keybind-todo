@@ -9,17 +9,17 @@ import { todoFunc } from "@/libs/todo"
 import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
     const [key, setKey] = useState("")
-    const [todos, setTodos] = useState<TodoProps[]>([{ id: 0, text: 'new task1', priority: 'A' }])
+    const [todos, setTodos] = useState<TodoProps[]>([{ id: 0, text: 'new task1', priority: 'A', project: "private", context: "family" }])
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [mode, setMode] = useState('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const { register, setFocus, getValues } = useForm()
     const enabled = {
-        normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false },
-        edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true },
-        command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true },
-        always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true }
+        normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false, ignoreModifiers: true, preventDefault: true },
+        edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true, ignoreModifiers: true, preventDefault: true },
+        command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true, ignoreModifiers: true, preventDefault: true },
+        always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
     }
     useEffect(() => {
         if (mode === 'edit') setFocus(`edit-${prefix}-${todos[currentIndex].id}`, { shouldSelect: true })
@@ -32,26 +32,22 @@ export const Todo = () => {
      *******************/
     // move to up 
     useHotkeys(keymap['up'].keys, (e) => {
-        e.preventDefault()
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
     }, enabled[keymap['up'].mode])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
-        e.preventDefault()
         if (currentIndex < todos.length - 1) setCurrentIndex(currentIndex + 1)
     }, enabled[keymap['down'].mode])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
-        e.preventDefault()
         setTodos(todoFunc.add(currentIndex, todos))
         setMode('edit')
     }, enabled[keymap['insert'].mode])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
-        e.preventDefault()
         setTodos(todoFunc.add(0, todos))
         setCurrentIndex(0)
         setMode('edit')
@@ -59,7 +55,6 @@ export const Todo = () => {
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
-        e.preventDefault()
         setTodos(todoFunc.add(currentIndex + 1, todos))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
@@ -67,7 +62,6 @@ export const Todo = () => {
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        e.preventDefault()
         setTodos(todoFunc.add(todos.length, todos))
         setCurrentIndex(todos.length)
         setMode('edit')
@@ -75,20 +69,29 @@ export const Todo = () => {
 
     // change to edit mode
     useHotkeys(keymap['editTextMode'].keys, (e) => {
-        e.preventDefault()
         setMode('edit')
     }, enabled[keymap['editTextMode'].mode])
 
-    // change to edit mode
+    // change to priority edit mode
     useHotkeys(keymap['editPriorityMode'].keys, (e) => {
-        e.preventDefault()
         setPrefix('priority')
         setMode('edit')
     }, enabled[keymap['editPriorityMode'].mode])
 
+    // change to project edit mode
+    useHotkeys(keymap['editProjectMode'].keys, (e) => {
+        setPrefix('project')
+        setMode('edit')
+    }, enabled[keymap['editProjectMode'].mode])
+
+    // change to context edit mode
+    useHotkeys(keymap['editContextMode'].keys, (e) => {
+        setPrefix('context')
+        setMode('edit')
+    }, enabled[keymap['editContextMode'].mode])
+
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
-        e.preventDefault()
         setTodos(todoFunc.modify(todos, {
             id: todos[currentIndex].id,
             isCompletion: !todos[currentIndex].isCompletion,
@@ -103,7 +106,6 @@ export const Todo = () => {
 
     // change command mode
     useHotkeys(':', (e) => {
-        e.preventDefault()
         setMode('command')
         setKey(e.key)
     }, enabled.normal)
@@ -115,7 +117,6 @@ export const Todo = () => {
      *******************/
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
-        e.preventDefault()
         if (!e.isComposing) {
             const replace = {
                 id: todos[currentIndex].id,
@@ -124,8 +125,8 @@ export const Todo = () => {
                 completionDate: todos[currentIndex].completionDate,
                 creationDate: todos[currentIndex].creationDate,
                 text: getValues(`edit-text-${todos[currentIndex].id}`),
-                project: todos[currentIndex].project,
-                context: todos[currentIndex].context
+                project: getValues(`edit-project-${todos[currentIndex].id}`),
+                context: getValues(`edit-context-${todos[currentIndex].id}`)
             }
             if (todoFunc.isEmpty(replace)) {
                 setTodos(todoFunc.delete(todos, todos[currentIndex].id))
@@ -144,7 +145,6 @@ export const Todo = () => {
      * 
      *******************/
     useHotkeys('*', (e) => {
-        e.preventDefault()
         if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setKey(key + e.key)
     }, enabled.command)
 
@@ -213,6 +213,30 @@ export const Todo = () => {
                                         handleBlur={handleBlur}
                                         handleFocus={handleFocus}
                                         register={register} />
+                                    <Item
+                                        t={t}
+                                        index={index}
+                                        currentIndex={currentIndex}
+                                        prefix={"project"}
+                                        currentPrefix={prefix}
+                                        mode={mode}
+                                        label={t.project ? ` +${t.project}` : ""}
+                                        handleBlur={handleBlur}
+                                        handleFocus={handleFocus}
+                                        register={register} />
+                                    <Item
+                                        t={t}
+                                        index={index}
+                                        currentIndex={currentIndex}
+                                        prefix={"context"}
+                                        currentPrefix={prefix}
+                                        mode={mode}
+                                        label={t.context ? ` @${t.context}` : ""}
+                                        handleBlur={handleBlur}
+                                        handleFocus={handleFocus}
+                                        register={register} />
+
+
                                 </div>
                             )
                         })}
@@ -283,7 +307,7 @@ const Item = (
         t: TodoProps
         index: number
         currentIndex: number
-        prefix: "text" | "priority"
+        prefix: "text" | "priority" | "project" | "context"
         currentPrefix: string
         mode: string
         width?: string

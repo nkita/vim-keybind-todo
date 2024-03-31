@@ -10,6 +10,8 @@ import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
     const [key, setKey] = useState("")
     const [todos, setTodos] = useState<TodoProps[]>([{ id: 0, text: 'new task1', priority: 'A', project: "private", context: "family" }])
+    const [projects, setProjects] = useState<string[]>([])
+    const [currentProject, setCurrentProject] = useState("")
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [mode, setMode] = useState('normal')
     const [prefix, setPrefix] = useState('text')
@@ -25,6 +27,12 @@ export const Todo = () => {
         if (mode === 'edit') setFocus(`edit-${prefix}-${todos[currentIndex].id}`, { shouldSelect: true })
         if (mode === 'normal') setFocus(`${prefix}-${todos[currentIndex].id}`)
     }, [todos, mode, prefix, currentIndex, setFocus])
+
+    useEffect(() => {
+        const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
+        console.log(filteredProjects)
+        setProjects(Array.from(new Set(filteredProjects)));
+    }, [todos])
     /*******************
      * 
      * Normal mode
@@ -42,27 +50,27 @@ export const Todo = () => {
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
-        setTodos(todoFunc.add(currentIndex, todos))
+        setTodos(todoFunc.add(currentIndex, todos, { project: currentProject }))
         setMode('edit')
     }, enabled[keymap['insert'].mode])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
-        setTodos(todoFunc.add(0, todos))
+        setTodos(todoFunc.add(0, todos, { project: currentProject }))
         setCurrentIndex(0)
         setMode('edit')
     }, enabled[keymap['insertTop'].mode])
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
-        setTodos(todoFunc.add(currentIndex + 1, todos))
+        setTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
     }, enabled[keymap['append'].mode])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        setTodos(todoFunc.add(todos.length, todos))
+        setTodos(todoFunc.add(todos.length, todos, { project: currentProject }))
         setCurrentIndex(todos.length)
         setMode('edit')
     }, enabled[keymap['appendBottom'].mode])
@@ -89,6 +97,34 @@ export const Todo = () => {
         setPrefix('context')
         setMode('edit')
     }, enabled[keymap['editContextMode'].mode])
+
+    // move to right project
+    useHotkeys(keymap['moveProjectRight'].keys, (e) => {
+        if (projects.length > 0) {
+            if (!currentProject) {
+                setCurrentProject(projects[0])
+            } else {
+                const _index = projects.indexOf(currentProject)
+                if (_index < projects.length - 1) {
+                    setCurrentProject(projects[_index + 1])
+                }
+            }
+        }
+    }, enabled[keymap['moveProjectRight'].mode])
+
+    // move to left project
+    useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
+        if (projects.length > 0) {
+            if (currentProject) {
+                const _index = projects.indexOf(currentProject)
+                if (_index === 0) {
+                    setCurrentProject("")
+                } else {
+                    setCurrentProject(projects[_index - 1])
+                }
+            }
+        }
+    }, enabled[keymap['moveProjectLeft'].mode])
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
@@ -186,7 +222,13 @@ export const Todo = () => {
             <div className="flex flex-col ">
                 <div className="flex justify-between">
                     <div onMouseDown={handleTodoMouseDown} className="w-3/4 overflow-auto">
-                        {todos.map((t, index) => {
+                        <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : ""}`}>All</button>
+                        {projects.map(p => {
+                            return (
+                                <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
+                            )
+                        })}
+                        {todos.filter(t => !currentProject ? true : t.project === currentProject).map((t, index) => {
                             return (
                                 <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100">
                                     <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>

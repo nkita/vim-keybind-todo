@@ -1,7 +1,10 @@
 import { TodoProps } from "@/types"
 import { yyyymmddhhmmss } from "./time"
+interface options {
+    project: string
+}
 export const todoFunc = {
-    add: (index: number, todos: TodoProps[]) => {
+    add: (index: number, todos: TodoProps[], options: options = { project: "" }) => {
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
         return [
             ...todos.slice(0, index),
@@ -9,6 +12,7 @@ export const todoFunc = {
                 id: newId,
                 creationDate: yyyymmddhhmmss(new Date()),
                 text: "",
+                project: options.project
             },
             ...todos.slice(index)
         ]

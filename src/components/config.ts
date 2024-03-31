@@ -16,6 +16,8 @@ export type Keymap = {
     editPriorityMode: KeymapItem;
     editProjectMode: KeymapItem;
     editContextMode: KeymapItem;
+    moveProjectRight: KeymapItem;
+    moveProjectLeft: KeymapItem;
     normalMode: KeymapItem;
 };
 
@@ -74,6 +76,16 @@ export const keymap: Keymap = {
         keys: ['@',],
         mode: "normal",
         description: "コンテキストを編集"
+    },
+    moveProjectRight: {
+        keys: ['l'],
+        mode: "normal",
+        description: "プロジェクトタブを右に移動"
+    },
+    moveProjectLeft: {
+        keys: ['h'],
+        mode: "normal",
+        description: "プロジェクトタブを右に移動"
     },
     normalMode: {
         keys: ['Enter', 'Esc'],

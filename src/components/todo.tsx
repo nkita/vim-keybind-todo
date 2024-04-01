@@ -15,6 +15,7 @@ export const Todo = () => {
         { id: 2, text: '締切日までに作品仕上げる', priority: 'c', project: "hobby", },
         { id: 3, text: '材料を買う', project: "hobby" }
     ])
+    const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [projects, setProjects] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
     const [currentIndex, setCurrentIndex] = useState<number>(0)
@@ -23,20 +24,21 @@ export const Todo = () => {
     const [log, setLog] = useState("")
     const { register, setFocus, getValues } = useForm()
     const enabled = {
-        normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false, ignoreModifiers: true, preventDefault: true },
-        edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true, ignoreModifiers: true, preventDefault: true },
-        command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true, ignoreModifiers: true, preventDefault: true },
+        normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false, preventDefault: true },
+        edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
+        command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
         always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
     }
     useEffect(() => {
-        if (mode === 'edit') setFocus(`edit-${prefix}-${todos[currentIndex].id}`, { shouldSelect: true })
-        if (mode === 'normal') setFocus(`${prefix}-${todos[currentIndex].id}`)
-    }, [todos, mode, prefix, currentIndex, setFocus])
+        const _todos = !currentProject ? todos : todos.filter(t => t.project === currentProject)
+        if (mode === 'edit') setFocus(`edit-${prefix}-${_todos[currentIndex].id}`, { shouldSelect: true })
+        if (mode === 'normal') setFocus(`${prefix}-${_todos[currentIndex].id}`)
+        setFilterdTodos(_todos)
+    }, [todos, mode, prefix, currentIndex, currentProject, setFocus])
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
         setProjects(Array.from(new Set(filteredProjects)));
-        console.log(todos)
     }, [todos])
     /*******************
      * 
@@ -50,7 +52,7 @@ export const Todo = () => {
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
-        if (currentIndex < todos.length - 1) setCurrentIndex(currentIndex + 1)
+        if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
     }, enabled[keymap['down'].mode])
 
     // insert task 
@@ -76,7 +78,7 @@ export const Todo = () => {
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
         setTodos(todoFunc.add(todos.length, todos, { project: currentProject }))
-        setCurrentIndex(todos.length)
+        setCurrentIndex(filterdTodos.length)
         setMode('edit')
     }, enabled[keymap['appendBottom'].mode])
 
@@ -108,10 +110,12 @@ export const Todo = () => {
         if (projects.length > 0) {
             if (!currentProject) {
                 setCurrentProject(projects[0])
+                setCurrentIndex(0)
             } else {
                 const _index = projects.indexOf(currentProject)
                 if (_index < projects.length - 1) {
                     setCurrentProject(projects[_index + 1])
+                    setCurrentIndex(0)
                 }
             }
         }
@@ -127,6 +131,7 @@ export const Todo = () => {
                 } else {
                     setCurrentProject(projects[_index - 1])
                 }
+                setCurrentIndex(0)
             }
         }
     }, enabled[keymap['moveProjectLeft'].mode])

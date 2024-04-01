@@ -36,7 +36,6 @@ export const todoFunc = {
             switch (key) {
                 case "completionDate":
                 case "text":
-                case "project":
                 case "priority":
                 case "context":
                     if (value) isEmpty = false

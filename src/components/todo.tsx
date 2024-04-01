@@ -9,7 +9,12 @@ import { todoFunc } from "@/libs/todo"
 import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
     const [key, setKey] = useState("")
-    const [todos, setTodos] = useState<TodoProps[]>([{ id: 0, text: 'new task1', priority: 'A', project: "private", context: "family" }])
+    const [todos, setTodos] = useState<TodoProps[]>([
+        { id: 0, text: '家に帰って電話する', priority: 'A', project: "private", context: "family" },
+        { id: 1, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
+        { id: 2, text: '締切日までに作品仕上げる', priority: 'c', project: "hobby", },
+        { id: 3, text: '材料を買う', project: "hobby" }
+    ])
     const [projects, setProjects] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
     const [currentIndex, setCurrentIndex] = useState<number>(0)
@@ -30,8 +35,8 @@ export const Todo = () => {
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
-        console.log(filteredProjects)
         setProjects(Array.from(new Set(filteredProjects)));
+        console.log(todos)
     }, [todos])
     /*******************
      * 

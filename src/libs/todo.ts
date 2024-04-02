@@ -6,16 +6,32 @@ interface options {
 export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: options = { project: "" }) => {
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
-        return [
-            ...todos.slice(0, index),
-            {
-                id: newId,
-                creationDate: yyyymmddhhmmss(new Date()),
-                text: "",
-                project: options.project
-            },
-            ...todos.slice(index)
-        ]
+        const _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
+        if (index === 0 || index >= _todos.length) {
+            return [
+                ...todos.slice(0, index === 0 ? 0 : todos.length),
+                {
+                    id: newId,
+                    creationDate: yyyymmddhhmmss(new Date()),
+                    text: "",
+                    project: options.project
+                },
+                ...todos.slice(index === 0 ? 0 : todos.length)
+            ]
+        } else {
+            const _id = _todos[index - 1].id
+            const _index = todos.map(t => t.id).indexOf(_id)
+            return [
+                ...todos.slice(0, _index + 1),
+                {
+                    id: newId,
+                    creationDate: yyyymmddhhmmss(new Date()),
+                    text: "",
+                    project: options.project
+                },
+                ...todos.slice(_index + 1)
+            ]
+        }
     },
     modify: (todos: TodoProps[], replace: TodoProps) => todos.map(t => {
         return {

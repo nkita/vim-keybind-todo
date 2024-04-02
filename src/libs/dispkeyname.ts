@@ -3,7 +3,7 @@ export const dispKey = (k: string) => {
     const u = k.toUpperCase()
     if (u === 'ARROWDOWN') disp = '↓'
     if (u === 'ARROWUP') disp = '⇡'
-    if (u === 'ARROOWRIGHT') disp = '→'
-    if (u === 'ARROOWLEFT') disp = '←'
+    if (u === 'ARROWRIGHT') disp = '→'
+    if (u === 'ARROWLEFT') disp = '←'
     return disp
 }

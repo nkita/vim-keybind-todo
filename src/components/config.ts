@@ -1,6 +1,6 @@
 export type KeymapItem = {
     keys: string[]
-    mode: "normal" | "edit" | "command" | "always"
+    mode: "normal" | "edit" | "command" | "sort" | "always" | "noNormal"
     description: string
 }
 
@@ -19,6 +19,13 @@ export type Keymap = {
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
     normalMode: KeymapItem;
+    sortMode: KeymapItem;
+    sortTextMode: KeymapItem;
+    sortPriorityMode: KeymapItem;
+    sortCompletionMode: KeymapItem;
+    sortCreationDateMode: KeymapItem;
+    sortContextMode: KeymapItem;
+    sortClear: KeymapItem
 };
 
 export const keymap: Keymap = {
@@ -31,6 +38,16 @@ export const keymap: Keymap = {
         keys: ['j', 'ArrowDown'],
         mode: "normal",
         description: "下へ移動"
+    },
+    moveProjectRight: {
+        keys: ['l', 'ArrowRight'],
+        mode: "normal",
+        description: "プロジェクトタブを右に移動"
+    },
+    moveProjectLeft: {
+        keys: ['h', 'ArrowLeft'],
+        mode: "normal",
+        description: "プロジェクトタブを右に移動"
     },
     insert: {
         keys: ['i',],
@@ -77,19 +94,44 @@ export const keymap: Keymap = {
         mode: "normal",
         description: "コンテキストを編集"
     },
-    moveProjectRight: {
-        keys: ['l'],
+    sortMode: {
+        keys: ['s'],
         mode: "normal",
-        description: "プロジェクトタブを右に移動"
+        description: "ソート"
     },
-    moveProjectLeft: {
-        keys: ['h'],
-        mode: "normal",
-        description: "プロジェクトタブを右に移動"
+    sortTextMode: {
+        keys: ['t'],
+        mode: "sort",
+        description: "タスク内容"
+    },
+    sortPriorityMode: {
+        keys: ['p'],
+        mode: "sort",
+        description: "優先度"
+    },
+    sortCompletionMode: {
+        keys: ['x'],
+        mode: "sort",
+        description: "タスク完了・未完了"
+    },
+    sortCreationDateMode: {
+        keys: ['d'],
+        mode: "sort",
+        description: "作成日"
+    },
+    sortContextMode: {
+        keys: ['@'],
+        mode: "sort",
+        description: "コンテキスト"
+    },
+    sortClear: {
+        keys: ['Delete'],
+        mode: "sort",
+        description: "クリア"
     },
     normalMode: {
-        keys: ['Enter', 'Esc'],
-        mode: "edit",
+        keys: ['Esc', 'Enter'],
+        mode: "noNormal",
         description: "戻る"
     },
 }

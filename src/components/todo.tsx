@@ -10,14 +10,15 @@ import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
     const [key, setKey] = useState("")
     const [todos, setTodos] = useState<TodoProps[]>([
-        { id: 0, text: '家に帰って電話する', priority: 'A', project: "private", context: "family" },
+        { id: 0, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
         { id: 1, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
-        { id: 2, text: '締切日までに作品仕上げる', priority: 'c', project: "hobby", },
+        { id: 2, text: '締切日までに作品仕上げる', priority: 'A', project: "hobby", },
         { id: 3, text: '材料を買う', project: "hobby" }
     ])
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [projects, setProjects] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
+    const [currentSort, setCurrentSort] = useState<"text" | "priority" | "context" | "creationDate" | undefined>(undefined)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [mode, setMode] = useState('normal')
     const [prefix, setPrefix] = useState('text')
@@ -26,20 +27,31 @@ export const Todo = () => {
     const enabled = {
         normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false, preventDefault: true },
         edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
+        sort: { enabled: mode === "sort", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
         command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
-        always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
+        always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
+        noNormal: { enabled: mode !== "normal", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
     }
     useEffect(() => {
-        const _todos = !currentProject ? todos : todos.filter(t => t.project === currentProject)
-        if (mode === 'edit') setFocus(`edit-${prefix}-${_todos[currentIndex].id}`, { shouldSelect: true })
-        if (mode === 'normal') setFocus(`${prefix}-${_todos[currentIndex].id}`)
+        const _testtodos = !currentProject ? todos : todos.filter(t => t.project === currentProject)
+        const _todos = [..._testtodos]
+        if (currentSort !== undefined) {
+            _todos.sort(function (a, b) {
+                const _a = a[currentSort] || ""; // プライオリティが undefined の場合は空文字列として扱う
+                const _b = b[currentSort] || "";
+                return _a.localeCompare(_b); // 文字列の比較にする
+            });
+        }
+        if (mode === 'edit') setFocus(`edit-${prefix}-${_todos[currentIndex >= _todos.length ? _todos.length - 1 : currentIndex].id}`, { shouldSelect: true })
+        if (mode === 'normal') setFocus(`${prefix}-${_todos[currentIndex >= _todos.length ? _todos.length - 1 : currentIndex].id}`)
         setFilterdTodos(_todos)
-    }, [todos, mode, prefix, currentIndex, currentProject, setFocus])
+    }, [todos, mode, prefix, currentIndex, currentProject, currentSort, setFocus])
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
         setProjects(Array.from(new Set(filteredProjects)));
     }, [todos])
+
     /*******************
      * 
      * Normal mode
@@ -139,16 +151,40 @@ export const Todo = () => {
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         setTodos(todoFunc.modify(todos, {
-            id: todos[currentIndex].id,
-            isCompletion: !todos[currentIndex].isCompletion,
-            priority: todos[currentIndex].priority,
-            completionDate: !todos[currentIndex].isCompletion ? yyyymmddhhmmss(new Date()) : "",
-            creationDate: todos[currentIndex].creationDate,
-            text: todos[currentIndex].text,
-            project: todos[currentIndex].project,
-            context: todos[currentIndex].context
+            id: filterdTodos[currentIndex].id,
+            isCompletion: !filterdTodos[currentIndex].isCompletion,
+            priority: filterdTodos[currentIndex].priority,
+            completionDate: !filterdTodos[currentIndex].isCompletion ? yyyymmddhhmmss(new Date()) : "",
+            creationDate: filterdTodos[currentIndex].creationDate,
+            text: filterdTodos[currentIndex].text,
+            project: filterdTodos[currentIndex].project,
+            context: filterdTodos[currentIndex].context
         }))
     }, enabled[keymap['completion'].mode])
+
+    // change sort mode
+    useHotkeys(keymap['sortMode'].keys, (e) => {
+        setMode("sort")
+    }, enabled[keymap['sortMode'].mode])
+
+    /*******************
+     * 
+     * Sort mode
+     * 
+     *******************/
+
+    useHotkeys(keymap['sortPriorityMode'].keys, (e) => {
+        setCurrentSort("priority")
+        setMode("normal")
+    }, enabled[keymap['sortPriorityMode'].mode])
+
+    // return to normal mode
+    useHotkeys(keymap['normalMode'].keys, (e) => {
+        setMode("normal")
+    }, enabled['sort'])
+
+
+
 
     // change command mode
     useHotkeys(':', (e) => {
@@ -165,17 +201,17 @@ export const Todo = () => {
     useHotkeys(keymap['normalMode'].keys, (e) => {
         if (!e.isComposing) {
             const replace = {
-                id: todos[currentIndex].id,
-                isCompletion: todos[currentIndex].isCompletion,
-                priority: getValues(`edit-priority-${todos[currentIndex].id}`).toUpperCase(),
-                completionDate: todos[currentIndex].completionDate,
-                creationDate: todos[currentIndex].creationDate,
-                text: getValues(`edit-text-${todos[currentIndex].id}`),
-                project: getValues(`edit-project-${todos[currentIndex].id}`),
-                context: getValues(`edit-context-${todos[currentIndex].id}`)
+                id: filterdTodos[currentIndex].id,
+                isCompletion: filterdTodos[currentIndex].isCompletion,
+                priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`).toUpperCase(),
+                completionDate: filterdTodos[currentIndex].completionDate,
+                creationDate: filterdTodos[currentIndex].creationDate,
+                text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
+                project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
+                context: getValues(`edit-context-${filterdTodos[currentIndex].id}`)
             }
             if (todoFunc.isEmpty(replace)) {
-                setTodos(todoFunc.delete(todos, todos[currentIndex].id))
+                setTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
                 setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
             } else {
                 setTodos(todoFunc.modify(todos, replace))
@@ -225,7 +261,7 @@ export const Todo = () => {
     const handleTodoMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(); // マウスダウンイベントの伝搬を停止
     const handleBlur = () => {
         setMode('normal')
-        setFocus(`text-${todos[currentIndex].id}`)
+        setFocus(`text-${filterdTodos[currentIndex].id}`)
     }
     return (
         <div className="flex flex-col h-screen justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
@@ -238,7 +274,7 @@ export const Todo = () => {
                                 <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
                             )
                         })}
-                        {todos.filter(t => !currentProject ? true : t.project === currentProject).map((t, index) => {
+                        {filterdTodos.map((t, index) => {
                             return (
                                 <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100">
                                     <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
@@ -298,16 +334,26 @@ export const Todo = () => {
                             <ul>
                                 {/* <li>id: {todos[currentIndex].id}</li> */}
                                 {/* <li>isCompletion: {todos[currentIndex].isCompletion ? "完了" : "未完了"}</li> */}
-                                <li>priority(A&gt;Z):{todos[currentIndex].priority}</li>
-                                <li>completionDate: {todos[currentIndex].completionDate}</li>
-                                <li>creationDate: {todos[currentIndex].creationDate}</li>
-                                <li>text: {todos[currentIndex].text}</li>
-                                <li>+project: {todos[currentIndex].project}</li>
-                                <li>@context: {todos[currentIndex].context}</li>
+                                {/* <li>priority(A&gt;Z):{filterdTodos[currentIndex].priority}</li> */}
+                                {/* <li>completionDate: {filterdTodos[currentIndex].completionDate}</li> */}
+                                {/* <li>creationDate: {filterdTodos[currentIndex].creationDate}</li> */}
+                                {/* <li>text: {filterdTodos[currentIndex].text}</li> */}
+                                {/* <li>+project: {filterdTodos[currentIndex].project}</li> */}
+                                {/* <li>@context: {filterdTodos[currentIndex].context}</li> */}
                             </ul>
                         </div>
-                        <div>
-                            new are
+                        <div className="border rounded-sm bg-green-50 h-[400px] overflow-auto">
+                            debug area:
+                            {
+                                todos.map((t, i) => {
+                                    return (
+                                        <div key={`debug:${t.id}`} className="py-2 border-b-2">
+                                            index:{i}
+                                            {Object.entries(t).map(([key, val]) => <div key={`debug:${key}`}>{key}:{val}</div>)}
+                                        </div>
+                                    )
+                                })
+                            }
                         </div>
                     </div>
                 </div>
@@ -318,7 +364,7 @@ export const Todo = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8  gap-4 b">
                         {
                             Object.entries(keymap).map(([key, value]) => {
-                                if (value.mode === mode) {
+                                if (value.mode === mode || value.mode === "always" || (value.mode === 'noNormal' && mode !== 'normal')) {
                                     return (
                                         <div key={key} className="flex items-center gap-2">
                                             {value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{dispKey(k)}</kbd>)}:{value.description}
@@ -375,7 +421,7 @@ const Item = (
             <div className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "w-0"}`}>
                 <button
                     className={`w-full text-left truncate outline-none`}
-                    onFocus={_ => handleFocus(index)}
+                    onClick={_ => handleFocus(index)}
                     autoFocus={currentIndex === index}
                     {...register(`${prefix}-${t.id}`)}
                 >
@@ -392,7 +438,8 @@ const Item = (
                     maxLength={prefix === 'priority' ? 1 : -1}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
                     // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                    onBlur={handleBlur} />
+                    onBlur={handleBlur}
+                     />
             </div >
         </>
     )

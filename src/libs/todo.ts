@@ -1,12 +1,22 @@
-import { TodoProps } from "@/types"
+import { TodoProps, Sort } from "@/types"
 import { yyyymmddhhmmss } from "./time"
 interface options {
     project: string
+    sort?: Sort
 }
 export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: options = { project: "" }) => {
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
         const _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
+        const sort = options.sort
+        if (sort !== undefined) {
+            _todos.sort((a, b) => {
+                const _a = a[sort] || ""; // プライオリティが undefined の場合は空文字列として扱う
+                const _b = b[sort] || "";
+                return _a.localeCompare(_b); // 文字列の比較にする
+            });
+        }
+
         if (index === 0 || index >= _todos.length) {
             return [
                 ...todos.slice(0, index === 0 ? 0 : todos.length),

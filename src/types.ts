@@ -8,3 +8,6 @@ export interface TodoProps {
     project?: string    // +projctname
     context?: string    // @context    
 }
+
+
+export type Sort = "text" | "priority" | "context" | "creationDate" | undefined

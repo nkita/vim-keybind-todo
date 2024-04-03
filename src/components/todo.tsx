@@ -4,7 +4,7 @@ import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from './config'
 import { dispKey } from "@/libs/dispkeyname"
-import { TodoProps } from "@/types"
+import { TodoProps, Sort } from "@/types"
 import { todoFunc } from "@/libs/todo"
 import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
@@ -18,7 +18,7 @@ export const Todo = () => {
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [projects, setProjects] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
-    const [currentSort, setCurrentSort] = useState<"text" | "priority" | "context" | "creationDate" | undefined>(undefined)
+    const [currentSort, setCurrentSort] = useState<Sort>(undefined)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [mode, setMode] = useState('normal')
     const [prefix, setPrefix] = useState('text')
@@ -33,25 +33,49 @@ export const Todo = () => {
         noNormal: { enabled: mode !== "normal", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
     }
     useEffect(() => {
-        const _testtodos = !currentProject ? todos : todos.filter(t => t.project === currentProject)
-        const _todos = [..._testtodos]
+        const _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
         if (currentSort !== undefined) {
-            _todos.sort(function (a, b) {
+            _todos.sort((a, b) => {
                 const _a = a[currentSort] || ""; // プライオリティが undefined の場合は空文字列として扱う
                 const _b = b[currentSort] || "";
                 return _a.localeCompare(_b); // 文字列の比較にする
             });
         }
-        if (mode === 'edit') setFocus(`edit-${prefix}-${_todos[currentIndex >= _todos.length ? _todos.length - 1 : currentIndex].id}`, { shouldSelect: true })
-        if (mode === 'normal') setFocus(`${prefix}-${_todos[currentIndex >= _todos.length ? _todos.length - 1 : currentIndex].id}`)
         setFilterdTodos(_todos)
-    }, [todos, mode, prefix, currentIndex, currentProject, currentSort, setFocus])
+    }, [todos, currentProject, currentSort])
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
         setProjects(Array.from(new Set(filteredProjects)));
     }, [todos])
 
+    useEffect(() => {
+        if (mode === 'edit') setFocus(`edit-${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`, { shouldSelect: true })
+        if (mode === 'normal') setFocus(`${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`)
+    }, [filterdTodos, mode, currentIndex, prefix, setFocus])
+    /*****
+     * common func
+     */
+    const toNormalMode = () => {
+        const replace = {
+            id: filterdTodos[currentIndex].id,
+            isCompletion: filterdTodos[currentIndex].isCompletion,
+            priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`).toUpperCase(),
+            completionDate: filterdTodos[currentIndex].completionDate,
+            creationDate: filterdTodos[currentIndex].creationDate,
+            text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
+            project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
+            context: getValues(`edit-context-${filterdTodos[currentIndex].id}`)
+        }
+        if (todoFunc.isEmpty(replace)) {
+            setTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
+            setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
+        } else {
+            setTodos(todoFunc.modify(todos, replace))
+        }
+        setPrefix('text')
+        setMode('normal')
+    }
     /*******************
      * 
      * Normal mode
@@ -183,9 +207,6 @@ export const Todo = () => {
         setMode("normal")
     }, enabled['sort'])
 
-
-
-
     // change command mode
     useHotkeys(':', (e) => {
         setMode('command')
@@ -200,24 +221,7 @@ export const Todo = () => {
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
         if (!e.isComposing) {
-            const replace = {
-                id: filterdTodos[currentIndex].id,
-                isCompletion: filterdTodos[currentIndex].isCompletion,
-                priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`).toUpperCase(),
-                completionDate: filterdTodos[currentIndex].completionDate,
-                creationDate: filterdTodos[currentIndex].creationDate,
-                text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
-                project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
-                context: getValues(`edit-context-${filterdTodos[currentIndex].id}`)
-            }
-            if (todoFunc.isEmpty(replace)) {
-                setTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
-                setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
-            } else {
-                setTodos(todoFunc.modify(todos, replace))
-            }
-            setPrefix('text')
-            setMode('normal')
+            toNormalMode()
         }
     }, enabled[keymap['normalMode'].mode])
 
@@ -257,18 +261,23 @@ export const Todo = () => {
 
     const handleFocus = (index: number) => setCurrentIndex(index)
     // const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
-    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const handleTodoMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation(); // マウスダウンイベントの伝搬を停止
+    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation()
+    }
+    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+        toNormalMode()
+        e.stopPropagation(); // マウスダウンイベントの伝搬を停止
+    }
     const handleBlur = () => {
-        setMode('normal')
-        setFocus(`text-${filterdTodos[currentIndex].id}`)
+        // setMode('normal')
+        // setFocus(`text-${filterdTodos[currentIndex].id}`)
     }
     return (
         <div className="flex flex-col h-screen justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
             <div className="flex flex-col ">
                 <div className="flex justify-between">
-                    <div onMouseDown={handleTodoMouseDown} className="w-3/4 overflow-auto">
-                        <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : ""}`}>All</button>
+                    <div onMouseDown={handleTodoAreaMouseDown} className="w-3/4 overflow-auto bg-gray-50">
+                        <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
                         {projects.map(p => {
                             return (
                                 <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
@@ -276,7 +285,7 @@ export const Todo = () => {
                         })}
                         {filterdTodos.map((t, index) => {
                             return (
-                                <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100">
+                                <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100 bg-white">
                                     <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
                                     <Item
                                         t={t}
@@ -342,19 +351,31 @@ export const Todo = () => {
                                 {/* <li>@context: {filterdTodos[currentIndex].context}</li> */}
                             </ul>
                         </div>
+                        debug area:
                         <div className="border rounded-sm bg-green-50 h-[400px] overflow-auto">
-                            debug area:
                             {
                                 todos.map((t, i) => {
                                     return (
                                         <div key={`debug:${t.id}`} className="py-2 border-b-2">
-                                            index:{i}
-                                            {Object.entries(t).map(([key, val]) => <div key={`debug:${key}`}>{key}:{val}</div>)}
+                                            {Object.entries(t).map(([key, val]) => key === "id" || key === "text" ? <div key={`debug:${key}`}>{key}:{val}</div> : undefined)}
                                         </div>
                                     )
                                 })
                             }
                         </div>
+                        filterdTodos
+                        <div className="border rounded-sm bg-green-50 h-[500px] overflow-auto">
+                            {
+                                filterdTodos.map((t, i) => {
+                                    return (
+                                        <div key={`debug:${t.id}`} className="py-2 border-b-2">
+                                            {Object.entries(t).map(([key, val]) => key === "id" || key === "text" ? <div key={`debug:${key}`}>{key}:{val}</div> : undefined)}
+                                        </div>
+                                    )
+                                })
+                            }
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -379,13 +400,13 @@ export const Todo = () => {
                     <span>press:{key}</span>
                     <span>current index:{currentIndex}</span>
                     <span>current mode:{mode}</span>
+                    <span>current sort:{currentSort}</span>
                     <span>current log:{log}</span>
                 </div>
             </div>
         </div>
     )
 }
-
 
 const Item = (
     {
@@ -416,9 +437,10 @@ const Item = (
         register: any
     }
 ) => {
+    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
     return (
         <>
-            <div className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "w-0"}`}>
+            <div onMouseDown={handleMouseDown} className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "w-0"}`}>
                 <button
                     className={`w-full text-left truncate outline-none`}
                     onClick={_ => handleFocus(index)}
@@ -430,16 +452,15 @@ const Item = (
                     </span>
                 </button>
             </div>
-            <div className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "w-0"}`}>
+            <div onMouseDown={handleMouseDown} className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "w-0"}`}>
                 <input
                     tabIndex={-1}
                     className={`w-full text-left truncate outline-none bg-transparent focus:bg-gray-100`}
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
-                    // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                    onBlur={handleBlur}
-                     />
+                // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
+                />
             </div >
         </>
     )

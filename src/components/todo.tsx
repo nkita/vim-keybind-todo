@@ -23,7 +23,7 @@ export const Todo = () => {
     const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
-    const { register, setFocus, getValues } = useForm()
+    const { register, setFocus, getValues, setValue } = useForm()
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[] } | undefined) => {
         let enabledMode = false
@@ -117,6 +117,13 @@ export const Todo = () => {
         setCurrentIndex(0)
         setMode('edit')
     }, setKeyEnableDefine(keymap['insertTop'].enable))
+
+    // add task to Top
+    useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
+        console.log("koko")
+        setFocus('newtask')
+        setMode('editOnSort')
+    }, setKeyEnableDefine(keymap['insertTopOnSort'].enable))
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
@@ -232,6 +239,26 @@ export const Todo = () => {
         if (!e.isComposing) toNormalMode()
     }, setKeyEnableDefine(keymap['normalMode'].enable))
 
+    useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
+        if (!e.isComposing) {
+            const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
+            const newtask = {
+                id: newId,
+                creationDate: yyyymmddhhmmss(new Date()),
+                text: getValues(`newtask`),
+                project: currentProject
+            }
+            if (!todoFunc.isEmpty(newtask)) {
+                setTodos([newtask, ...todos])
+                setCurrentIndex(currentIndex + 1)
+                setValue("newtask", "")
+            }
+            setPrefix('text')
+            setMode('normal')
+        }
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable))
+
+
     /*******************
      * 
      * Command mode
@@ -281,6 +308,18 @@ export const Todo = () => {
                                 <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
                             )
                         })}
+                        {currentSort !== undefined &&
+                            <div className="flex items-center border-b truncate bg-white">
+                                <input
+                                    tabIndex={-1}
+                                    className={`text-left truncate outline-none bg-transparent focus:bg-gray-100`}
+                                    type="text"
+                                    maxLength={prefix === 'priority' ? 1 : -1}
+                                    {...register(`newtask`)}
+                                // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
+                                />
+                            </div>
+                        }
                         {filterdTodos.map((t, index) => {
                             return (
                                 <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100 bg-white">

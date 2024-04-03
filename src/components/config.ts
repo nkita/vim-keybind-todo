@@ -10,6 +10,7 @@ export type Keymap = {
     down: KeymapItem;
     insert: KeymapItem;
     insertTop: KeymapItem;
+    insertTopOnSort: KeymapItem;
     appendBottom: KeymapItem;
     completion: KeymapItem;
     append: KeymapItem;
@@ -19,7 +20,6 @@ export type Keymap = {
     editContextMode: KeymapItem;
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
-    normalMode: KeymapItem;
     sortMode: KeymapItem;
     sortTextMode: KeymapItem;
     sortPriorityMode: KeymapItem;
@@ -27,6 +27,8 @@ export type Keymap = {
     sortCreationDateMode: KeymapItem;
     sortContextMode: KeymapItem;
     sortClear: KeymapItem
+    normalMode: KeymapItem;
+    normalModeOnSort: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -64,6 +66,11 @@ export const keymap: Keymap = {
         keys: ['shift+i',],
         enable: { mode: ["normal"], sort: [undefined] },
         description: "タスク追加（一番上）"
+    },
+    insertTopOnSort: {
+        keys: ['shift+i',],
+        enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate'] },
+        description: "タスク追加"
     },
     appendBottom: {
         keys: ['shift+a',],
@@ -133,6 +140,11 @@ export const keymap: Keymap = {
     normalMode: {
         keys: ['Esc', 'Enter'],
         enable: { mode: ["edit", "command", "sort"] },
+        description: "戻る"
+    },
+    normalModeOnSort: {
+        keys: ['Esc', 'Enter'],
+        enable: { mode: ["editOnSort"] },
         description: "戻る"
     },
 }

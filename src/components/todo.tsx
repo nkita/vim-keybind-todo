@@ -48,10 +48,14 @@ export const Todo = () => {
         const _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
         if (currentSort !== undefined) {
             _todos.sort((a, b) => {
-                const _a = a[currentSort]
-                const _b = b[currentSort]
-                if (_a === undefined) return 1
-                if (_b === undefined) return -1
+                let _a = a[currentSort]
+                let _b = b[currentSort]
+                if (currentSort === 'isCompletion' || typeof _a === "boolean" || typeof _b === "boolean") {
+                    _a = _a === undefined ? "a" : _a ? undefined : "a"
+                    _b = _b === undefined ? "a" : _b ? undefined : "a"
+                }
+                if (_a === undefined || !_a) return 1
+                if (_b === undefined || !_b) return -1
                 return _a.localeCompare(_b); // 文字列の比較にする
             });
         }
@@ -120,7 +124,6 @@ export const Todo = () => {
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
-        console.log("koko")
         setFocus('newtask')
         setMode('editOnSort')
     }, setKeyEnableDefine(keymap['insertTopOnSort'].enable))
@@ -218,10 +221,31 @@ export const Todo = () => {
      * 
      *******************/
 
-    useHotkeys(keymap['sortPriorityMode'].keys, (e) => {
+    useHotkeys(keymap['sortPriority'].keys, (e) => {
         setCurrentSort("priority")
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortPriorityMode'].enable))
+    }, setKeyEnableDefine(keymap['sortPriority'].enable))
+
+    useHotkeys(keymap['sortClear'].keys, (e) => {
+        setCurrentSort(undefined)
+        setMode("normal")
+    }, setKeyEnableDefine(keymap['sortClear'].enable))
+
+    useHotkeys(keymap['sortCreationDate'].keys, (e) => {
+        setCurrentSort("creationDate")
+        setMode("normal")
+    }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
+
+    useHotkeys(keymap['sortContext'].keys, (e) => {
+        setCurrentSort("context")
+        setMode("normal")
+    }, setKeyEnableDefine(keymap['sortContext'].enable))
+
+    useHotkeys(keymap['sortCompletion'].keys, (e) => {
+        setCurrentSort("isCompletion")
+        setMode("normal")
+    }, setKeyEnableDefine(keymap['sortCompletion'].enable))
+
 
     // change command mode
     // useHotkeys(':', (e) => {
@@ -312,7 +336,7 @@ export const Todo = () => {
                             <div className="flex items-center border-b truncate bg-white">
                                 <input
                                     tabIndex={-1}
-                                    className={`text-left truncate outline-none bg-transparent focus:bg-gray-100`}
+                                    className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:h-auto h-0`}
                                     type="text"
                                     maxLength={prefix === 'priority' ? 1 : -1}
                                     {...register(`newtask`)}
@@ -400,7 +424,7 @@ export const Todo = () => {
                                 filterdTodos.map((t, i) => {
                                     return (
                                         <div key={`debug:${t.id}`} className="py-2 border-b-2">
-                                            {Object.entries(t).map(([key, val]) => key === "id" || key === "text" ? <div key={`debug:${key}`}>{key}:{val}</div> : undefined)}
+                                            {Object.entries(t).map(([key, val]) => (key === "id" || key === "text" || key === "priority" || key === "project") ? <div key={`debug:${key}`}>{key}:{val ?? "undefined or null"}</div> : undefined)}
                                         </div>
                                     )
                                 })

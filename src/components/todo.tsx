@@ -4,7 +4,7 @@ import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from './config'
 import { dispKey } from "@/libs/dispkeyname"
-import { TodoProps, Sort } from "@/types"
+import { TodoProps, Sort, Mode } from "@/types"
 import { todoFunc } from "@/libs/todo"
 import { yyyymmddhhmmss } from "@/libs/time"
 export const Todo = () => {
@@ -20,18 +20,30 @@ export const Todo = () => {
     const [currentProject, setCurrentProject] = useState("")
     const [currentSort, setCurrentSort] = useState<Sort>(undefined)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
-    const [mode, setMode] = useState('normal')
+    const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const { register, setFocus, getValues } = useForm()
-    const enabled = {
-        normal: { enabled: mode === "normal", enableOnContentEditable: true, enableOnFormTags: false, preventDefault: true },
-        edit: { enabled: mode === "edit", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
-        sort: { enabled: mode === "sort", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
-        command: { enabled: mode === "command", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
-        always: { enabled: true, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true },
-        noNormal: { enabled: mode !== "normal", enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
+
+    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[] } | undefined) => {
+        let enabledMode = false
+        let enabledSort = true
+        if (keyConf !== undefined) {
+            if (keyConf.mode !== undefined) {
+                keyConf.mode.forEach(m => {
+                    if (m === mode) enabledMode = true
+                })
+            }
+            if (keyConf.sort !== undefined) {
+                enabledSort = false
+                keyConf.sort.forEach(s => {
+                    if (s === currentSort) enabledSort = true
+                })
+            }
+        }
+        return { enabled: enabledMode && enabledSort, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
     }
+
     useEffect(() => {
         const _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
         if (currentSort !== undefined) {
@@ -86,62 +98,62 @@ export const Todo = () => {
     // move to up 
     useHotkeys(keymap['up'].keys, (e) => {
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
-    }, enabled[keymap['up'].mode])
+    }, setKeyEnableDefine(keymap['up'].enable))
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
         if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
-    }, enabled[keymap['down'].mode])
+    }, setKeyEnableDefine(keymap['down'].enable))
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         setTodos(todoFunc.add(currentIndex, todos, { project: currentProject }))
         setMode('edit')
-    }, enabled[keymap['insert'].mode])
+    }, setKeyEnableDefine(keymap['insert'].enable))
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         setTodos(todoFunc.add(0, todos, { project: currentProject }))
         setCurrentIndex(0)
         setMode('edit')
-    }, enabled[keymap['insertTop'].mode])
+    }, setKeyEnableDefine(keymap['insertTop'].enable))
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
         setTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, enabled[keymap['append'].mode])
+    }, setKeyEnableDefine(keymap['append'].enable))
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
         setMode('edit')
         setTodos(todoFunc.add(todos.length, todos, { project: currentProject }))
         setCurrentIndex(filterdTodos.length)
-    }, enabled[keymap['appendBottom'].mode])
+    }, setKeyEnableDefine(keymap['appendBottom'].enable))
 
     // change to edit mode
     useHotkeys(keymap['editTextMode'].keys, (e) => {
         setMode('edit')
-    }, enabled[keymap['editTextMode'].mode])
+    }, setKeyEnableDefine(keymap['editTextMode'].enable))
 
     // change to priority edit mode
     useHotkeys(keymap['editPriorityMode'].keys, (e) => {
         setPrefix('priority')
         setMode('edit')
-    }, enabled[keymap['editPriorityMode'].mode])
+    }, setKeyEnableDefine(keymap['editPriorityMode'].enable))
 
     // change to project edit mode
     useHotkeys(keymap['editProjectMode'].keys, (e) => {
         setPrefix('project')
         setMode('edit')
-    }, enabled[keymap['editProjectMode'].mode])
+    }, setKeyEnableDefine(keymap['editProjectMode'].enable))
 
     // change to context edit mode
     useHotkeys(keymap['editContextMode'].keys, (e) => {
         setPrefix('context')
         setMode('edit')
-    }, enabled[keymap['editContextMode'].mode])
+    }, setKeyEnableDefine(keymap['editContextMode'].enable))
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
@@ -157,7 +169,7 @@ export const Todo = () => {
                 }
             }
         }
-    }, enabled[keymap['moveProjectRight'].mode])
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable))
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
@@ -172,7 +184,7 @@ export const Todo = () => {
                 setCurrentIndex(0)
             }
         }
-    }, enabled[keymap['moveProjectLeft'].mode])
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable))
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
@@ -186,12 +198,12 @@ export const Todo = () => {
             project: filterdTodos[currentIndex].project,
             context: filterdTodos[currentIndex].context
         }))
-    }, enabled[keymap['completion'].mode])
+    }, setKeyEnableDefine(keymap['completion'].enable))
 
     // change sort mode
     useHotkeys(keymap['sortMode'].keys, (e) => {
         setMode("sort")
-    }, enabled[keymap['sortMode'].mode])
+    }, setKeyEnableDefine(keymap['sortMode'].enable))
 
     /*******************
      * 
@@ -202,18 +214,13 @@ export const Todo = () => {
     useHotkeys(keymap['sortPriorityMode'].keys, (e) => {
         setCurrentSort("priority")
         setMode("normal")
-    }, enabled[keymap['sortPriorityMode'].mode])
-
-    // return to normal mode
-    useHotkeys(keymap['normalMode'].keys, (e) => {
-        setMode("normal")
-    }, enabled['sort'])
+    }, setKeyEnableDefine(keymap['sortPriorityMode'].enable))
 
     // change command mode
-    useHotkeys(':', (e) => {
-        setMode('command')
-        setKey(e.key)
-    }, enabled.normal)
+    // useHotkeys(':', (e) => {
+    //     setMode('command')
+    //     setKey(e.key)
+    // }, enabled.normal)
 
     /*******************
      * 
@@ -222,33 +229,31 @@ export const Todo = () => {
      *******************/
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
-        if (!e.isComposing) {
-            toNormalMode()
-        }
-    }, enabled[keymap['normalMode'].mode])
+        if (!e.isComposing) toNormalMode()
+    }, setKeyEnableDefine(keymap['normalMode'].enable))
 
     /*******************
      * 
      * Command mode
      * 
      *******************/
-    useHotkeys('*', (e) => {
-        if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setKey(key + e.key)
-    }, enabled.command)
+    // useHotkeys('*', (e) => {
+    //     if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setKey(key + e.key)
+    // }, enabled.command)
 
-    useHotkeys(['Enter'], (e) => {
-        e.preventDefault()
-        setLog(`Not found command:${key}`)
-        setMode('normal')
-        setKey("")
-    }, enabled.command)
+    // useHotkeys(['Enter'], (e) => {
+    //     e.preventDefault()
+    //     setLog(`Not found command:${key}`)
+    //     setMode('normal')
+    //     setKey("")
+    // }, enabled.command)
 
-    useHotkeys('Esc', (e) => {
-        e.preventDefault()
-        setMode('normal')
-        setPrefix('text')
-        setKey("")
-    }, enabled.command)
+    // useHotkeys('Esc', (e) => {
+    //     e.preventDefault()
+    //     setMode('normal')
+    //     setPrefix('text')
+    //     setKey("")
+    // }, enabled.command)
 
 
     // const handleTodoChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -321,8 +326,6 @@ export const Todo = () => {
                                         label={t.context ? ` @${t.context}` : ""}
                                         handleFocus={handleFocus}
                                         register={register} />
-
-
                                 </div>
                             )
                         })}
@@ -374,7 +377,7 @@ export const Todo = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8  gap-4 b">
                         {
                             Object.entries(keymap).map(([key, value]) => {
-                                if (value.mode === mode || value.mode === "always" || (value.mode === 'noNormal' && mode !== 'normal')) {
+                                if (value.enable?.mode.includes(mode) && (value.enable.sort === undefined || value.enable.sort?.includes(currentSort))) {
                                     return (
                                         <div key={key} className="flex items-center gap-2">
                                             {value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{dispKey(k)}</kbd>)}:{value.description}

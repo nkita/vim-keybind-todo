@@ -21,11 +21,11 @@ export type Keymap = {
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
     sortMode: KeymapItem;
-    sortTextMode: KeymapItem;
-    sortPriorityMode: KeymapItem;
-    sortCompletionMode: KeymapItem;
-    sortCreationDateMode: KeymapItem;
-    sortContextMode: KeymapItem;
+    sortText: KeymapItem;
+    sortPriority: KeymapItem;
+    sortCreationDate: KeymapItem;
+    sortContext: KeymapItem;
+    sortCompletion: KeymapItem;
     sortClear: KeymapItem
     normalMode: KeymapItem;
     normalModeOnSort: KeymapItem;
@@ -107,35 +107,35 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"] },
         description: "ソート"
     },
-    sortTextMode: {
+    sortText: {
         keys: ['t'],
         enable: { mode: ["sort"] },
         description: "タスク内容"
     },
-    sortPriorityMode: {
+    sortPriority: {
         keys: ['p'],
         enable: { mode: ["sort"] },
         description: "優先度"
     },
-    sortCompletionMode: {
-        keys: ['x'],
-        enable: { mode: ["sort"] },
-        description: "タスク完了・未完了"
-    },
-    sortCreationDateMode: {
+    sortCreationDate: {
         keys: ['d'],
         enable: { mode: ["sort"] },
         description: "作成日"
     },
-    sortContextMode: {
+    sortContext: {
         keys: ['@'],
         enable: { mode: ["sort"] },
         description: "コンテキスト"
     },
-    sortClear: {
-        keys: ['Delete'],
+    sortCompletion: {
+        keys: ['x'],
         enable: { mode: ["sort"] },
-        description: "クリア"
+        description: "完了・未完了"
+    },
+    sortClear: {
+        keys: ['q'],
+        enable: { mode: ["sort"] },
+        description: "ソート解除"
     },
     normalMode: {
         keys: ['Esc', 'Enter'],

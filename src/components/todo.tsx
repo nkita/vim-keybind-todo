@@ -36,8 +36,10 @@ export const Todo = () => {
         const _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
         if (currentSort !== undefined) {
             _todos.sort((a, b) => {
-                const _a = a[currentSort] || ""; // プライオリティが undefined の場合は空文字列として扱う
-                const _b = b[currentSort] || "";
+                const _a = a[currentSort]
+                const _b = b[currentSort]
+                if (_a === undefined) return 1
+                if (_b === undefined) return -1
                 return _a.localeCompare(_b); // 文字列の比較にする
             });
         }
@@ -113,9 +115,9 @@ export const Todo = () => {
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
+        setMode('edit')
         setTodos(todoFunc.add(todos.length, todos, { project: currentProject }))
         setCurrentIndex(filterdTodos.length)
-        setMode('edit')
     }, enabled[keymap['appendBottom'].mode])
 
     // change to edit mode
@@ -260,18 +262,9 @@ export const Todo = () => {
     // }
 
     const handleFocus = (index: number) => setCurrentIndex(index)
-    // const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
-    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        e.stopPropagation()
-    }
-    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode()
-        e.stopPropagation(); // マウスダウンイベントの伝搬を停止
-    }
-    const handleBlur = () => {
-        // setMode('normal')
-        // setFocus(`text-${filterdTodos[currentIndex].id}`)
-    }
+    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
+    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation();
+
     return (
         <div className="flex flex-col h-screen justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
             <div className="flex flex-col ">
@@ -296,7 +289,6 @@ export const Todo = () => {
                                         mode={mode}
                                         width="w-[25px]"
                                         label={t.priority ? `(${t.priority})` : ""}
-                                        handleBlur={handleBlur}
                                         handleFocus={handleFocus}
                                         register={register} />
                                     <Item
@@ -307,7 +299,6 @@ export const Todo = () => {
                                         currentPrefix={prefix}
                                         mode={mode}
                                         label={t.text}
-                                        handleBlur={handleBlur}
                                         handleFocus={handleFocus}
                                         register={register} />
                                     <Item
@@ -318,7 +309,6 @@ export const Todo = () => {
                                         currentPrefix={prefix}
                                         mode={mode}
                                         label={t.project ? ` +${t.project}` : ""}
-                                        handleBlur={handleBlur}
                                         handleFocus={handleFocus}
                                         register={register} />
                                     <Item
@@ -329,7 +319,6 @@ export const Todo = () => {
                                         currentPrefix={prefix}
                                         mode={mode}
                                         label={t.context ? ` @${t.context}` : ""}
-                                        handleBlur={handleBlur}
                                         handleFocus={handleFocus}
                                         register={register} />
 
@@ -420,7 +409,6 @@ const Item = (
         height = '',
         label,
         handleFocus,
-        handleBlur,
         register
     }: {
         t: TodoProps
@@ -433,7 +421,6 @@ const Item = (
         height?: string
         label: string | undefined
         handleFocus: (index: number) => void
-        handleBlur: () => void
         register: any
     }
 ) => {

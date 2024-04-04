@@ -19,6 +19,7 @@ export const Todo = () => {
     const [projects, setProjects] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
     const [currentSort, setCurrentSort] = useState<Sort>(undefined)
+    const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
@@ -45,7 +46,10 @@ export const Todo = () => {
     }
 
     useEffect(() => {
-        const _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
+        let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
+
+        if (!viewCompletionTask) _todos = _todos.filter(t => t.isCompletion !== true)
+
         if (currentSort !== undefined) {
             _todos.sort((a, b) => {
                 let _a = a[currentSort]
@@ -60,7 +64,7 @@ export const Todo = () => {
             });
         }
         setFilterdTodos(_todos)
-    }, [todos, currentProject, currentSort])
+    }, [todos, currentProject, currentSort, viewCompletionTask])
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
@@ -68,8 +72,10 @@ export const Todo = () => {
     }, [todos])
 
     useEffect(() => {
-        if (mode === 'edit') setFocus(`edit-${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`, { shouldSelect: true })
-        if (mode === 'normal') setFocus(`${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`)
+        if (filterdTodos.length > 0) {
+            if (mode === 'edit') setFocus(`edit-${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`, { shouldSelect: true })
+            if (mode === 'normal') setFocus(`${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`)
+        }
     }, [filterdTodos, mode, currentIndex, prefix, setFocus])
     /*****
      * common func
@@ -111,13 +117,13 @@ export const Todo = () => {
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
-        setTodos(todoFunc.add(currentIndex, todos, { project: currentProject }))
+        setTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setMode('edit')
     }, setKeyEnableDefine(keymap['insert'].enable))
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
-        setTodos(todoFunc.add(0, todos, { project: currentProject }))
+        setTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(0)
         setMode('edit')
     }, setKeyEnableDefine(keymap['insertTop'].enable))
@@ -130,7 +136,7 @@ export const Todo = () => {
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
-        setTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject }))
+        setTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
     }, setKeyEnableDefine(keymap['append'].enable))
@@ -138,7 +144,7 @@ export const Todo = () => {
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
         setMode('edit')
-        setTodos(todoFunc.add(todos.length, todos, { project: currentProject }))
+        setTodos(todoFunc.add(todos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(filterdTodos.length)
     }, setKeyEnableDefine(keymap['appendBottom'].enable))
 
@@ -214,6 +220,13 @@ export const Todo = () => {
     useHotkeys(keymap['sortMode'].keys, (e) => {
         setMode("sort")
     }, setKeyEnableDefine(keymap['sortMode'].enable))
+
+
+    // toggle commpletion
+    useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
+        setViewCompletionTask(!viewCompletionTask)
+    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
+
 
     /*******************
      * 
@@ -344,6 +357,9 @@ export const Todo = () => {
                                 />
                             </div>
                         }
+                        {filterdTodos.length === 0 &&
+                            <div>No task. good!</div>
+                        }
                         {filterdTodos.map((t, index) => {
                             return (
                                 <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100 bg-white">
@@ -392,6 +408,7 @@ export const Todo = () => {
                                 </div>
                             )
                         })}
+                        <div className="text-gray-400">CompletionTask: {todos.filter(t => !currentProject ? true : t.project === currentProject).filter(t => t.isCompletion).length}</div>
                     </div>
                     <div className="border bg-gray-200 w-1/4 h-full break-words">
                         <div className="border rounded-md">

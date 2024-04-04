@@ -2,12 +2,13 @@ import { TodoProps, Sort } from "@/types"
 import { yyyymmddhhmmss } from "./time"
 interface options {
     project: string
+    viewCompletionTask: boolean
 }
 export const todoFunc = {
-    add: (index: number, todos: TodoProps[], options: options = { project: "" }) => {
+    add: (index: number, todos: TodoProps[], options: options) => {
         const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
-        const _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
-
+        let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
+        if (!options.viewCompletionTask) _todos = _todos.filter(t => t.isCompletion !== true)
         if (index === 0 || index >= _todos.length) {
             return [
                 ...todos.slice(0, index === 0 ? 0 : todos.length),

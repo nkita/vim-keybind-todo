@@ -29,6 +29,7 @@ export type Keymap = {
     sortClear: KeymapItem
     normalMode: KeymapItem;
     normalModeOnSort: KeymapItem;
+    toggleCompletionTask: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -69,7 +70,7 @@ export const keymap: Keymap = {
     },
     insertTopOnSort: {
         keys: ['shift+i',],
-        enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate'] },
+        enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate', 'isCompletion'] },
         description: "タスク追加"
     },
     appendBottom: {
@@ -107,11 +108,6 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"] },
         description: "ソート"
     },
-    sortText: {
-        keys: ['t'],
-        enable: { mode: ["sort"] },
-        description: "タスク内容"
-    },
     sortPriority: {
         keys: ['p'],
         enable: { mode: ["sort"] },
@@ -146,5 +142,10 @@ export const keymap: Keymap = {
         keys: ['Esc', 'Enter'],
         enable: { mode: ["editOnSort"] },
         description: "戻る"
+    },
+    toggleCompletionTask: {
+        keys: ['v'],
+        enable: { mode: ["normal", "command", "sort"] },
+        description: "完了済みタスクの表示・非表示"
     },
 }

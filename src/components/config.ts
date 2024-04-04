@@ -1,7 +1,7 @@
 import { Sort, Mode } from "@/types"
 export type KeymapItem = {
     keys: string[]
-    enable?: { sort?: Sort[], mode: Mode[] } // and
+    enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean } // and
     description: string
 }
 
@@ -21,7 +21,6 @@ export type Keymap = {
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
     sortMode: KeymapItem;
-    sortText: KeymapItem;
     sortPriority: KeymapItem;
     sortCreationDate: KeymapItem;
     sortContext: KeymapItem;
@@ -35,17 +34,17 @@ export type Keymap = {
 export const keymap: Keymap = {
     up: {
         keys: ['k', 'ArrowUp'],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "上へ移動"
     },
     down: {
         keys: ['j', 'ArrowDown'],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "下へ移動"
     },
     moveProjectRight: {
         keys: ['l', 'ArrowRight'],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], },
         description: "プロジェクトタブを右に移動"
     },
     moveProjectLeft: {
@@ -55,12 +54,12 @@ export const keymap: Keymap = {
     },
     insert: {
         keys: ['i',],
-        enable: { mode: ["normal"], sort: [undefined] },
+        enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
         description: "タスク追加（前）"
     },
     append: {
         keys: ['a',],
-        enable: { mode: ["normal"], sort: [undefined] },
+        enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
         description: "タスク追加（後）"
     },
     insertTop: {
@@ -75,32 +74,32 @@ export const keymap: Keymap = {
     },
     appendBottom: {
         keys: ['shift+a',],
-        enable: { mode: ["normal"], sort: [undefined] },
+        enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
         description: "タスク追加（一番下）"
     },
     completion: {
         keys: ['x'],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "完了・未完了"
     },
     editTextMode: {
         keys: ['Enter',],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "タスクを編集"
     },
     editPriorityMode: {
         keys: ['p',],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "優先度を編集"
     },
     editProjectMode: {
         keys: ['0'],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "プロジェクトを編集"
     },
     editContextMode: {
         keys: ['@',],
-        enable: { mode: ["normal"] },
+        enable: { mode: ["normal"], withoutTask: false },
         description: "コンテキストを編集"
     },
     sortMode: {
@@ -145,7 +144,7 @@ export const keymap: Keymap = {
     },
     toggleCompletionTask: {
         keys: ['v'],
-        enable: { mode: ["normal", "command", "sort"] },
+        enable: { mode: ["normal", "command"] },
         description: "完了済みタスクの表示・非表示"
     },
 }

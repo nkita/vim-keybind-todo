@@ -13,7 +13,12 @@ export const Todo = () => {
         { id: 0, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
         { id: 1, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
         { id: 2, text: '締切日までに作品仕上げる', priority: 'A', project: "hobby", },
-        { id: 3, text: '材料を買う', project: "hobby" }
+        { id: 3, text: '材料を買う', project: "hobby" },
+        { id: 4, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
+        { id: 14, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
+        { id: 12, text: '締切日までに作品仕上げる', priority: 'A', project: "hobby", },
+        { id: 13, text: '材料を買う', project: "hobby" },
+        { id: 10, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
     ])
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [projects, setProjects] = useState<string[]>([])
@@ -21,14 +26,17 @@ export const Todo = () => {
     const [currentSort, setCurrentSort] = useState<Sort>(undefined)
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
+    const [currentId, setCurrentId] = useState<number | undefined>(undefined)
+    const [prevId, setPrevId] = useState<number | undefined>(undefined)
     const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const { register, setFocus, getValues, setValue } = useForm()
 
-    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[] } | undefined) => {
+    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean } | undefined) => {
         let enabledMode = false
         let enabledSort = true
+        let enabledWithoutTask = true
         if (keyConf !== undefined) {
             if (keyConf.mode !== undefined) {
                 keyConf.mode.forEach(m => {
@@ -41,8 +49,9 @@ export const Todo = () => {
                     if (s === currentSort) enabledSort = true
                 })
             }
+            enabledWithoutTask = filterdTodos.length === 0 ? keyConf.withoutTask ?? true : true
         }
-        return { enabled: enabledMode && enabledSort, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
+        return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
     }
 
     useEffect(() => {
@@ -77,6 +86,19 @@ export const Todo = () => {
             if (mode === 'normal') setFocus(`${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`)
         }
     }, [filterdTodos, mode, currentIndex, prefix, setFocus])
+
+    useEffect(() => {
+        if (currentId !== undefined && currentId !== prevId) {
+            const index = filterdTodos.map(t => t.id).indexOf(currentId)
+            if (index >= 0) {
+                if (mode === 'edit') setFocus(`edit-${prefix}-${currentId}`, { shouldSelect: true })
+                if (mode === 'normal') setFocus(`${prefix}-${currentId}`)
+            }
+            setPrevId(currentId)
+        }
+    }, [filterdTodos, currentId, prevId, mode, prefix, setFocus])
+
+
     /*****
      * common func
      */
@@ -457,7 +479,11 @@ export const Todo = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8  gap-4 b">
                         {
                             Object.entries(keymap).map(([key, value]) => {
-                                if (value.enable?.mode.includes(mode) && (value.enable.sort === undefined || value.enable.sort?.includes(currentSort))) {
+                                if (
+                                    value.enable?.mode.includes(mode)
+                                    && (value.enable.sort === undefined || value.enable.sort?.includes(currentSort))
+                                    && (filterdTodos.length > 0 ? true : (value.enable.withoutTask === undefined || value.enable.withoutTask))
+                                ) {
                                     return (
                                         <div key={key} className="flex items-center gap-2">
                                             {value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{dispKey(k)}</kbd>)}:{value.description}

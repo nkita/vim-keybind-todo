@@ -169,6 +169,13 @@ export const Todo = () => {
         setMode('edit')
     }, setKeyEnableDefine(keymap['appendBottom'].enable))
 
+    // delete task
+    useHotkeys(keymap['delete'].keys, (e) => {
+        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
+        setCurrentIndex(index)
+        setTodos(todoFunc.delete(todos, filterdTodos[index].id))
+    }, setKeyEnableDefine(keymap['delete'].enable))
+
     // change to edit mode
     useHotkeys(keymap['editTextMode'].keys, (e) => {
         setMode('edit')

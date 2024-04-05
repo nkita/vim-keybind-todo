@@ -15,6 +15,7 @@ export type Keymap = {
     completion: KeymapItem;
     append: KeymapItem;
     editTextMode: KeymapItem;
+    delete: KeymapItem;
     editPriorityMode: KeymapItem;
     editProjectMode: KeymapItem;
     editContextMode: KeymapItem;
@@ -86,6 +87,11 @@ export const keymap: Keymap = {
         keys: ['Enter',],
         enable: { mode: ["normal"], withoutTask: false },
         description: "タスクを編集"
+    },
+    delete: {
+        keys: ['d',],
+        enable: { mode: ["normal"], withoutTask: false },
+        description: "タスクを削除"
     },
     editPriorityMode: {
         keys: ['p',],

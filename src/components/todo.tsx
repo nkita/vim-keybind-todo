@@ -27,7 +27,6 @@ export const Todo = () => {
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [currentId, setCurrentId] = useState<number | undefined>(undefined)
-    const [prevId, setPrevId] = useState<number | undefined>(undefined)
     const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
@@ -94,23 +93,17 @@ export const Todo = () => {
             if (mode === 'edit') setFocus(`edit-${formid}`, { shouldSelect: true })
             if (mode === 'normal') setFocus(formid)
         }
-    }, [filterdTodos, mode, currentIndex, prefix, setFocus])
+    }, [filterdTodos, currentId, mode, currentIndex, prefix, setFocus])
 
-
-    // useEffect(() => {
-    //     console.log(currentIndex, filterdTodos.length)
-    //     if (currentIndex >= filterdTodos.length) setCurrentIndex(filterdTodos.length - 1)
-    //     if (filterdTodos.length > 0 && currentIndex === -1) setCurrentIndex(0)
-    // }, [filterdTodos, currentIndex])
 
     /*****
-     * common func
+     * common function
      */
     const toNormalMode = () => {
         const replace = {
             id: filterdTodos[currentIndex].id,
             isCompletion: filterdTodos[currentIndex].isCompletion,
-            priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`).toUpperCase(),
+            priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`),
             completionDate: filterdTodos[currentIndex].completionDate,
             creationDate: filterdTodos[currentIndex].creationDate,
             text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
@@ -266,7 +259,6 @@ export const Todo = () => {
      * Sort mode
      * 
      *******************/
-
     useHotkeys(keymap['sortPriority'].keys, (e) => {
         setCurrentSort("priority")
         setMode("normal")
@@ -320,7 +312,6 @@ export const Todo = () => {
             }
             if (!todoFunc.isEmpty(newtask)) {
                 setTodos([newtask, ...todos])
-                // setCurrentIndex(currentIndex + 1)
                 setValue("newtask", "")
                 setCurrentId(newId)
             }
@@ -398,6 +389,7 @@ export const Todo = () => {
                         {filterdTodos.map((t, index) => {
                             return (
                                 <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100 bg-white">
+                                    <span className="w-[15px] text-center text-xs text-gray-900 border-r border-r-blue-200"> {index + 1}</span>
                                     <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
                                     <Item
                                         t={t}

@@ -57,7 +57,9 @@ export const Todo = () => {
     useEffect(() => {
         let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
 
-        if (!viewCompletionTask) _todos = _todos.filter(t => t.isCompletion !== true)
+        if (!viewCompletionTask) {
+            _todos = _todos.filter(t => t.isCompletion !== true)
+        }
 
         if (currentSort !== undefined) {
             _todos.sort((a, b) => {
@@ -73,31 +75,33 @@ export const Todo = () => {
             });
         }
         setFilterdTodos(_todos)
-    }, [todos, currentProject, currentSort, viewCompletionTask])
+        if (currentId !== undefined) {
+            const index = _todos.map(t => t.id).indexOf(currentId)
+            if (index >= 0) setCurrentIndex(index)
+            setCurrentId(undefined)
+        }
+    }, [todos, currentId, currentProject, currentSort, viewCompletionTask])
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
         setProjects(Array.from(new Set(filteredProjects)));
-    }, [todos])
+    }, [todos,])
 
     useEffect(() => {
-        if (filterdTodos.length > 0) {
-            if (mode === 'edit') setFocus(`edit-${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`, { shouldSelect: true })
-            if (mode === 'normal') setFocus(`${prefix}-${filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id}`)
+        if (filterdTodos.length > 0 && currentIndex !== - 1) {
+            const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
+            const formid = `${prefix}-${id}`
+            if (mode === 'edit') setFocus(`edit-${formid}`, { shouldSelect: true })
+            if (mode === 'normal') setFocus(formid)
         }
     }, [filterdTodos, mode, currentIndex, prefix, setFocus])
 
-    useEffect(() => {
-        if (currentId !== undefined && currentId !== prevId) {
-            const index = filterdTodos.map(t => t.id).indexOf(currentId)
-            if (index >= 0) {
-                if (mode === 'edit') setFocus(`edit-${prefix}-${currentId}`, { shouldSelect: true })
-                if (mode === 'normal') setFocus(`${prefix}-${currentId}`)
-            }
-            setPrevId(currentId)
-        }
-    }, [filterdTodos, currentId, prevId, mode, prefix, setFocus])
 
+    // useEffect(() => {
+    //     console.log(currentIndex, filterdTodos.length)
+    //     if (currentIndex >= filterdTodos.length) setCurrentIndex(filterdTodos.length - 1)
+    //     if (filterdTodos.length > 0 && currentIndex === -1) setCurrentIndex(0)
+    // }, [filterdTodos, currentIndex])
 
     /*****
      * common func
@@ -119,6 +123,8 @@ export const Todo = () => {
         } else {
             setTodos(todoFunc.modify(todos, replace))
         }
+        // ソートした後に編集すると位置ズレを起こすため修正
+        setCurrentId(filterdTodos[currentIndex].id)
         setPrefix('text')
         setMode('normal')
     }
@@ -165,9 +171,9 @@ export const Todo = () => {
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        setMode('edit')
-        setTodos(todoFunc.add(todos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        setTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(filterdTodos.length)
+        setMode('edit')
     }, setKeyEnableDefine(keymap['appendBottom'].enable))
 
     // change to edit mode
@@ -226,16 +232,19 @@ export const Todo = () => {
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
-        setTodos(todoFunc.modify(todos, {
-            id: filterdTodos[currentIndex].id,
-            isCompletion: !filterdTodos[currentIndex].isCompletion,
-            priority: filterdTodos[currentIndex].priority,
-            completionDate: !filterdTodos[currentIndex].isCompletion ? yyyymmddhhmmss(new Date()) : "",
-            creationDate: filterdTodos[currentIndex].creationDate,
-            text: filterdTodos[currentIndex].text,
-            project: filterdTodos[currentIndex].project,
-            context: filterdTodos[currentIndex].context
-        }))
+        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
+        setCurrentIndex(index)
+        const _todos = todoFunc.modify(todos, {
+            id: filterdTodos[index].id,
+            isCompletion: !filterdTodos[index].isCompletion,
+            priority: filterdTodos[index].priority,
+            completionDate: !filterdTodos[index].isCompletion ? yyyymmddhhmmss(new Date()) : "",
+            creationDate: filterdTodos[index].creationDate,
+            text: filterdTodos[index].text,
+            project: filterdTodos[index].project,
+            context: filterdTodos[index].context
+        })
+        setTodos(_todos)
     }, setKeyEnableDefine(keymap['completion'].enable))
 
     // change sort mode
@@ -246,7 +255,9 @@ export const Todo = () => {
 
     // toggle commpletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
+        const id = filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined
         setViewCompletionTask(!viewCompletionTask)
+        if (id !== undefined) setCurrentId(id)
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
 
 
@@ -309,8 +320,9 @@ export const Todo = () => {
             }
             if (!todoFunc.isEmpty(newtask)) {
                 setTodos([newtask, ...todos])
-                setCurrentIndex(currentIndex + 1)
+                // setCurrentIndex(currentIndex + 1)
                 setValue("newtask", "")
+                setCurrentId(newId)
             }
             setPrefix('text')
             setMode('normal')
@@ -369,6 +381,7 @@ export const Todo = () => {
                         })}
                         {currentSort !== undefined &&
                             <div className="flex items-center border-b truncate bg-white">
+                                <div className="w-[45px]" />
                                 <input
                                     tabIndex={-1}
                                     className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:h-auto h-0`}
@@ -497,6 +510,7 @@ export const Todo = () => {
                 <div className="flex gap-3 bg-black text-white">
                     <span>press:{key}</span>
                     <span>current index:{currentIndex}</span>
+                    <span>current id:{currentId}</span>
                     <span>current mode:{mode}</span>
                     <span>current sort:{currentSort}</span>
                     <span>current log:{log}</span>

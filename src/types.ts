@@ -11,4 +11,4 @@ export interface TodoProps {
 
 
 export type Sort = "text" | "priority" | "context" | "creationDate" | "isCompletion" | undefined
-export type Mode = "normal" | "edit" | "editOnSort" | "sort" | "command" 
+export type Mode = "normal" | "edit" | "editOnSort" | "sort" | "command" | "number"

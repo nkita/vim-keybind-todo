@@ -327,6 +327,30 @@ export const Todo = () => {
         }
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable))
 
+    useHotkeys(keymap['numberMode'].keys, (e) => {
+        setKey(key + e.key)
+        setMode('number')
+    }, setKeyEnableDefine(keymap['numberMode'].enable))
+
+    /******************
+     *
+     * Number mode
+     * 
+     *****************/
+
+    useHotkeys(keymap['moveToLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (!isNaN(line)) {
+            if (filterdTodos.length > line) {
+                setCurrentIndex(line - 1)
+            } else {
+                setLog("not found line")
+            }
+        }
+        setMode('normal')
+        setKey('')
+    }, setKeyEnableDefine(keymap['moveToLine'].enable))
+
 
     /*******************
      * 

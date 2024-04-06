@@ -30,6 +30,8 @@ export type Keymap = {
     normalMode: KeymapItem;
     normalModeOnSort: KeymapItem;
     toggleCompletionTask: KeymapItem;
+    numberMode: KeymapItem;
+    moveToLine: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -140,7 +142,7 @@ export const keymap: Keymap = {
     },
     normalMode: {
         keys: ['Esc', 'Enter'],
-        enable: { mode: ["edit", "command", "sort"] },
+        enable: { mode: ["edit", "command", "sort", 'number'] },
         description: "戻る"
     },
     normalModeOnSort: {
@@ -152,5 +154,15 @@ export const keymap: Keymap = {
         keys: ['v'],
         enable: { mode: ["normal", "command"] },
         description: "完了済みタスクの表示・非表示"
+    },
+    numberMode: {
+        keys: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        enable: { mode: ["normal", "number"] },
+        description: "行番号指定"
+    },
+    moveToLine: {
+        keys: ['shift+g'],
+        enable: { mode: ["number"] },
+        description: "指定した行へ移動"
     },
 }

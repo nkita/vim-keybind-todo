@@ -15,11 +15,15 @@ export type Keymap = {
     appendBottom: KeymapItem;
     completion: KeymapItem;
     append: KeymapItem;
-    editTextMode: KeymapItem;
+    editText: KeymapItem;
     delete: KeymapItem;
-    editPriorityMode: KeymapItem;
-    editProjectMode: KeymapItem;
-    editContextMode: KeymapItem;
+    editPriority: KeymapItem;
+    editProject: KeymapItem;
+    editContext: KeymapItem;
+    editTextLine: KeymapItem;
+    editPriorityLine: KeymapItem;
+    editProjectLine: KeymapItem;
+    editContextLine: KeymapItem;
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
     sortMode: KeymapItem;
@@ -33,6 +37,8 @@ export type Keymap = {
     toggleCompletionTask: KeymapItem;
     numberMode: KeymapItem;
     moveToLine: KeymapItem;
+    addToLine: KeymapItem;
+    insertToLine: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -93,7 +99,7 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: false },
         description: "完了・未完了"
     },
-    editTextMode: {
+    editText: {
         keys: ['Enter',],
         enable: { mode: ["normal"], withoutTask: false },
         description: "タスクを編集"
@@ -103,17 +109,17 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: false },
         description: "タスクを削除"
     },
-    editPriorityMode: {
+    editPriority: {
         keys: ['p',],
         enable: { mode: ["normal"], withoutTask: false },
         description: "優先度を編集"
     },
-    editProjectMode: {
+    editProject: {
         keys: ['0'],
         enable: { mode: ["normal"], withoutTask: false },
         description: "プロジェクトを編集"
     },
-    editContextMode: {
+    editContext: {
         keys: ['@',],
         enable: { mode: ["normal"], withoutTask: false },
         description: "コンテキストを編集"
@@ -166,13 +172,43 @@ export const keymap: Keymap = {
     numberMode: {
         keys: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
         keysDisp: ['数字'],
-        enable: { mode: ["normal", "number"] },
+        enable: { mode: ["normal", "number"], withoutTask: false },
         description: "行番号指定"
     },
     moveToLine: {
         keys: ['shift+g'],
         keysDisp: ['G'],
-        enable: { mode: ["number"] },
+        enable: { mode: ["number"], withoutTask: false },
         description: "指定した行へ移動"
+    },
+    addToLine: {
+        keys: ['a'],
+        enable: { mode: ["number"], sort: [undefined], withoutTask: false },
+        description: "指定した行の次へタスクを追加"
+    },
+    insertToLine: {
+        keys: ['i'],
+        enable: { mode: ["number"], sort: [undefined], withoutTask: false },
+        description: "指定した行の前へタスクを追加"
+    },
+    editProjectLine: {
+        keys: ['0'],
+        enable: { mode: ["number"], withoutTask: false },
+        description: "指定した行のプロジェクトを編集"
+    },
+    editPriorityLine: {
+        keys: ['p'],
+        enable: { mode: ["number"], withoutTask: false },
+        description: "指定した行のプライオリティを編集"
+    },
+    editContextLine: {
+        keys: ['c'],
+        enable: { mode: ["number"], withoutTask: false },
+        description: "指定した行のコンテキストを編集"
+    },
+    editTextLine: {
+        keys: ['t'],
+        enable: { mode: ["number"], withoutTask: false },
+        description: "指定した行のタスクを編集"
     },
 }

@@ -180,27 +180,27 @@ export const Todo = () => {
     }, setKeyEnableDefine(keymap['delete'].enable))
 
     // change to edit mode
-    useHotkeys(keymap['editTextMode'].keys, (e) => {
+    useHotkeys(keymap['editText'].keys, (e) => {
         setMode('edit')
-    }, setKeyEnableDefine(keymap['editTextMode'].enable))
+    }, setKeyEnableDefine(keymap['editText'].enable))
 
     // change to priority edit mode
-    useHotkeys(keymap['editPriorityMode'].keys, (e) => {
+    useHotkeys(keymap['editPriority'].keys, (e) => {
         setPrefix('priority')
         setMode('edit')
-    }, setKeyEnableDefine(keymap['editPriorityMode'].enable))
+    }, setKeyEnableDefine(keymap['editPriority'].enable))
 
     // change to project edit mode
-    useHotkeys(keymap['editProjectMode'].keys, (e) => {
+    useHotkeys(keymap['editProject'].keys, (e) => {
         setPrefix('project')
         setMode('edit')
-    }, setKeyEnableDefine(keymap['editProjectMode'].enable))
+    }, setKeyEnableDefine(keymap['editProject'].enable))
 
     // change to context edit mode
-    useHotkeys(keymap['editContextMode'].keys, (e) => {
+    useHotkeys(keymap['editContext'].keys, (e) => {
         setPrefix('context')
         setMode('edit')
-    }, setKeyEnableDefine(keymap['editContextMode'].enable))
+    }, setKeyEnableDefine(keymap['editContext'].enable))
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
@@ -349,19 +349,93 @@ export const Todo = () => {
      * 
      *****************/
 
-    useHotkeys(keymap['moveToLine'].keys, (e) => {
-        const line = parseInt(key)
+
+    const moveToLine = (line: number) => {
         if (!isNaN(line)) {
             if (filterdTodos.length > line) {
                 setCurrentIndex(line - 1)
+                return true
             } else {
                 setLog("not found line")
+                return false
             }
         }
+    }
+
+    useHotkeys(keymap['moveToLine'].keys, (e) => {
+        const line = parseInt(key)
+        moveToLine(line)
         setMode('normal')
         setKey('')
     }, setKeyEnableDefine(keymap['moveToLine'].enable))
 
+    useHotkeys(keymap['addToLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (moveToLine(line)) {
+            setTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            setCurrentIndex(line)
+            setMode('edit')
+        } else {
+            setMode('normal')
+        }
+        setKey('')
+    }, setKeyEnableDefine(keymap['moveToLine'].enable))
+
+    useHotkeys(keymap['insertToLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (moveToLine(line)) {
+            setTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            setCurrentIndex(line - 1)
+            setMode('edit')
+        } else {
+            setMode('normal')
+        }
+        setKey('')
+    }, setKeyEnableDefine(keymap['moveToLine'].enable))
+
+
+    useHotkeys(keymap['editProjectLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (moveToLine(line)) {
+            setPrefix('project')
+            setMode('edit')
+        } else {
+            setMode('normal')
+        }
+        setKey('')
+    }, setKeyEnableDefine(keymap['editProjectLine'].enable))
+
+    useHotkeys(keymap['editContextLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (moveToLine(line)) {
+            setPrefix('context')
+            setMode('edit')
+        } else {
+            setMode('normal')
+        }
+        setKey('')
+    }, setKeyEnableDefine(keymap['editContextLine'].enable))
+
+    useHotkeys(keymap['editPriorityLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (moveToLine(line)) {
+            setPrefix('priority')
+            setMode('edit')
+        } else {
+            setMode('normal')
+        }
+        setKey('')
+    }, setKeyEnableDefine(keymap['editPriorityLine'].enable))
+
+    useHotkeys(keymap['editTextLine'].keys, (e) => {
+        const line = parseInt(key)
+        if (moveToLine(line)) {
+            setMode('edit')
+        } else {
+            setMode('normal')
+        }
+        setKey('')
+    }, setKeyEnableDefine(keymap['editTextLine'].enable))
 
     /*******************
      * 

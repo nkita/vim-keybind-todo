@@ -1,6 +1,7 @@
 import { Sort, Mode } from "@/types"
 export type KeymapItem = {
     keys: string[]
+    keysDisp?: string[]
     enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean } // and
     description: string
 }
@@ -37,21 +38,25 @@ export type Keymap = {
 export const keymap: Keymap = {
     up: {
         keys: ['k', 'ArrowUp'],
+        keysDisp:['k','⇡'],
         enable: { mode: ["normal"], withoutTask: false },
         description: "上へ移動"
     },
     down: {
         keys: ['j', 'ArrowDown'],
+        keysDisp:['j','↓'],
         enable: { mode: ["normal"], withoutTask: false },
         description: "下へ移動"
     },
     moveProjectRight: {
         keys: ['l', 'ArrowRight'],
+        keysDisp:['l','→'],
         enable: { mode: ["normal"], },
         description: "プロジェクトタブを右に移動"
     },
     moveProjectLeft: {
         keys: ['h', 'ArrowLeft'],
+        keysDisp:['h','←'],
         enable: { mode: ["normal"] },
         description: "プロジェクトタブを右に移動"
     },
@@ -67,16 +72,19 @@ export const keymap: Keymap = {
     },
     insertTop: {
         keys: ['shift+i',],
+        keysDisp: ['I'],
         enable: { mode: ["normal"], sort: [undefined] },
         description: "タスク追加（一番上）"
     },
     insertTopOnSort: {
         keys: ['shift+i',],
+        keysDisp: ['I'],
         enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate', 'isCompletion'] },
         description: "タスク追加"
     },
     appendBottom: {
         keys: ['shift+a',],
+        keysDisp: ['A'],
         enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
         description: "タスク追加（一番下）"
     },
@@ -157,11 +165,13 @@ export const keymap: Keymap = {
     },
     numberMode: {
         keys: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        keysDisp: ['数字'],
         enable: { mode: ["normal", "number"] },
         description: "行番号指定"
     },
     moveToLine: {
         keys: ['shift+g'],
+        keysDisp: ['G'],
         enable: { mode: ["number"] },
         description: "指定した行へ移動"
     },

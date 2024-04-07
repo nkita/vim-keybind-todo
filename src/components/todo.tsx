@@ -352,7 +352,7 @@ export const Todo = () => {
 
     const moveToLine = (line: number) => {
         if (!isNaN(line)) {
-            if (filterdTodos.length > line) {
+            if (filterdTodos.length >= line) {
                 setCurrentIndex(line - 1)
                 return true
             } else {

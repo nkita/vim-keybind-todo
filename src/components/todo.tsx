@@ -128,11 +128,15 @@ export const Todo = () => {
     // move to up 
     useHotkeys(keymap['up'].keys, (e) => {
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
+        setKey('')
+        setMode('normal')
     }, setKeyEnableDefine(keymap['up'].enable))
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
         if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
+        setKey('')
+        setMode('normal')
     }, setKeyEnableDefine(keymap['down'].enable))
 
     // insert task 
@@ -204,11 +208,15 @@ export const Todo = () => {
             if (!currentProject) {
                 setCurrentProject(projects[0])
                 setCurrentIndex(0)
+                setKey('')
+                setMode('normal')
             } else {
                 const _index = projects.indexOf(currentProject)
                 if (_index < projects.length - 1) {
                     setCurrentProject(projects[_index + 1])
                     setCurrentIndex(0)
+                    setKey('')
+                    setMode('normal')
                 }
             }
         }
@@ -225,6 +233,8 @@ export const Todo = () => {
                     setCurrentProject(projects[_index - 1])
                 }
                 setCurrentIndex(0)
+                setKey('')
+                setMode('normal')
             }
         }
     }, setKeyEnableDefine(keymap['moveProjectLeft'].enable))

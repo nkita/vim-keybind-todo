@@ -45,25 +45,25 @@ export const keymap: Keymap = {
     up: {
         keys: ['k', 'ArrowUp'],
         keysDisp: ['k', '⇡'],
-        enable: { mode: ["normal", "number"], withoutTask: false },
+        enable: { mode: ["normal", "sort", "number"], withoutTask: false },
         description: "上へ移動"
     },
     down: {
         keys: ['j', 'ArrowDown'],
         keysDisp: ['j', '↓'],
-        enable: { mode: ["normal", "number"], withoutTask: false },
+        enable: { mode: ["normal", "sort", "number"], withoutTask: false },
         description: "下へ移動"
     },
     moveProjectRight: {
         keys: ['l', 'ArrowRight'],
         keysDisp: ['l', '→'],
-        enable: { mode: ["normal", "number"], },
+        enable: { mode: ["normal", "sort", "number"], },
         description: "プロジェクトタブを右に移動"
     },
     moveProjectLeft: {
         keys: ['h', 'ArrowLeft'],
         keysDisp: ['h', '←'],
-        enable: { mode: ["normal", "number"] },
+        enable: { mode: ["normal", "sort", "number"] },
         description: "プロジェクトタブを右に移動"
     },
     insert: {

@@ -3,7 +3,6 @@ import { useState, MouseEvent, ChangeEvent, useEffect, } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from './config'
-import { dispKey } from "@/libs/dispkeyname"
 import { TodoProps, Sort, Mode } from "@/types"
 import { todoFunc } from "@/libs/todo"
 import { yyyymmddhhmmss } from "@/libs/time"
@@ -306,6 +305,7 @@ export const Todo = () => {
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
         if (!e.isComposing) toNormalMode()
+        setKey('')
     }, setKeyEnableDefine(keymap['normalMode'].enable))
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
@@ -325,6 +325,7 @@ export const Todo = () => {
             setPrefix('text')
             setMode('normal')
         }
+        setKey('')
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable))
 
     useHotkeys(keymap['numberMode'].keys, (e) => {
@@ -522,7 +523,12 @@ export const Todo = () => {
                                 ) {
                                     return (
                                         <div key={key} className="flex items-center gap-2">
-                                            {value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{dispKey(k)}</kbd>)}:{value.description}
+                                            {value.keysDisp !== undefined ? (
+                                                value.keysDisp.map((k, i) => <kbd key={`usage${k}${i}`} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{k}</kbd>)
+                                            ) : (
+                                                value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{k}</kbd>)
+                                            )}
+                                            :{value.description}
                                         </div>
                                     )
                                 }

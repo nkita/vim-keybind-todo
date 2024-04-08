@@ -343,6 +343,14 @@ export const Todo = () => {
         setMode('number')
     }, setKeyEnableDefine(keymap['numberMode'].enable))
 
+    useHotkeys(keymap['moveToTop'].keys, (e) => {
+        setCurrentIndex(0)
+    }, { ...setKeyEnableDefine(keymap['moveToTop'].enable), ignoreModifiers: true })
+
+    useHotkeys(keymap['moveToEnd'].keys, (e) => {
+        setCurrentIndex(filterdTodos.length - 1)
+    }, setKeyEnableDefine(keymap['moveToEnd'].enable))
+
     /******************
      *
      * Number mode

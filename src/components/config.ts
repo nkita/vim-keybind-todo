@@ -37,6 +37,8 @@ export type Keymap = {
     toggleCompletionTask: KeymapItem;
     numberMode: KeymapItem;
     moveToLine: KeymapItem;
+    moveToTop: KeymapItem;
+    moveToEnd: KeymapItem;
     addToLine: KeymapItem;
     insertToLine: KeymapItem;
 };
@@ -180,6 +182,18 @@ export const keymap: Keymap = {
         keysDisp: ['G'],
         enable: { mode: ["number"], withoutTask: false },
         description: "指定した行へ移動"
+    },
+    moveToTop: {
+        keys: ['0'],
+        keysDisp: ['0'],
+        enable: { mode: ["normal"], withoutTask: false },
+        description: "先頭に移動"
+    },
+    moveToEnd: {
+        keys: ['shift+g'],
+        keysDisp: ['G'],
+        enable: { mode: ["normal"], withoutTask: false },
+        description: "最終行に移動"
     },
     addToLine: {
         keys: ['a'],

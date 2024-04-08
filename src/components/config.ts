@@ -36,6 +36,7 @@ export type Keymap = {
     normalModeOnSort: KeymapItem;
     toggleCompletionTask: KeymapItem;
     numberMode: KeymapItem;
+    numberInput: KeymapItem;
     moveToLine: KeymapItem;
     moveToTop: KeymapItem;
     moveToEnd: KeymapItem;
@@ -172,10 +173,16 @@ export const keymap: Keymap = {
         description: "完了済みタスクの表示・非表示"
     },
     numberMode: {
+        keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
+        keysDisp: ['数字'],
+        enable: { mode: ["normal"], withoutTask: false },
+        description: "行番号を入力"
+    },
+    numberInput: {
         keys: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
         keysDisp: ['数字'],
-        enable: { mode: ["normal", "number"], withoutTask: false },
-        description: "行番号指定"
+        enable: { mode: ["number"], withoutTask: false },
+        description: "行番号を入力"
     },
     moveToLine: {
         keys: ['shift+g'],

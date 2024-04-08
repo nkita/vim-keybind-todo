@@ -343,6 +343,11 @@ export const Todo = () => {
         setMode('number')
     }, setKeyEnableDefine(keymap['numberMode'].enable))
 
+    useHotkeys(keymap['numberInput'].keys, (e) => {
+        setKey(key + e.key)
+        setMode('number')
+    }, setKeyEnableDefine(keymap['numberInput'].enable))
+
     useHotkeys(keymap['moveToTop'].keys, (e) => {
         setCurrentIndex(0)
     }, { ...setKeyEnableDefine(keymap['moveToTop'].enable), ignoreModifiers: true })

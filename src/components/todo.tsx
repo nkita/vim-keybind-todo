@@ -26,6 +26,7 @@ export const Todo = () => {
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [currentId, setCurrentId] = useState<number | undefined>(undefined)
+    const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
@@ -194,7 +195,7 @@ export const Todo = () => {
     useHotkeys(keymap['editProject'].keys, (e) => {
         setPrefix('project')
         setMode('edit')
-    }, setKeyEnableDefine(keymap['editProject'].enable))
+    }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
 
     // change to context edit mode
     useHotkeys(keymap['editContext'].keys, (e) => {
@@ -350,7 +351,7 @@ export const Todo = () => {
 
     useHotkeys(keymap['moveToTop'].keys, (e) => {
         setCurrentIndex(0)
-    }, { ...setKeyEnableDefine(keymap['moveToTop'].enable), ignoreModifiers: true })
+    }, setKeyEnableDefine(keymap['moveToTop'].enable))
 
     useHotkeys(keymap['moveToEnd'].keys, (e) => {
         setCurrentIndex(filterdTodos.length - 1)
@@ -361,8 +362,6 @@ export const Todo = () => {
      * Number mode
      * 
      *****************/
-
-
     const moveToLine = (line: number) => {
         if (!isNaN(line)) {
             if (filterdTodos.length >= line) {
@@ -450,6 +449,29 @@ export const Todo = () => {
         setKey('')
     }, setKeyEnableDefine(keymap['editTextLine'].enable))
 
+    // change to search mode
+    useHotkeys(keymap['searchMode'].keys, (e) => {
+        setValue("search", "")
+        setMode("search")
+        setFocus('search')
+    }, setKeyEnableDefine(keymap['searchMode'].enable))
+    // search mode cancel
+    useHotkeys(keymap['searchEsc'].keys, (e) => {
+        setValue("search", "")
+        setMode("normal")
+        setCurrentIndex(currentIndex)
+    }, setKeyEnableDefine(keymap['searchEsc'].enable))
+    // search word
+    useHotkeys(keymap['searchEnter'].keys, (e) => {
+        if (!e.isComposing) {
+            const keyword = getValues('search').replace(/\s+/g, '')
+            keyword
+                ? setSearchResultIndex(filterdTodos.map(t => t.text.toLocaleLowerCase().replace(/\s+/g, '').includes(keyword.toLowerCase().replace(/\s+/g, ''))))
+                : setSearchResultIndex([])
+            setMode("normal")
+        }
+    }, setKeyEnableDefine(keymap['searchEnter'].enable))
+
     /*******************
      * 
      * Command mode
@@ -517,7 +539,7 @@ export const Todo = () => {
                         }
                         {filterdTodos.map((t, index) => {
                             return (
-                                <div key={t.id} className="flex items-center border-b truncate focus-within:bg-blue-100 bg-white">
+                                <div key={t.id} className={`flex items-center border-b truncate focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"}`}>
                                     <span className="w-[15px] text-center text-xs text-gray-900 border-r border-r-blue-200"> {index + 1}</span>
                                     <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
                                     <Item
@@ -548,7 +570,7 @@ export const Todo = () => {
                                         prefix={"project"}
                                         currentPrefix={prefix}
                                         mode={mode}
-                                        label={t.project ? ` +${t.project}` : ""}
+                                        label={t.project ? ` :${t.project}` : ""}
                                         handleFocus={handleFocus}
                                         register={register} />
                                     <Item
@@ -635,6 +657,7 @@ export const Todo = () => {
                 </div>
                 <div className="flex gap-3 bg-black text-white">
                     <span>press:{key}</span>
+                    <div className="flex">search keyword:<input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" /></div>
                     <span>current index:{currentIndex}</span>
                     <span>current id:{currentId}</span>
                     <span>current mode:{mode}</span>

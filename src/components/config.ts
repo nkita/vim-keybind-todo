@@ -42,6 +42,10 @@ export type Keymap = {
     moveToEnd: KeymapItem;
     addToLine: KeymapItem;
     insertToLine: KeymapItem;
+    searchMode: KeymapItem;
+    searchKeyword: KeymapItem;
+    searchEsc: KeymapItem;
+    searchEnter: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -118,7 +122,7 @@ export const keymap: Keymap = {
         description: "優先度を編集"
     },
     editProject: {
-        keys: ['0'],
+        keys: [':'],
         enable: { mode: ["normal"], withoutTask: false },
         description: "プロジェクトを編集"
     },
@@ -213,7 +217,7 @@ export const keymap: Keymap = {
         description: "指定した行の前へタスクを追加"
     },
     editProjectLine: {
-        keys: ['0'],
+        keys: [':'],
         enable: { mode: ["number"], withoutTask: false },
         description: "指定した行のプロジェクトを編集"
     },
@@ -231,5 +235,26 @@ export const keymap: Keymap = {
         keys: ['t'],
         enable: { mode: ["number"], withoutTask: false },
         description: "指定した行のタスクを編集"
+    },
+    searchMode: {
+        keys: ['/'],
+        enable: { mode: ["normal", "sort"], withoutTask: false },
+        description: "検索"
+    },
+    searchKeyword: {
+        keys: ['*'],
+        enable: { mode: ["search"], withoutTask: false },
+        keysDisp: ["キーワード"],
+        description: "検索"
+    },
+    searchEsc: {
+        keys: ['Esc'],
+        enable: { mode: ["search"], withoutTask: false },
+        description: "キャンセル"
+    },
+    searchEnter: {
+        keys: ['Enter'],
+        enable: { mode: ["search"], withoutTask: false },
+        description: "検索"
     },
 }

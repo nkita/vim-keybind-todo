@@ -381,7 +381,7 @@ export const Todo = () => {
         setKey('')
     }, setKeyEnableDefine(keymap['moveToLine'].enable))
 
-    useHotkeys(keymap['addToLine'].keys, (e) => {
+    useHotkeys(keymap['appendToLine'].keys, (e) => {
         const line = parseInt(key)
         if (moveToLine(line)) {
             setTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
@@ -391,7 +391,7 @@ export const Todo = () => {
             setMode('normal')
         }
         setKey('')
-    }, setKeyEnableDefine(keymap['moveToLine'].enable))
+    }, setKeyEnableDefine(keymap['appendToLine'].enable))
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
         const line = parseInt(key)
@@ -403,7 +403,7 @@ export const Todo = () => {
             setMode('normal')
         }
         setKey('')
-    }, setKeyEnableDefine(keymap['moveToLine'].enable))
+    }, setKeyEnableDefine(keymap['insertToLine'].enable))
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {

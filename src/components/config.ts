@@ -40,7 +40,7 @@ export type Keymap = {
     moveToLine: KeymapItem;
     moveToTop: KeymapItem;
     moveToEnd: KeymapItem;
-    addToLine: KeymapItem;
+    appendToLine: KeymapItem;
     insertToLine: KeymapItem;
     searchMode: KeymapItem;
     searchKeyword: KeymapItem;
@@ -206,7 +206,7 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: false },
         description: "最終行に移動"
     },
-    addToLine: {
+    appendToLine: {
         keys: ['a'],
         enable: { mode: ["number"], sort: [undefined], withoutTask: false },
         description: "指定した行の次へタスクを追加"

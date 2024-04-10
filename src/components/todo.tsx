@@ -539,50 +539,59 @@ export const Todo = () => {
                         }
                         {filterdTodos.map((t, index) => {
                             return (
-                                <div key={t.id} className={`flex items-center border-b truncate focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"}`}>
+                                <div key={t.id} className={`flex w-full border-b truncate focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"}`}>
                                     <span className="w-[15px] text-center text-xs text-gray-900 border-r border-r-blue-200"> {index + 1}</span>
-                                    <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
-                                    <Item
-                                        t={t}
-                                        index={index}
-                                        currentIndex={currentIndex}
-                                        prefix={"priority"}
-                                        currentPrefix={prefix}
-                                        mode={mode}
-                                        width="w-[25px]"
-                                        label={t.priority ? `(${t.priority})` : ""}
-                                        handleFocus={handleFocus}
-                                        register={register} />
-                                    <Item
-                                        t={t}
-                                        index={index}
-                                        currentIndex={currentIndex}
-                                        prefix={"text"}
-                                        currentPrefix={prefix}
-                                        mode={mode}
-                                        label={t.text}
-                                        handleFocus={handleFocus}
-                                        register={register} />
-                                    <Item
-                                        t={t}
-                                        index={index}
-                                        currentIndex={currentIndex}
-                                        prefix={"project"}
-                                        currentPrefix={prefix}
-                                        mode={mode}
-                                        label={t.project ? ` :${t.project}` : ""}
-                                        handleFocus={handleFocus}
-                                        register={register} />
-                                    <Item
-                                        t={t}
-                                        index={index}
-                                        currentIndex={currentIndex}
-                                        prefix={"context"}
-                                        currentPrefix={prefix}
-                                        mode={mode}
-                                        label={t.context ? ` @${t.context}` : ""}
-                                        handleFocus={handleFocus}
-                                        register={register} />
+                                    <div className="w-full">
+                                        <div className="flex items-center w-full">
+                                            <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
+                                            <Item
+                                                t={t}
+                                                index={index}
+                                                currentIndex={currentIndex}
+                                                prefix={"priority"}
+                                                currentPrefix={prefix}
+                                                mode={mode}
+                                                width="w-[25px]"
+                                                label={t.priority ? `(${t.priority})` : ""}
+                                                handleFocus={handleFocus}
+                                                register={register} />
+                                            <Item
+                                                t={t}
+                                                index={index}
+                                                currentIndex={currentIndex}
+                                                prefix={"text"}
+                                                currentPrefix={prefix}
+                                                mode={mode}
+                                                label={t.text}
+                                                handleFocus={handleFocus}
+                                                register={register} />
+                                        </div>
+                                        <div className="flex w-full gap-3 justify-between text-xs">
+                                            <div className="flex gap-3 text-xs text-gray-400 pl-8">
+                                                <Item
+                                                    t={t}
+                                                    index={index}
+                                                    currentIndex={currentIndex}
+                                                    prefix={"project"}
+                                                    currentPrefix={prefix}
+                                                    mode={mode}
+                                                    label={t.project ? ` :${t.project}` : ""}
+                                                    handleFocus={handleFocus}
+                                                    register={register} />
+                                                <Item
+                                                    t={t}
+                                                    index={index}
+                                                    currentIndex={currentIndex}
+                                                    prefix={"context"}
+                                                    currentPrefix={prefix}
+                                                    mode={mode}
+                                                    label={t.context ? ` @${t.context}` : ""}
+                                                    handleFocus={handleFocus}
+                                                    register={register} />
+                                            </div>
+                                            {t.creationDate}
+                                        </div>
+                                    </div>
                                 </div>
                             )
                         })}
@@ -699,7 +708,7 @@ const Item = (
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
     return (
         <>
-            <div onMouseDown={handleMouseDown} className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "w-0"}`}>
+            <div onMouseDown={handleMouseDown} className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "hidden"}`}>
                 <button
                     className={`w-full text-left truncate outline-none`}
                     onClick={_ => handleFocus(index)}
@@ -711,7 +720,7 @@ const Item = (
                     </span>
                 </button>
             </div>
-            <div onMouseDown={handleMouseDown} className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "w-0"}`}>
+            <div onMouseDown={handleMouseDown} className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "hidden"}`}>
                 <input
                     tabIndex={-1}
                     className={`w-full text-left truncate outline-none bg-transparent focus:bg-gray-100`}

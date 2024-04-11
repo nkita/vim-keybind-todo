@@ -508,12 +508,15 @@ export const Todo = () => {
 
     const handleFocus = (index: number) => setCurrentIndex(index)
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
-    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation();
+    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+        e.preventDefault()
+        e.stopPropagation();
+    }
 
     return (
         <div className="flex flex-col h-screen justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
-            <div className="flex flex-col ">
-                <div className="flex justify-between">
+            <div onMouseDown={e => e.preventDefault()} className="flex flex-col">
+                <div onMouseDown={e => e.preventDefault()} className="flex justify-between">
                     <div onMouseDown={handleTodoAreaMouseDown} className="w-3/4 overflow-auto bg-gray-50">
                         <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
                         {projects.map(p => {

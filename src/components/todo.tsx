@@ -1,33 +1,40 @@
 'use client'
-import { useState, MouseEvent, ChangeEvent, useEffect, } from "react"
+import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from './config'
 import { TodoProps, Sort, Mode } from "@/types"
-import { todoFunc } from "@/libs/todo"
-import { yyyymmddhhmmss } from "@/libs/time"
-export const Todo = () => {
-    const [key, setKey] = useState("")
-    const [todos, setTodos] = useState<TodoProps[]>([
-        { id: 0, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
-        { id: 1, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
-        { id: 2, text: '締切日までに作品仕上げる', priority: 'A', project: "hobby", },
-        { id: 3, text: '材料を買う', project: "hobby" },
-        { id: 4, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
-        { id: 14, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
-        { id: 12, text: '締切日までに作品仕上げる', priority: 'A', project: "hobby", },
-        { id: 13, text: '材料を買う', project: "hobby" },
-        { id: 10, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
-    ])
-    const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
+import { todoFunc } from "@/lib/todo"
+import { yyyymmddhhmmss } from "@/lib/time"
+import { TodoList } from "./todo-list"
+export const Todo = (
+    {
+        todos,
+        filterdTodos,
+        mode,
+        sort,
+        setTodos,
+        setFilterdTodos,
+        setMode,
+        setSort
+    }: {
+        todos: TodoProps[]
+        filterdTodos: TodoProps[]
+        mode: Mode
+        sort: Sort
+        setTodos: Dispatch<SetStateAction<TodoProps[]>>
+        setFilterdTodos: Dispatch<SetStateAction<TodoProps[]>>
+        setMode: Dispatch<SetStateAction<Mode>>
+        setSort: Dispatch<SetStateAction<Sort>>
+    }
+) => {
+    const [command, setCommand] = useState("")
     const [projects, setProjects] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
-    const [currentSort, setCurrentSort] = useState<Sort>(undefined)
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [currentId, setCurrentId] = useState<number | undefined>(undefined)
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
-    const [mode, setMode] = useState<Mode>('normal')
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const { register, setFocus, getValues, setValue } = useForm()
@@ -45,7 +52,7 @@ export const Todo = () => {
             if (keyConf.sort !== undefined) {
                 enabledSort = false
                 keyConf.sort.forEach(s => {
-                    if (s === currentSort) enabledSort = true
+                    if (s === sort) enabledSort = true
                 })
             }
             enabledWithoutTask = filterdTodos.length === 0 ? keyConf.withoutTask ?? true : true
@@ -60,11 +67,11 @@ export const Todo = () => {
             _todos = _todos.filter(t => t.isCompletion !== true)
         }
 
-        if (currentSort !== undefined) {
+        if (sort !== undefined) {
             _todos.sort((a, b) => {
-                let _a = a[currentSort]
-                let _b = b[currentSort]
-                if (currentSort === 'isCompletion' || typeof _a === "boolean" || typeof _b === "boolean") {
+                let _a = a[sort]
+                let _b = b[sort]
+                if (sort === 'isCompletion' || typeof _a === "boolean" || typeof _b === "boolean") {
                     _a = _a === undefined ? "a" : _a ? undefined : "a"
                     _b = _b === undefined ? "a" : _b ? undefined : "a"
                 }
@@ -79,7 +86,7 @@ export const Todo = () => {
             if (index >= 0) setCurrentIndex(index)
             setCurrentId(undefined)
         }
-    }, [todos, currentId, currentProject, currentSort, viewCompletionTask])
+    }, [todos, currentId, currentProject, sort, viewCompletionTask, setFilterdTodos])
 
     useEffect(() => {
         const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
@@ -129,14 +136,14 @@ export const Todo = () => {
     // move to up 
     useHotkeys(keymap['up'].keys, (e) => {
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
-        setKey('')
+        setCommand('')
         setMode('normal')
     }, setKeyEnableDefine(keymap['up'].enable))
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
         if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
-        setKey('')
+        setCommand('')
         setMode('normal')
     }, setKeyEnableDefine(keymap['down'].enable))
 
@@ -209,14 +216,14 @@ export const Todo = () => {
             if (!currentProject) {
                 setCurrentProject(projects[0])
                 setCurrentIndex(0)
-                setKey('')
+                setCommand('')
                 setMode('normal')
             } else {
                 const _index = projects.indexOf(currentProject)
                 if (_index < projects.length - 1) {
                     setCurrentProject(projects[_index + 1])
                     setCurrentIndex(0)
-                    setKey('')
+                    setCommand('')
                     setMode('normal')
                 }
             }
@@ -234,7 +241,7 @@ export const Todo = () => {
                     setCurrentProject(projects[_index - 1])
                 }
                 setCurrentIndex(0)
-                setKey('')
+                setCommand('')
                 setMode('normal')
             }
         }
@@ -277,27 +284,27 @@ export const Todo = () => {
      * 
      *******************/
     useHotkeys(keymap['sortPriority'].keys, (e) => {
-        setCurrentSort("priority")
+        setSort("priority")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortPriority'].enable))
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
-        setCurrentSort(undefined)
+        setSort(undefined)
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortClear'].enable))
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
-        setCurrentSort("creationDate")
+        setSort("creationDate")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
 
     useHotkeys(keymap['sortContext'].keys, (e) => {
-        setCurrentSort("context")
+        setSort("context")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortContext'].enable))
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
-        setCurrentSort("isCompletion")
+        setSort("isCompletion")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortCompletion'].enable))
 
@@ -305,7 +312,7 @@ export const Todo = () => {
     // change command mode
     // useHotkeys(':', (e) => {
     //     setMode('command')
-    //     setKey(e.key)
+    //     setCommand(e.key)
     // }, enabled.normal)
 
     /*******************
@@ -316,7 +323,7 @@ export const Todo = () => {
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
         if (!e.isComposing) toNormalMode()
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['normalMode'].enable))
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
@@ -336,16 +343,16 @@ export const Todo = () => {
             setPrefix('text')
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable))
 
     useHotkeys(keymap['numberMode'].keys, (e) => {
-        setKey(key + e.key)
+        setCommand(command + e.key)
         setMode('number')
     }, setKeyEnableDefine(keymap['numberMode'].enable))
 
     useHotkeys(keymap['numberInput'].keys, (e) => {
-        setKey(key + e.key)
+        setCommand(command + e.key)
         setMode('number')
     }, setKeyEnableDefine(keymap['numberInput'].enable))
 
@@ -375,14 +382,14 @@ export const Todo = () => {
     }
 
     useHotkeys(keymap['moveToLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         moveToLine(line)
         setMode('normal')
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['moveToLine'].enable))
 
     useHotkeys(keymap['appendToLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         if (moveToLine(line)) {
             setTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
             setCurrentIndex(line)
@@ -390,11 +397,11 @@ export const Todo = () => {
         } else {
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['appendToLine'].enable))
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         if (moveToLine(line)) {
             setTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
             setCurrentIndex(line - 1)
@@ -402,51 +409,51 @@ export const Todo = () => {
         } else {
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['insertToLine'].enable))
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('project')
             setMode('edit')
         } else {
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['editProjectLine'].enable))
 
     useHotkeys(keymap['editContextLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('context')
             setMode('edit')
         } else {
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['editContextLine'].enable))
 
     useHotkeys(keymap['editPriorityLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('priority')
             setMode('edit')
         } else {
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['editPriorityLine'].enable))
 
     useHotkeys(keymap['editTextLine'].keys, (e) => {
-        const line = parseInt(key)
+        const line = parseInt(command)
         if (moveToLine(line)) {
             setMode('edit')
         } else {
             setMode('normal')
         }
-        setKey('')
+        setCommand('')
     }, setKeyEnableDefine(keymap['editTextLine'].enable))
 
     // change to search mode
@@ -478,21 +485,21 @@ export const Todo = () => {
      * 
      *******************/
     // useHotkeys('*', (e) => {
-    //     if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setKey(key + e.key)
+    //     if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setCommand(key + e.key)
     // }, enabled.command)
 
     // useHotkeys(['Enter'], (e) => {
     //     e.preventDefault()
     //     setLog(`Not found command:${key}`)
     //     setMode('normal')
-    //     setKey("")
+    //     setCommand("")
     // }, enabled.command)
 
     // useHotkeys('Esc', (e) => {
     //     e.preventDefault()
     //     setMode('normal')
     //     setPrefix('text')
-    //     setKey("")
+    //     setCommand("")
     // }, enabled.command)
 
 
@@ -506,233 +513,20 @@ export const Todo = () => {
     // }
     // }
 
-    const handleFocus = (index: number) => setCurrentIndex(index)
-    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
-    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        e.preventDefault()
-        e.stopPropagation();
-    }
-
     return (
-        <div className="flex flex-col h-screen justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
-            <div onMouseDown={e => e.preventDefault()} className="flex flex-col">
-                <div onMouseDown={e => e.preventDefault()} className="flex justify-between">
-                    <div onMouseDown={handleTodoAreaMouseDown} className="w-3/4 overflow-auto bg-gray-50">
-                        <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
-                        {projects.map(p => {
-                            return (
-                                <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
-                            )
-                        })}
-                        {currentSort !== undefined &&
-                            <div className="flex items-center border-b truncate bg-white">
-                                <div className="w-[45px]" />
-                                <input
-                                    tabIndex={-1}
-                                    className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:h-auto h-0`}
-                                    type="text"
-                                    maxLength={prefix === 'priority' ? 1 : -1}
-                                    {...register(`newtask`)}
-                                // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                                />
-                            </div>
-                        }
-                        {filterdTodos.length === 0 &&
-                            <div>No task. good!</div>
-                        }
-                        {filterdTodos.map((t, index) => {
-                            return (
-                                <div key={t.id} className={`flex w-full border-b truncate focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"}`}>
-                                    <span className="w-[15px] text-center text-xs text-gray-900 border-r border-r-blue-200"> {index + 1}</span>
-                                    <div className="w-full">
-                                        <div className="flex items-center w-full">
-                                            <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
-                                            <Item
-                                                t={t}
-                                                index={index}
-                                                currentIndex={currentIndex}
-                                                prefix={"priority"}
-                                                currentPrefix={prefix}
-                                                mode={mode}
-                                                width="w-[25px]"
-                                                label={t.priority ? `(${t.priority})` : ""}
-                                                handleFocus={handleFocus}
-                                                register={register} />
-                                            <Item
-                                                t={t}
-                                                index={index}
-                                                currentIndex={currentIndex}
-                                                prefix={"text"}
-                                                currentPrefix={prefix}
-                                                mode={mode}
-                                                label={t.text}
-                                                handleFocus={handleFocus}
-                                                register={register} />
-                                        </div>
-                                        <div className="flex w-full gap-3 justify-between text-xs">
-                                            <div className="flex gap-3 text-xs text-gray-400 pl-8">
-                                                <Item
-                                                    t={t}
-                                                    index={index}
-                                                    currentIndex={currentIndex}
-                                                    prefix={"project"}
-                                                    currentPrefix={prefix}
-                                                    mode={mode}
-                                                    label={t.project ? ` :${t.project}` : ""}
-                                                    handleFocus={handleFocus}
-                                                    register={register} />
-                                                <Item
-                                                    t={t}
-                                                    index={index}
-                                                    currentIndex={currentIndex}
-                                                    prefix={"context"}
-                                                    currentPrefix={prefix}
-                                                    mode={mode}
-                                                    label={t.context ? ` @${t.context}` : ""}
-                                                    handleFocus={handleFocus}
-                                                    register={register} />
-                                            </div>
-                                            {t.creationDate}
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })}
-                        <div className="text-gray-400">CompletionTask: {todos.filter(t => !currentProject ? true : t.project === currentProject).filter(t => t.isCompletion).length}</div>
-                    </div>
-                    <div className="border bg-gray-200 w-1/4 h-full break-words">
-                        <div className="border rounded-md">
-                            <ul>
-                                {/* <li>id: {todos[currentIndex].id}</li> */}
-                                {/* <li>isCompletion: {todos[currentIndex].isCompletion ? "完了" : "未完了"}</li> */}
-                                {/* <li>priority(A&gt;Z):{filterdTodos[currentIndex].priority}</li> */}
-                                {/* <li>completionDate: {filterdTodos[currentIndex].completionDate}</li> */}
-                                {/* <li>creationDate: {filterdTodos[currentIndex].creationDate}</li> */}
-                                {/* <li>text: {filterdTodos[currentIndex].text}</li> */}
-                                {/* <li>+project: {filterdTodos[currentIndex].project}</li> */}
-                                {/* <li>@context: {filterdTodos[currentIndex].context}</li> */}
-                            </ul>
-                        </div>
-                        debug area:
-                        <div className="border rounded-sm bg-green-50 h-[400px] overflow-auto">
-                            {
-                                todos.map((t, i) => {
-                                    return (
-                                        <div key={`debug:${t.id}`} className="py-2 border-b-2">
-                                            {Object.entries(t).map(([key, val]) => key === "id" || key === "text" ? <div key={`debug:${key}`}>{key}:{val}</div> : undefined)}
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
-                        filterdTodos
-                        <div className="border rounded-sm bg-green-50 h-[500px] overflow-auto">
-                            {
-                                filterdTodos.map((t, i) => {
-                                    return (
-                                        <div key={`debug:${t.id}`} className="py-2 border-b-2">
-                                            {Object.entries(t).map(([key, val]) => (key === "id" || key === "text" || key === "priority" || key === "project") ? <div key={`debug:${key}`}>{key}:{val ?? "undefined or null"}</div> : undefined)}
-                                        </div>
-                                    )
-                                })
-                            }
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div>
-                <div className="bg-sky-300 py-2 px-2">
-                    Usage space
-                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-8  gap-4 b">
-                        {
-                            Object.entries(keymap).map(([key, value]) => {
-                                if (
-                                    value.enable?.mode.includes(mode)
-                                    && (value.enable.sort === undefined || value.enable.sort?.includes(currentSort))
-                                    && (filterdTodos.length > 0 ? true : (value.enable.withoutTask === undefined || value.enable.withoutTask))
-                                ) {
-                                    return (
-                                        <div key={key} className="flex items-center gap-2">
-                                            {value.keysDisp !== undefined ? (
-                                                value.keysDisp.map((k, i) => <kbd key={`usage${k}${i}`} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{k}</kbd>)
-                                            ) : (
-                                                value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{k}</kbd>)
-                                            )}
-                                            :{value.description}
-                                        </div>
-                                    )
-                                }
-                            })
-                        }
-                    </div>
-                </div>
-                <div className="flex gap-3 bg-black text-white">
-                    <span>press:{key}</span>
-                    <div className="flex">search keyword:<input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" /></div>
-                    <span>current index:{currentIndex}</span>
-                    <span>current id:{currentId}</span>
-                    <span>current mode:{mode}</span>
-                    <span>current sort:{currentSort}</span>
-                    <span>current log:{log}</span>
-                </div>
-            </div>
-        </div>
-    )
-}
-
-const Item = (
-    {
-        t,
-        index,
-        mode,
-        currentIndex,
-        prefix,
-        currentPrefix,
-        width = '',
-        height = '',
-        label,
-        handleFocus,
-        register
-    }: {
-        t: TodoProps
-        index: number
-        currentIndex: number
-        prefix: "text" | "priority" | "project" | "context"
-        currentPrefix: string
-        mode: string
-        width?: string
-        height?: string
-        label: string | undefined
-        handleFocus: (index: number) => void
-        register: any
-    }
-) => {
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    return (
-        <>
-            <div onMouseDown={handleMouseDown} className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "hidden"}`}>
-                <button
-                    className={`w-full text-left truncate outline-none`}
-                    onClick={_ => handleFocus(index)}
-                    autoFocus={currentIndex === index}
-                    {...register(`${prefix}-${t.id}`)}
-                >
-                    <span className={`${t.isCompletion ? "line-through text-gray-600" : ""}`}>
-                        {label}
-                    </span>
-                </button>
-            </div>
-            <div onMouseDown={handleMouseDown} className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "hidden"}`}>
-                <input
-                    tabIndex={-1}
-                    className={`w-full text-left truncate outline-none bg-transparent focus:bg-gray-100`}
-                    type="text"
-                    maxLength={prefix === 'priority' ? 1 : -1}
-                    {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
-                // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                />
-            </div >
-        </>
+        <TodoList
+            filterdTodos={filterdTodos}
+            currentIndex={currentIndex}
+            prefix={prefix}
+            mode={mode}
+            projects={projects}
+            currentProject={currentProject}
+            sort={sort}
+            searchResultIndex={searchResultIndex}
+            command={command}
+            log={log}
+            setCurrentIndex={setCurrentIndex}
+            register={register}
+        />
     )
 }

@@ -2,6 +2,7 @@
 import { Dispatch, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
+import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 export const TodoList = (
     {
         filterdTodos,
@@ -42,6 +43,7 @@ export const TodoList = (
         <div className="flex flex-col justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
             mode:{mode}, sort:{sort ?? "-"}, key:{!command ? "-" : command} , log:{log ?? "-"}
             <div className="flex">search keyword:<input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" /></div>
+
             <div onMouseDown={e => e.preventDefault()} className="flex flex-col">
                 <div onMouseDown={e => e.preventDefault()} className="flex justify-between">
                     <div onMouseDown={handleTodoAreaMouseDown} className="w-3/4 overflow-auto bg-gray-50">
@@ -64,12 +66,87 @@ export const TodoList = (
                                 />
                             </div>
                         }
-                        {filterdTodos.length === 0 &&
-                            <div>No task. good!</div>
-                        }
-                        {filterdTodos.map((t, index) => {
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead></TableHead>
+                                    <TableHead></TableHead>
+                                    <TableHead>優先度</TableHead>
+                                    <TableHead>タスク</TableHead>
+                                    <TableHead>ラベル</TableHead>
+                                    <TableHead>プロジェクト</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filterdTodos.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell>No task. good!</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    <>
+                                        {
+                                            filterdTodos.map((t, index) => {
+                                                return (
+                                                    <TableRow key={t.id} className={`focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} >
+                                                        <TableCell>{index + 1}</TableCell>
+                                                        <TableCell>{t.isCompletion ? "x" : ""}</TableCell>
+                                                        <TableCell>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"priority"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                width="w-[25px]"
+                                                                label={t.priority ? `(${t.priority})` : ""}
+                                                                register={register} />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"text"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                label={t.text}
+                                                                register={register} />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"project"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                label={t.project ? ` :${t.project}` : ""}
+                                                                register={register} />
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"context"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                label={t.context ? ` @${t.context}` : ""}
+                                                                register={register} />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })
+                                        }
+                                    </>
+                                )}
+                            </TableBody>
+                        </Table>
+
+                        {/* {filterdTodos.map((t, index) => {
                             return (
-                                <div key={t.id} className={`flex w-full border-b truncate focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"} `} onClick={_ => setCurrentIndex(index)}>
+                                <div key={t.id} className={`flex w - full border - b truncate focus - within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"} `} onClick={_ => setCurrentIndex(index)}>
                                     <span className="w-[15px] text-center text-xs text-gray-900 border-r border-r-blue-200"> {index + 1}</span>
                                     <div className="w-full">
                                         <div className="flex items-center w-full">
@@ -120,11 +197,11 @@ export const TodoList = (
                                     </div>
                                 </div>
                             )
-                        })}
+                        })} */}
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

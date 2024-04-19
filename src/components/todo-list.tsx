@@ -44,16 +44,16 @@ export const TodoList = (
     }
     return (
         <>
-            <div className="border w-[800px] p-4 rounded-md shadow-md">
+            <div className="border w-[1200px] p-4 rounded-md">
                 <Badge variant={mode === "normal" ? "default" : mode === "edit" ? "outline" : "destructive"}>{mode}</Badge>
                 {!command ? "" : "press key:" + command}
                 {log ?? ""}
                 <input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" />
-                <div onMouseDown={handleTodoAreaMouseDown} className=" bg-gray-50 pt-4">
-                    <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
+                <div onMouseDown={handleTodoAreaMouseDown} className="pt-4">
+                    <button className={`border rounded-t-sm text-sm px-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
                     {projects.map(p => {
                         return (
-                            <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
+                            <button key={p} className={`rounded-t-sm text-sm border px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
                         )
                     })}
                     {sort !== undefined &&
@@ -70,7 +70,7 @@ export const TodoList = (
                         </div>
                     }
                 </div>
-                <Table className="h-[300px] border">
+                <Table className="h-[600px] border">
                     <TableHeader className="top-0 sticky bg-gray-50">
                         <TableRow>
                             <TableHead className="w-[20px]"></TableHead>
@@ -81,7 +81,7 @@ export const TodoList = (
                             <TableHead className="w-[200px]" >プロジェクト</TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody className="bg-gray-100">
+                    <TableBody>
                         {filterdTodos.length === 0 ? (
                             <TableRow>
                                 <TableCell>No task. good!</TableCell>
@@ -189,7 +189,7 @@ const Item = (
                     autoFocus={currentIndex === index}
                     {...register(`${prefix}-${t.id}`)}
                 >
-                    <span className={`${t.isCompletion ? "line-through text-gray-600" : ""}`}>
+                    <span className={`${t.isCompletion ? "line-through" : ""}`}>
                         {label}
                     </span>
                 </button>
@@ -201,7 +201,6 @@ const Item = (
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
-                // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
                 />
             </div >
         </>

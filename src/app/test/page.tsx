@@ -1,4 +1,5 @@
 'use client'
+import { useRef } from "react"
 import {
     Table,
     TableBody,
@@ -13,33 +14,35 @@ import {
 
 export default function TableDemo() {
     return (
-        <Table className="bg-yellow-50 w-[500px] h-[300px]">
-            <TableCaption>A list of your recent invoices.</TableCaption>
-            <TableHeader className="top-0 sticky z-10 bg-yellow-50">
-                <TableRow>
-                    <TableHead className="w-[100px]">Invoice</TableHead>
-                    <TableHead >Status</TableHead>
-                    <TableHead >Method</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>
-                {invoices.map((invoice) => (
-                    <TableRow key={invoice.invoice}>
-                        <TableCell className="font-medium">{invoice.invoice}</TableCell>
-                        <TableCell>{invoice.paymentStatus}</TableCell>
-                        <TableCell>{invoice.paymentMethod}</TableCell>
-                        <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+        <>
+            <Table className="bg-yellow-50 w-[500px] h-[300px]" >
+                <TableCaption>A list of your recent invoices.</TableCaption>
+                <TableHeader className="top-0 sticky z-10 bg-yellow-50">
+                    <TableRow>
+                        <TableHead className="w-[100px]">Invoice</TableHead>
+                        <TableHead >Status</TableHead>
+                        <TableHead >Method</TableHead>
+                        <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
-                ))}
-            </TableBody>
-            <TableFooter>
-                <TableRow>
-                    <TableCell colSpan={3}>Total</TableCell>
-                    <TableCell className="text-right">$2,500.00</TableCell>
-                </TableRow>
-            </TableFooter>
-        </Table>
+                </TableHeader>
+                <TableBody>
+                    {invoices.map((invoice, index) => (
+                        <TableRow key={index + invoice.invoice}>
+                            <TableCell className="font-medium">{invoice.invoice}</TableCell>
+                            <TableCell>{invoice.paymentStatus}</TableCell>
+                            <TableCell>{invoice.paymentMethod}</TableCell>
+                            <TableCell className="text-right">{invoice.totalAmount}</TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+                <TableFooter>
+                    <TableRow>
+                        <TableCell colSpan={3}>Total</TableCell>
+                        <TableCell className="text-right">$2,500.00</TableCell>
+                    </TableRow>
+                </TableFooter>
+            </Table>
+        </>
     )
 }
 

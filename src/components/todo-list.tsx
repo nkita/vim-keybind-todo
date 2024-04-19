@@ -1,8 +1,11 @@
 'use client'
-import { Dispatch, MouseEvent, SetStateAction } from "react"
+import { Dispatch, HTMLAttributes, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
+import { ClassNameValue } from "tailwind-merge"
+import { cn } from "@/lib/utils"
+import { Badge } from "./ui/badge"
 export const TodoList = (
     {
         filterdTodos,
@@ -40,168 +43,112 @@ export const TodoList = (
         e.stopPropagation();
     }
     return (
-        <div className="flex flex-col justify-between text-sm" id="main" onMouseDown={handleMainMouseDown}>
-            mode:{mode}, sort:{sort ?? "-"}, key:{!command ? "-" : command} , log:{log ?? "-"}
-            <div className="flex">search keyword:<input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" /></div>
-
-            <div onMouseDown={e => e.preventDefault()} className="flex flex-col">
-                <div onMouseDown={e => e.preventDefault()} className="flex justify-between">
-                    <div onMouseDown={handleTodoAreaMouseDown} className="w-3/4 overflow-auto bg-gray-50">
-                        <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
-                        {projects.map(p => {
-                            return (
-                                <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
-                            )
-                        })}
-                        {sort !== undefined &&
-                            <div className="flex items-center border-b truncate bg-white">
-                                <div className="w-[45px]" />
-                                <input
-                                    tabIndex={-1}
-                                    className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:h-auto h-0`}
-                                    type="text"
-                                    maxLength={prefix === 'priority' ? 1 : -1}
-                                    {...register(`newtask`)}
-                                // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                                />
-                            </div>
-                        }
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead></TableHead>
-                                    <TableHead></TableHead>
-                                    <TableHead>優先度</TableHead>
-                                    <TableHead>タスク</TableHead>
-                                    <TableHead>ラベル</TableHead>
-                                    <TableHead>プロジェクト</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {filterdTodos.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell>No task. good!</TableCell>
-                                    </TableRow>
-                                ) : (
-                                    <>
-                                        {
-                                            filterdTodos.map((t, index) => {
-                                                return (
-                                                    <TableRow key={t.id} className={`focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} >
-                                                        <TableCell>{index + 1}</TableCell>
-                                                        <TableCell>{t.isCompletion ? "x" : ""}</TableCell>
-                                                        <TableCell>
-                                                            <Item
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"priority"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                width="w-[25px]"
-                                                                label={t.priority ? `(${t.priority})` : ""}
-                                                                register={register} />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Item
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"text"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                label={t.text}
-                                                                register={register} />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Item
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"project"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                label={t.project ? ` :${t.project}` : ""}
-                                                                register={register} />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <Item
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"context"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                label={t.context ? ` @${t.context}` : ""}
-                                                                register={register} />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )
-                                            })
-                                        }
-                                    </>
-                                )}
-                            </TableBody>
-                        </Table>
-
-                        {/* {filterdTodos.map((t, index) => {
-                            return (
-                                <div key={t.id} className={`flex w - full border - b truncate focus - within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : "bg-white"} `} onClick={_ => setCurrentIndex(index)}>
-                                    <span className="w-[15px] text-center text-xs text-gray-900 border-r border-r-blue-200"> {index + 1}</span>
-                                    <div className="w-full">
-                                        <div className="flex items-center w-full">
-                                            <span className="w-[15px] text-center"> {t.isCompletion ? "x" : ""}</span>
-                                            <Item
-                                                t={t}
-                                                index={index}
-                                                currentIndex={currentIndex}
-                                                prefix={"priority"}
-                                                currentPrefix={prefix}
-                                                mode={mode}
-                                                width="w-[25px]"
-                                                label={t.priority ? `(${t.priority})` : ""}
-                                                register={register} />
-                                            <Item
-                                                t={t}
-                                                index={index}
-                                                currentIndex={currentIndex}
-                                                prefix={"text"}
-                                                currentPrefix={prefix}
-                                                mode={mode}
-                                                label={t.text}
-                                                register={register} />
-                                        </div>
-                                        <div className="flex w-full gap-3 justify-between text-xs">
-                                            <div className="flex gap-3 text-xs text-gray-400 pl-8">
-                                                <Item
-                                                    t={t}
-                                                    index={index}
-                                                    currentIndex={currentIndex}
-                                                    prefix={"project"}
-                                                    currentPrefix={prefix}
-                                                    mode={mode}
-                                                    label={t.project ? ` :${t.project}` : ""}
-                                                    register={register} />
-                                                <Item
-                                                    t={t}
-                                                    index={index}
-                                                    currentIndex={currentIndex}
-                                                    prefix={"context"}
-                                                    currentPrefix={prefix}
-                                                    mode={mode}
-                                                    label={t.context ? ` @${t.context}` : ""}
-                                                    register={register} />
-                                            </div>
-                                            {t.creationDate}
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })} */}
-                    </div>
+        <>
+            <div className="border w-[800px] p-4 rounded-md shadow-md">
+                <Badge variant={mode === "normal" ? "default" : mode === "edit" ? "outline" : "destructive"}>{mode}</Badge>
+                {!command ? "" : "press key:" + command}
+                {log ?? ""}
+                <input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" />
+                <div onMouseDown={handleTodoAreaMouseDown} className=" bg-gray-50 pt-4">
+                    <button className={`border-r-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
+                    {projects.map(p => {
+                        return (
+                            <button key={p} className={`border-r-2 border-t-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
+                        )
+                    })}
+                    {sort !== undefined &&
+                        <div className="flex items-center border-b truncate bg-white">
+                            <div className="w-[45px]" />
+                            <input
+                                tabIndex={-1}
+                                className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:h-auto h-0`}
+                                type="text"
+                                maxLength={prefix === 'priority' ? 1 : -1}
+                                {...register(`newtask`)}
+                            // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
+                            />
+                        </div>
+                    }
                 </div>
+                <Table className="h-[300px] border">
+                    <TableHeader className="top-0 sticky bg-gray-50">
+                        <TableRow>
+                            <TableHead className="w-[20px]"></TableHead>
+                            <TableHead className="w-[20px]"></TableHead>
+                            <TableHead className="w-[80px] text-center">優先度</TableHead>
+                            <TableHead>タスク</TableHead>
+                            <TableHead className="w-[200px]">ラベル</TableHead>
+                            <TableHead className="w-[200px]" >プロジェクト</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody className="bg-gray-100">
+                        {filterdTodos.length === 0 ? (
+                            <TableRow>
+                                <TableCell>No task. good!</TableCell>
+                            </TableRow>
+                        ) : (
+                            <>
+                                {
+                                    filterdTodos.map((t, index) => {
+                                        return (
+                                            <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} onClick={_ => setCurrentIndex(index)}>
+                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell className="text-center">{t.isCompletion ? "x" : ""}</TableCell>
+                                                <TableCell className="text-center">
+                                                    <Item
+                                                        t={t}
+                                                        index={index}
+                                                        currentIndex={currentIndex}
+                                                        prefix={"priority"}
+                                                        currentPrefix={prefix}
+                                                        mode={mode}
+                                                        label={t.priority ? `(${t.priority})` : ""}
+                                                        className={"text-center"}
+                                                        register={register} />
+                                                </TableCell>
+                                                <TableCell className="truncate whitespace-nowrap">
+                                                    <Item
+                                                        t={t}
+                                                        index={index}
+                                                        currentIndex={currentIndex}
+                                                        prefix={"text"}
+                                                        currentPrefix={prefix}
+                                                        mode={mode}
+                                                        label={t.text}
+                                                        register={register} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Item
+                                                        t={t}
+                                                        index={index}
+                                                        currentIndex={currentIndex}
+                                                        prefix={"context"}
+                                                        currentPrefix={prefix}
+                                                        mode={mode}
+                                                        label={t.context ? ` @${t.context}` : ""}
+                                                        register={register} />
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Item
+                                                        t={t}
+                                                        index={index}
+                                                        currentIndex={currentIndex}
+                                                        prefix={"project"}
+                                                        currentPrefix={prefix}
+                                                        mode={mode}
+                                                        label={t.project ? ` :${t.project}` : ""}
+                                                        register={register} />
+                                                </TableCell>
+                                            </TableRow>
+                                        )
+                                    })
+                                }
+                            </>
+                        )}
+                    </TableBody>
+                </Table>
             </div >
-        </div >
+        </>
     )
 }
 
@@ -216,6 +163,7 @@ const Item = (
         width = '',
         height = '',
         label,
+        className,
         register
     }: {
         t: TodoProps
@@ -227,15 +175,17 @@ const Item = (
         width?: string
         height?: string
         label: string | undefined
+        className?: string | undefined
         register: any
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
+    const _className = cn("p-1 w-full text-left truncate outline-none bg-transparent", className)
     return (
         <>
             <div onMouseDown={handleMouseDown} className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "hidden"}`}>
                 <button
-                    className={`w-full text-left truncate outline-none`}
+                    className={_className}
                     autoFocus={currentIndex === index}
                     {...register(`${prefix}-${t.id}`)}
                 >
@@ -244,10 +194,10 @@ const Item = (
                     </span>
                 </button>
             </div>
-            <div onMouseDown={handleMouseDown} className={`focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "hidden"}`}>
+            <div onMouseDown={handleMouseDown} className={`w-full focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "hidden"}`}>
                 <input
                     tabIndex={-1}
-                    className={`w-full text-left truncate outline-none bg-transparent focus:bg-gray-100`}
+                    className={_className}
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}

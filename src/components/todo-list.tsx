@@ -6,6 +6,7 @@ import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from ".
 import { ClassNameValue } from "tailwind-merge"
 import { cn } from "@/lib/utils"
 import { Badge } from "./ui/badge"
+import { CheckCircledIcon, CircleIcon } from "@radix-ui/react-icons"
 export const TodoList = (
     {
         filterdTodos,
@@ -73,11 +74,11 @@ export const TodoList = (
                 <Table className="h-[600px] border">
                     <TableHeader className="top-0 sticky bg-gray-50">
                         <TableRow>
-                            <TableHead className="w-[20px]"></TableHead>
-                            <TableHead className="w-[20px]"></TableHead>
-                            <TableHead className="w-[80px] text-center">
+                            <TableHead className="w-[35px]"></TableHead>
+                            <TableHead className="w-[35px]"></TableHead>
+                            <TableHead className="w-[35px] text-center">
                                 {sort === "priority" && "↓"}
-                                優先度
+                                優
                             </TableHead>
                             <TableHead>タスク</TableHead>
                             <TableHead className="w-[200px]">
@@ -99,7 +100,9 @@ export const TodoList = (
                                         return (
                                             <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="pl-1">{index + 1}</TableCell>
-                                                <TableCell className="text-center">{t.isCompletion ? "x" : ""}</TableCell>
+                                                <TableCell className="text-center">
+                                                    {t.isCompletion ? <CheckCircledIcon className="text-green-500"/> : <CircleIcon className="text-gray-500" />}
+                                                </TableCell>
                                                 <TableCell className="text-center">
                                                     <Item
                                                         t={t}

@@ -50,10 +50,10 @@ export const TodoList = (
                 {log ?? ""}
                 <input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" />
                 <div onMouseDown={handleTodoAreaMouseDown} className="pt-4">
-                    <button className={`border rounded-t-sm text-sm px-2 border-t-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
+                    <button className={`border-x border-t rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
                     {projects.map(p => {
                         return (
-                            <button key={p} className={`rounded-t-sm text-sm border px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
+                            <button key={p} className={`rounded-t-sm text-sm border-x border-t px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
                         )
                     })}
                     {sort !== undefined &&
@@ -75,10 +75,16 @@ export const TodoList = (
                         <TableRow>
                             <TableHead className="w-[20px]"></TableHead>
                             <TableHead className="w-[20px]"></TableHead>
-                            <TableHead className="w-[80px] text-center">優先度</TableHead>
+                            <TableHead className="w-[80px] text-center">
+                                {sort === "priority" && "↓"}
+                                優先度
+                            </TableHead>
                             <TableHead>タスク</TableHead>
-                            <TableHead className="w-[200px]">ラベル</TableHead>
-                            <TableHead className="w-[200px]" >プロジェクト</TableHead>
+                            <TableHead className="w-[200px]">
+                                {sort === "context" && "↓"}
+                                ラベル
+                            </TableHead>
+                            <TableHead className="w-[200px]">プロジェクト</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -92,7 +98,7 @@ export const TodoList = (
                                     filterdTodos.map((t, index) => {
                                         return (
                                             <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} onClick={_ => setCurrentIndex(index)}>
-                                                <TableCell>{index + 1}</TableCell>
+                                                <TableCell className="pl-1">{index + 1}</TableCell>
                                                 <TableCell className="text-center">{t.isCompletion ? "x" : ""}</TableCell>
                                                 <TableCell className="text-center">
                                                     <Item

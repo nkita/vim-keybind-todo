@@ -3,10 +3,9 @@ import { Dispatch, HTMLAttributes, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
-import { ClassNameValue } from "tailwind-merge"
 import { cn } from "@/lib/utils"
 import { Badge } from "./ui/badge"
-import { CheckCircledIcon, CircleIcon } from "@radix-ui/react-icons"
+import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
 export const TodoList = (
     {
         filterdTodos,
@@ -51,10 +50,10 @@ export const TodoList = (
                 {log ?? ""}
                 <input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" />
                 <div onMouseDown={handleTodoAreaMouseDown} className="pt-4">
-                    <button className={`border-x border-t rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}>All</button>
+                    <button className={`border-x border-t rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map(p => {
                         return (
-                            <button key={p} className={`rounded-t-sm text-sm border-x border-t px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}>{p}</button>
+                            <button key={p} className={`rounded-t-sm text-sm border-x border-t px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}><div className="flex gap-1 items-center"><FaSitemap className="text-blue-500" />{p}</div></button>
                         )
                     })}
                     {sort !== undefined &&
@@ -76,14 +75,18 @@ export const TodoList = (
                         <TableRow>
                             <TableHead className="w-[35px]"></TableHead>
                             <TableHead className="w-[35px]"></TableHead>
-                            <TableHead className="w-[35px] text-center">
-                                {sort === "priority" && "↓"}
-                                優
+                            <TableHead className="w-[55px] text-center">
+                                <div className="flex items-center">
+                                    優
+                                    {sort === "priority" && <FaArrowUpZA className="text-xs" />}
+                                </div>
                             </TableHead>
                             <TableHead>タスク</TableHead>
                             <TableHead className="w-[200px]">
-                                {sort === "context" && "↓"}
-                                ラベル
+                                <div className="flex items-center">
+                                    ラベル
+                                    {sort === "context" && <FaArrowUpZA className="text-xs" />}
+                                </div>
                             </TableHead>
                             <TableHead className="w-[200px]">プロジェクト</TableHead>
                         </TableRow>
@@ -101,7 +104,7 @@ export const TodoList = (
                                             <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="pl-1">{index + 1}</TableCell>
                                                 <TableCell className="text-center">
-                                                    {t.isCompletion ? <CheckCircledIcon className="text-green-500"/> : <CircleIcon className="text-gray-500" />}
+                                                    {t.isCompletion ? <FaCircleCheck className="text-green-500" /> : <FaRegCircle className="text-gray-500" />}
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     <Item
@@ -134,7 +137,7 @@ export const TodoList = (
                                                         prefix={"context"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.context ? ` @${t.context}` : ""}
+                                                        label={t.context ? <> <FaTag className="text-emerald-500" />t.context</> : ""}
                                                         register={register} />
                                                 </TableCell>
                                                 <TableCell>
@@ -145,7 +148,7 @@ export const TodoList = (
                                                         prefix={"project"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.project ? ` :${t.project}` : ""}
+                                                        label={t.project ? <><FaSitemap className="text-blue-500" /> {t.project}</> : ""}
                                                         register={register} />
                                                 </TableCell>
                                             </TableRow>
@@ -183,7 +186,7 @@ const Item = (
         mode: string
         width?: string
         height?: string
-        label: string | undefined
+        label: any
         className?: string | undefined
         register: any
     }
@@ -198,9 +201,9 @@ const Item = (
                     autoFocus={currentIndex === index}
                     {...register(`${prefix}-${t.id}`)}
                 >
-                    <span className={`${t.isCompletion ? "line-through" : ""}`}>
+                    <div className={`flex items-center gap-1 ${t.isCompletion ? "line-through" : ""}`}>
                         {label}
-                    </span>
+                    </div>
                 </button>
             </div>
             <div onMouseDown={handleMouseDown} className={`w-full focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "hidden"}`}>

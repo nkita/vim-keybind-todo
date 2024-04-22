@@ -32,16 +32,18 @@ export default function Home() {
 
   return (
     <>
-      <Todo
-        todos={todos}
-        filterdTodos={filterdTodos}
-        mode={mode}
-        sort={sort}
-        setTodos={setTodos}
-        setFilterdTodos={setFilterdTodos}
-        setMode={setMode}
-        setSort={setSort}
-      />
+      <div className="w-[1000px]">
+        <Todo
+          todos={todos}
+          filterdTodos={filterdTodos}
+          mode={mode}
+          sort={sort}
+          setTodos={setTodos}
+          setFilterdTodos={setFilterdTodos}
+          setMode={setMode}
+          setSort={setSort}
+        />
+      </div>
       <Usage
         sort={sort}
         mode={mode}

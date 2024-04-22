@@ -2,16 +2,24 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
+
+type exTableProps = {
+  index?: number | undefined
+}
+export interface TableProps
+  extends React.InputHTMLAttributes<HTMLTableElement>,
+  exTableProps { }
+
 const Table = React.forwardRef<
   HTMLTableElement,
-  React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => {
+  TableProps
+>(({ className, index, ...props }, ref) => {
   const _ref = React.useRef<HTMLDivElement>(null)
-  const handleClick = () => {
-    if (_ref.current) {
-      _ref.current.scrollTop = 0
-    }
-  }
+
+  React.useEffect(() => {
+    if (_ref.current && index && index < 3) _ref.current.scrollTop = 0
+  }, [index])
+
   return (
     <>
       <div className={cn("relative w-full overflow-auto", className)} ref={_ref}>

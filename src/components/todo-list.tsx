@@ -77,25 +77,25 @@ export const TodoList = (
                     }
                 </div>
                 <Table className="w-full h-[600px] border" index={currentIndex}>
-                    <TableHeader className="top-0 sticky bg-gray-50">
+                    <TableHeader className="top-0 sticky z-10 bg-gray-50">
                         <TableRow>
-                            <TableHead className="w-[30px]"></TableHead>
-                            <TableHead className="w-[30px]"></TableHead>
-                            <TableHead className="w-[30px] text-center">
+                            <TableHead className="w-[3%]"></TableHead>
+                            <TableHead className="w-[3%]"></TableHead>
+                            <TableHead className="w-[4%] text-center">
                                 <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
                                     優
                                     {sort === "priority" && <FaArrowUpZA className="text-xs" />}
                                 </div>
                             </TableHead>
-                            <TableHead>タスク</TableHead>
-                            <TableHead className="w-[100px]">
+                            <TableHead className="w-[64%]">タスク</TableHead>
+                            <TableHead className="w-[13%]">
                                 <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
                                     <FaTag />
                                     ラベル
                                     {sort === "context" && <FaArrowUpZA className="text-xs" />}
                                 </div>
                             </TableHead>
-                            <TableHead className="w-[130px]">
+                            <TableHead className="w-[13%]">
                                 <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
                                     <FaSitemap />
                                     プロジェクト

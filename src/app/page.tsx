@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="w-[1000px]">
+      <div className="w-full max-w-[1200px]">
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}

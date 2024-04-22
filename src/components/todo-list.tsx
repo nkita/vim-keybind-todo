@@ -70,7 +70,7 @@ export const TodoList = (
                         </div>
                     }
                 </div>
-                <Table className="h-[600px] border">
+                <Table className="h-[600px] border" index={currentIndex}>
                     <TableHeader className="top-0 sticky bg-gray-50">
                         <TableRow>
                             <TableHead className="w-[35px]"></TableHead>

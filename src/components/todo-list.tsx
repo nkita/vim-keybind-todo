@@ -76,14 +76,14 @@ export const TodoList = (
                             <TableHead className="w-[35px]"></TableHead>
                             <TableHead className="w-[35px]"></TableHead>
                             <TableHead className="w-[55px] text-center">
-                                <div className="flex items-center">
+                                <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
                                     優
                                     {sort === "priority" && <FaArrowUpZA className="text-xs" />}
                                 </div>
                             </TableHead>
                             <TableHead>タスク</TableHead>
                             <TableHead className="w-[200px]">
-                                <div className="flex items-center">
+                                <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
                                     ラベル
                                     {sort === "context" && <FaArrowUpZA className="text-xs" />}
                                 </div>
@@ -101,7 +101,7 @@ export const TodoList = (
                                 {
                                     filterdTodos.map((t, index) => {
                                         return (
-                                            <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""}`} onClick={_ => setCurrentIndex(index)}>
+                                            <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""} ${t.isCompletion && "bg-gray-50 text-gray-300 focus-within:text-gray-500"}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="pl-1">{index + 1}</TableCell>
                                                 <TableCell className="text-center">
                                                     {t.isCompletion ? <FaCircleCheck className="text-green-500" /> : <FaRegCircle className="text-gray-500" />}
@@ -137,7 +137,7 @@ export const TodoList = (
                                                         prefix={"context"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.context ? <> <FaTag className="text-emerald-500" />t.context</> : ""}
+                                                        label={t.context ? <> <FaTag className={`text-emerald-500 ${(t.isCompletion && currentIndex !== index) && "text-emerald-100"}`} />{t.context}</> : ""}
                                                         register={register} />
                                                 </TableCell>
                                                 <TableCell>
@@ -148,7 +148,7 @@ export const TodoList = (
                                                         prefix={"project"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.project ? <><FaSitemap className="text-blue-500" /> {t.project}</> : ""}
+                                                        label={t.project ? <><FaSitemap className={`text-blue-500 ${(t.isCompletion && currentIndex !== index) && "text-blue-100"}`} /> {t.project}</> : ""}
                                                         register={register} />
                                                 </TableCell>
                                             </TableRow>
@@ -201,7 +201,7 @@ const Item = (
                     autoFocus={currentIndex === index}
                     {...register(`${prefix}-${t.id}`)}
                 >
-                    <div className={`flex items-center gap-1 ${t.isCompletion ? "line-through" : ""}`}>
+                    <div className={`flex items-center gap-1`}>
                         {label}
                     </div>
                 </button>

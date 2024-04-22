@@ -36,7 +36,13 @@ export const TodoList = (
         register: UseFormRegister<FieldValues>
     }
 ) => {
-
+    const columnsPixelLength = {
+        no: 30,
+        completion: 25,
+        priorty: 30,
+        context: 100,
+        project: 100,
+    }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
     const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         e.preventDefault()
@@ -44,7 +50,7 @@ export const TodoList = (
     }
     return (
         <>
-            <div className="border w-[1200px] p-4 rounded-md">
+            <div className="border w-full p-4 rounded-md">
                 <Badge variant={mode === "normal" ? "default" : mode === "edit" ? "outline" : "destructive"}>{mode}</Badge>
                 {!command ? "" : "press key:" + command}
                 {log ?? ""}
@@ -70,25 +76,31 @@ export const TodoList = (
                         </div>
                     }
                 </div>
-                <Table className="h-[600px] border" index={currentIndex}>
+                <Table className="w-full h-[600px] border" index={currentIndex}>
                     <TableHeader className="top-0 sticky bg-gray-50">
                         <TableRow>
-                            <TableHead className="w-[35px]"></TableHead>
-                            <TableHead className="w-[35px]"></TableHead>
-                            <TableHead className="w-[55px] text-center">
+                            <TableHead className="w-[30px]"></TableHead>
+                            <TableHead className="w-[30px]"></TableHead>
+                            <TableHead className="w-[30px] text-center">
                                 <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
                                     優
                                     {sort === "priority" && <FaArrowUpZA className="text-xs" />}
                                 </div>
                             </TableHead>
                             <TableHead>タスク</TableHead>
-                            <TableHead className="w-[200px]">
+                            <TableHead className="w-[100px]">
                                 <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
+                                    <FaTag />
                                     ラベル
                                     {sort === "context" && <FaArrowUpZA className="text-xs" />}
                                 </div>
                             </TableHead>
-                            <TableHead className="w-[200px]">プロジェクト</TableHead>
+                            <TableHead className="w-[130px]">
+                                <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
+                                    <FaSitemap />
+                                    プロジェクト
+                                </div>
+                            </TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -101,10 +113,10 @@ export const TodoList = (
                                 {
                                     filterdTodos.map((t, index) => {
                                         return (
-                                            <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""} ${t.isCompletion && "bg-gray-50 text-gray-300 focus-within:text-gray-500"}`} onClick={_ => setCurrentIndex(index)}>
+                                            <TableRow key={t.id} className={` focus-within:bg-blue-100 ${searchResultIndex[index] ? "bg-yellow-100" : ""} ${t.isCompletion ? "bg-gray-50 text-gray-300 focus-within:text-gray-500" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="pl-1">{index + 1}</TableCell>
-                                                <TableCell className="text-center">
-                                                    {t.isCompletion ? <FaCircleCheck className="text-green-500" /> : <FaRegCircle className="text-gray-500" />}
+                                                <TableCell>
+                                                    {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125" /> : <FaRegCircle className="text-gray-500 scale-125" />}
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     <Item
@@ -114,11 +126,11 @@ export const TodoList = (
                                                         prefix={"priority"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.priority ? `(${t.priority})` : ""}
+                                                        label={t.priority ? t.priority : ""}
                                                         className={"text-center"}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell className="truncate whitespace-nowrap">
+                                                <TableCell>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -129,7 +141,7 @@ export const TodoList = (
                                                         label={t.text}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className={`text-emerald-500 ${(t.isCompletion && currentIndex !== index) && "text-emerald-100"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -137,10 +149,10 @@ export const TodoList = (
                                                         prefix={"context"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.context ? <> <FaTag className={`text-emerald-500 ${(t.isCompletion && currentIndex !== index) && "text-emerald-100"}`} />{t.context}</> : ""}
+                                                        label={t.context}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell className={`text-blue-500 ${(t.isCompletion && currentIndex !== index) && "text-blue-100"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -148,7 +160,7 @@ export const TodoList = (
                                                         prefix={"project"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
-                                                        label={t.project ? <><FaSitemap className={`text-blue-500 ${(t.isCompletion && currentIndex !== index) && "text-blue-100"}`} /> {t.project}</> : ""}
+                                                        label={t.project}
                                                         register={register} />
                                                 </TableCell>
                                             </TableRow>
@@ -172,8 +184,6 @@ const Item = (
         currentIndex,
         prefix,
         currentPrefix,
-        width = '',
-        height = '',
         label,
         className,
         register
@@ -184,32 +194,29 @@ const Item = (
         prefix: "text" | "priority" | "project" | "context"
         currentPrefix: string
         mode: string
-        width?: string
-        height?: string
         label: any
         className?: string | undefined
         register: any
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _className = cn("p-1 w-full text-left truncate outline-none bg-transparent", className)
+    const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
+    const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
     return (
         <>
-            <div onMouseDown={handleMouseDown} className={`${!(currentIndex === index && currentPrefix === prefix && mode === "edit") ? width : "hidden"}`}>
+            <div onMouseDown={handleMouseDown} className={`${isView && "hidden"} ${className}`}>
                 <button
-                    className={_className}
                     autoFocus={currentIndex === index}
+                    className={_classNameCont}
                     {...register(`${prefix}-${t.id}`)}
                 >
-                    <div className={`flex items-center gap-1`}>
-                        {label}
-                    </div>
+                    {label}
                 </button>
             </div>
-            <div onMouseDown={handleMouseDown} className={`w-full focus-within:font-medium ${currentIndex === index && currentPrefix === prefix && mode === "edit" ? width : "hidden"}`}>
+            <div onMouseDown={handleMouseDown} className={`${!isView && "hidden"} ${className}`}>
                 <input
                     tabIndex={-1}
-                    className={_className}
+                    className={_classNameCont}
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}

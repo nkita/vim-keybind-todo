@@ -2,7 +2,7 @@
 import { Dispatch, HTMLAttributes, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
-import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
+import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell, TableFooter } from "./ui/table"
 import { cn } from "@/lib/utils"
 import { Badge } from "./ui/badge"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
@@ -50,7 +50,7 @@ export const TodoList = (
     }
     return (
         <>
-            <div className="border w-full p-4 rounded-md">
+            <div className="w-full p-4 rounded-md">
                 <Badge variant={mode === "normal" ? "default" : mode === "edit" ? "outline" : "destructive"}>{mode}</Badge>
                 {!command ? "" : "press key:" + command}
                 {log ?? ""}
@@ -62,19 +62,6 @@ export const TodoList = (
                             <button key={p} className={`rounded-t-sm text-sm border-x border-t px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}><div className="flex gap-1 items-center"><FaSitemap className="text-blue-500" />{p}</div></button>
                         )
                     })}
-                    {sort !== undefined &&
-                        <div className="flex items-center border-b truncate bg-white">
-                            <div className="w-[45px]" />
-                            <input
-                                tabIndex={-1}
-                                className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:h-auto h-0`}
-                                type="text"
-                                maxLength={prefix === 'priority' ? 1 : -1}
-                                {...register(`newtask`)}
-                            // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                            />
-                        </div>
-                    }
                 </div>
                 <Table className="w-full h-[600px] border" index={currentIndex}>
                     <TableHeader className="top-0 sticky z-10 bg-gray-50">
@@ -103,7 +90,26 @@ export const TodoList = (
                             </TableHead>
                         </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    <TableBody className="border-b">
+                        {(sort !== undefined && mode === "editOnSort") &&
+                            <TableRow className={`bg-blue-100 `}>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                                <TableCell></TableCell>
+                                <TableCell>
+                                    <input
+                                        tabIndex={-1}
+                                        className={`p-1 text-left truncate outline-none bg-transparent font-semibold`}
+                                        type="text"
+                                        maxLength={prefix === 'priority' ? 1 : -1}
+                                        {...register(`newtask`)}
+                                    // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
+                                    />
+                                </TableCell>
+                                <TableCell></TableCell>
+                                <TableCell className="p-1 font-light text-blue-500">{currentProject}</TableCell>
+                            </TableRow>
+                        }
                         {filterdTodos.length === 0 ? (
                             <TableRow>
                                 <TableCell>No task. good!</TableCell>
@@ -202,6 +208,7 @@ const Item = (
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
     const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
     const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
+    const val = t[prefix] ?? ""
     return (
         <>
             <div onMouseDown={handleMouseDown} className={`${isView && "hidden"} ${className}`}>
@@ -213,12 +220,13 @@ const Item = (
                     {label}
                 </button>
             </div>
-            <div onMouseDown={handleMouseDown} className={`${!isView && "hidden"} ${className}`}>
+            <div onMouseDown={handleMouseDown} className={`${!isView && "hidden"} ${className} font-bold`}>
                 <input
                     tabIndex={-1}
                     className={_classNameCont}
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
+                    onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
                 />
             </div >

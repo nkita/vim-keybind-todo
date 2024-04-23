@@ -97,8 +97,9 @@ export const Todo = (
         if (filterdTodos.length > 0 && currentIndex !== - 1) {
             const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
             const formid = `${prefix}-${id}`
-            if (mode === 'edit') setFocus(`edit-${formid}`, { shouldSelect: true })
+            if (mode === 'edit') setFocus(`edit-${formid}`)
             if (mode === 'normal') setFocus(formid)
+            if (mode === 'editOnSort') setFocus("newtask")
         }
     }, [filterdTodos, currentId, mode, currentIndex, prefix, setFocus])
 
@@ -162,7 +163,6 @@ export const Todo = (
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
-        setFocus('newtask')
         setMode('editOnSort')
     }, setKeyEnableDefine(keymap['insertTopOnSort'].enable))
 

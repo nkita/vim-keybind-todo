@@ -2,7 +2,7 @@
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
-import { keymap } from './config'
+import { keymap } from '@/components/config'
 import { TodoProps, Sort, Mode } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"

@@ -51,15 +51,15 @@ export type Keymap = {
 export const keymap: Keymap = {
     up: {
         keys: ['k', 'ArrowUp'],
-        keysDisp: ['k', '⇡'],
+        keysDisp: ['k'],
         enable: { mode: ["normal", "sort", "number"], withoutTask: false },
-        description: "上へ移動"
+        description: "で上へ移動"
     },
     down: {
         keys: ['j', 'ArrowDown'],
-        keysDisp: ['j', '↓'],
+        keysDisp: ['j'],
         enable: { mode: ["normal", "sort", "number"], withoutTask: false },
-        description: "下へ移動"
+        description: "で下へ移動"
     },
     moveProjectRight: {
         keys: ['l', 'ArrowRight'],

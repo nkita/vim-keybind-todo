@@ -1,5 +1,5 @@
 'use client'
-import { keymap } from './config'
+import { keymap, Keymap } from '@/components/config'
 import { Sort, Mode } from "@/types"
 
 export const Usage = ({
@@ -37,6 +37,16 @@ export const Usage = ({
                     })
                 }
             </div>
+        </div>
+    )
+}
+
+export const UsageView = ({ name, view }: { name: string, view: boolean }) => {
+    const conf = keymap[name]
+    if (conf === undefined || !view) return <></>
+    return (
+        <div className='p-1'>
+            <span className='p-1  bg-gray-100 text-xs border rounded-md'>{conf.keysDisp.join(' or ')} {conf.description}</span>
         </div>
     )
 }

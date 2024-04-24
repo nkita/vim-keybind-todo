@@ -1,11 +1,12 @@
 'use client'
-import { Dispatch, HTMLAttributes, MouseEvent, SetStateAction } from "react"
+import { Dispatch, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell, TableFooter } from "./ui/table"
-import { cn } from "@/lib/utils"
-import { Badge } from "./ui/badge"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
+import { keymap } from "@/components/config"
+import { UsageView } from "./usage"
+
 export const TodoList = (
     {
         filterdTodos,
@@ -17,7 +18,6 @@ export const TodoList = (
         sort,
         searchResultIndex,
         command,
-        log,
         setCurrentIndex,
         register
 
@@ -31,18 +31,10 @@ export const TodoList = (
         sort: Sort
         searchResultIndex: boolean[]
         command: string
-        log: string
         setCurrentIndex: Dispatch<SetStateAction<number>>
         register: UseFormRegister<FieldValues>
     }
 ) => {
-    const columnsPixelLength = {
-        no: 30,
-        completion: 25,
-        priorty: 30,
-        context: 100,
-        project: 100,
-    }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
     const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         e.preventDefault()
@@ -135,6 +127,7 @@ export const TodoList = (
                                                         register={register} />
                                                 </TableCell>
                                                 <TableCell>
+                                                    <UsageView name={'up'} view={currentIndex === index && currentIndex > 0} />
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -144,6 +137,7 @@ export const TodoList = (
                                                         mode={mode}
                                                         label={t.text}
                                                         register={register} />
+                                                    <UsageView name={'down'} view={currentIndex === index && currentIndex !== filterdTodos.length - 1} />
                                                 </TableCell>
                                                 <TableCell className={`text-emerald-500 ${(t.isCompletion && currentIndex !== index) && "text-emerald-100"} font-light`}>
                                                     <Item

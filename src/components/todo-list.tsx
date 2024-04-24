@@ -50,11 +50,9 @@ export const TodoList = (
     }
     return (
         <>
-            <div className="w-full p-4 rounded-md">
-                <Badge variant={mode === "normal" ? "default" : mode === "edit" ? "outline" : "destructive"}>{mode}</Badge>
-                {!command ? "" : "press key:" + command}
-                {log ?? ""}
-                <input {...register("search")} className={`text-left truncate outline-none bg-transparent focus:bg-gray-100 focus:text-black`} type="text" />
+            <div>
+                <div className="flex ">
+                </div>
                 <div onMouseDown={handleTodoAreaMouseDown} className="pt-4">
                     <button className={`border-x border-t rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map(p => {
@@ -71,7 +69,7 @@ export const TodoList = (
                             <TableHead className="w-[4%] text-center">
                                 <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
                                     優
-                                    {sort === "priority" && <FaArrowUpZA className="text-xs" />}
+                                    {sort === "priority" && <FaArrowUpZA />}
                                 </div>
                             </TableHead>
                             <TableHead className="w-[64%]">タスク</TableHead>
@@ -83,7 +81,7 @@ export const TodoList = (
                                 </div>
                             </TableHead>
                             <TableHead className="w-[13%]">
-                                <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
+                                <div className={`flex items-center`}>
                                     <FaSitemap />
                                     プロジェクト
                                 </div>
@@ -177,6 +175,18 @@ export const TodoList = (
                         )}
                     </TableBody>
                 </Table>
+                <div className="flex justify-between text-sm">
+                    <div>
+                        {command ? (
+                            <span>{command}</span>
+                        ) : (
+                            <span>--{mode}--</span>
+                        )}
+                    </div>
+                    <div>
+                        <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-blue-50 focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
+                    </div>
+                </div>
             </div >
         </>
     )

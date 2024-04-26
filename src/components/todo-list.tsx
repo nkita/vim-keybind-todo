@@ -2,10 +2,8 @@
 import { Dispatch, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
-import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell, TableFooter } from "./ui/table"
+import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
-import { keymap } from "@/components/config"
-import { UsageView } from "./usage"
 
 export const TodoList = (
     {
@@ -42,18 +40,16 @@ export const TodoList = (
     }
     return (
         <>
-            <div>
-                <div className="flex ">
-                </div>
-                <div onMouseDown={handleTodoAreaMouseDown} className="pt-4">
-                    <button className={`border-x border-t rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
+            <div className="h-full overflow-auto border">
+                <div onMouseDown={handleTodoAreaMouseDown} className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
+                    <button className={`border rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map(p => {
                         return (
-                            <button key={p} className={`rounded-t-sm text-sm border-x border-t px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}><div className="flex gap-1 items-center"><FaSitemap className="text-blue-500" />{p}</div></button>
+                            <button key={p} className={`rounded-t-sm text-sm border px-2 p-1 ${currentProject === p ? "bg-blue-100" : ""}`}><div className="flex gap-1 items-center"><FaSitemap className="text-blue-500" />{p}</div></button>
                         )
                     })}
                 </div>
-                <Table className="w-full h-[600px] border" index={currentIndex}>
+                <Table className="w-full border h-[calc(100%-100px)]" index={currentIndex}>
                     <TableHeader className="top-0 sticky z-10 bg-gray-50">
                         <TableRow>
                             <TableHead className="w-[3%]"></TableHead>
@@ -127,7 +123,6 @@ export const TodoList = (
                                                         register={register} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <UsageView name={'up'} view={currentIndex === index && currentIndex > 0} />
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -137,7 +132,6 @@ export const TodoList = (
                                                         mode={mode}
                                                         label={t.text}
                                                         register={register} />
-                                                    <UsageView name={'down'} view={currentIndex === index && currentIndex !== filterdTodos.length - 1} />
                                                 </TableCell>
                                                 <TableCell className={`text-emerald-500 ${(t.isCompletion && currentIndex !== index) && "text-emerald-100"} font-light`}>
                                                     <Item

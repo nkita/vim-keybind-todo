@@ -514,7 +514,7 @@ export const Todo = (
     // }
 
     return (
-        <div className="p-1">
+        <div className="p-1 h-full w-full">
             <TodoList
                 filterdTodos={filterdTodos}
                 currentIndex={currentIndex}
@@ -525,7 +525,6 @@ export const Todo = (
                 sort={sort}
                 searchResultIndex={searchResultIndex}
                 command={command}
-                log={log}
                 setCurrentIndex={setCurrentIndex}
                 register={register}
             />

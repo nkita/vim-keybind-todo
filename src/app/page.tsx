@@ -31,8 +31,8 @@ export default function Home() {
   const [sort, setSort] = useState<Sort>(undefined)
 
   return (
-    <>
-      <div className="p-4 max-w-[1200px]">
+    <article className="flex flex-col justify-between h-screen">
+      <div className="p-4 max-w-[1200px] h-[calc(100vh-100px)]">
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -44,11 +44,13 @@ export default function Home() {
           setSort={setSort}
         />
       </div>
-      <Usage
-        sort={sort}
-        mode={mode}
-        isTodos={filterdTodos.length > 0}
-      />
-    </>
+      {/* <div className="h-[300px] overflow-auto">
+        <Usage
+          sort={sort}
+          mode={mode}
+          isTodos={filterdTodos.length > 0}
+        />
+      </div> */}
+    </article>
   );
 }

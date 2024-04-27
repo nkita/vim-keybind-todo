@@ -40,7 +40,7 @@ export const TodoList = (
     }
     return (
         <>
-            <div className="h-full overflow-auto border">
+            <div className="h-full">
                 <div onMouseDown={handleTodoAreaMouseDown} className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
                     <button className={`border rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-blue-100" : "bg-white"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map(p => {

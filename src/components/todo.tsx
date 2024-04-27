@@ -514,20 +514,18 @@ export const Todo = (
     // }
 
     return (
-        <div className="p-1 h-full w-full">
-            <TodoList
-                filterdTodos={filterdTodos}
-                currentIndex={currentIndex}
-                prefix={prefix}
-                mode={mode}
-                projects={projects}
-                currentProject={currentProject}
-                sort={sort}
-                searchResultIndex={searchResultIndex}
-                command={command}
-                setCurrentIndex={setCurrentIndex}
-                register={register}
-            />
-        </div>
+        <TodoList
+            filterdTodos={filterdTodos}
+            currentIndex={currentIndex}
+            prefix={prefix}
+            mode={mode}
+            projects={projects}
+            currentProject={currentProject}
+            sort={sort}
+            searchResultIndex={searchResultIndex}
+            command={command}
+            setCurrentIndex={setCurrentIndex}
+            register={register}
+        />
     )
 }

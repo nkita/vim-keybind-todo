@@ -2,6 +2,7 @@
 import { keymap, Keymap, KeymapItem, KeymapItemType } from '@/components/config'
 import { Sort, Mode } from "@/types"
 import { title } from 'process'
+import { cn } from "@/lib/utils"
 
 export const Usage = ({
     sort,
@@ -14,16 +15,11 @@ export const Usage = ({
 }) => {
 
     return (
-        <article className="py-2 px-2 rounded-md shadow-md overflow-auto">
+        <article className="py-2 px-2  h-full rounded-md shadow-md">
             <h1>キーボードショートカット</h1>
-            <div>
-                <h2>移動</h2>
-                <div className='flex overflow-auto'>
-                    <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} className='border w-full' />
-                    <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} className='border w-full' />
-                    <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} className='border w-full' />
-                </div>
-            </div>
+            <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
+            <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
+            <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} />
         </article >
     )
 }
@@ -41,12 +37,12 @@ const Section = ({
     sort: Sort
     mode: Mode
     isTodos: boolean
-    className: string
+    className?: string
 }) => {
     return (
-        <section className={className}>
-            <h2 className='p-1'>{title}</h2>
-            <ul className='p-1'>
+        <section className={cn("border m-1 rounded-md w-full overflow-auto", className)}>
+            <h2 className='p-2'>{title}</h2>
+            <ul className='grid grid-cols-2'>
                 {
                     Object.entries(keymap).map(([key, value]) => {
                         const enabled = value.enable?.mode.includes(mode)
@@ -55,14 +51,14 @@ const Section = ({
 
                         if (value.type.includes(type)) {
                             return (
-                                <li key={key} className="flex items-center gap-2 text-xs p-1">
+                                <li key={key} className={`flex items-center gap-2 text-xs p-1 ${!enabled && "text-gray-300"}`}>
                                     {value.keysDisp !== undefined ? (
-                                        value.keysDisp.map((k, i) => <kbd key={`usage${k}${i}`} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{k}</kbd>)
+                                        value.keysDisp.map((k, i) => <kbd key={`usage${k} ${i}`} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold border rounded-md">{k}</kbd>)
                                     ) : (
-                                        value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold bg-sky-100 shadow-lg rounded-md">{k}</kbd>)
+                                        value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold border rounded-md">{k}</kbd>)
                                     )}
                                     :
-                                    <span className={`${!enabled && "text-gray-300"}`}>{value.description}</span>
+                                    <span className={`${!enabled && "text-gray-300"} `}>{value.description}</span>
                                 </li>
                             )
                         } else {

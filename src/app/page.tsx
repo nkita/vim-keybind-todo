@@ -31,8 +31,8 @@ export default function Home() {
   const [sort, setSort] = useState<Sort>(undefined)
 
   return (
-    <article className="flex flex-col justify-between h-screen">
-      <div className="max-w-[1200px] h-[calc(100vh-300px)]">
+    <article className="flex justify-between">
+      <div className="p-4 max-w-[1000px] h-screen">
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -44,7 +44,7 @@ export default function Home() {
           setSort={setSort}
         />
       </div>
-      <div className="h-[300px] overflow-auto">
+      <div>
         <Usage
           sort={sort}
           mode={mode}

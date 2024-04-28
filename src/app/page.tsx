@@ -32,7 +32,7 @@ export default function Home() {
 
   return (
     <article className="flex justify-between">
-      <div className="p-4 max-w-[1000px] h-screen">
+      <div className="p-4 w-2/3 h-screen">
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -44,7 +44,7 @@ export default function Home() {
           setSort={setSort}
         />
       </div>
-      <div>
+      <div className="w-1/3 h-screen">
         <Usage
           sort={sort}
           mode={mode}

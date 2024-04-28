@@ -15,7 +15,7 @@ export const Usage = ({
 }) => {
 
     return (
-        <article className="py-2 px-2  h-full rounded-md shadow-md">
+        <article className="py-2 px-2 h-full rounded-md shadow-md overflow-auto">
             <h1>キーボードショートカット</h1>
             <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
             <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
@@ -40,9 +40,9 @@ const Section = ({
     className?: string
 }) => {
     return (
-        <section className={cn("border m-1 rounded-md w-full overflow-auto", className)}>
+        <section className={cn("border m-2 rounded-md", className)}>
             <h2 className='p-2'>{title}</h2>
-            <ul className='grid grid-cols-2'>
+            <ul className='grid grid-cols-1 xl:grid-cols-2'>
                 {
                     Object.entries(keymap).map(([key, value]) => {
                         const enabled = value.enable?.mode.includes(mode)

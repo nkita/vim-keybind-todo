@@ -48,6 +48,7 @@ export type Keymap = {
     searchKeyword: KeymapItem;
     searchEsc: KeymapItem;
     searchEnter: KeymapItem;
+    viewHelp: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -298,4 +299,10 @@ export const keymap: Keymap = {
         type: ["other"],
         description: "検索"
     },
+    viewHelp: {
+        keys: ['H'],
+        enable: { mode: ["normal"], withoutTask: true },
+        type: ["other"],
+        description: "ヘルプの表示・非表示"
+    }
 }

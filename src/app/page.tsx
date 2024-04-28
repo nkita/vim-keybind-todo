@@ -29,10 +29,13 @@ export default function Home() {
   const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
   const [mode, setMode] = useState<Mode>('normal')
   const [sort, setSort] = useState<Sort>(undefined)
+  const [isHelp, setHelp] = useState(true)
+
+  const handleToggleHelp = () => setHelp(!isHelp)
 
   return (
     <article className="flex justify-between">
-      <div className="p-4 w-2/3 h-screen">
+      <div className={`p-4 ${isHelp ? "w-2/3" : "w-full"} h-screen`}>
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -42,15 +45,16 @@ export default function Home() {
           setFilterdTodos={setFilterdTodos}
           setMode={setMode}
           setSort={setSort}
+          toggleHelp={handleToggleHelp}
         />
       </div>
-      <div className="w-1/3 h-screen">
+      <div className={`${isHelp ? "w-1/3" : "hidden"} h-screen`}>
         <Usage
           sort={sort}
           mode={mode}
           isTodos={filterdTodos.length > 0}
         />
       </div>
-    </article>
+    </article >
   );
 }

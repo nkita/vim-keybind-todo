@@ -16,7 +16,8 @@ export const Todo = (
         setTodos,
         setFilterdTodos,
         setMode,
-        setSort
+        setSort,
+        toggleHelp
     }: {
         todos: TodoProps[]
         filterdTodos: TodoProps[]
@@ -26,6 +27,7 @@ export const Todo = (
         setFilterdTodos: Dispatch<SetStateAction<TodoProps[]>>
         setMode: Dispatch<SetStateAction<Mode>>
         setSort: Dispatch<SetStateAction<Sort>>
+        toggleHelp: () => void;
     }
 ) => {
     const [command, setCommand] = useState("")
@@ -478,6 +480,12 @@ export const Todo = (
             setMode("normal")
         }
     }, setKeyEnableDefine(keymap['searchEnter'].enable))
+
+    // help toggle
+    useHotkeys(keymap['viewHelp'].keys, (e) => {
+        console.log(e.key)
+        toggleHelp()
+    }, { ...setKeyEnableDefine(keymap['viewHelp'].enable), ignoreModifiers: true })
 
     /*******************
      * 

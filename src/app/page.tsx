@@ -34,8 +34,8 @@ export default function Home() {
   const handleToggleHelp = () => setHelp(!isHelp)
 
   return (
-    <article className="flex justify-between">
-      <div className={`p-4 ${isHelp ? "w-2/3" : "w-full"} h-screen`}>
+    <article className="flex flex-col justify-between h-screen">
+      <div className={`p-4 w-full ${isHelp ? "h-screen" : "h-screen sm:h-[calc(100vh-300px)]"}`}>
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -48,7 +48,8 @@ export default function Home() {
           toggleHelp={handleToggleHelp}
         />
       </div>
-      <div className={`${isHelp ? "w-1/3" : "hidden"} h-screen`}>
+      <div className={`w-full ${isHelp ? "hidden" : "h-0 sm:h-[350px]"}`}>
+        {/* <h1 className="text-sm">キーボードショートカット</h1> */}
         <Usage
           sort={sort}
           mode={mode}

@@ -15,12 +15,13 @@ export const Usage = ({
 }) => {
 
     return (
-        <article className="py-2 px-2 h-full rounded-md shadow-md overflow-auto">
-            <h1>キーボードショートカット</h1>
-            <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
-            <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
-            <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} />
-        </article >
+        <>
+            <article className="flex h-full rounded-md shadow-md ">
+                <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} />
+            </article >
+        </>
     )
 }
 
@@ -40,16 +41,16 @@ const Section = ({
     className?: string
 }) => {
     return (
-        <section className={cn("border m-2 rounded-md", className)}>
+        <section className={cn("border m-2 rounded-md overflow-auto w-1/3", className)}>
             <h2 className='p-2'>{title}</h2>
-            <ul className='grid grid-cols-1 xl:grid-cols-2'>
+            <ul className='grid grid-cols-1 sm:grid-cols-2'>
                 {
                     Object.entries(keymap).map(([key, value]) => {
                         const enabled = value.enable?.mode.includes(mode)
                             && (value.enable.sort === undefined || value.enable.sort?.includes(sort))
                             && (isTodos ? true : (value.enable.withoutTask === undefined || value.enable.withoutTask))
 
-                        if (value.type.includes(type)) {
+                        if (value.type.includes(type) && enabled) {
                             return (
                                 <li key={key} className={`flex items-center gap-2 text-xs p-1 ${!enabled && "text-gray-300"}`}>
                                     {value.keysDisp !== undefined ? (

@@ -485,7 +485,7 @@ export const Todo = (
     useHotkeys(keymap['viewHelp'].keys, (e) => {
         console.log(e.key)
         toggleHelp()
-    }, { ...setKeyEnableDefine(keymap['viewHelp'].enable), ignoreModifiers: true })
+    }, setKeyEnableDefine(keymap['viewHelp'].enable))
 
     /*******************
      * 
@@ -522,18 +522,20 @@ export const Todo = (
     // }
 
     return (
-        <TodoList
-            filterdTodos={filterdTodos}
-            currentIndex={currentIndex}
-            prefix={prefix}
-            mode={mode}
-            projects={projects}
-            currentProject={currentProject}
-            sort={sort}
-            searchResultIndex={searchResultIndex}
-            command={command}
-            setCurrentIndex={setCurrentIndex}
-            register={register}
-        />
+        <>
+            <TodoList
+                filterdTodos={filterdTodos}
+                currentIndex={currentIndex}
+                prefix={prefix}
+                mode={mode}
+                projects={projects}
+                currentProject={currentProject}
+                sort={sort}
+                searchResultIndex={searchResultIndex}
+                command={command}
+                setCurrentIndex={setCurrentIndex}
+                register={register}
+            />
+        </>
     )
 }

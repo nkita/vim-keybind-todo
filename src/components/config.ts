@@ -300,7 +300,8 @@ export const keymap: Keymap = {
         description: "検索"
     },
     viewHelp: {
-        keys: ['H'],
+        keys: ['shift+h'],
+        keysDisp: ['H'],
         enable: { mode: ["normal"], withoutTask: true },
         type: ["other"],
         description: "ヘルプの表示・非表示"

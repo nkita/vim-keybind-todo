@@ -13,7 +13,7 @@ export default function Home() {
     { id: 14, text: 'プロジェクトAの締め切り日に対してメールする', priority: 'b', project: "job", context: "family" },
     { id: 12, text: '締切日までに作品仕上げる', priority: 'A', project: "hobby", },
     { id: 13, text: '材料を買う', project: "hobby" },
-    { id: 10, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
+    { id: 10, text: '家に帰って電話する', priority: 'c', project: "private", context: "family", completionDate: "2024-01-12", creationDate: "2024-01-10" },
     { id: 20, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
     { id: 21, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
     { id: 30, text: '家に帰って電話する', priority: 'c', project: "private", context: "family" },
@@ -34,8 +34,8 @@ export default function Home() {
   const handleToggleHelp = () => setHelp(!isHelp)
 
   return (
-    <article className="flex flex-col justify-between h-screen">
-      <div className={`p-4 w-full ${isHelp ? "h-screen" : "h-screen sm:h-[calc(100vh-300px)]"}`}>
+    <article className="flex flex-col justify-between h-screen bg-sky-50/50">
+      <div className={`p-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-300px)]" : "h-screen"}`}>
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -48,7 +48,7 @@ export default function Home() {
           toggleHelp={handleToggleHelp}
         />
       </div>
-      <div className={`w-full ${isHelp ? "hidden" : "h-0 sm:h-[350px]"}`}>
+      <div className={`w-full ${isHelp ? "h-0 sm:h-[350px]" : "hidden"}`}>
         {/* <h1 className="text-sm">キーボードショートカット</h1> */}
         <Usage
           sort={sort}

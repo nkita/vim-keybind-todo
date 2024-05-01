@@ -41,7 +41,7 @@ const Section = ({
     className?: string
 }) => {
     return (
-        <section className={cn("border m-2 rounded-md overflow-auto w-1/3", className)}>
+        <section className={cn("bg-popover text-popover-foreground shadow-lg border m-2 rounded-md overflow-auto w-1/3", className)}>
             <h2 className='p-2'>{title}</h2>
             <ul className='grid grid-cols-1 sm:grid-cols-2'>
                 {

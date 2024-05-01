@@ -1,5 +1,10 @@
 import type { Config } from "tailwindcss"
 
+const ex = {
+  label: "#10b981",
+  project: "#3b82f6"
+}
+
 const config = {
   darkMode: ["class"],
   content: [
@@ -7,7 +12,7 @@ const config = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
-	],
+  ],
   prefix: "",
   theme: {
     container: {
@@ -52,6 +57,7 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        ex,
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -78,3 +84,4 @@ const config = {
 } satisfies Config
 
 export default config
+

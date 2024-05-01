@@ -7,6 +7,7 @@ import { TodoProps, Sort, Mode } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
+import { Detail } from "./detail"
 export const Todo = (
     {
         todos,
@@ -483,7 +484,6 @@ export const Todo = (
 
     // help toggle
     useHotkeys(keymap['viewHelp'].keys, (e) => {
-        console.log(e.key)
         toggleHelp()
     }, setKeyEnableDefine(keymap['viewHelp'].enable))
 
@@ -522,20 +522,26 @@ export const Todo = (
     // }
 
     return (
-        <>
-            <TodoList
-                filterdTodos={filterdTodos}
-                currentIndex={currentIndex}
-                prefix={prefix}
-                mode={mode}
-                projects={projects}
-                currentProject={currentProject}
-                sort={sort}
-                searchResultIndex={searchResultIndex}
-                command={command}
-                setCurrentIndex={setCurrentIndex}
-                register={register}
-            />
-        </>
+        <div className={`flex gap-2 w-full h-full`}>
+            <div className="w-2/3">
+                <TodoList
+                    filterdTodos={filterdTodos}
+                    currentIndex={currentIndex}
+                    prefix={prefix}
+                    mode={mode}
+                    projects={projects}
+                    currentProject={currentProject}
+                    sort={sort}
+                    searchResultIndex={searchResultIndex}
+                    command={command}
+                    setCurrentIndex={setCurrentIndex}
+                    register={register}
+                />
+            </div>
+            <div className="w-1/3 mt-12">
+                <Detail todo={filterdTodos[currentIndex]} />
+            </div>
+        </div>
+
     )
 }

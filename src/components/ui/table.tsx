@@ -17,7 +17,7 @@ const Table = React.forwardRef<
   const _ref = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
-    if (_ref.current && index && index < 3) _ref.current.scrollTop = 0
+    if (_ref.current && index !== undefined && index < 3) _ref.current.scrollTop = 0
   }, [index])
 
   return (

@@ -35,7 +35,7 @@ export default function Home() {
 
   return (
     <article className="flex flex-col justify-between h-screen bg-sky-50/50">
-      <div className={`p-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-300px)]" : "h-screen"}`}>
+      <div className={`p-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-350px)]" : "h-screen"}`}>
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -48,8 +48,8 @@ export default function Home() {
           toggleHelp={handleToggleHelp}
         />
       </div>
-      <div className={`w-full ${isHelp ? "h-0 sm:h-[350px]" : "hidden"}`}>
-        {/* <h1 className="text-sm">キーボードショートカット</h1> */}
+      <div className={`w-full py-4 ${isHelp ? "hidden sm:block sm:h-[350px]" : "hidden"} border shadow-lg bg-popover text-popover-foreground`}>
+        <h1 className="p-2 text-sm font-semibold">ショートカット</h1>
         <Usage
           sort={sort}
           mode={mode}

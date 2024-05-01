@@ -16,7 +16,7 @@ export const Usage = ({
 
     return (
         <>
-            <article className="flex h-full rounded-md shadow-md ">
+            <article className="flex h-[calc(100%-20px)] ">
                 <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
                 <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
                 <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} />
@@ -41,7 +41,7 @@ const Section = ({
     className?: string
 }) => {
     return (
-        <section className={cn("bg-popover text-popover-foreground shadow-lg border m-2 rounded-md overflow-auto w-1/3", className)}>
+        <section className={cn("border m-2 rounded-md overflow-auto w-1/3", className)}>
             <h2 className='p-2'>{title}</h2>
             <ul className='grid grid-cols-1 sm:grid-cols-2'>
                 {
@@ -52,14 +52,14 @@ const Section = ({
 
                         if (value.type.includes(type) && enabled) {
                             return (
-                                <li key={key} className={`flex items-center gap-2 text-xs p-1 ${!enabled && "text-gray-300"}`}>
+                                <li key={key} className={`flex items-center gap-2 text-xs p-1`}>
                                     {value.keysDisp !== undefined ? (
                                         value.keysDisp.map((k, i) => <kbd key={`usage${k} ${i}`} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold border rounded-md">{k}</kbd>)
                                     ) : (
                                         value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold border rounded-md">{k}</kbd>)
                                     )}
                                     :
-                                    <span className={`${!enabled && "text-gray-300"} `}>{value.description}</span>
+                                    <span>{value.description}</span>
                                 </li>
                             )
                         } else {

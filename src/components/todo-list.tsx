@@ -42,19 +42,19 @@ export const TodoList = (
         <>
             <div className="h-full">
                 <div onMouseDown={handleTodoAreaMouseDown} className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
-                    <button className={`border-x border-t rounded-t-sm text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-accent text-accent-foreground" : "bg-card text-card-foreground"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
+                    <button className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map(p => {
                         return (
-                            <button key={p} className={`rounded-t-sm border-r border-t text-sm px-2 p-1 ${currentProject === p ? "bg-accent text-accent-foreground" : "bg-card text-card-foreground"}`}><div className="flex gap-1 items-center"><FaSitemap className="text-blue-500" />{p}</div></button>
+                            <button key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-sm px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
                         )
                     })}
                 </div>
-                <Table className="w-full border h-[calc(100%-100px)] bg-card" index={currentIndex}>
-                    <TableHeader className="top-0 sticky z-10 text-xs bg-accent text-accent-foreground">
+                <Table className="w-full border border-primary/90 h-[calc(100%-100px)] bg-card rounded-b-md" index={currentIndex}>
+                    <TableHeader className="top-0 sticky z-10 text-xs bg-primary/90 text-primary-foreground">
                         <TableRow>
                             <TableHead className="w-[30px]"></TableHead>
-                            <TableHead className="w-[15px]"></TableHead>
-                            <TableHead className="w-[20px] text-center">
+                            <TableHead className="w-[30px]"></TableHead>
+                            <TableHead className="w-[30px] text-center">
                                 <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
                                     優
                                     {sort === "priority" && <FaArrowUpZA />}
@@ -65,12 +65,12 @@ export const TodoList = (
                                 <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
                                     <FaTag />
                                     ラベル
-                                    {sort === "context" && <FaArrowUpZA className="text-xs" />}
+                                    {sort === "context" && <FaArrowUpZA className="text-xs w-1" />}
                                 </div>
                             </TableHead>
                             <TableHead className="w-[13%]">
                                 <div className={`flex items-center`}>
-                                    <FaSitemap />
+                                    <FaSitemap className="w-4" />
                                     プロジェクト
                                 </div>
                             </TableHead>
@@ -106,7 +106,7 @@ export const TodoList = (
                                     filterdTodos.map((t, index) => {
                                         return (
                                             <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.isCompletion ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
-                                                <TableCell className="pl-1">{index + 1}</TableCell>
+                                                <TableCell className="px-2 text-right">{index + 1}</TableCell>
                                                 <TableCell>
                                                     {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125" /> : <FaRegCircle className="text-gray-500 scale-125" />}
                                                 </TableCell>

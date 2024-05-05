@@ -254,6 +254,10 @@ export const Todo = (
     useHotkeys(keymap['completion'].keys, (e) => {
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
         setCurrentIndex(index)
+        completeTask(index)
+    }, setKeyEnableDefine(keymap['completion'].enable))
+
+    const completeTask = (index: number) => {
         const _todos = todoFunc.modify(todos, {
             id: filterdTodos[index].id,
             isCompletion: !filterdTodos[index].isCompletion,
@@ -265,15 +269,14 @@ export const Todo = (
             context: filterdTodos[index].context
         })
         setTodos(_todos)
-    }, setKeyEnableDefine(keymap['completion'].enable))
-
+    }
     // change sort mode
     useHotkeys(keymap['sortMode'].keys, (e) => {
         setMode("sort")
     }, setKeyEnableDefine(keymap['sortMode'].enable))
 
 
-    // toggle commpletion
+    // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
         const id = filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined
         setViewCompletionTask(!viewCompletionTask)
@@ -521,6 +524,10 @@ export const Todo = (
     // }
     // }
 
+
+    const handleClickElement = (index: number, prefix: string) => {
+        if (prefix === 'completion') completeTask(index)
+    }
     return (
         <div className={`flex gap-2 w-full h-full`}>
             <div className="w-2/3">
@@ -534,6 +541,7 @@ export const Todo = (
                     sort={sort}
                     searchResultIndex={searchResultIndex}
                     command={command}
+                    onClick={handleClickElement}
                     setCurrentIndex={setCurrentIndex}
                     register={register}
                 />

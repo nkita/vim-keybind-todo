@@ -16,9 +16,9 @@ export const TodoList = (
         sort,
         searchResultIndex,
         command,
+        onClick,
         setCurrentIndex,
-        register
-
+        register,
     }: {
         filterdTodos: TodoProps[]
         currentIndex: number
@@ -29,6 +29,7 @@ export const TodoList = (
         sort: Sort
         searchResultIndex: boolean[]
         command: string
+        onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
         register: UseFormRegister<FieldValues>
     }
@@ -107,7 +108,7 @@ export const TodoList = (
                                         return (
                                             <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.isCompletion ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="px-2 text-right">{index + 1}</TableCell>
-                                                <TableCell>
+                                                <TableCell onClick={_ => onClick(index, 'completion')} className="hover:cursor-pointer">
                                                     {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125" /> : <FaRegCircle className="text-gray-500 scale-125" />}
                                                 </TableCell>
                                                 <TableCell className="text-center">

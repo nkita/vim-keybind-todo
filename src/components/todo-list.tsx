@@ -43,10 +43,10 @@ export const TodoList = (
         <>
             <div className="h-full">
                 <div onMouseDown={handleTodoAreaMouseDown} className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
-                    <button className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
-                    {projects.map(p => {
+                    <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
+                    {projects.map((p, i) => {
                         return (
-                            <button key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-sm px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
+                            <button onClick={_ => onClick(i, 'projectTab')} key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-sm px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
                         )
                     })}
                 </div>
@@ -108,8 +108,8 @@ export const TodoList = (
                                         return (
                                             <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.isCompletion ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="px-2 text-right">{index + 1}</TableCell>
-                                                <TableCell onClick={_ => onClick(index, 'completion')} className="hover:cursor-pointer">
-                                                    {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125" /> : <FaRegCircle className="text-gray-500 scale-125" />}
+                                                <TableCell onClick={_ => onClick(index, 'completion')} className="group hover:cursor-pointer">
+                                                    {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
                                                 </TableCell>
                                                 <TableCell className="text-center">
                                                     <Item

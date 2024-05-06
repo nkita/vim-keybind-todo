@@ -109,7 +109,7 @@ export const Todo = (
 
     /*****
      * common function
-     */
+     ****/
     const toNormalMode = () => {
         const replace = {
             id: filterdTodos[currentIndex].id,
@@ -132,6 +132,28 @@ export const Todo = (
         setPrefix('text')
         setMode('normal')
     }
+
+    const completeTask = (index: number) => {
+        const _todos = todoFunc.modify(todos, {
+            id: filterdTodos[index].id,
+            isCompletion: !filterdTodos[index].isCompletion,
+            priority: filterdTodos[index].priority,
+            completionDate: !filterdTodos[index].isCompletion ? yyyymmddhhmmss(new Date()) : "",
+            creationDate: filterdTodos[index].creationDate,
+            text: filterdTodos[index].text,
+            project: filterdTodos[index].project,
+            context: filterdTodos[index].context
+        })
+        setTodos(_todos)
+    }
+
+    const changeProject = (index: number) => {
+        setCurrentProject(index === -1 ? "" : projects[index])
+        setCurrentIndex(0)
+        setCommand('')
+        setMode('normal')
+    }
+    /** hotkeys  */
     /*******************
      * 
      * Normal mode
@@ -217,18 +239,10 @@ export const Todo = (
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
         if (projects.length > 0) {
             if (!currentProject) {
-                setCurrentProject(projects[0])
-                setCurrentIndex(0)
-                setCommand('')
-                setMode('normal')
+                changeProject(0)
             } else {
                 const _index = projects.indexOf(currentProject)
-                if (_index < projects.length - 1) {
-                    setCurrentProject(projects[_index + 1])
-                    setCurrentIndex(0)
-                    setCommand('')
-                    setMode('normal')
-                }
+                if (_index < projects.length - 1) changeProject(_index + 1)
             }
         }
     }, setKeyEnableDefine(keymap['moveProjectRight'].enable))
@@ -239,13 +253,10 @@ export const Todo = (
             if (currentProject) {
                 const _index = projects.indexOf(currentProject)
                 if (_index === 0) {
-                    setCurrentProject("")
+                    changeProject(-1)
                 } else {
-                    setCurrentProject(projects[_index - 1])
+                    changeProject(_index - 1)
                 }
-                setCurrentIndex(0)
-                setCommand('')
-                setMode('normal')
             }
         }
     }, setKeyEnableDefine(keymap['moveProjectLeft'].enable))
@@ -257,24 +268,10 @@ export const Todo = (
         completeTask(index)
     }, setKeyEnableDefine(keymap['completion'].enable))
 
-    const completeTask = (index: number) => {
-        const _todos = todoFunc.modify(todos, {
-            id: filterdTodos[index].id,
-            isCompletion: !filterdTodos[index].isCompletion,
-            priority: filterdTodos[index].priority,
-            completionDate: !filterdTodos[index].isCompletion ? yyyymmddhhmmss(new Date()) : "",
-            creationDate: filterdTodos[index].creationDate,
-            text: filterdTodos[index].text,
-            project: filterdTodos[index].project,
-            context: filterdTodos[index].context
-        })
-        setTodos(_todos)
-    }
     // change sort mode
     useHotkeys(keymap['sortMode'].keys, (e) => {
         setMode("sort")
     }, setKeyEnableDefine(keymap['sortMode'].enable))
-
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
@@ -282,7 +279,6 @@ export const Todo = (
         setViewCompletionTask(!viewCompletionTask)
         if (id !== undefined) setCurrentId(id)
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
-
 
     /*******************
      * 
@@ -495,38 +491,10 @@ export const Todo = (
      * Command mode
      * 
      *******************/
-    // useHotkeys('*', (e) => {
-    //     if (!['Enter', 'Escape', 'Backspace'].includes(e.key)) setCommand(key + e.key)
-    // }, enabled.command)
-
-    // useHotkeys(['Enter'], (e) => {
-    //     e.preventDefault()
-    //     setLog(`Not found command:${key}`)
-    //     setMode('normal')
-    //     setCommand("")
-    // }, enabled.command)
-
-    // useHotkeys('Esc', (e) => {
-    //     e.preventDefault()
-    //     setMode('normal')
-    //     setPrefix('text')
-    //     setCommand("")
-    // }, enabled.command)
-
-
-    // const handleTodoChange = (e: ChangeEvent<HTMLInputElement>) => {
-    // const val = e.target?.value
-    // if (val) {
-    // setTodos(todos.map((t, i) => {
-    // if (i === currentIndex) t.text = val
-    // return t
-    // }))
-    // }
-    // }
-
 
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index)
+        if (prefix === 'projectTab') changeProject(index)
     }
     return (
         <div className={`flex gap-2 w-full h-full`}>

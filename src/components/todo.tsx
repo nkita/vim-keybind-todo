@@ -495,9 +495,19 @@ export const Todo = (
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index)
         if (prefix === 'projectTab') changeProject(index)
+        if (['priority', 'context', 'text', 'project'].includes(prefix)) {
+            setPrefix(prefix)
+            setMode('edit')
+        }
+    }
+    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+        setMode('normal')
+        setPrefix('text')
+        e.preventDefault()
+        e.stopPropagation();
     }
     return (
-        <div className={`flex gap-2 w-full h-full`}>
+        <div className={`flex gap-2 w-full h-full`} onMouseDown={handleMainMouseDown}>
             <div className="w-2/3">
                 <TodoList
                     filterdTodos={filterdTodos}

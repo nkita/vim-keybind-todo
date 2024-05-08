@@ -34,15 +34,10 @@ export const TodoList = (
         register: UseFormRegister<FieldValues>
     }
 ) => {
-    const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => e.preventDefault()
-    const handleTodoAreaMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        e.preventDefault()
-        e.stopPropagation();
-    }
     return (
         <>
             <div className="h-full">
-                <div onMouseDown={handleTodoAreaMouseDown} className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
+                <div className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
                     <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map((p, i) => {
                         return (
@@ -111,7 +106,7 @@ export const TodoList = (
                                                 <TableCell onClick={_ => onClick(index, 'completion')} className="group hover:cursor-pointer">
                                                     {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
                                                 </TableCell>
-                                                <TableCell className="text-center">
+                                                <TableCell className="text-center" onDoubleClick={_ => onClick(index, 'priority')}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -123,7 +118,7 @@ export const TodoList = (
                                                         className={"text-center"}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'text')}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -134,7 +129,7 @@ export const TodoList = (
                                                         label={t.text}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell className={`text-ex-label ${(t.isCompletion && currentIndex !== index) && "text-ex-label/50"} font-light`}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`text-ex-label ${(t.isCompletion && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -145,7 +140,7 @@ export const TodoList = (
                                                         label={t.context}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell className={`text-ex-project ${(t.isCompletion && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`text-ex-project ${(t.isCompletion && currentIndex !== index) && "text-ex-project/50"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -210,7 +205,7 @@ const Item = (
     const val = t[prefix] ?? ""
     return (
         <>
-            <div onMouseDown={handleMouseDown} className={`${isView && "hidden"} ${className}`}>
+            <div className={`${isView && "hidden"} ${className}`}>
                 <button
                     autoFocus={currentIndex === index}
                     className={_classNameCont}
@@ -219,7 +214,7 @@ const Item = (
                     {label}
                 </button>
             </div>
-            <div onMouseDown={handleMouseDown} className={`${!isView && "hidden"} ${className} font-bold`}>
+            <div className={`${!isView && "hidden"} ${className} font-bold`}>
                 <input
                     tabIndex={-1}
                     className={_classNameCont}

@@ -501,8 +501,7 @@ export const Todo = (
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        setMode('normal')
-        setPrefix('text')
+        toNormalMode()
         e.preventDefault()
         e.stopPropagation();
     }

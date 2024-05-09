@@ -46,7 +46,7 @@ export default function Home() {
   const handleToggleHelp = () => setHelp(!isHelp)
 
   return (
-    <article className="flex flex-col justify-between h-screen bg-sky-50/50">
+    <article className="h-screen bg-sky-50/50">
       <div className="flex justify-between items-center w-full py-2 px-4">
         <div className="flex  items-center gap-2">
           <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
@@ -92,7 +92,7 @@ export default function Home() {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-350px)]" : "h-screen"} `}>
+      <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
@@ -105,7 +105,7 @@ export default function Home() {
           toggleHelp={handleToggleHelp}
         />
       </div>
-      <div className={`w-full p-4 ${isHelp ? "hidden sm:block sm:h-[350px]" : "hidden"} border-t shadow-lg rounded-t-3xl bg-popover text-popover-foreground`}>
+      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-[350px]" : "hidden"} border-t shadow-lg rounded-t-3xl bg-popover text-popover-foreground`}>
         <h1 className="p-2 text-sm font-semibold text-center">ショートカット</h1>
         <Usage
           sort={sort}

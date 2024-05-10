@@ -1,19 +1,9 @@
 'use client'
 import { Todo } from "@/components/todo";
-import { useState, MouseEvent, ChangeEvent, useEffect, } from "react"
+import { useState } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { Usage } from "@/components/usage";
-import { FaUser, FaGear, FaArrowRightFromBracket, FaRegSquarePlus, FaPlus, FaRotate, FaTrash } from "react-icons/fa6";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { FaPlusCircle } from "react-icons/fa";
+import Header from "@/components/header";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([
@@ -44,54 +34,9 @@ export default function Home() {
   const [isHelp, setHelp] = useState(true)
 
   const handleToggleHelp = () => setHelp(!isHelp)
-
   return (
     <article className="h-screen bg-sky-50/50">
-      <div className="flex justify-between items-center w-full py-2 px-4">
-        <div className="flex  items-center gap-2">
-          <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
-          <h2 className="font-medium">新しいタスク</h2>
-        </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="rounded-full">
-            <Avatar>
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="mr-2 w-56">
-            <DropdownMenuLabel className=" text-center">
-              <div className="flex justify-center p-4">
-                <Avatar className="scale-125">
-                  <AvatarImage src="" />
-                  <AvatarFallback>CN</AvatarFallback>
-                </Avatar>
-              </div>
-              <span>
-                Your Name
-              </span>
-              <br />
-              <span className="text-muted-foreground font-light">sample@example.com</span>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <FaRotate className="mr-2 h-4 w-4" /><span>Todoを切り替え</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <FaPlus className="mr-2 h-4 w-4" /><span>新しいTodoを作成</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <FaTrash className="mr-2 h-4 w-4" /><span>現在のTodoを削除</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <FaGear className="mr-2 h-4 w-4" /><span>設定</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <FaArrowRightFromBracket className="mr-2 h-4 w-4" /><span>ログアウト</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+      <Header />
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
           todos={todos}

@@ -22,9 +22,13 @@ export const Detail = ({
                         {
                             todo["isCompletion"] ? <FaCircleCheck className="text-green-500 w-5 h-5" /> : <FaRegCircle className="w-5 h-5" />
                         }
-                    </span>{todo["text"]}</li>
-                <li className="text-sm flex justify-between  text-gray-500" ><span>{creationDate && `${creationDateLabel}に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></li>
+                    </span>
+                    <span className={`${todo["isCompletion"] ? "text-muted-foreground/50" : "text-primary"}`}>
+                        {todo["text"]}
+                    </span>
+                </li>
+                <li className="text-sm flex justify-between  text-gray-500" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></li>
             </ul>
-        </div>
+        </div >
     )
 }

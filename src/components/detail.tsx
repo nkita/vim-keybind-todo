@@ -1,10 +1,12 @@
 import { TodoProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
-import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList, FaRegCircleCheck, FaCircle } from "react-icons/fa6";
+import { FaRegCircle, FaCircleCheck } from "react-icons/fa6";
 export const Detail = ({
-    todo
+    todo,
+    onClick
 }: {
     todo: TodoProps
+    onClick: (prefix: string) => void
 }) => {
     if (!todo) return <></>
     const creationDate = todo["creationDate"]
@@ -15,7 +17,12 @@ export const Detail = ({
         <div className="p-4 w-full border rounded-md bg-white border-primary/90">
             <h2 className="text-primary/80 font-medium text-center py-4">詳細</h2>
             <ul className="flex flex-col gap-2">
-                <li className="flex font-bold items-center gap-2"><span className="w-5 h-5 flex items-center">{todo["isCompletion"] ? <FaCircleCheck className="text-green-500 w-5 h-5" /> : <FaRegCircle className="w-5 h-5" />}</span>{todo["text"]}</li>
+                <li className="flex font-bold items-center gap-2" >
+                    <span className="w-5 h-5 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
+                        {
+                            todo["isCompletion"] ? <FaCircleCheck className="text-green-500 w-5 h-5" /> : <FaRegCircle className="w-5 h-5" />
+                        }
+                    </span>{todo["text"]}</li>
                 <li className="text-sm flex justify-between  text-gray-500" ><span>{creationDate && `${creationDateLabel}に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></li>
             </ul>
         </div>

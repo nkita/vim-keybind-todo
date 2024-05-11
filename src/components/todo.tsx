@@ -491,7 +491,6 @@ export const Todo = (
      * Command mode
      * 
      *******************/
-
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index)
         if (prefix === 'projectTab') changeProject(index)
@@ -499,6 +498,9 @@ export const Todo = (
             setPrefix(prefix)
             setMode('edit')
         }
+    }
+    const handleClickDetailElement = (prefix: string) => {
+        if (prefix === 'completion') completeTask(currentIndex)
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         toNormalMode()
@@ -524,7 +526,10 @@ export const Todo = (
                 />
             </div>
             <div className="w-1/3 mt-12">
-                <Detail todo={filterdTodos[currentIndex]} />
+                <Detail
+                    todo={filterdTodos[currentIndex]}
+                    onClick={handleClickDetailElement}
+                />
             </div>
         </div>
 

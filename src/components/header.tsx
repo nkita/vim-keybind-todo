@@ -11,6 +11,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
@@ -21,7 +28,15 @@ export default function Header() {
         <div className="flex justify-between items-center w-full py-3 px-4">
             <div className="flex  items-center gap-2 h-9">
                 <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
-                <h2 className="font-medium">新しいタスク</h2>
+                <Select>
+                    <SelectTrigger className="w-[250px] truncate text-muted-foreground">
+                        <SelectValue placeholder="タスクを選択 (⌘ + T)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="abcdefg">仕事</SelectItem>
+                        <SelectItem value="dddddd">プライベート</SelectItem>
+                    </SelectContent>
+                </Select>
             </div>
             {isLoading ? (
                 <Spinner className="p-1 w-9 h-9" />

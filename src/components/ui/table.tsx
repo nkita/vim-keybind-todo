@@ -22,7 +22,7 @@ const Table = React.forwardRef<
 
   return (
     <>
-      <div className={cn("relative overflow-auto", className)} ref={_ref}>
+      <div className={cn("relative overflow-y-scroll scroll-bar", className)} ref={_ref}>
         <table
           ref={ref}
           className={"w-full caption-bottom text-sm table-fixed"}

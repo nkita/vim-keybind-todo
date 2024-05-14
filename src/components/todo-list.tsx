@@ -45,40 +45,40 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <Table className="w-full border border-primary/90 h-[calc(100%-100px)] bg-card rounded-b-md" index={currentIndex}>
-                    <TableHeader className="top-0 sticky z-10 text-xs bg-primary/90 text-primary-foreground">
-                        <TableRow>
-                            <TableHead className="w-[30px]"></TableHead>
-                            <TableHead className="w-[30px]"></TableHead>
-                            <TableHead className="w-[30px] text-center">
-                                <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
-                                    優
-                                    {sort === "priority" && <FaArrowUpZA />}
-                                </div>
-                            </TableHead>
-                            <TableHead className="w-[64%]">タスク</TableHead>
-                            <TableHead className="w-[13%]">
-                                <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
-                                    <FaTag />
-                                    ラベル
-                                    {sort === "context" && <FaArrowUpZA className="text-xs w-1" />}
-                                </div>
-                            </TableHead>
-                            <TableHead className="w-[13%]">
-                                <div className={`flex items-center`}>
-                                    <FaSitemap className="w-4" />
-                                    プロジェクト
-                                </div>
-                            </TableHead>
-                        </TableRow>
-                    </TableHeader>
+                <div className="text-xs bg-primary/90 text-primary-foreground rounded-tr-md p-1 py-2">
+                    <div className="flex bg-primary text-primary-foreground">
+                        <div className="w-[30px]"></div>
+                        <div className="w-[30px]"></div>
+                        <div className="w-[30px] text-center">
+                            <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
+                                優
+                                {sort === "priority" && <FaArrowUpZA />}
+                            </div>
+                        </div>
+                        <div className="w-[64%]">タスク</div>
+                        <div className="w-[13%]">
+                            <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
+                                <FaTag />
+                                ラベル
+                                {sort === "context" && <FaArrowUpZA className="text-xs w-1" />}
+                            </div>
+                        </div>
+                        <div className="w-[13%]">
+                            <div className={`flex items-center`}>
+                                <FaSitemap className="w-4" />
+                                プロジェクト
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <Table className="pl-2 w-full border border-primary/90 h-[calc(100%-110px)] bg-card rounded-b-md" index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground">
                         {(sort !== undefined && mode === "editOnSort") &&
                             <TableRow className={`bg-accent text-accent-foreground`}>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell></TableCell>
-                                <TableCell>
+                                <TableCell className="w-[30px]"></TableCell>
+                                <TableCell className="w-[30px]"></TableCell>
+                                <TableCell className="w-[30px]"></TableCell>
+                                <TableCell className="w-[64%]">
                                     <input
                                         tabIndex={-1}
                                         className={`p-1 text-left truncate outline-none bg-transparent font-semibold`}
@@ -87,9 +87,9 @@ export const TodoList = (
                                         {...register(`newtask`)}
                                     // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
                                     />
-                                </TableCell>
-                                <TableCell></TableCell>
-                                <TableCell className="p-1 font-light text-lab text-ex-project">{currentProject}</TableCell>
+                                </TableCell >
+                                <TableCell className="w-[13%]" ></TableCell>
+                                <TableCell className="w-[13%] p-1 font-light text-lab text-ex-project">{currentProject}</TableCell>
                             </TableRow>
                         }
                         {filterdTodos.length === 0 ? (
@@ -102,11 +102,11 @@ export const TodoList = (
                                     filterdTodos.map((t, index) => {
                                         return (
                                             <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.isCompletion ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
-                                                <TableCell className="px-2 text-right">{index + 1}</TableCell>
-                                                <TableCell onClick={_ => onClick(index, 'completion')} className="group hover:cursor-pointer">
+                                                <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
+                                                <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
                                                     {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
                                                 </TableCell>
-                                                <TableCell className="text-center" onDoubleClick={_ => onClick(index, 'priority')}>
+                                                <TableCell className="w-[30px] text-center" onDoubleClick={_ => onClick(index, 'priority')}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -118,7 +118,7 @@ export const TodoList = (
                                                         className={"text-center"}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'text')}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'text')} className="w-[64%]">
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -129,7 +129,7 @@ export const TodoList = (
                                                         label={t.text}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`text-ex-label ${(t.isCompletion && currentIndex !== index) && "text-ex-label/50"} font-light`}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.isCompletion && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -140,7 +140,7 @@ export const TodoList = (
                                                         label={t.context}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`text-ex-project ${(t.isCompletion && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`w-[13%] text-ex-project ${(t.isCompletion && currentIndex !== index) && "text-ex-project/50"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}

@@ -4,7 +4,8 @@ import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
-
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select"
+import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 export const TodoList = (
     {
         filterdTodos,
@@ -45,8 +46,8 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className="text-xs bg-primary/90 text-primary-foreground rounded-tr-md p-1 py-2">
-                    <div className="flex bg-primary text-primary-foreground">
+                <div className="text-xs bg-primary text-primary-foreground rounded-tr-md p-1 py-2">
+                    <div className="flex gap-1">
                         <div className="w-[30px]"></div>
                         <div className="w-[30px]"></div>
                         <div className="w-[30px] text-center">
@@ -203,6 +204,11 @@ const Item = (
     const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
     const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
     const val = t[prefix] ?? ""
+
+
+    const addItem = (val: string) => {
+        console.log(val)
+    }
     return (
         <>
             <div className={`${isView && "hidden"} ${className}`}>
@@ -215,6 +221,9 @@ const Item = (
                 </button>
             </div>
             <div className={`${!isView && "hidden"} ${className} font-bold`}>
+                {/* {(prefix === "project" || prefix === "context") ? (
+                    <DynamicSearchSelect tabIndex={-1} items={["project", "hobby"]} placeholder={"選択"} {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })} addItem={addItem} autoSave={false} />
+                ) : ( */}
                 <input
                     tabIndex={-1}
                     className={_classNameCont}
@@ -223,6 +232,7 @@ const Item = (
                     onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
                     {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
                 />
+                {/* )} */}
             </div >
         </>
     )

@@ -1,11 +1,26 @@
 'use client'
 import { Todo } from "@/components/todo";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { Usage } from "@/components/usage";
 import Header from "@/components/header";
+import useSWR from "swr";
+import { useAuth0 } from "@auth0/auth0-react";
+import { useFetchList } from "@/lib/fetch";
 
 export default function Home() {
+  const { getAccessTokenSilently } = useAuth0();
+  const [token, setToken] = useState("")
+
+  useEffect(() => {
+    async function getToken() {
+      const token = await getAccessTokenSilently()
+      if (token) setToken(token)
+    }
+    return (() => { getToken() })
+  }, [getAccessTokenSilently])
+
+  const { data: list, isLoading: isLodingList } = useFetchList("", token)
   const [todos, setTodos] = useState<TodoProps[]>([
     { id: 0, text: '家に帰って電話する', priority: 'c', project: "private", context: "family", creationDate: "2024-01-10" },
     { id: 1, text: 'プロジェクトAの締め切り日に対してメールするがどうなるんだろう。おかしいな', priority: 'b', project: "job", context: "family", creationDate: "2024-01-10" },
@@ -34,9 +49,10 @@ export default function Home() {
   const [isHelp, setHelp] = useState(true)
 
   const handleToggleHelp = () => setHelp(!isHelp)
+
   return (
     <article className="h-screen bg-sky-50/50">
-      <Header />
+      <Header list={list} />
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
           todos={todos}

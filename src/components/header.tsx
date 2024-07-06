@@ -22,8 +22,9 @@ import {
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 
-export default function Header() {
-    const { loginWithRedirect, logout, user, isLoading } = useAuth0();
+export default function Header({ list }: { list: any }) {
+    const { loginWithRedirect, logout, user, isLoading, getAccessTokenSilently } = useAuth0();
+
     return (
         <div className="flex justify-between items-center w-full py-3 px-4">
             <div className="flex  items-center gap-2 h-9">
@@ -33,8 +34,9 @@ export default function Header() {
                         <SelectValue placeholder="タスクを選択 (⌘ + T)" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem value="abcdefg">仕事</SelectItem>
-                        <SelectItem value="dddddd">プライベート</SelectItem>
+                        {list && list.map(l => {
+                            return <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                        })}
                     </SelectContent>
                 </Select>
             </div>

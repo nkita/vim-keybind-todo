@@ -18,13 +18,27 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
+import * as React from "react";
 
 export default function Header({ list }: { list: any }) {
     const { loginWithRedirect, logout, user, isLoading, getAccessTokenSilently } = useAuth0();
-
+    const [open, setOpen] = React.useState(false)
+    const handleAddList = () => {
+        setOpen(true)
+    }
     return (
         <div className="flex justify-between items-center w-full py-3 px-4">
             <div className="flex  items-center gap-2 h-9">
@@ -71,7 +85,7 @@ export default function Header({ list }: { list: any }) {
                             <DropdownMenuItem>
                                 <FaRotate className="mr-2 h-4 w-4" /><span>Todoを切り替え</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={handleAddList}>
                                 <FaPlus className="mr-2 h-4 w-4" /><span>新しいTodoを作成</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
@@ -88,6 +102,30 @@ export default function Header({ list }: { list: any }) {
                     </DropdownMenu >
                 )
             }
+            <AddListDialog open={open} setOpen={setOpen} />
         </div >
+    )
+}
+
+
+const AddListDialog = ({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+    return (
+        <Dialog open={open}>
+            <DialogContent className="sm:max-w-md" onEscapeKeyDown={_ => setOpen(false)}>
+                <DialogHeader>
+                    <DialogTitle>Share link</DialogTitle>
+                    <DialogDescription>
+                        Anyone who has this link will be able to view this.
+                    </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="sm:justify-start">
+                    <DialogClose asChild>
+                        <Button type="button" variant="secondary" onClick={_ => setOpen(false)}>
+                            Close
+                        </Button>
+                    </DialogClose>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }

@@ -41,8 +41,10 @@ export default function Header({ list }: { list: any }) {
     }
     return (
         <div className="flex justify-between items-center w-full py-3 px-4">
-            <div className="flex  items-center gap-2 h-9">
+            <div className="flex items-center gap-2 h-9">
                 <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
+            </div>
+            <div className="flex gap-1">
                 <Select>
                     <SelectTrigger className="w-[250px] truncate text-muted-foreground">
                         <SelectValue placeholder="タスクを選択 (⌘ + T)" />
@@ -53,6 +55,7 @@ export default function Header({ list }: { list: any }) {
                         })}
                     </SelectContent>
                 </Select>
+                <AddListDialog />
             </div>
             {isLoading ? (
                 <Spinner className="p-1 w-9 h-9" />
@@ -85,7 +88,7 @@ export default function Header({ list }: { list: any }) {
                             <DropdownMenuItem>
                                 <FaRotate className="mr-2 h-4 w-4" /><span>Todoを切り替え</span>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleAddList}>
+                            <DropdownMenuItem>
                                 <FaPlus className="mr-2 h-4 w-4" /><span>新しいTodoを作成</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem>
@@ -102,25 +105,30 @@ export default function Header({ list }: { list: any }) {
                     </DropdownMenu >
                 )
             }
-            <AddListDialog open={open} setOpen={setOpen} />
         </div >
     )
 }
 
 
-const AddListDialog = ({ open, setOpen }: { open: boolean, setOpen: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const AddListDialog = () => {
     return (
-        <Dialog open={open}>
-            <DialogContent className="sm:max-w-md" onEscapeKeyDown={_ => setOpen(false)}>
+        <Dialog>
+            <DialogTrigger className="flex items-center text-sm">
+                <Button variant="outline" size="icon">
+                    <FaPlus className="h-4 w-4" />
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Share link</DialogTitle>
+                    <DialogTitle>新しいTodoリストを追加する</DialogTitle>
                     <DialogDescription>
-                        Anyone who has this link will be able to view this.
+                        新しいTodoを追加します。
                     </DialogDescription>
                 </DialogHeader>
+                <input className="w-full outline rounded-sm p-1" />
                 <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
-                        <Button type="button" variant="secondary" onClick={_ => setOpen(false)}>
+                        <Button type="button" variant="secondary">
                             Close
                         </Button>
                     </DialogClose>

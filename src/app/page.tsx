@@ -1,17 +1,18 @@
 'use client'
 import { Todo } from "@/components/todo";
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { Usage } from "@/components/usage";
 import Header from "@/components/header";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useFetchList } from "@/lib/fetch";
+import { useFetchList, postFetch } from "@/lib/fetch";
+import { debounce } from "@/lib/utils";
 
 export default function Home() {
   const { getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState("")
-
+  const [apiTodoURL, setApiTodoURL] = useState("")
   useEffect(() => {
     async function getToken() {
       const token = await getAccessTokenSilently()
@@ -21,6 +22,17 @@ export default function Home() {
   }, [getAccessTokenSilently])
 
   const { data: list, isLoading: isLodingList } = useFetchList("", token)
+
+  useEffect(() => {
+    const apiListURL = `${process.env.NEXT_PUBLIC_API}/api/list`
+    if (list) {
+      setApiTodoURL(`${apiListURL}/${list[0].id}/todo`)
+    } else if (list === null) {
+      postFetch(apiListURL, token, { name: "first list" })
+      mutate(apiListURL)
+    }
+  }, [list, token])
+
   const [todos, setTodos] = useState<TodoProps[]>([
     { id: 0, text: '家に帰って電話する', priority: 'c', project: "private", context: "family", creationDate: "2024-01-10" },
     { id: 1, text: 'プロジェクトAの締め切り日に対してメールするがどうなるんだろう。おかしいな', priority: 'b', project: "job", context: "family", creationDate: "2024-01-10" },
@@ -43,6 +55,11 @@ export default function Home() {
     { id: 80, text: '家に帰って電話する', priority: 'c', project: "private", context: "family", creationDate: "2024-01-10" },
     { id: 90, text: '家に帰って電話する', priority: 'c', project: "private", context: "family", creationDate: "2024-01-10" },
   ])
+
+
+  const [prevTodos, setPrevTodos] = useState<TodoProps[]>(todos)
+  // const test = useCallback(debounce(() => console.log(todos), 1000), [])
+
   const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
   const [mode, setMode] = useState<Mode>('normal')
   const [sort, setSort] = useState<Sort>(undefined)

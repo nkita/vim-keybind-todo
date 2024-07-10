@@ -36,26 +36,29 @@ import * as React from "react";
 export default function Header({ list }: { list: any }) {
     const { loginWithRedirect, logout, user, isLoading, getAccessTokenSilently } = useAuth0();
     const [open, setOpen] = React.useState(false)
-    const handleAddList = () => {
-        setOpen(true)
-    }
+    const [addList, setAddList] = React.useState(false)
     return (
         <div className="flex justify-between items-center w-full py-3 px-4">
             <div className="flex items-center gap-2 h-9">
                 <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
             </div>
-            <div className="flex gap-1">
-                <Select>
-                    <SelectTrigger className="w-[250px] truncate text-muted-foreground">
-                        <SelectValue placeholder="タスクを選択 (⌘ + T)" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {list && list.map(l => {
-                            return <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
-                        })}
-                    </SelectContent>
-                </Select>
-                <AddListDialog />
+            <div className="gap-1 hidden">
+                {addList ? (
+                    <input type="text" placeholder="新しいタスクを追加" className={`p-1`}></input>
+                ) : (
+                    <div>
+                        <Select>
+                            <SelectTrigger className="w-[250px] truncate text-muted-foreground">
+                                <SelectValue placeholder="タスクを選択 (⌘ + T)" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {list && list.map(l => {
+                                    return <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
+                                })}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                )}
             </div>
             {isLoading ? (
                 <Spinner className="p-1 w-9 h-9" />
@@ -114,9 +117,7 @@ const AddListDialog = () => {
     return (
         <Dialog>
             <DialogTrigger className="flex items-center text-sm">
-                <Button variant="outline" size="icon">
-                    <FaPlus className="h-4 w-4" />
-                </Button>
+                追加する
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>

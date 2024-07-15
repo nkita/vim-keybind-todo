@@ -1,5 +1,5 @@
 export interface TodoProps {
-    id: number,
+    id: string,
     isCompletion?: boolean
     priority?: string    // a character. A-Z Uppercase
     completionDate?: string    // format yyyy-mm-dd
@@ -7,6 +7,7 @@ export interface TodoProps {
     text: string
     project?: string    // +projctname
     context?: string    // @context    
+    isUpdate?: boolean
 }
 
 

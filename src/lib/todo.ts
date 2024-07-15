@@ -1,12 +1,13 @@
 import { TodoProps, Sort } from "@/types"
 import { yyyymmddhhmmss } from "./time"
+
 interface options {
     project: string
     viewCompletionTask: boolean
 }
 export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: options) => {
-        const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
+        const newId = self.crypto.randomUUID()
         let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
         if (!options.viewCompletionTask) _todos = _todos.filter(t => t.isCompletion !== true)
         if (index === 0 || index >= _todos.length) {
@@ -16,7 +17,8 @@ export const todoFunc = {
                     id: newId,
                     creationDate: yyyymmddhhmmss(new Date()),
                     text: "",
-                    project: options.project
+                    project: options.project,
+                    isUpdate: true,
                 },
                 ...todos.slice(index === 0 ? 0 : todos.length)
             ]
@@ -29,7 +31,8 @@ export const todoFunc = {
                     id: newId,
                     creationDate: yyyymmddhhmmss(new Date()),
                     text: "",
-                    project: options.project
+                    project: options.project,
+                    isUpdate: true,
                 },
                 ...todos.slice(_index + 1)
             ]
@@ -44,10 +47,11 @@ export const todoFunc = {
             creationDate: t.id === replace.id ? replace.creationDate : t.creationDate,
             text: t.id === replace.id ? replace.text : t.text,
             project: t.id === replace.id ? replace.project : t.project,
-            context: t.id === replace.id ? replace.context : t.context
+            context: t.id === replace.id ? replace.context : t.context,
+            isUpdate: t.id === replace.id,
         }
     }),
-    delete: (todos: TodoProps[], id: number) => todos.filter(t => t.id !== id),
+    delete: (todos: TodoProps[], id: string) => todos.filter(t => t.id !== id),
     isEmpty: (todo: TodoProps) => {
         let isEmpty = true
         Object.entries(todo).map(([key, value]) => {

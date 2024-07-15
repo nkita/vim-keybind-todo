@@ -8,6 +8,8 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
+import { randomUUID } from "crypto"
+
 export const Todo = (
     {
         todos,
@@ -36,7 +38,7 @@ export const Todo = (
     const [currentProject, setCurrentProject] = useState("")
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
-    const [currentId, setCurrentId] = useState<number | undefined>(undefined)
+    const [currentId, setCurrentId] = useState<string | undefined>(undefined)
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
@@ -330,7 +332,7 @@ export const Todo = (
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
         if (!e.isComposing) {
-            const newId = todos.length === 0 ? 1 : Math.max(...todos.map((t: TodoProps) => t.id)) + 1
+            const newId = self.crypto.randomUUID()
             const newtask = {
                 id: newId,
                 creationDate: yyyymmddhhmmss(new Date()),

@@ -33,7 +33,7 @@ import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
 
-export default function Header({ list }: { list: any }) {
+export default function Header({ list, isSave }: { list: any, isSave: boolean }) {
     const { loginWithRedirect, logout, user, isLoading, getAccessTokenSilently } = useAuth0();
     const [open, setOpen] = React.useState(false)
     const [addList, setAddList] = React.useState(false)
@@ -42,6 +42,7 @@ export default function Header({ list }: { list: any }) {
             <div className="flex items-center gap-2 h-9">
                 <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
             </div>
+            <div className="text-sm">{isSave ? "保存中です・・・" : "保存しました"}</div>
             <div className="gap-1 hidden">
                 {addList ? (
                     <input type="text" placeholder="新しいタスクを追加" className={`p-1`}></input>
@@ -52,7 +53,7 @@ export default function Header({ list }: { list: any }) {
                                 <SelectValue placeholder="タスクを選択 (⌘ + T)" />
                             </SelectTrigger>
                             <SelectContent>
-                                {list && list.map(l => {
+                                {list && list.map((l: any) => {
                                     return <SelectItem key={l.id} value={l.id}>{l.name}</SelectItem>
                                 })}
                             </SelectContent>

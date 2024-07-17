@@ -20,6 +20,7 @@ export const Todo = (
         setFilterdTodos,
         setMode,
         setSort,
+        setIsUpdate,
         toggleHelp
     }: {
         todos: TodoProps[]
@@ -30,6 +31,7 @@ export const Todo = (
         setFilterdTodos: Dispatch<SetStateAction<TodoProps[]>>
         setMode: Dispatch<SetStateAction<Mode>>
         setSort: Dispatch<SetStateAction<Sort>>
+        setIsUpdate: Dispatch<SetStateAction<boolean>>
         toggleHelp: () => void;
     }
 ) => {
@@ -112,6 +114,10 @@ export const Todo = (
     /*****
      * common function
      ****/
+    const handleSetTodos = (todos: TodoProps[]) => {
+        setTodos(todos)
+        setIsUpdate(true)
+    }
     const toNormalMode = () => {
         const replace = {
             id: filterdTodos[currentIndex].id,
@@ -124,10 +130,10 @@ export const Todo = (
             context: getValues(`edit-context-${filterdTodos[currentIndex].id}`)
         }
         if (todoFunc.isEmpty(replace)) {
-            setTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
+            handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
             setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
         } else {
-            setTodos(todoFunc.modify(todos, replace))
+            handleSetTodos(todoFunc.modify(todos, replace))
         }
         // ソートした後に編集すると位置ズレを起こすため修正
         setCurrentId(filterdTodos[currentIndex].id)
@@ -146,7 +152,7 @@ export const Todo = (
             project: filterdTodos[index].project,
             context: filterdTodos[index].context
         })
-        setTodos(_todos)
+        handleSetTodos(_todos)
     }
 
     const changeProject = (index: number) => {
@@ -177,13 +183,13 @@ export const Todo = (
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
-        setTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setMode('edit')
     }, setKeyEnableDefine(keymap['insert'].enable))
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
-        setTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(0)
         setMode('edit')
     }, setKeyEnableDefine(keymap['insertTop'].enable))
@@ -195,14 +201,14 @@ export const Todo = (
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
-        setTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
     }, setKeyEnableDefine(keymap['append'].enable))
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        setTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(filterdTodos.length)
         setMode('edit')
     }, setKeyEnableDefine(keymap['appendBottom'].enable))
@@ -211,7 +217,7 @@ export const Todo = (
     useHotkeys(keymap['delete'].keys, (e) => {
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
         setCurrentIndex(index)
-        setTodos(todoFunc.delete(todos, filterdTodos[index].id))
+        handleSetTodos(todoFunc.delete(todos, filterdTodos[index].id))
     }, setKeyEnableDefine(keymap['delete'].enable))
 
     // change to edit mode
@@ -340,7 +346,7 @@ export const Todo = (
                 project: currentProject
             }
             if (!todoFunc.isEmpty(newtask)) {
-                setTodos([newtask, ...todos])
+                handleSetTodos([newtask, ...todos])
                 setValue("newtask", "")
                 setCurrentId(newId)
             }
@@ -395,7 +401,7 @@ export const Todo = (
     useHotkeys(keymap['appendToLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            setTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            handleSetTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
             setCurrentIndex(line)
             setMode('edit')
         } else {
@@ -407,7 +413,7 @@ export const Todo = (
     useHotkeys(keymap['insertToLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            setTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            handleSetTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
             setCurrentIndex(line - 1)
             setMode('edit')
         } else {

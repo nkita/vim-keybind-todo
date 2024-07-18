@@ -85,7 +85,7 @@ x (A) 2024-02-01 2024-01-01 go to home +Private @shopping due:2024-02-01 detail:
 
 ```typescript
 interface Todo {
-    isCompletion?   : boolean
+    is_complete?   : boolean
     priority?       : string    // a character. A-Z Uppercase
     completionDate? : string    // format yyyy-mm-dd
     creationDate?   : string    // format yyyy-mm-dd

@@ -8,6 +8,7 @@ import { mutate } from "swr";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchList, useFetchTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
+import { isEqual } from "lodash";
 
 export default function Home() {
   const { getAccessTokenSilently } = useAuth0();
@@ -58,36 +59,25 @@ export default function Home() {
     try {
       setIsSave(true)
       const api = `${process.env.NEXT_PUBLIC_API}/api/list/${currentListID}/todo`
-      try {
-        await Promise.all(todos.map(t => {
-          if (t.isUpdate && api) {
-            postFetch(api, token,
-              {
-                id: t.id,
-                created_at: t.creationDate,
-                text: t.text,
-                project: t.project,
-                context: t.context
-              })
-          }
-        })).then(r => console.log(r))
+      const updates = todos.filter(t => {
+        const _t = prevTodos.filter(pt => pt.id === t.id)
+        // modify or new task
+        return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
+      })
 
-        const _ids = todos.map(t => t.id)
-        await Promise.all(prevTodos.map(t => {
-          if (!_ids.includes(t.id)) {
-            postFetch(api, token,
-              {
-                id: t.id,
-                isArchived: true
-              })
-          }
-        })).then(r => console.log(r))
-
+      const _ids = todos.map(t => t.id)
+      const deletes = prevTodos.filter(pt => !_ids.includes(pt.id)).map(pt => {
+        pt.isArchived = true
+        return pt
+      })
+      const postData = [...updates, ...deletes]
+      if (postData.length > 0) postFetch(api, token, postData).then(_ => {
         setPrevTodos([...todos])
         setIsUpdate(false)
-      } catch (e) {
-        console.error(e)
-      }
+      }).catch(e => console.error(e))
+
+    } catch (e) {
+      console.error(e)
     } finally {
       setIsSave(false)
     }
@@ -95,7 +85,7 @@ export default function Home() {
 
   const [isUpdate, setIsUpdate] = useState(false)
 
-  const saveTodos = useCallback(debounce((todos, prevTodos, token) => handleSaveTodos(todos, prevTodos, token), 3000), [])
+  const saveTodos = useCallback(debounce((todos, prevTodos, token) => handleSaveTodos(todos, prevTodos, token), 5000), [])
   useEffect(() => {
     if (token && isUpdate) saveTodos(todos, prevTodos, token)
   }, [saveTodos, isUpdate, todos, token, prevTodos])

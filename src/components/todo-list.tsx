@@ -102,10 +102,10 @@ export const TodoList = (
                                 {
                                     filterdTodos.map((t, index) => {
                                         return (
-                                            <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.isCompletion ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
+                                            <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                 <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
                                                 <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
-                                                    {t.isCompletion ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                    {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
                                                 </TableCell>
                                                 <TableCell className="w-[30px] text-center" onDoubleClick={_ => onClick(index, 'priority')}>
                                                     <Item
@@ -130,7 +130,7 @@ export const TodoList = (
                                                         label={t.text}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.isCompletion && currentIndex !== index) && "text-ex-label/50"} font-light`}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}
@@ -141,7 +141,7 @@ export const TodoList = (
                                                         label={t.context}
                                                         register={register} />
                                                 </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`w-[13%] text-ex-project ${(t.isCompletion && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
                                                     <Item
                                                         t={t}
                                                         index={index}

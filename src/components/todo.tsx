@@ -71,14 +71,14 @@ export const Todo = (
         let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
 
         if (!viewCompletionTask) {
-            _todos = _todos.filter(t => t.isCompletion !== true)
+            _todos = _todos.filter(t => t.is_complete !== true)
         }
 
         if (sort !== undefined) {
             _todos.sort((a, b) => {
                 let _a = a[sort]
                 let _b = b[sort]
-                if (sort === 'isCompletion' || typeof _a === "boolean" || typeof _b === "boolean") {
+                if (sort === 'is_complete' || typeof _a === "boolean" || typeof _b === "boolean") {
                     _a = _a === undefined ? "a" : _a ? undefined : "a"
                     _b = _b === undefined ? "a" : _b ? undefined : "a"
                 }
@@ -114,20 +114,21 @@ export const Todo = (
     /*****
      * common function
      ****/
-    const handleSetTodos = (todos: TodoProps[]) => {
-        setTodos(todos)
+    const handleSetTodos = (_todos: TodoProps[]) => {
+        setTodos(_todos)
         setIsUpdate(true)
     }
     const toNormalMode = () => {
-        const replace = {
+        const replace: TodoProps = {
             id: filterdTodos[currentIndex].id,
-            isCompletion: filterdTodos[currentIndex].isCompletion,
+            is_complete: filterdTodos[currentIndex].is_complete,
             priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`),
             completionDate: filterdTodos[currentIndex].completionDate,
             creationDate: filterdTodos[currentIndex].creationDate,
             text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
             project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
-            context: getValues(`edit-context-${filterdTodos[currentIndex].id}`)
+            context: getValues(`edit-context-${filterdTodos[currentIndex].id}`),
+            detail: filterdTodos[currentIndex].detail
         }
         if (todoFunc.isEmpty(replace)) {
             handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
@@ -144,13 +145,14 @@ export const Todo = (
     const completeTask = (index: number) => {
         const _todos = todoFunc.modify(todos, {
             id: filterdTodos[index].id,
-            isCompletion: !filterdTodos[index].isCompletion,
+            is_complete: !filterdTodos[index].is_complete,
             priority: filterdTodos[index].priority,
-            completionDate: !filterdTodos[index].isCompletion ? yyyymmddhhmmss(new Date()) : "",
+            completionDate: !filterdTodos[index].is_complete ? yyyymmddhhmmss(new Date()) : null,
             creationDate: filterdTodos[index].creationDate,
             text: filterdTodos[index].text,
             project: filterdTodos[index].project,
-            context: filterdTodos[index].context
+            context: filterdTodos[index].context,
+            detail: filterdTodos[index].detail
         })
         handleSetTodos(_todos)
     }
@@ -314,7 +316,7 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['sortContext'].enable))
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
-        setSort("isCompletion")
+        setSort("is_complete")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortCompletion'].enable))
 

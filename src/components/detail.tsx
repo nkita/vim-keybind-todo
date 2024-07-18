@@ -20,10 +20,10 @@ export const Detail = ({
                 <li className="flex font-bold items-center gap-2" >
                     <span className="w-5 h-5 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                         {
-                            todo["isCompletion"] ? <FaCircleCheck className="text-green-500 w-5 h-5" /> : <FaRegCircle className="w-5 h-5" />
+                            todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-5 h-5" /> : <FaRegCircle className="w-5 h-5" />
                         }
                     </span>
-                    <span className={`${todo["isCompletion"] ? "text-muted-foreground/50" : "text-primary"}`}>
+                    <span className={`${todo["is_complete"] ? "text-muted-foreground/50" : "text-primary"}`}>
                         {todo["text"]}
                     </span>
                 </li>

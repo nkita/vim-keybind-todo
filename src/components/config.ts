@@ -102,7 +102,7 @@ export const keymap: Keymap = {
     insertTopOnSort: {
         keys: ['shift+i',],
         keysDisp: ['I'],
-        enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate', 'isCompletion'] },
+        enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate', 'is_complete'] },
         type: ["edit"],
         description: "タスク追加"
     },

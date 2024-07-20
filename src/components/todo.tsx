@@ -8,7 +8,6 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { randomUUID } from "crypto"
 
 export const Todo = (
     {
@@ -16,6 +15,7 @@ export const Todo = (
         filterdTodos,
         mode,
         sort,
+        loading,
         setTodos,
         setFilterdTodos,
         setMode,
@@ -27,6 +27,7 @@ export const Todo = (
         filterdTodos: TodoProps[]
         mode: Mode
         sort: Sort
+        loading: Boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setFilterdTodos: Dispatch<SetStateAction<TodoProps[]>>
         setMode: Dispatch<SetStateAction<Mode>>
@@ -530,6 +531,7 @@ export const Todo = (
                     sort={sort}
                     searchResultIndex={searchResultIndex}
                     command={command}
+                    loading={loading}
                     onClick={handleClickElement}
                     setCurrentIndex={setCurrentIndex}
                     register={register}

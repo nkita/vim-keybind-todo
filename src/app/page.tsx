@@ -13,8 +13,20 @@ import { isEqual } from "lodash";
 export default function Home() {
   const { getAccessTokenSilently } = useAuth0();
   const [token, setToken] = useState("")
-  const [apiTodoURL, setApiTodoURL] = useState("")
-  const [currentListID, setCurrentListID] = useState("1d6b35c2-e62c-4fe5-89a0-6bd8287685dc")
+  const [currentListID, setCurrentListID] = useState("")
+  const [todos, setTodos] = useState<TodoProps[]>([])
+  const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
+  const [isSave, setIsSave] = useState(false)
+  const [isUpdate, setIsUpdate] = useState(false)
+  const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
+  const [mode, setMode] = useState<Mode>('normal')
+  const [sort, setSort] = useState<Sort>(undefined)
+  const [isHelp, setHelp] = useState(false)
+
+  const [todosLoading, setTodosLoading] = useState(true)
+  const [listLoading, setListLoading] = useState(true)
+  const { data: list } = useFetchList("", token)
+  const { data: fetch_todo } = useFetchTodo(currentListID, token)
 
   useEffect(() => {
     async function getToken() {
@@ -26,30 +38,37 @@ export default function Home() {
     return (() => { getToken() })
   }, [getAccessTokenSilently])
 
-  const { data: list, isLoading: isLodingList } = useFetchList("", token)
-
   useEffect(() => {
-    if (list === null) {
-      const apiListURL = `${process.env.NEXT_PUBLIC_API}/api/list`
-      postFetch(apiListURL, token, { name: "first list" })
-      mutate(apiListURL)
+    try {
+      if (token) {
+        if (list === null) {
+          const apiListURL = `${process.env.NEXT_PUBLIC_API}/api/list`
+          postFetch(apiListURL, token, { name: "first list" })
+          mutate(apiListURL)
+          setListLoading(false)
+        } else if (list && list.length > 0) {
+          setCurrentListID(list[0].id)
+          setListLoading(false)
+        }
+      }
+    } catch (e) {
+      console.error(e)
+      setListLoading(false)
     }
   }, [list, token])
 
-  const [todos, setTodos] = useState<TodoProps[]>([])
-  const { data: fetch_todo, isLoading: isLoadingTodo } = useFetchTodo(currentListID, token)
   useEffect(() => {
-    if (fetch_todo && token && currentListID) {
-      setTodos(fetch_todo)
-      setPrevTodos(fetch_todo)
+    try {
+      if (fetch_todo && token && currentListID) {
+        setTodos(fetch_todo)
+        setPrevTodos(fetch_todo)
+        setTodosLoading(false)
+      }
+    } catch (e) {
+      console.error(e)
+      setTodosLoading(false)
     }
   }, [fetch_todo, token, currentListID])
-
-  const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
-  const [isSave, setIsSave] = useState(false)
-  useEffect(() => {
-    console.log("isSave=", isSave)
-  }, [isSave])
 
   const handleSaveTodos = async (
     todos: TodoProps[],
@@ -82,18 +101,10 @@ export default function Home() {
       setIsSave(false)
     }
   }
-
-  const [isUpdate, setIsUpdate] = useState(false)
-
   const saveTodos = useCallback(debounce((todos, prevTodos, token) => handleSaveTodos(todos, prevTodos, token), 5000), [])
   useEffect(() => {
     if (token && isUpdate) saveTodos(todos, prevTodos, token)
   }, [saveTodos, isUpdate, todos, token, prevTodos])
-
-  const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
-  const [mode, setMode] = useState<Mode>('normal')
-  const [sort, setSort] = useState<Sort>(undefined)
-  const [isHelp, setHelp] = useState(false)
 
   const handleToggleHelp = () => setHelp(!isHelp)
 
@@ -101,12 +112,12 @@ export default function Home() {
     <article className="h-screen bg-sky-50/50">
       <Header list={list} isSave={isSave} />
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
-        {isLoadingTodo && "loading"}
         <Todo
           todos={todos}
           filterdTodos={filterdTodos}
           mode={mode}
           sort={sort}
+          loading={listLoading && todosLoading}
           setTodos={setTodos}
           setFilterdTodos={setFilterdTodos}
           setMode={setMode}

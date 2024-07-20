@@ -17,6 +17,7 @@ export const TodoList = (
         sort,
         searchResultIndex,
         command,
+        loading,
         onClick,
         setCurrentIndex,
         register,
@@ -30,6 +31,7 @@ export const TodoList = (
         sort: Sort
         searchResultIndex: boolean[]
         command: string
+        loading: Boolean
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
         register: UseFormRegister<FieldValues>
@@ -74,6 +76,11 @@ export const TodoList = (
                 </div>
                 <Table className="pl-2 w-full border border-primary/90 h-[calc(100%-110px)] bg-card rounded-b-md" index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground">
+                        {loading &&
+                            <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
+                                <TableCell>Loading...</TableCell>
+                            </TableRow>
+                        }
                         {(sort !== undefined && mode === "editOnSort") &&
                             <TableRow className={`bg-accent text-accent-foreground`}>
                                 <TableCell className="w-[30px]"></TableCell>
@@ -93,7 +100,7 @@ export const TodoList = (
                                 <TableCell className="w-[13%] p-1 font-light text-lab text-ex-project">{currentProject}</TableCell>
                             </TableRow>
                         }
-                        {filterdTodos.length === 0 ? (
+                        {(!loading &&  filterdTodos.length === 0) ? (
                             <TableRow>
                                 <TableCell>No task. good!</TableCell>
                             </TableRow>
@@ -205,10 +212,6 @@ const Item = (
     const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
     const val = t[prefix] ?? ""
 
-
-    const addItem = (val: string) => {
-        console.log(val)
-    }
     return (
         <>
             <div className={`${isView && "hidden"} ${className}`}>

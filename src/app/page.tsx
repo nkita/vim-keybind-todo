@@ -1,4 +1,5 @@
 'use client'
+
 import { Todo } from "@/components/todo";
 import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
@@ -73,11 +74,12 @@ export default function Home() {
   const handleSaveTodos = async (
     todos: TodoProps[],
     prevTodos: TodoProps[],
+    listID: string,
     token: string,
   ) => {
     try {
       setIsSave(true)
-      const api = `${process.env.NEXT_PUBLIC_API}/api/list/${currentListID}/todo`
+      const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/todo`
       const updates = todos.filter(t => {
         const _t = prevTodos.filter(pt => pt.id === t.id)
         // modify or new task
@@ -93,24 +95,22 @@ export default function Home() {
       if (postData.length > 0) postFetch(api, token, postData).then(_ => {
         setPrevTodos([...todos])
         setIsUpdate(false)
-      }).catch(e => console.error(e))
+      }).catch(e => console.error(e)).finally(() => setIsSave(false))
 
     } catch (e) {
       console.error(e)
-    } finally {
-      setIsSave(false)
     }
   }
-  const saveTodos = useCallback(debounce((todos, prevTodos, token) => handleSaveTodos(todos, prevTodos, token), 5000), [])
+  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token) => handleSaveTodos(todos, prevTodos, listID, token), 5000), [])
   useEffect(() => {
-    if (token && isUpdate) saveTodos(todos, prevTodos, token)
-  }, [saveTodos, isUpdate, todos, token, prevTodos])
+    if (token && currentListID && isUpdate) saveTodos(todos, prevTodos, currentListID, token)
+  }, [saveTodos, isUpdate, todos, token, prevTodos, currentListID])
 
   const handleToggleHelp = () => setHelp(!isHelp)
 
   return (
     <article className="h-screen bg-sky-50/50">
-      <Header list={list} isSave={isSave} />
+      <Header list={list} isSave={isSave} isUpdate={isUpdate} />
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
           todos={todos}

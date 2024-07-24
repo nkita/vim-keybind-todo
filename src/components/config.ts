@@ -6,6 +6,7 @@ export type KeymapItem = {
     enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean } // and
     type: KeymapItemType[]
     description: string
+    options?: any
 }
 
 export type Keymap = {
@@ -49,6 +50,7 @@ export type Keymap = {
     searchEsc: KeymapItem;
     searchEnter: KeymapItem;
     viewHelp: KeymapItem;
+    save: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -305,5 +307,12 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: true },
         type: ["other"],
         description: "ヘルプの表示・非表示"
+    },
+    save: {
+        keys: ['Control+s'],
+        keysDisp: ['Ctrl+S'],
+        enable: { mode: ["normal"], withoutTask: true },
+        type: ["other"],
+        description: "保存"
     }
 }

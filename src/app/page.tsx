@@ -81,8 +81,10 @@ export default function Home() {
     prevTodos: TodoProps[],
     listID: string,
     token: string,
+    isUpdate: boolean,
   ) => {
     try {
+      if (!isUpdate) return
       setIsSave(true)
       const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/todo`
       const updates = todos.filter(t => {
@@ -110,12 +112,13 @@ export default function Home() {
       console.error(e)
     }
   }
-  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token) => handleSaveTodos(todos, prevTodos, listID, token), 5000), [])
+  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 5000), [])
+
   useEffect(() => {
-    if (token && currentListID && isUpdate) saveTodos(todos, prevTodos, currentListID, token)
+    if (token && currentListID && isUpdate) saveTodos(todos, prevTodos, currentListID, token, isUpdate)
   }, [saveTodos, isUpdate, todos, token, prevTodos, currentListID])
 
-  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token)
+  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
 
   const handleToggleHelp = () => setHelp(!isHelp)
 
@@ -135,6 +138,7 @@ export default function Home() {
           setSort={setSort}
           setIsUpdate={setIsUpdate}
           toggleHelp={handleToggleHelp}
+          onClickSaveButton={handleClickSaveButton}
         />
       </div>
       <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-[350px]" : "hidden"} border-t shadow-lg rounded-t-3xl bg-popover text-popover-foreground`}>

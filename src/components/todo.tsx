@@ -22,7 +22,8 @@ export const Todo = (
         setMode,
         setSort,
         setIsUpdate,
-        toggleHelp
+        toggleHelp,
+        onClickSaveButton
     }: {
         todos: TodoProps[]
         filterdTodos: TodoProps[]
@@ -35,6 +36,7 @@ export const Todo = (
         setSort: Dispatch<SetStateAction<Sort>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
         toggleHelp: () => void;
+        onClickSaveButton: () => void;
     }
 ) => {
     const [command, setCommand] = useState("")
@@ -174,6 +176,9 @@ export const Todo = (
      * Normal mode
      * 
      *******************/
+    // save
+    useHotkeys(keymap['save'].keys, (e) => onClickSaveButton(), setKeyEnableDefine(keymap['save'].enable))
+
     // move to up 
     useHotkeys(keymap['up'].keys, (e) => {
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)

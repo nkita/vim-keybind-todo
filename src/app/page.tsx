@@ -34,7 +34,12 @@ export default function Home() {
       try {
         const token = await getAccessTokenSilently()
         if (token) setToken(token)
-      } catch (e) { }
+      } catch (e) {
+        setListLoading(false)
+        setTodosLoading(false)
+        setTodos([])
+        setFilterdTodos([])
+      }
     }
     return (() => { getToken() })
   }, [getAccessTokenSilently])
@@ -92,10 +97,14 @@ export default function Home() {
         return pt
       })
       const postData = [...updates, ...deletes]
-      if (postData.length > 0) postFetch(api, token, postData).then(_ => {
-        setPrevTodos([...todos])
-        setIsUpdate(false)
-      }).catch(e => console.error(e)).finally(() => setIsSave(false))
+      if (postData.length > 0) {
+        postFetch(api, token, postData).then(_ => {
+          setPrevTodos([...todos])
+          setIsUpdate(false)
+        }).catch(e => console.error(e)).finally(() => setIsSave(false))
+      } else {
+        setIsSave(false)
+      }
 
     } catch (e) {
       console.error(e)

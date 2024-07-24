@@ -34,7 +34,7 @@ import { Spinner } from "./ui/spinner";
 import * as React from "react";
 import { CircleCheck, CloudUpload, SaveAllIcon } from "lucide-react";
 
-export default function Header({ list, isSave, isUpdate }: { list: any, isSave: boolean, isUpdate: boolean }) {
+export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
     const { loginWithRedirect, logout, user, isLoading } = useAuth0();
     const [addList, setAddList] = React.useState(false)
     return (
@@ -68,7 +68,7 @@ export default function Header({ list, isSave, isUpdate }: { list: any, isSave: 
                 ) : (
                     <div className="flex gap-2">
                         {isUpdate ? (
-                            <Button onClick={_ => { }} size={"default"} className="bg-blue-500 text-white hover:bg-blue-600 gap-1">
+                            <Button onClick={onClickSaveButton} size={"default"} className="bg-blue-500 text-white hover:bg-blue-600 gap-1">
                                 {isSave ? (
                                     <Spinner className="p-1 w-6 h-6 fill-blue-400" />
                                 ) : (

@@ -115,11 +115,13 @@ export default function Home() {
     if (token && currentListID && isUpdate) saveTodos(todos, prevTodos, currentListID, token)
   }, [saveTodos, isUpdate, todos, token, prevTodos, currentListID])
 
+  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token)
+
   const handleToggleHelp = () => setHelp(!isHelp)
 
   return (
     <article className="h-screen bg-sky-50/50">
-      <Header list={list} isSave={isSave} isUpdate={isUpdate} />
+      <Header list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
           todos={todos}

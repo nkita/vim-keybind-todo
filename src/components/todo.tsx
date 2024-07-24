@@ -8,6 +8,7 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
+import { isEqual } from "lodash";
 
 export const Todo = (
     {
@@ -120,25 +121,28 @@ export const Todo = (
         setIsUpdate(true)
     }
     const toNormalMode = () => {
-        const replace: TodoProps = {
-            id: filterdTodos[currentIndex].id,
-            is_complete: filterdTodos[currentIndex].is_complete,
-            priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`),
-            completionDate: filterdTodos[currentIndex].completionDate,
-            creationDate: filterdTodos[currentIndex].creationDate,
-            text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
-            project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
-            context: getValues(`edit-context-${filterdTodos[currentIndex].id}`),
-            detail: filterdTodos[currentIndex].detail
+        if (filterdTodos.length > 0) {
+            const replace: TodoProps = {
+                id: filterdTodos[currentIndex].id,
+                is_complete: filterdTodos[currentIndex].is_complete,
+                priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`),
+                completionDate: filterdTodos[currentIndex].completionDate,
+                creationDate: filterdTodos[currentIndex].creationDate,
+                text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
+                project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
+                context: getValues(`edit-context-${filterdTodos[currentIndex].id}`),
+                detail: filterdTodos[currentIndex].detail
+            }
+            if (todoFunc.isEmpty(replace)) {
+                handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
+                setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
+            } else {
+                const t = todos.filter(_t => _t.id === replace.id)[0]
+                if (!isEqual(t, replace)) handleSetTodos(todoFunc.modify(todos, replace))
+            }
+            // ソートした後に編集すると位置ズレを起こすため修正
+            setCurrentId(filterdTodos[currentIndex].id)
         }
-        if (todoFunc.isEmpty(replace)) {
-            handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
-            setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
-        } else {
-            handleSetTodos(todoFunc.modify(todos, replace))
-        }
-        // ソートした後に編集すると位置ズレを起こすため修正
-        setCurrentId(filterdTodos[currentIndex].id)
         setPrefix('text')
         setMode('normal')
     }

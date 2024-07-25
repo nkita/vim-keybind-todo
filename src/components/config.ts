@@ -116,7 +116,7 @@ export const keymap: Keymap = {
         description: "タスク追加（一番下）"
     },
     completion: {
-        keys: ['x'],
+        keys: ['Space'],
         enable: { mode: ["normal"], withoutTask: false },
         type: ["edit"],
         description: "完了・未完了"
@@ -176,7 +176,7 @@ export const keymap: Keymap = {
         description: "コンテキスト"
     },
     sortCompletion: {
-        keys: ['x'],
+        keys: ['Space'],
         enable: { mode: ["sort"] },
         type: ["other"],
         description: "完了・未完了"

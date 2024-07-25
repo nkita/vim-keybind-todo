@@ -106,13 +106,14 @@ export default function Home() {
         }).catch(e => console.error(e)).finally(() => setIsSave(false))
       } else {
         setIsSave(false)
+        setIsUpdate(false)
       }
 
     } catch (e) {
       console.error(e)
     }
   }
-  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 5000), [])
+  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 30000), [])
 
   useEffect(() => {
     if (token && currentListID && isUpdate) saveTodos(todos, prevTodos, currentListID, token, isUpdate)

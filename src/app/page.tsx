@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchList, useFetchTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { isEqual } from "lodash";
+import { todoFunc } from "@/lib/todo";
 
 export default function Home() {
   const { getAccessTokenSilently } = useAuth0();
@@ -87,18 +88,7 @@ export default function Home() {
       if (!isUpdate) return
       setIsSave(true)
       const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/todo`
-      const updates = todos.filter(t => {
-        const _t = prevTodos.filter(pt => pt.id === t.id)
-        // modify or new task
-        return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
-      })
-
-      const _ids = todos.map(t => t.id)
-      const deletes = prevTodos.filter(pt => !_ids.includes(pt.id)).map(pt => {
-        pt.isArchived = true
-        return pt
-      })
-      const postData = [...updates, ...deletes]
+      const postData = todoFunc.diff(todos, prevTodos)
       if (postData.length > 0) {
         postFetch(api, token, postData).then(_ => {
           setPrevTodos([...todos])
@@ -108,7 +98,6 @@ export default function Home() {
         setIsSave(false)
         setIsUpdate(false)
       }
-
     } catch (e) {
       console.error(e)
     }
@@ -129,6 +118,7 @@ export default function Home() {
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
           todos={todos}
+          prevTodos={prevTodos}
           filterdTodos={filterdTodos}
           mode={mode}
           sort={sort}

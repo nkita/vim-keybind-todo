@@ -1,5 +1,6 @@
 import { TodoProps, Sort } from "@/types"
 import { yyyymmddhhmmss } from "./time"
+import { isEqual } from "lodash"
 
 interface options {
     project: string
@@ -56,6 +57,19 @@ export const todoFunc = {
         }
     }),
     delete: (todos: TodoProps[], id: string) => todos.filter(t => t.id !== id),
+    diff: (todos: TodoProps[], prevTodos: TodoProps[]) => {
+        const updates = todos.filter(t => {
+            const _t = prevTodos.filter(pt => pt.id === t.id)
+            return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
+        })
+
+        const _ids = todos.map(t => t.id)
+        const deletes = prevTodos.filter(pt => !_ids.includes(pt.id)).map(pt => {
+            pt.isArchived = true
+            return pt
+        })
+        return [...updates, ...deletes]
+    },
     isEmpty: (todo: TodoProps) => {
         let isEmpty = true
         Object.entries(todo).map(([key, value]) => {

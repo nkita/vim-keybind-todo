@@ -13,6 +13,7 @@ import { isEqual } from "lodash";
 export const Todo = (
     {
         todos,
+        prevTodos,
         filterdTodos,
         mode,
         sort,
@@ -26,6 +27,7 @@ export const Todo = (
         onClickSaveButton
     }: {
         todos: TodoProps[]
+        prevTodos: TodoProps[]
         filterdTodos: TodoProps[]
         mode: Mode
         sort: Sort
@@ -120,7 +122,7 @@ export const Todo = (
      ****/
     const handleSetTodos = (_todos: TodoProps[]) => {
         setTodos(_todos)
-        setIsUpdate(true)
+        setIsUpdate(todoFunc.diff(_todos, prevTodos).length > 0)
     }
     const toNormalMode = () => {
         if (filterdTodos.length > 0) {

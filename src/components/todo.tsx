@@ -176,6 +176,9 @@ export const Todo = (
      * Normal mode
      * 
      *******************/
+    // useHotkeys("Space", (e) => console.log(e))
+
+
     // save
     useHotkeys(keymap['save'].keys, (e) => onClickSaveButton(), setKeyEnableDefine(keymap['save'].enable))
 

@@ -9,8 +9,9 @@ export interface TodoProps {
     project?: string    // +projctname
     context?: string    // @context    
     isArchived?: boolean
+    sort?: number
 }
 
 
-export type Sort = "text" | "priority" | "context" | "creationDate" | "is_complete" | undefined
+export type Sort = "text" | "priority" | "context" | "creationDate" | "is_complete" | "sort" | undefined
 export type Mode = "normal" | "edit" | "editOnSort" | "sort" | "command" | "number" | "search"

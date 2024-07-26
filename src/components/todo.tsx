@@ -81,17 +81,25 @@ export const Todo = (
         }
 
         if (sort !== undefined) {
-            _todos.sort((a, b) => {
-                let _a = a[sort]
-                let _b = b[sort]
-                if (sort === 'is_complete' || typeof _a === "boolean" || typeof _b === "boolean") {
-                    _a = _a === undefined ? "a" : _a ? undefined : "a"
-                    _b = _b === undefined ? "a" : _b ? undefined : "a"
-                }
-                if (_a === undefined || !_a) return 1
-                if (_b === undefined || !_b) return -1
-                return _a.localeCompare(_b); // 文字列の比較にする
-            });
+            if (sort === "sort") {
+                _todos.sort((a, b) => {
+                    let _a = a[sort] ?? 99999999
+                    let _b = b[sort] ?? 99999999
+                    return _a - _b
+                })
+            } else {
+                _todos.sort((a, b) => {
+                    let _a = a[sort]
+                    let _b = b[sort]
+                    if (sort === 'is_complete' || typeof _a === "boolean" || typeof _b === "boolean") {
+                        _a = _a === undefined ? "a" : _a ? undefined : "a"
+                        _b = _b === undefined ? "a" : _b ? undefined : "a"
+                    }
+                    if (_a === undefined || !_a) return 1
+                    if (_b === undefined || !_b) return -1
+                    return _a.localeCompare(_b); // 文字列の比較にする
+                });
+            }
         }
         setFilterdTodos(_todos)
         if (currentId !== undefined) {
@@ -116,13 +124,13 @@ export const Todo = (
         }
     }, [filterdTodos, currentId, mode, currentIndex, prefix, setFocus])
 
-
     /*****
      * common function
      ****/
     const handleSetTodos = (_todos: TodoProps[]) => {
-        setTodos(_todos)
-        setIsUpdate(todoFunc.diff(_todos, prevTodos).length > 0)
+        const _t = todoFunc.sortUpdate(_todos)
+        setTodos(_t)
+        setIsUpdate(todoFunc.diff(_t, prevTodos).length > 0)
     }
     const toNormalMode = () => {
         if (filterdTodos.length > 0) {
@@ -179,7 +187,6 @@ export const Todo = (
      * 
      *******************/
     // useHotkeys("Space", (e) => console.log(e))
-
 
     // save
     useHotkeys(keymap['save'].keys, (e) => onClickSaveButton(), setKeyEnableDefine(keymap['save'].enable))

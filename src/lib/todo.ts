@@ -54,6 +54,7 @@ export const todoFunc = {
             detail: t.id === replace.id ? replace.detail : t.detail,
             project: t.id === replace.id ? replace.project : t.project,
             context: t.id === replace.id ? replace.context : t.context,
+            sort: t.id === replace.id ? replace.sort: t.sort,
         }
     }),
     delete: (todos: TodoProps[], id: string) => todos.filter(t => t.id !== id),
@@ -69,6 +70,12 @@ export const todoFunc = {
             return pt
         })
         return [...updates, ...deletes]
+    },
+    sortUpdate: (todos: TodoProps[]) => {
+        return todos.map((t, i) => {
+            t.sort = i + 1
+            return t
+        })
     },
     isEmpty: (todo: TodoProps) => {
         let isEmpty = true

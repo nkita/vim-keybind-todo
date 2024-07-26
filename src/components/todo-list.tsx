@@ -100,7 +100,7 @@ export const TodoList = (
                                 <TableCell className="w-[13%] p-1 font-light text-lab text-ex-project">{currentProject}</TableCell>
                             </TableRow>
                         }
-                        {(!loading &&  filterdTodos.length === 0) ? (
+                        {(!loading && filterdTodos.length === 0) ? (
                             <TableRow>
                                 <TableCell>No task. good!</TableCell>
                             </TableRow>

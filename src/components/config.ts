@@ -3,7 +3,7 @@ export type KeymapItemType = "focus" | "edit" | "other"
 export type KeymapItem = {
     keys: string[]
     keysDisp?: string[]
-    enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean } // and
+    enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean, useKey?: boolean } // and
     type: KeymapItemType[]
     description: string
     options?: any
@@ -122,7 +122,8 @@ export const keymap: Keymap = {
         description: "完了・未完了"
     },
     editText: {
-        keys: ['Enter',],
+        keys: ['Enter', 'shift+t'],
+        keysDisp: ['Enter', 'T'],
         enable: { mode: ["normal"], withoutTask: false },
         type: ["edit"],
         description: "タスクを編集"
@@ -140,16 +141,18 @@ export const keymap: Keymap = {
         description: "優先度を編集"
     },
     editProject: {
-        keys: [':'],
+        keys: ['Shift+p'],
+        keysDisp: ['P',],
         enable: { mode: ["normal"], withoutTask: false },
         type: ["edit"],
         description: "プロジェクトを編集"
     },
     editContext: {
-        keys: ['@',],
+        keys: ['Shift+l',],
+        keysDisp: ['L',],
         enable: { mode: ["normal"], withoutTask: false },
         type: ["edit"],
-        description: "コンテキストを編集"
+        description: "ラベルを編集"
     },
     sortMode: {
         keys: ['s'],
@@ -158,7 +161,7 @@ export const keymap: Keymap = {
         description: "ソート"
     },
     sortPriority: {
-        keys: ['p'],
+        keys: ['p',],
         enable: { mode: ["sort"] },
         type: ["other"],
         description: "優先度"
@@ -170,10 +173,11 @@ export const keymap: Keymap = {
         description: "作成日"
     },
     sortContext: {
-        keys: ['@'],
+        keys: ['shift+l'],
+        keysDisp: ['L'],
         enable: { mode: ["sort"] },
         type: ["other"],
-        description: "コンテキスト"
+        description: "ラベル"
     },
     sortCompletion: {
         keys: ['Space'],
@@ -207,14 +211,14 @@ export const keymap: Keymap = {
     },
     numberMode: {
         keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
-        keysDisp: ['数字キー'],
+        keysDisp: ['数字'],
         enable: { mode: ["normal"], withoutTask: false },
         type: ["focus", "edit"],
         description: "行番号を入力"
     },
     numberInput: {
         keys: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-        keysDisp: ['数字キー'],
+        keysDisp: ['数字'],
         enable: { mode: ["number"], withoutTask: false },
         type: [],
         description: "行番号を入力"
@@ -271,7 +275,8 @@ export const keymap: Keymap = {
         description: "指定した行のコンテキストを編集"
     },
     editTextLine: {
-        keys: ['t'],
+        keys: ['Shift+t'],
+        keysDisp: ['T'],
         enable: { mode: ["number"], withoutTask: false },
         type: ["edit"],
         description: "指定した行のタスクを編集"
@@ -302,9 +307,8 @@ export const keymap: Keymap = {
         description: "検索"
     },
     viewHelp: {
-        keys: ['shift+h'],
-        keysDisp: ['H'],
-        enable: { mode: ["normal"], withoutTask: true },
+        keys: ['?'],
+        enable: { mode: ["normal"], withoutTask: true, useKey: true },
         type: ["other"],
         description: "ヘルプの表示・非表示"
     },

@@ -43,7 +43,7 @@ const Section = ({
     return (
         <section className={cn("m-2 overflow-auto w-1/3 h-full", className)}>
             <h2 className='text-sm text-accent-foreground'>{title}</h2>
-            <div className='p-4 bg-popover text-popover-foreground border rounded-md h-[calc(100%-35px)]'>
+            <div className='p-4 bg-popover text-popover-foreground border rounded-md h-[calc(100%-35px)] overflow-y-scroll'>
                 <ul className='grid grid-cols-1 sm:grid-cols-2'>
                     {
                         Object.entries(keymap).map(([key, value]) => {

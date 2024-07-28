@@ -169,14 +169,14 @@ export const TodoList = (
                 </Table>
                 <div className="flex justify-between text-sm">
                     <div>
+                        <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
+                    </div>
+                    <div>
                         {command ? (
                             <span>{command}</span>
                         ) : (
                             <span>--{mode}--</span>
                         )}
-                    </div>
-                    <div>
-                        <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                     </div>
                 </div>
             </div >

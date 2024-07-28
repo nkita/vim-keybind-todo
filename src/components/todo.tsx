@@ -52,7 +52,7 @@ export const Todo = (
     const [log, setLog] = useState("")
     const { register, setFocus, getValues, setValue } = useForm()
 
-    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean } | undefined) => {
+    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
         let enabledSort = true
         let enabledWithoutTask = true
@@ -70,7 +70,7 @@ export const Todo = (
             }
             enabledWithoutTask = filterdTodos.length === 0 ? keyConf.withoutTask ?? true : true
         }
-        return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true }
+        return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true, useKey: keyConf?.useKey ?? false }
     }
 
     useEffect(() => {
@@ -130,6 +130,7 @@ export const Todo = (
     const handleSetTodos = (_todos: TodoProps[]) => {
         const _t = todoFunc.sortUpdate(_todos)
         setTodos(_t)
+        // console.log(_t[0], prevTodos[0])
         setIsUpdate(todoFunc.diff(_t, prevTodos).length > 0)
     }
     const toNormalMode = () => {

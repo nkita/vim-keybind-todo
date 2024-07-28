@@ -74,7 +74,7 @@ export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { 
                                 ) : (
                                     <CloudUpload className="scale-75" />
                                 )}
-                                保存する <kbd>Ctrl</kbd>+<kbd>S</kbd>
+                                保存する <kbd className="bg-blue-400 text-blue-50 border-blue-300">Ctrl</kbd>+<kbd className="bg-blue-400 text-blue-50 border-blue-300">S</kbd>
                             </Button>
                         ) : (
                             <Button onClick={_ => { }} size={"default"} variant={"outline"} className="gap-1" disabled><CircleCheck className="scale-75" />保存済み</Button>

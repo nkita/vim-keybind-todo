@@ -140,6 +140,9 @@ export default function Home() {
           isTodos={filterdTodos.length > 0}
         />
       </div>
+      {!isHelp && <div className="w-full text-xs text-slate-500 text-right pr-2 absolute bottom-1">
+        ヘルプを開く<kbd>?</kbd>
+      </div>}
     </article >
   );
 }

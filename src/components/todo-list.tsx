@@ -123,7 +123,7 @@ export const TodoList = (
                                                         currentPrefix={prefix}
                                                         mode={mode}
                                                         label={t.priority ? t.priority : ""}
-                                                        className={"text-center"}
+                                                        className={"text-center text-xs"}
                                                         register={register} />
                                                 </TableCell>
                                                 <TableCell onDoubleClick={_ => onClick(index, 'text')} className="w-[64%]">
@@ -145,6 +145,7 @@ export const TodoList = (
                                                         prefix={"context"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
+                                                        className="text-xs"
                                                         label={t.context}
                                                         register={register} />
                                                 </TableCell>
@@ -156,6 +157,7 @@ export const TodoList = (
                                                         prefix={"project"}
                                                         currentPrefix={prefix}
                                                         mode={mode}
+                                                        className="text-xs"
                                                         label={t.project}
                                                         register={register} />
                                                 </TableCell>

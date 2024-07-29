@@ -283,7 +283,7 @@ export const keymap: Keymap = {
     },
     searchMode: {
         keys: ['/'],
-        enable: { mode: ["normal", "sort"], withoutTask: false },
+        enable: { mode: ["normal", "sort"], withoutTask: false, useKey: true },
         type: ["other"],
         description: "検索"
     },

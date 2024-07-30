@@ -6,6 +6,8 @@ import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from ".
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
+import { Item } from "./todo"
+
 export const TodoList = (
     {
         filterdTodos,
@@ -181,63 +183,6 @@ export const TodoList = (
                         )}
                     </div>
                 </div>
-            </div >
-        </>
-    )
-}
-
-const Item = (
-    {
-        t,
-        index,
-        mode,
-        currentIndex,
-        prefix,
-        currentPrefix,
-        label,
-        className,
-        register
-    }: {
-        t: TodoProps
-        index: number
-        currentIndex: number
-        prefix: "text" | "priority" | "project" | "context"
-        currentPrefix: string
-        mode: string
-        label: any
-        className?: string | undefined
-        register: any
-    }
-) => {
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
-    const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
-    const val = t[prefix] ?? ""
-
-    return (
-        <>
-            <div className={`${isView && "hidden"} ${className}`}>
-                <button
-                    autoFocus={currentIndex === index}
-                    className={_classNameCont}
-                    {...register(`${prefix}-${t.id}`)}
-                >
-                    {label}
-                </button>
-            </div>
-            <div className={`${!isView && "hidden"} ${className} font-bold`}>
-                {/* {(prefix === "project" || prefix === "context") ? (
-                    <DynamicSearchSelect tabIndex={-1} items={["project", "hobby"]} placeholder={"選択"} {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })} addItem={addItem} autoSave={false} />
-                ) : ( */}
-                <input
-                    tabIndex={-1}
-                    className={_classNameCont}
-                    type="text"
-                    maxLength={prefix === 'priority' ? 1 : -1}
-                    onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
-                    {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
-                />
-                {/* )} */}
             </div >
         </>
     )

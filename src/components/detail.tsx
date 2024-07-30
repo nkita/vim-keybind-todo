@@ -1,12 +1,21 @@
 import { TodoProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
-import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
+import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt } from "react-icons/fa6";
+import { UseFormRegister, FieldValues } from "react-hook-form"
+import { Item } from "./todo";
+
 export const Detail = ({
     todo,
-    onClick
+    mode,
+    prefix,
+    onClick,
+    register
 }: {
     todo: TodoProps
+    mode: string
+    prefix: string
     onClick: (prefix: string) => void
+    register: UseFormRegister<FieldValues>
 }) => {
     if (!todo) return <></>
     const creationDate = todo["creationDate"]
@@ -27,17 +36,32 @@ export const Detail = ({
                         {todo["text"]}
                     </span>
                 </li>
+                <li>
+                    <div className={`flex  text-sm font-light gap-1 hover:cursor-pointer`} onDoubleClick={_ => onClick("detail")}>
+                        <FaReceipt className="mt-2"/>
+                        <Item
+                            t={todo}
+                            index={0}
+                            currentIndex={0}
+                            prefix={"detail"}
+                            currentPrefix={prefix}
+                            mode={mode}
+                            className="text-sm w-full"
+                            label={todo.detail ? todo.detail : <span className="text-gray-400">詳細を入力…</span>}
+                            register={register} />
+                    </div>
+                </li>
                 {todo.context &&
                     <li>
-                        <div className={`flex items-center text-ex-label text-sm font-light`}>
+                        <div className={`flex items-center text-ex-label text-sm font-light gap-1`}>
                             <FaTag /> {todo.context}
                         </div>
                     </li>
                 }
                 {todo.project &&
                     <li>
-                        <div className={`flex items-center text-ex-project text-sm font-light`}>
-                            <FaSitemap /> {todo.project}
+                        <div className={`flex items-center text-ex-project text-sm font-light gap-1`}>
+                            <FaSitemap />{todo.project}
                         </div>
                     </li>
                 }

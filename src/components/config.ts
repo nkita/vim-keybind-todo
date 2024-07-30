@@ -24,6 +24,7 @@ export type Keymap = {
     editProject: KeymapItem;
     editContext: KeymapItem;
     editTextLine: KeymapItem;
+    editDetail: KeymapItem;
     editPriorityLine: KeymapItem;
     editProjectLine: KeymapItem;
     editContextLine: KeymapItem;
@@ -129,8 +130,8 @@ export const keymap: Keymap = {
         description: "タスクを編集"
     },
     delete: {
-        keys: ['d',],
-        enable: { mode: ["normal"], withoutTask: false },
+        keys: ['delete',],
+        enable: { mode: ["normal"], withoutTask: false, useKey: true },
         type: ["edit"],
         description: "タスクを削除"
     },
@@ -192,13 +193,13 @@ export const keymap: Keymap = {
         description: "ソート解除"
     },
     normalMode: {
-        keys: ['Esc', 'Enter'],
+        keys: ['Esc'],
         enable: { mode: ["edit", "command", "sort", 'number'] },
         type: ["edit"],
         description: "戻る"
     },
     normalModeOnSort: {
-        keys: ['Esc', 'Enter'],
+        keys: ['Esc'],
         enable: { mode: ["editOnSort"] },
         type: ["edit"],
         description: "戻る"
@@ -280,6 +281,12 @@ export const keymap: Keymap = {
         enable: { mode: ["number"], withoutTask: false },
         type: ["edit"],
         description: "指定した行のタスクを編集"
+    },
+    editDetail: {
+        keys: ['d'],
+        enable: { mode: ["normal"], withoutTask: false },
+        type: ["edit"],
+        description: "詳細を編集する"
     },
     searchMode: {
         keys: ['/'],

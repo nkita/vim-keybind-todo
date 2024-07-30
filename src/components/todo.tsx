@@ -144,7 +144,7 @@ export const Todo = (
                 text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
                 project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
                 context: getValues(`edit-context-${filterdTodos[currentIndex].id}`),
-                detail: filterdTodos[currentIndex].detail
+                detail: getValues(`edit-detail-${filterdTodos[currentIndex].id}`)
             }
             if (todoFunc.isEmpty(replace)) {
                 handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
@@ -491,6 +491,11 @@ export const Todo = (
         setCommand('')
     }, setKeyEnableDefine(keymap['editTextLine'].enable))
 
+    useHotkeys(keymap['editDetail'].keys, (e) => {
+        setPrefix("detail")
+        setMode('edit')
+    }, setKeyEnableDefine(keymap['editDetail'].enable))
+
     // change to search mode
     useHotkeys(keymap['searchMode'].keys, (e) => {
         setValue("search", "")
@@ -534,6 +539,10 @@ export const Todo = (
     }
     const handleClickDetailElement = (prefix: string) => {
         if (prefix === 'completion') completeTask(currentIndex)
+        if (prefix === 'detail') {
+            setPrefix("detail")
+            setMode("edit")
+        }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         toNormalMode()
@@ -562,10 +571,95 @@ export const Todo = (
             <div className="w-1/3 mt-12">
                 <Detail
                     todo={filterdTodos[currentIndex]}
+                    prefix={prefix}
+                    mode={mode}
                     onClick={handleClickDetailElement}
+                    register={register}
                 />
             </div>
         </div>
 
+    )
+}
+
+
+export const Item = (
+    {
+        t,
+        index,
+        mode,
+        currentIndex,
+        prefix,
+        currentPrefix,
+        label,
+        className,
+        register
+    }: {
+        t: TodoProps
+        index: number
+        currentIndex: number
+        prefix: "text" | "priority" | "project" | "context" | "detail"
+        currentPrefix: string
+        mode: string
+        label: any
+        className?: string | undefined
+        register: any
+    }
+) => {
+    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
+    const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
+    const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
+    const val = t[prefix] ?? ""
+
+    return (
+        <>
+            <div className={`${isView && "hidden"} ${className}`}>
+                {prefix === "detail" ? (
+                    <textarea
+                        tabIndex={-1}
+                        // className={_classNameCont}
+                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
+                        rows={10}
+                        value={t.detail ? t.detail : "詳細を入力…"}
+                    />
+                ) :
+                    (
+                        <button
+                            autoFocus={currentIndex === index}
+                            className={_classNameCont}
+                            {...register(`${prefix}-${t.id}`)}
+                        >
+                            {label}
+                        </button>
+                    )}
+            </div>
+            <div className={`${!isView && "hidden"} ${className} font-bold`}>
+                {/* {(prefix === "project" || prefix === "context") ? (
+                    <DynamicSearchSelect tabIndex={-1} items={["project", "hobby"]} placeholder={"選択"} {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })} addItem={addItem} autoSave={false} />
+                ) : ( */}
+                {prefix === "detail" ? (
+                    <textarea
+                        onMouseDown={e => e.stopPropagation()}
+                        tabIndex={-1}
+                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
+                        rows={10}
+                        type="text"
+                        onFocus={e => e.currentTarget.setSelectionRange(0, val.length)}
+                        {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
+                    />
+                ) :
+                    (
+                        <input
+                            tabIndex={-1}
+                            className={_classNameCont}
+                            type="text"
+                            maxLength={prefix === 'priority' ? 1 : -1}
+                            onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
+                            {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
+                        />
+                    )}
+                {/* )} */}
+            </div >
+        </>
     )
 }

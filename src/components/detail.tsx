@@ -27,9 +27,9 @@ export const Detail = ({
             <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
             <ul className="flex flex-col gap-3">
                 <li className="flex font-bold items-center gap-2" >
-                    <span className="w-5 h-5 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
+                    <span className="w-4 h-4 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                         {
-                            todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-5 h-5" /> : <FaRegCircle className="w-5 h-5" />
+                            todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
                         }
                     </span>
                     <span className={`${todo["is_complete"] ? "text-muted-foreground/50" : "text-primary"}`}>
@@ -37,8 +37,8 @@ export const Detail = ({
                     </span>
                 </li>
                 <li>
-                    <div className={`flex  text-sm font-light gap-1 hover:cursor-pointer`} onDoubleClick={_ => onClick("detail")}>
-                        <FaReceipt className="mt-2"/>
+                    <div className={`flex  text-sm font-light gap-1 hover:cursor-pointer`} onClick={_ => onClick("detail")}>
+                        <FaReceipt className="mt-2" />
                         <Item
                             t={todo}
                             index={0}
@@ -47,7 +47,7 @@ export const Detail = ({
                             currentPrefix={prefix}
                             mode={mode}
                             className="text-sm w-full"
-                            label={todo.detail ? todo.detail : <span className="text-gray-400">詳細を入力…</span>}
+                            label={""}
                             register={register} />
                     </div>
                 </li>

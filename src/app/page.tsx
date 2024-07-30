@@ -132,7 +132,7 @@ export default function Home() {
           onClickSaveButton={handleClickSaveButton}
         />
       </div>
-      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-[350px]" : "hidden"} border-t shadow-lg rounded-t-3xl bg-popover text-popover-foreground`}>
+      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-[550px]" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
         <h1 className="p-2 text-sm font-semibold text-center">ショートカット</h1>
         <Usage
           sort={sort}

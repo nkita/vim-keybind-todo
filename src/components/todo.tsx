@@ -620,7 +620,8 @@ export const Item = (
                         // className={_classNameCont}
                         className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
                         rows={10}
-                        value={t.detail ? t.detail : "詳細を入力…"}
+                        placeholder="詳細を入力…"
+                        {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
                     />
                 ) :
                     (
@@ -643,7 +644,7 @@ export const Item = (
                         tabIndex={-1}
                         className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
                         rows={10}
-                        type="text"
+                        placeholder="詳細を入力…"
                         onFocus={e => e.currentTarget.setSelectionRange(0, val.length)}
                         {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
                     />

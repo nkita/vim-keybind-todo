@@ -59,16 +59,16 @@ export const TodoList = (
                             </div>
                         </div>
                         <div className="w-[64%]">タスク</div>
-                        <div className="w-[13%]">
-                            <div className={`flex items-center ${sort === "context" && "font-semibold"}`}>
-                                <FaTag />
+                        <div className="flex w-[13%]">
+                            <FaTag />
+                            <div className="truncate">
                                 ラベル
-                                {sort === "context" && <FaArrowUpZA className="text-xs w-1" />}
                             </div>
+                            {sort === "context" && <FaArrowUpZA className="text-xs w-1" />}
                         </div>
-                        <div className="w-[13%]">
-                            <div className={`flex items-center`}>
-                                <FaSitemap className="w-4" />
+                        <div className="flex w-[13%]">
+                            <FaSitemap />
+                            <div className="truncate">
                                 プロジェクト
                             </div>
                         </div>

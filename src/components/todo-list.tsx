@@ -74,7 +74,7 @@ export const TodoList = (
                         </div>
                     </div>
                 </div>
-                <Table className="pl-2 w-full border border-primary/90 h-[calc(100%-110px)] bg-card rounded-b-md" index={currentIndex}>
+                <Table className="w-full border border-primary/90 h-[calc(100%-110px)] bg-card rounded-b-md" index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>

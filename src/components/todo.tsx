@@ -9,6 +9,11 @@ import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
 import { isEqual } from "lodash";
+import {
+    ResizableHandle,
+    ResizablePanel,
+    ResizablePanelGroup,
+} from "@/components/ui/resizable"
 
 export const Todo = (
     {
@@ -551,32 +556,35 @@ export const Todo = (
     }
     return (
         <div className={`flex gap-2 w-full h-full`} onMouseDown={handleMainMouseDown}>
-            <div className="w-2/3">
-                <TodoList
-                    filterdTodos={filterdTodos}
-                    currentIndex={currentIndex}
-                    prefix={prefix}
-                    mode={mode}
-                    projects={projects}
-                    currentProject={currentProject}
-                    sort={sort}
-                    searchResultIndex={searchResultIndex}
-                    command={command}
-                    loading={loading}
-                    onClick={handleClickElement}
-                    setCurrentIndex={setCurrentIndex}
-                    register={register}
-                />
-            </div>
-            <div className="w-1/3 mt-12">
-                <Detail
-                    todo={filterdTodos[currentIndex]}
-                    prefix={prefix}
-                    mode={mode}
-                    onClick={handleClickDetailElement}
-                    register={register}
-                />
-            </div>
+            <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
+                <ResizablePanel defaultSize={80} minSize={4}>
+                    <TodoList
+                        filterdTodos={filterdTodos}
+                        currentIndex={currentIndex}
+                        prefix={prefix}
+                        mode={mode}
+                        projects={projects}
+                        currentProject={currentProject}
+                        sort={sort}
+                        searchResultIndex={searchResultIndex}
+                        command={command}
+                        loading={loading}
+                        onClick={handleClickElement}
+                        setCurrentIndex={setCurrentIndex}
+                        register={register}
+                    />
+                </ResizablePanel>
+                <ResizableHandle className="w-0 px-1 bg-transparent border-0 outline-none ring-0" />
+                <ResizablePanel defaultSize={20} minSize={4} className=" mt-12" >
+                    <Detail
+                        todo={filterdTodos[currentIndex]}
+                        prefix={prefix}
+                        mode={mode}
+                        onClick={handleClickDetailElement}
+                        register={register}
+                    />
+                </ResizablePanel>
+            </ResizablePanelGroup>
         </div>
 
     )

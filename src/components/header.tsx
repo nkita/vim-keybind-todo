@@ -33,6 +33,7 @@ import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
 import { CircleCheck, CloudUpload, SaveAllIcon } from "lucide-react";
+import Link from "next/link";
 
 export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
     const { loginWithRedirect, logout, user, isLoading } = useAuth0();
@@ -101,10 +102,10 @@ export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { 
                                     <span className="text-muted-foreground font-light">{user?.email}</span>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem>
-                                    <FaGear className="mr-2 h-4 w-4" /><span>設定</span>
+                                <DropdownMenuItem >
+                                    <Link href={"/setting"} className="flex w-full"><FaGear className="mr-2 h-4 w-4" /><span>情報・設定</span></Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={_ => logout({ logoutParams: { returnTo: process.env.NEXT_PUBLIC_DOMAIN } })}>
+                                <DropdownMenuItem onClick={_ => logout({ logoutParams: { returnTo: process.env.NEXT_PUBLIC_DOMAIN } })} className="cursor-pointer">
                                     <FaArrowRightFromBracket className="mr-2 h-4 w-4" /><span>ログアウト</span>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

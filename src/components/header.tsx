@@ -102,9 +102,9 @@ export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { 
                                     <span className="text-muted-foreground font-light">{user?.email}</span>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem >
+                                {/* <DropdownMenuItem >
                                     <Link href={"/setting"} className="flex w-full"><FaGear className="mr-2 h-4 w-4" /><span>情報・設定</span></Link>
-                                </DropdownMenuItem>
+                                </DropdownMenuItem> */}
                                 <DropdownMenuItem onClick={_ => logout({ logoutParams: { returnTo: process.env.NEXT_PUBLIC_DOMAIN } })} className="cursor-pointer">
                                     <FaArrowRightFromBracket className="mr-2 h-4 w-4" /><span>ログアウト</span>
                                 </DropdownMenuItem>

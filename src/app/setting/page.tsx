@@ -17,9 +17,6 @@ export default function Home() {
         <div className="p-2 ">
           <ul>
             <li>Auto Save</li>
-            <li>Auto Save</li>
-            <li>Auto Save</li>
-            <li>Auto Save</li>
           </ul>
         </div>
       </div>

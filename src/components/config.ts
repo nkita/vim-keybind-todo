@@ -1,5 +1,5 @@
 import { Sort, Mode } from "@/types"
-export type KeymapItemType = "focus" | "edit" | "other"
+export type KeymapItemType = "focus" | "edit" | "add" | "sort" | "other" | "view"
 export type KeymapItem = {
     keys: string[]
     keysDisp?: string[]
@@ -86,34 +86,34 @@ export const keymap: Keymap = {
     insert: {
         keys: ['i',],
         enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
-        type: ["edit"],
+        type: ["add"],
         description: "タスク追加（前）"
     },
     append: {
         keys: ['a',],
         enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
-        type: ["edit"],
+        type: ["add"],
         description: "タスク追加（後）"
     },
     insertTop: {
         keys: ['shift+i',],
         keysDisp: ['I'],
         enable: { mode: ["normal"], sort: [undefined] },
-        type: ["edit"],
+        type: ["add"],
         description: "タスク追加（一番上）"
     },
     insertTopOnSort: {
         keys: ['shift+i',],
         keysDisp: ['I'],
         enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate', 'is_complete'] },
-        type: ["edit"],
+        type: ["add"],
         description: "タスク追加"
     },
     appendBottom: {
         keys: ['shift+a',],
         keysDisp: ['A'],
         enable: { mode: ["normal"], sort: [undefined], withoutTask: false },
-        type: ["edit"],
+        type: ["add"],
         description: "タスク追加（一番下）"
     },
     completion: {
@@ -159,63 +159,63 @@ export const keymap: Keymap = {
     sortMode: {
         keys: ['s'],
         enable: { mode: ["normal"] },
-        type: ["other"],
+        type: ["sort"],
         description: "ソート"
     },
     sortPriority: {
         keys: ['p',],
         enable: { mode: ["sort"] },
-        type: ["other"],
+        type: ["sort"],
         description: "優先度"
     },
     sortCreationDate: {
         keys: ['d'],
         enable: { mode: ["sort"] },
-        type: ["other"],
+        type: ["sort"],
         description: "作成日"
     },
     sortContext: {
         keys: ['shift+l'],
         keysDisp: ['L'],
         enable: { mode: ["sort"] },
-        type: ["other"],
+        type: ["sort"],
         description: "ラベル"
     },
     sortCompletion: {
         keys: ['Space'],
         enable: { mode: ["sort"] },
-        type: ["other"],
+        type: ["sort"],
         description: "完了・未完了"
     },
     sortClear: {
         keys: ['q'],
         enable: { mode: ["sort"] },
-        type: ["other"],
+        type: ["sort"],
         description: "ソート解除"
     },
     normalMode: {
         keys: ['Esc'],
         enable: { mode: ["edit", "command", "sort", 'number'] },
-        type: ["edit"],
+        type: ["other"],
         description: "戻る"
     },
     normalModeOnSort: {
         keys: ['Esc'],
         enable: { mode: ["editOnSort"] },
-        type: ["edit"],
+        type: ["other"],
         description: "戻る"
     },
     toggleCompletionTask: {
         keys: ['v'],
         enable: { mode: ["normal", "command"] },
-        type: ["other"],
+        type: ["view"],
         description: "完了済みタスクの表示・非表示"
     },
     numberMode: {
         keys: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
         keysDisp: ['数字'],
         enable: { mode: ["normal"], withoutTask: false },
-        type: ["focus", "edit"],
+        type: ["other"],
         description: "行番号を入力"
     },
     numberInput: {

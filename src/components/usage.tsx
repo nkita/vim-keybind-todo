@@ -16,9 +16,12 @@ export const Usage = ({
 
     return (
         <>
-            <article className="flex h-[calc(100%-30px)] ">
+            <article className="grid grid-cols-2 md:grid-cols-3 h-[calc(100%-30px)] ">
                 <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={"追加"} type='add' sort={sort} mode={mode} isTodos={isTodos} />
                 <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={"表示"} type='view' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={"ソート"} type='sort' sort={sort} mode={mode} isTodos={isTodos} />
                 <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} />
             </article >
         </>
@@ -41,7 +44,7 @@ const Section = ({
     className?: string
 }) => {
     return (
-        <section className={cn("m-2 overflow-auto w-1/3 h-full", className)}>
+        <section className={cn("m-2 overflow-auto h-full", className)}>
             <h2 className='text-sm text-accent-foreground'>{title}</h2>
             <div className='p-4 bg-popover text-popover-foreground border rounded-md h-[calc(100%-35px)] overflow-auto'>
                 <ul className='grid md:grid-cols-2 sm:grid-cols-1'>

@@ -11,6 +11,7 @@ import { useFetchList, useFetchTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { isEqual } from "lodash";
 import { todoFunc } from "@/lib/todo";
+import { useLocalStorage } from "@/hook/useLocalStrorage";
 
 export default function Home() {
   const { getAccessTokenSilently } = useAuth0();
@@ -23,7 +24,7 @@ export default function Home() {
   const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
   const [mode, setMode] = useState<Mode>('normal')
   const [sort, setSort] = useState<Sort>(undefined)
-  const [isHelp, setHelp] = useState(false)
+  const [isHelp, setHelp] = useLocalStorage("is_help",false)
 
   const [todosLoading, setTodosLoading] = useState(true)
   const [listLoading, setListLoading] = useState(true)

@@ -9,9 +9,10 @@ import { mutate } from "swr";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchList, useFetchTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
-import { isEqual } from "lodash";
 import { todoFunc } from "@/lib/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
+import { Button } from "@/components/ui/button";
+import { Keyboard } from "lucide-react";
 
 export default function Home() {
   const { getAccessTokenSilently } = useAuth0();
@@ -24,7 +25,7 @@ export default function Home() {
   const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
   const [mode, setMode] = useState<Mode>('normal')
   const [sort, setSort] = useState<Sort>(undefined)
-  const [isHelp, setHelp] = useLocalStorage("is_help",false)
+  const [isHelp, setHelp] = useLocalStorage("todo_is_help", false)
 
   const [todosLoading, setTodosLoading] = useState(true)
   const [listLoading, setListLoading] = useState(true)
@@ -134,15 +135,18 @@ export default function Home() {
         />
       </div>
       <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-[550px]" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
-        <h1 className="p-2 text-sm font-semibold text-center">ショートカット</h1>
+        <div className="flex justify-between">
+          <h1 className="flex gap-1 p-2 text-md font-semibold text-center"><Keyboard /> ショートカット</h1>
+          <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを閉じる<kbd>?</kbd></Button>
+        </div>
         <Usage
           sort={sort}
           mode={mode}
           isTodos={filterdTodos.length > 0}
         />
       </div>
-      {!isHelp && <div className="w-full text-xs text-slate-500 text-right pr-2 absolute bottom-1">
-        ヘルプを開く<kbd>?</kbd>
+      {!isHelp && <div className="w-full text-slate-500 text-right pr-2 absolute bottom-1">
+        <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを開く<kbd>?</kbd></Button>
       </div>}
     </article >
   );

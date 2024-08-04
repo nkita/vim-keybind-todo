@@ -3,6 +3,7 @@ import { keymap, Keymap, KeymapItem, KeymapItemType } from '@/components/config'
 import { Sort, Mode } from "@/types"
 import { title } from 'process'
 import { cn } from "@/lib/utils"
+import { ArrowDownAz, Bird, Monitor, Move, Pencil, Plus, SquarePlus } from 'lucide-react'
 
 export const Usage = ({
     sort,
@@ -17,12 +18,12 @@ export const Usage = ({
     return (
         <>
             <article className="grid grid-cols-2 md:grid-cols-3 h-[calc(100%-30px)] ">
-                <Section title={"移動"} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
-                <Section title={"追加"} type='add' sort={sort} mode={mode} isTodos={isTodos} />
-                <Section title={"編集"} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
-                <Section title={"表示"} type='view' sort={sort} mode={mode} isTodos={isTodos} />
-                <Section title={"ソート"} type='sort' sort={sort} mode={mode} isTodos={isTodos} />
-                <Section title={"その他"} type='other' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={<><Move className='scale-75' />移動</>} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={<><Plus className='scale-75' /> 追加</>} type='add' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={<><Pencil className='scale-75' />編集</>} type='edit' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={<><Monitor className='scale-75' />表示</>} type='view' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={<><ArrowDownAz className='scale-75' /> ソート</>} type='sort' sort={sort} mode={mode} isTodos={isTodos} />
+                <Section title={<><Bird className='scale-75' /> その他</>} type='other' sort={sort} mode={mode} isTodos={isTodos} />
             </article >
         </>
     )
@@ -36,7 +37,7 @@ const Section = ({
     isTodos,
     className,
 }: {
-    title: string
+    title: any,
     type: KeymapItemType,
     sort: Sort
     mode: Mode
@@ -45,7 +46,7 @@ const Section = ({
 }) => {
     return (
         <section className={cn("m-2 overflow-auto h-full", className)}>
-            <h2 className='text-sm text-accent-foreground'>{title}</h2>
+            <h2 className='flex text-sm text-accent-foreground items-center font-semibold'>{title}</h2>
             <div className='p-4 bg-popover text-popover-foreground border rounded-md h-[calc(100%-35px)] overflow-auto'>
                 <ul className='grid md:grid-cols-2 sm:grid-cols-1'>
                     {

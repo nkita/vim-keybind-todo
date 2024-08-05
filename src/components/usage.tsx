@@ -17,7 +17,7 @@ export const Usage = ({
 
     return (
         <>
-            <article className="grid grid-cols-2 md:grid-cols-3 h-[calc(100%-30px)] ">
+            <article className="grid grid-cols-2 md:grid-cols-3 h-[calc(100%-40px)] ">
                 <Section title={<><Move className='scale-75' />移動</>} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
                 <Section title={<><Plus className='scale-75' /> 追加</>} type='add' sort={sort} mode={mode} isTodos={isTodos} />
                 <Section title={<><Pencil className='scale-75' />編集</>} type='edit' sort={sort} mode={mode} isTodos={isTodos} />

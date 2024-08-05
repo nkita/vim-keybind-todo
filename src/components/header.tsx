@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth0 } from "@auth0/auth0-react";
+import { useAuth0, User } from "@auth0/auth0-react";
 import { FaRegUser, FaGear, FaArrowRightFromBracket, FaPlus, FaRotate, FaTrash } from "react-icons/fa6";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
@@ -35,8 +35,8 @@ import * as React from "react";
 import { CircleCheck, CloudUpload, SaveAllIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
-    const { loginWithRedirect, logout, user, isLoading } = useAuth0();
+export default function Header({ user, userLoading, list, isSave, isUpdate, onClickSaveButton }: { user: User | undefined, userLoading: boolean, list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
+    const { loginWithRedirect, logout } = useAuth0();
     const [addList, setAddList] = React.useState(false)
     return (
         <div className="flex justify-between items-center w-full py-3 px-4">
@@ -61,7 +61,7 @@ export default function Header({ list, isSave, isUpdate, onClickSaveButton }: { 
                     </div>
                 )}
             </div>
-            {isLoading ? (
+            {userLoading ? (
                 <Spinner className="p-1 w-9 h-9" />
             ) :
                 !user ? (

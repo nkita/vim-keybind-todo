@@ -1,7 +1,7 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useCallback, Dispatch, SetStateAction } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { Usage } from "@/components/usage";
 import Header from "@/components/header";
@@ -15,10 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Keyboard } from "lucide-react";
 
 export default function Home() {
-  const { getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently, user, isLoading: userLoading } = useAuth0();
   const [token, setToken] = useState("")
   const [currentListID, setCurrentListID] = useState("")
   const [todos, setTodos] = useState<TodoProps[]>([])
+  const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo-local-storage", [])
   const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
   const [isSave, setIsSave] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
@@ -40,8 +41,6 @@ export default function Home() {
       } catch (e) {
         setListLoading(false)
         setTodosLoading(false)
-        setTodos([])
-        setFilterdTodos([])
       }
     }
     return (() => { getToken() })
@@ -77,7 +76,7 @@ export default function Home() {
       console.error(e)
       setTodosLoading(false)
     }
-  }, [fetch_todo, token, currentListID])
+  }, [user, userLoading, fetch_todo, token, currentListID])
 
   const handleSaveTodos = async (
     todos: TodoProps[],
@@ -116,16 +115,16 @@ export default function Home() {
 
   return (
     <article className="h-screen bg-sky-50/50">
-      <Header list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
+      <Header user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
         <Todo
-          todos={todos}
+          todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}
           filterdTodos={filterdTodos}
           mode={mode}
           sort={sort}
-          loading={listLoading && todosLoading}
-          setTodos={setTodos}
+          loading={listLoading && todosLoading && userLoading}
+          setTodos={!userLoading && user ? setTodos : setTodosLS}
           setFilterdTodos={setFilterdTodos}
           setMode={setMode}
           setSort={setSort}
@@ -134,7 +133,7 @@ export default function Home() {
           onClickSaveButton={handleClickSaveButton}
         />
       </div>
-      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-[550px]" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
+      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-full" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
         <div className="flex justify-between">
           <h1 className="flex gap-1 p-2 text-md font-semibold text-center"><Keyboard /> ショートカット</h1>
           <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを閉じる<kbd>?</kbd></Button>

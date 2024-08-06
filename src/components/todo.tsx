@@ -123,7 +123,7 @@ export const Todo = (
         if (filterdTodos.length > 0 && currentIndex !== - 1) {
             const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
             const formid = `${prefix}-${id}`
-            if (mode === 'edit') setFocus(`edit-${formid}`)
+            if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${formid}`)
             if (mode === 'normal') setFocus(formid)
             if (mode === 'editOnSort') setFocus("newtask")
         }
@@ -386,6 +386,11 @@ export const Todo = (
         setCommand('')
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable))
 
+    useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
+        if (!e.isComposing) toNormalMode()
+        setCommand('')
+    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable))
+
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
         setMode('number')
@@ -498,7 +503,7 @@ export const Todo = (
 
     useHotkeys(keymap['editDetail'].keys, (e) => {
         setPrefix("detail")
-        setMode('edit')
+        setMode('editDetail')
     }, setKeyEnableDefine(keymap['editDetail'].enable))
 
     // change to search mode
@@ -546,7 +551,7 @@ export const Todo = (
         if (prefix === 'completion') completeTask(currentIndex)
         if (prefix === 'detail') {
             setPrefix("detail")
-            setMode("edit")
+            setMode("editDetail")
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
@@ -616,7 +621,7 @@ export const Item = (
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
     const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
-    const isView = currentIndex === index && currentPrefix === prefix && mode === "edit"
+    const isView = currentIndex === index && currentPrefix === prefix && (mode === "edit" || mode === "editDetail")
     const val = t[prefix] ?? ""
 
     return (

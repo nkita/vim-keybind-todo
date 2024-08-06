@@ -37,6 +37,7 @@ export type Keymap = {
     sortCompletion: KeymapItem;
     sortClear: KeymapItem
     normalMode: KeymapItem;
+    normalModefromEditDetail: KeymapItem;
     normalModeOnSort: KeymapItem;
     toggleCompletionTask: KeymapItem;
     numberMode: KeymapItem;
@@ -194,14 +195,20 @@ export const keymap: Keymap = {
         description: "ソート解除"
     },
     normalMode: {
-        keys: ['Esc'],
+        keys: ['Esc', 'Enter'],
         enable: { mode: ["edit", "command", "sort", 'number'] },
         type: ["other"],
         description: "戻る"
     },
     normalModeOnSort: {
-        keys: ['Esc'],
+        keys: ['Esc', 'Enter'],
         enable: { mode: ["editOnSort"] },
+        type: ["other"],
+        description: "戻る"
+    },
+    normalModefromEditDetail: {
+        keys: ['Esc'],
+        enable: { mode: ["editDetail",] },
         type: ["other"],
         description: "戻る"
     },
@@ -316,7 +323,7 @@ export const keymap: Keymap = {
     },
     viewHelp: {
         keys: ['?'],
-        enable: { mode: ["normal"], withoutTask: true, useKey: true },
+        enable: { mode: ["normal", "sort", "command"], withoutTask: true, useKey: true },
         type: ["other"],
         description: "ヘルプの表示・非表示"
     },

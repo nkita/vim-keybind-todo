@@ -133,7 +133,7 @@ export default function Home() {
           onClickSaveButton={handleClickSaveButton}
         />
       </div>
-      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-full" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
+      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-4/6" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
         <div className="flex justify-between">
           <h1 className="flex gap-1 p-2 text-md font-semibold text-center"><Keyboard /> ショートカット</h1>
           <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを閉じる<kbd>?</kbd></Button>

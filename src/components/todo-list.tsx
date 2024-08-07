@@ -103,8 +103,8 @@ export const TodoList = (
                         {!loading &&
                             <>
                                 {filterdTodos.length === 0 ? (
-                                    <TableRow>
-                                        <TableCell>No task. good!</TableCell>
+                                    <TableRow className="text-center text-muted-foreground text-xs">
+                                        <TableCell className="p-2"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
                                     </TableRow>
                                 ) : (
                                     <>

@@ -76,7 +76,7 @@
   }
 
   kbd {
-    @apply px-1 my-1 text-xs shadow-md font-semibold text-gray-500 bg-gray-100 border border-gray-200 rounded-md dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500
+    @apply px-2 py-1 text-xs shadow-sm font-thin text-gray-500 bg-gray-100 border border-gray-200 rounded-md dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500
   }
 }
 

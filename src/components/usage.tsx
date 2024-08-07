@@ -60,9 +60,9 @@ const Section = ({
                                     <li key={key} className={`flex items-center gap-2 text-xs p-1`}>
                                         <div>
                                             {value.keysDisp !== undefined ? (
-                                                value.keysDisp.map((k, i) => <kbd key={`usage${k} ${i}`} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold border rounded-md">{k}</kbd>)
+                                                value.keysDisp.map((k, i) => <kbd key={`usage${k} ${i}`}>{k}</kbd>)
                                             ) : (
-                                                value.keys.map(k => <kbd key={k} className="flex items-center h-[25px] px-2 py-0.5 text-xs font-semibold border rounded-md">{k}</kbd>)
+                                                value.keys.map(k => <kbd key={k}>{k}</kbd>)
                                             )}
                                         </div>
                                         :

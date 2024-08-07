@@ -559,6 +559,11 @@ export const Todo = (
         e.preventDefault()
         e.stopPropagation();
     }
+
+    const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
+        toNormalMode()
+        e.stopPropagation();
+    }
     return (
         <div className={`flex gap-2 w-full h-full`} onMouseDown={handleMainMouseDown}>
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
@@ -585,6 +590,7 @@ export const Todo = (
                         todo={filterdTodos[currentIndex]}
                         prefix={prefix}
                         mode={mode}
+                        onMouseDownEvent={handleDetailMouseDown}
                         onClick={handleClickDetailElement}
                         register={register}
                     />
@@ -646,14 +652,13 @@ export const Item = (
                             {label}
                         </button>
                     )}
-            </div>
-            <div className={`${!isView && "hidden"} ${className} font-bold`}>
+            </div >
+            <div className={`${!isView && "hidden"} ${className} font-bold`} onMouseDown={e => e.stopPropagation()}>
                 {/* {(prefix === "project" || prefix === "context") ? (
                     <DynamicSearchSelect tabIndex={-1} items={["project", "hobby"]} placeholder={"選択"} {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })} addItem={addItem} autoSave={false} />
                 ) : ( */}
                 {prefix === "detail" ? (
                     <textarea
-                        onMouseDown={e => e.stopPropagation()}
                         tabIndex={-1}
                         className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
                         rows={10}

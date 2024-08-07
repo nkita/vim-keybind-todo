@@ -100,73 +100,77 @@ export const TodoList = (
                                 <TableCell className="w-[13%] p-1 font-light text-lab text-ex-project">{currentProject}</TableCell>
                             </TableRow>
                         }
-                        {(!loading && filterdTodos.length === 0) ? (
-                            <TableRow>
-                                <TableCell>No task. good!</TableCell>
-                            </TableRow>
-                        ) : (
+                        {!loading &&
                             <>
-                                {
-                                    filterdTodos.map((t, index) => {
-                                        return (
-                                            <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
-                                                <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
-                                                <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
-                                                    {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
-                                                </TableCell>
-                                                <TableCell className="w-[30px] text-center" onDoubleClick={_ => onClick(index, 'priority')}>
-                                                    <Item
-                                                        t={t}
-                                                        index={index}
-                                                        currentIndex={currentIndex}
-                                                        prefix={"priority"}
-                                                        currentPrefix={prefix}
-                                                        mode={mode}
-                                                        label={t.priority ? t.priority : ""}
-                                                        className={"text-center text-xs"}
-                                                        register={register} />
-                                                </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'text')} className="w-[64%]">
-                                                    <Item
-                                                        t={t}
-                                                        index={index}
-                                                        currentIndex={currentIndex}
-                                                        prefix={"text"}
-                                                        currentPrefix={prefix}
-                                                        mode={mode}
-                                                        label={t.text}
-                                                        register={register} />
-                                                </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-                                                    <Item
-                                                        t={t}
-                                                        index={index}
-                                                        currentIndex={currentIndex}
-                                                        prefix={"context"}
-                                                        currentPrefix={prefix}
-                                                        mode={mode}
-                                                        className="text-xs"
-                                                        label={t.context}
-                                                        register={register} />
-                                                </TableCell>
-                                                <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
-                                                    <Item
-                                                        t={t}
-                                                        index={index}
-                                                        currentIndex={currentIndex}
-                                                        prefix={"project"}
-                                                        currentPrefix={prefix}
-                                                        mode={mode}
-                                                        className="text-xs"
-                                                        label={t.project}
-                                                        register={register} />
-                                                </TableCell>
-                                            </TableRow>
-                                        )
-                                    })
-                                }
+                                {filterdTodos.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell>No task. good!</TableCell>
+                                    </TableRow>
+                                ) : (
+                                    <>
+                                        {
+                                            filterdTodos.map((t, index) => {
+                                                return (
+                                                    <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
+                                                        <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
+                                                        <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
+                                                            {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                        </TableCell>
+                                                        <TableCell className="w-[30px] text-center" onDoubleClick={_ => onClick(index, 'priority')}>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"priority"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                label={t.priority ? t.priority : ""}
+                                                                className={"text-center text-xs"}
+                                                                register={register} />
+                                                        </TableCell>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className="w-[64%]">
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"text"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                label={t.text}
+                                                                register={register} />
+                                                        </TableCell>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"context"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                className="text-xs"
+                                                                label={t.context}
+                                                                register={register} />
+                                                        </TableCell>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                            <Item
+                                                                t={t}
+                                                                index={index}
+                                                                currentIndex={currentIndex}
+                                                                prefix={"project"}
+                                                                currentPrefix={prefix}
+                                                                mode={mode}
+                                                                className="text-xs"
+                                                                label={t.project}
+                                                                register={register} />
+                                                        </TableCell>
+                                                    </TableRow>
+                                                )
+                                            })
+                                        }
+                                    </>
+                                )}
                             </>
-                        )}
+                        }
                     </TableBody>
                 </Table>
                 <div className="flex justify-between text-sm">

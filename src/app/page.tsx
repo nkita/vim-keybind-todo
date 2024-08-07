@@ -112,7 +112,6 @@ export default function Home() {
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
 
   const handleToggleHelp = () => setHelp(!isHelp)
-
   return (
     <article className="h-screen bg-sky-50/50">
       <Header user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
@@ -123,7 +122,7 @@ export default function Home() {
           filterdTodos={filterdTodos}
           mode={mode}
           sort={sort}
-          loading={listLoading && todosLoading && userLoading}
+          loading={listLoading || todosLoading || userLoading}
           setTodos={!userLoading && user ? setTodos : setTodosLS}
           setFilterdTodos={setFilterdTodos}
           setMode={setMode}

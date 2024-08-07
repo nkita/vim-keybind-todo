@@ -41,7 +41,7 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, onCl
     return (
         <div className="flex justify-between items-center w-full py-3 px-4">
             <div className="flex items-center gap-2 h-9">
-                <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">Fast Todo</h1>
+                <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">VTodo</h1>
             </div>
             <div className="gap-1 hidden">
                 {addList ? (

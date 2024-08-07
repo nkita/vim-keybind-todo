@@ -584,7 +584,7 @@ export const Todo = (
                         register={register}
                     />
                 </ResizablePanel>
-                <ResizableHandle className="w-0 px-1 bg-transparent border-0 outline-none ring-0" />
+                <ResizableHandle className="w-1 px-1 bg-border-0 outline-none ring-0" />
                 <ResizablePanel defaultSize={20} minSize={4} className=" mt-12" >
                     <Detail
                         todo={filterdTodos[currentIndex]}

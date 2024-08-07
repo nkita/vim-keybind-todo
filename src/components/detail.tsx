@@ -3,18 +3,21 @@ import { getTimeAgo } from "@/lib/time"
 import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt } from "react-icons/fa6";
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Item } from "./todo";
+import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 
 export const Detail = ({
     todo,
     mode,
     prefix,
     onClick,
+    onMouseDownEvent,
     register
 }: {
     todo: TodoProps
     mode: string
     prefix: string
     onClick: (prefix: string) => void
+    onMouseDownEvent: (e: MouseEvent<HTMLDivElement>) => void
     register: UseFormRegister<FieldValues>
 }) => {
     if (!todo) return <></>
@@ -23,7 +26,7 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
     return (
-        <div className="p-4 w-full border rounded-md bg-white border-primary/90">
+        <div className="p-4 w-full border rounded-md bg-white border-primary/90" onMouseDown={onMouseDownEvent}>
             <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
             <ul className="flex flex-col gap-3">
                 <li className="flex font-bold items-center gap-2" >

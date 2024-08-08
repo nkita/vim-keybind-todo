@@ -637,7 +637,7 @@ export const Item = (
                     <textarea
                         tabIndex={-1}
                         // className={_classNameCont}
-                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
+                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
                         rows={10}
                         placeholder="詳細を入力…"
                         {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
@@ -653,14 +653,14 @@ export const Item = (
                         </button>
                     )}
             </div >
-            <div className={`${!isView && "hidden"} ${className} font-bold`} onMouseDown={e => e.stopPropagation()}>
+            <div className={`${!isView && "hidden"} ${className} font-bold h-full`} onMouseDown={e => e.stopPropagation()}>
                 {/* {(prefix === "project" || prefix === "context") ? (
                     <DynamicSearchSelect tabIndex={-1} items={["project", "hobby"]} placeholder={"選択"} {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })} addItem={addItem} autoSave={false} />
                 ) : ( */}
                 {prefix === "detail" ? (
                     <textarea
                         tabIndex={-1}
-                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none"}
+                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
                         rows={10}
                         placeholder="詳細を入力…"
                         onFocus={e => e.currentTarget.setSelectionRange(0, val.length)}

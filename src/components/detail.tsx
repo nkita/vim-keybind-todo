@@ -26,9 +26,9 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
     return (
-        <div className="p-4 w-full border rounded-md bg-white border-primary/90" onMouseDown={onMouseDownEvent}>
+        <div className="p-4 w-full border rounded-md bg-white border-primary/90 overflow-auto h-[80%]" onMouseDown={onMouseDownEvent}>
             <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
-            <ul className="flex flex-col gap-3">
+            <ul className="flex flex-col gap-3 h-[90%]">
                 <li className="flex font-bold items-center gap-2" >
                     <span className="w-4 h-4 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                         {
@@ -39,8 +39,8 @@ export const Detail = ({
                         {todo["text"]}
                     </span>
                 </li>
-                <li>
-                    <div className={`flex  text-sm font-light gap-1 hover:cursor-pointer`} onClick={_ => onClick("detail")}>
+                <li className="h-full">
+                    <div className={`flex text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")}>
                         <FaReceipt className="mt-2" />
                         <Item
                             t={todo}
@@ -49,7 +49,7 @@ export const Detail = ({
                             prefix={"detail"}
                             currentPrefix={prefix}
                             mode={mode}
-                            className="text-sm w-full"
+                            className="text-sm w-full h-full"
                             label={""}
                             register={register} />
                     </div>

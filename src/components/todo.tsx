@@ -109,7 +109,7 @@ export const Todo = (
         setFilterdTodos(_todos)
         if (currentId !== undefined) {
             const index = _todos.map(t => t.id).indexOf(currentId)
-            if (index >= 0) setCurrentIndex(index)
+            setCurrentIndex(index >= 0 ? index : _todos.length - 1)
             setCurrentId(undefined)
         }
     }, [todos, currentId, currentProject, sort, viewCompletionTask, setFilterdTodos])

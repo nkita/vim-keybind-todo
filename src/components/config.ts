@@ -266,7 +266,8 @@ export const keymap: Keymap = {
         description: "指定した行の前へタスクを追加"
     },
     editProjectLine: {
-        keys: [':'],
+        keys: ['shift-p'],
+        keysDisp: ["P"],
         enable: { mode: ["number"], withoutTask: false },
         type: ["edit"],
         description: "指定した行のプロジェクトを編集"
@@ -278,13 +279,14 @@ export const keymap: Keymap = {
         description: "指定した行のプライオリティを編集"
     },
     editContextLine: {
-        keys: ['c'],
+        keys: ['shift-l'],
+        keysDisp: ["L"],
         enable: { mode: ["number"], withoutTask: false },
         type: ["edit"],
-        description: "指定した行のコンテキストを編集"
+        description: "指定した行のラベルを編集"
     },
     editTextLine: {
-        keys: ['Shift+t'],
+        keys: ['shift+t'],
         keysDisp: ['T'],
         enable: { mode: ["number"], withoutTask: false },
         type: ["edit"],

@@ -122,9 +122,9 @@ export const Todo = (
     useEffect(() => {
         if (filterdTodos.length > 0 && currentIndex !== - 1) {
             const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
-            const formid = `${prefix}-${id}`
-            if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${formid}`)
-            if (mode === 'normal') setFocus(formid)
+            const formid = `${mode}-${prefix}-${id}`
+            if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
+            if (mode === 'normal') setFocus(`list-${prefix}-${id}`)
             if (mode === 'editOnSort') setFocus("newtask")
         }
     }, [filterdTodos, currentId, mode, currentIndex, prefix, setFocus])
@@ -135,21 +135,33 @@ export const Todo = (
     const handleSetTodos = (_todos: TodoProps[]) => {
         const _t = todoFunc.sortUpdate(_todos)
         setTodos(_t)
-        // console.log(_t[0], prevTodos[0])
+        _t.forEach(t => {
+            setValue(`edit-content-text-${t.id}`, t.text)
+            setValue(`edit-list-text-${t.id}`, t.text)
+        })
+        // console.log(_t, prevTodos)
         setIsUpdate(todoFunc.diff(_t, prevTodos).length > 0)
     }
     const toNormalMode = () => {
         if (filterdTodos.length > 0) {
+            const positions = {
+                editDetail: ["content", "list"],
+                default: ["list", "content"]
+            };
+            const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
+            const replaceText = getValues(`edit-${updatePosition}-text-${filterdTodos[currentIndex].id}`)
+            setValue(`edit-${otherPosition}-text-${filterdTodos[currentIndex].id}`, replaceText)
             const replace: TodoProps = {
                 id: filterdTodos[currentIndex].id,
                 is_complete: filterdTodos[currentIndex].is_complete,
-                priority: getValues(`edit-priority-${filterdTodos[currentIndex].id}`),
+                priority: getValues(`edit-${updatePosition}-priority-${filterdTodos[currentIndex].id}`),
                 completionDate: filterdTodos[currentIndex].completionDate,
                 creationDate: filterdTodos[currentIndex].creationDate,
-                text: getValues(`edit-text-${filterdTodos[currentIndex].id}`),
-                project: getValues(`edit-project-${filterdTodos[currentIndex].id}`),
-                context: getValues(`edit-context-${filterdTodos[currentIndex].id}`),
-                detail: getValues(`edit-detail-${filterdTodos[currentIndex].id}`)
+                text: replaceText,
+                project: getValues(`edit-${updatePosition}-project-${filterdTodos[currentIndex].id}`),
+                context: getValues(`edit-${updatePosition}-context-${filterdTodos[currentIndex].id}`),
+                detail: getValues(`edit-${updatePosition}-detail-${filterdTodos[currentIndex].id}`),
+                sort: filterdTodos[currentIndex].sort
             }
             if (todoFunc.isEmpty(replace)) {
                 handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
@@ -175,7 +187,8 @@ export const Todo = (
             text: filterdTodos[index].text,
             project: filterdTodos[index].project,
             context: filterdTodos[index].context,
-            detail: filterdTodos[index].detail
+            detail: filterdTodos[index].detail,
+            sort: filterdTodos[index].sort
         })
         handleSetTodos(_todos)
     }
@@ -549,8 +562,8 @@ export const Todo = (
     }
     const handleClickDetailElement = (prefix: string) => {
         if (prefix === 'completion') completeTask(currentIndex)
-        if (prefix === 'detail') {
-            setPrefix("detail")
+        if (prefix === 'detail' || prefix === "detailText") {
+            setPrefix(prefix)
             setMode("editDetail")
         }
     }
@@ -612,7 +625,8 @@ export const Item = (
         currentPrefix,
         label,
         className,
-        register
+        register,
+        position = "list"
     }: {
         t: TodoProps
         index: number
@@ -623,11 +637,14 @@ export const Item = (
         label: any
         className?: string | undefined
         register: any
+        position?: "list" | "content"
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = "p-1 w-full text-left truncate outline-none bg-transparent"
-    const isView = currentIndex === index && currentPrefix === prefix && (mode === "edit" || mode === "editDetail")
+    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" && "truncate"}`
+    const isView = currentIndex === index
+        && currentPrefix === prefix
+        && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
     const val = t[prefix] ?? ""
 
     return (
@@ -640,17 +657,19 @@ export const Item = (
                         className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
                         rows={10}
                         placeholder="詳細を入力…"
-                        {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
+                        {...register(`edit-${position}-${prefix}-${t.id}`)}
                     />
                 ) :
                     (
-                        <button
-                            autoFocus={currentIndex === index}
-                            className={_classNameCont}
-                            {...register(`${prefix}-${t.id}`)}
-                        >
-                            {label}
-                        </button>
+                        <>
+                            <button
+                                autoFocus={currentIndex === index}
+                                className={_classNameCont}
+                                {...register(`${position}-${prefix}-${t.id}`)}
+                            >
+                                {label}
+                            </button>
+                        </>
                     )}
             </div >
             <div className={`${!isView && "hidden"} ${className} font-bold h-full`} onMouseDown={e => e.stopPropagation()}>
@@ -664,7 +683,7 @@ export const Item = (
                         rows={10}
                         placeholder="詳細を入力…"
                         onFocus={e => e.currentTarget.setSelectionRange(0, val.length)}
-                        {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
+                        {...register(`edit-${position}-${prefix}-${t.id}`)}
                     />
                 ) :
                     (
@@ -674,7 +693,7 @@ export const Item = (
                             type="text"
                             maxLength={prefix === 'priority' ? 1 : -1}
                             onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
-                            {...register(`edit-${prefix}-${t.id}`, { value: t[prefix] })}
+                            {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
                         />
                     )}
                 {/* )} */}

@@ -57,7 +57,7 @@ const Section = ({
 
                             if (value.type.includes(type) && enabled) {
                                 return (
-                                    <li key={key} className={`flex items-center gap-2 text-xs p-1`}>
+                                    <li key={key} className={`flex items-center gap-2 text-xs p-2`}>
                                         <div>
                                             {value.keysDisp !== undefined ? (
                                                 value.keysDisp.map((k, i) => <kbd key={`usage${k} ${i}`}>{k}</kbd>)

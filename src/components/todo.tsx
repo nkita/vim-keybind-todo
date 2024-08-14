@@ -79,6 +79,11 @@ export const Todo = (
     }
 
     useEffect(() => {
+        const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
+        setProjects(Array.from(new Set(filteredProjects)));
+    }, [todos])
+
+    useEffect(() => {
         let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
 
         if (!viewCompletionTask) {
@@ -107,27 +112,26 @@ export const Todo = (
             }
         }
         setFilterdTodos(_todos)
-        if (currentId !== undefined) {
-            const index = _todos.map(t => t.id).indexOf(currentId)
-            setCurrentIndex(index >= 0 ? index : _todos.length - 1)
-            setCurrentId(undefined)
-        }
-    }, [todos, currentId, currentProject, sort, viewCompletionTask, setFilterdTodos])
-
-    useEffect(() => {
-        const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
-        setProjects(Array.from(new Set(filteredProjects)));
-    }, [todos,])
+    }, [todos, currentProject, sort, viewCompletionTask, setFilterdTodos])
 
     useEffect(() => {
         if (filterdTodos.length > 0 && currentIndex !== - 1) {
-            const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
-            const formid = `${mode}-${prefix}-${id}`
-            if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
-            if (mode === 'normal') setFocus(`list-${prefix}-${id}`)
-            if (mode === 'editOnSort') setFocus("newtask")
+            if (currentId && currentIndex !== filterdTodos.map(t => t.id).indexOf(currentId ? currentId : "")) {
+                let index = filterdTodos.map(t => t.id).indexOf(currentId)
+                if (index === -1) {
+                    index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex > 0 ? currentIndex - 1 : currentIndex
+                }
+                setCurrentIndex(index)
+                setCurrentId(undefined)
+            } else {
+                const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
+                if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
+                if (mode === 'normal') setFocus(`list-${prefix}-${id}`)
+                if (mode === 'editOnSort') setFocus("newtask")
+            }
         }
-    }, [filterdTodos, currentId, mode, currentIndex, prefix, setFocus])
+    }, [filterdTodos, mode, currentId, currentIndex, prefix, setFocus])
+
 
     /*****
      * common function
@@ -171,7 +175,8 @@ export const Todo = (
                 if (!isEqual(t, replace)) handleSetTodos(todoFunc.modify(todos, replace))
             }
             // ソートした後に編集すると位置ズレを起こすため修正
-            setCurrentId(filterdTodos[currentIndex].id)
+            setCurrentIndex(todoFunc.getIndexById(filterdTodos, filterdTodos[currentIndex].id))
+
         }
         setPrefix('text')
         setMode('normal')
@@ -326,9 +331,10 @@ export const Todo = (
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
+        console.log(currentIndex, filterdTodos)
         const id = filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined
         setViewCompletionTask(!viewCompletionTask)
-        if (id !== undefined) setCurrentId(id)
+        setCurrentId(id)
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
 
     /*******************

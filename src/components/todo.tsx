@@ -51,7 +51,7 @@ export const Todo = (
     const [currentProject, setCurrentProject] = useState("")
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
-    const [currentId, setCurrentId] = useState<string | undefined>(undefined)
+    const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
@@ -116,13 +116,13 @@ export const Todo = (
 
     useEffect(() => {
         if (filterdTodos.length > 0 && currentIndex !== - 1) {
-            if (currentId && currentIndex !== filterdTodos.map(t => t.id).indexOf(currentId ? currentId : "")) {
-                let index = filterdTodos.map(t => t.id).indexOf(currentId)
+            if (keepPositionId && currentIndex !== filterdTodos.map(t => t.id).indexOf(keepPositionId ? keepPositionId : "")) {
+                let index = filterdTodos.map(t => t.id).indexOf(keepPositionId)
                 if (index === -1) {
                     index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex > 0 ? currentIndex - 1 : currentIndex
                 }
                 setCurrentIndex(index)
-                setCurrentId(undefined)
+                setKeepPositionId(undefined)
             } else {
                 const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
                 if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
@@ -130,7 +130,7 @@ export const Todo = (
                 if (mode === 'editOnSort') setFocus("newtask")
             }
         }
-    }, [filterdTodos, mode, currentId, currentIndex, prefix, setFocus])
+    }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus])
 
 
     /*****
@@ -204,14 +204,15 @@ export const Todo = (
         setCommand('')
         setMode('normal')
     }
+
+    const keepPosition = (id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
+
     /** hotkeys  */
     /*******************
      * 
      * Normal mode
      * 
      *******************/
-    // useHotkeys("Space", (e) => console.log(e))
-
     // save
     useHotkeys(keymap['save'].keys, (e) => onClickSaveButton(), setKeyEnableDefine(keymap['save'].enable))
 
@@ -331,10 +332,8 @@ export const Todo = (
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
-        console.log(currentIndex, filterdTodos)
-        const id = filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined
         setViewCompletionTask(!viewCompletionTask)
-        setCurrentId(id)
+        keepPosition()
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
 
     /*******************
@@ -345,11 +344,13 @@ export const Todo = (
     useHotkeys(keymap['sortPriority'].keys, (e) => {
         setSort("priority")
         setMode("normal")
+        keepPosition()
     }, setKeyEnableDefine(keymap['sortPriority'].enable))
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
         setSort(undefined)
         setMode("normal")
+        keepPosition()
     }, setKeyEnableDefine(keymap['sortClear'].enable))
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
@@ -360,11 +361,13 @@ export const Todo = (
     useHotkeys(keymap['sortContext'].keys, (e) => {
         setSort("context")
         setMode("normal")
+        keepPosition()
     }, setKeyEnableDefine(keymap['sortContext'].enable))
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
         setSort("is_complete")
         setMode("normal")
+        keepPosition()
     }, setKeyEnableDefine(keymap['sortCompletion'].enable))
 
 
@@ -397,7 +400,7 @@ export const Todo = (
             if (!todoFunc.isEmpty(newtask)) {
                 handleSetTodos([newtask, ...todos])
                 setValue("newtask", "")
-                setCurrentId(newId)
+                keepPosition(newId)
             }
             setPrefix('text')
             setMode('normal')

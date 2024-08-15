@@ -143,7 +143,7 @@ export const Todo = (
             setValue(`edit-content-text-${t.id}`, t.text)
             setValue(`edit-list-text-${t.id}`, t.text)
         })
-        // console.log(_t, prevTodos)
+        // console.log(_t[0], prevTodos[0])
         setIsUpdate(todoFunc.diff(_t, prevTodos).length > 0)
     }
     const toNormalMode = () => {
@@ -158,15 +158,16 @@ export const Todo = (
             const replace: TodoProps = {
                 id: filterdTodos[currentIndex].id,
                 is_complete: filterdTodos[currentIndex].is_complete,
-                priority: getValues(`edit-${updatePosition}-priority-${filterdTodos[currentIndex].id}`),
+                priority: getValues(`edit-list-priority-${filterdTodos[currentIndex].id}`),
                 completionDate: filterdTodos[currentIndex].completionDate,
                 creationDate: filterdTodos[currentIndex].creationDate,
                 text: replaceText,
-                project: getValues(`edit-${updatePosition}-project-${filterdTodos[currentIndex].id}`),
-                context: getValues(`edit-${updatePosition}-context-${filterdTodos[currentIndex].id}`),
-                detail: getValues(`edit-${updatePosition}-detail-${filterdTodos[currentIndex].id}`),
+                project: getValues(`edit-list-project-${filterdTodos[currentIndex].id}`),
+                context: getValues(`edit-list-context-${filterdTodos[currentIndex].id}`),
+                detail: getValues(`edit-content-detail-${filterdTodos[currentIndex].id}`) ?? "",
                 sort: filterdTodos[currentIndex].sort
             }
+            console.log(replace)
             if (todoFunc.isEmpty(replace)) {
                 handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
                 setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
@@ -332,8 +333,8 @@ export const Todo = (
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
-        setViewCompletionTask(!viewCompletionTask)
         keepPosition()
+        setViewCompletionTask(!viewCompletionTask)
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
 
     /*******************
@@ -342,15 +343,15 @@ export const Todo = (
      * 
      *******************/
     useHotkeys(keymap['sortPriority'].keys, (e) => {
+        keepPosition()
         setSort("priority")
         setMode("normal")
-        keepPosition()
     }, setKeyEnableDefine(keymap['sortPriority'].enable))
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
+        keepPosition()
         setSort(undefined)
         setMode("normal")
-        keepPosition()
     }, setKeyEnableDefine(keymap['sortClear'].enable))
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
@@ -359,15 +360,15 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
 
     useHotkeys(keymap['sortContext'].keys, (e) => {
+        keepPosition()
         setSort("context")
         setMode("normal")
-        keepPosition()
     }, setKeyEnableDefine(keymap['sortContext'].enable))
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
+        keepPosition()
         setSort("is_complete")
         setMode("normal")
-        keepPosition()
     }, setKeyEnableDefine(keymap['sortCompletion'].enable))
 
 

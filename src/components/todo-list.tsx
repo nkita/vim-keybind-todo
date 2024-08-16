@@ -37,10 +37,13 @@ export const TodoList = (
         register: UseFormRegister<FieldValues>
     }
 ) => {
+    const tabHeight = 30
+    const tableHeadHeight = 35
+    const taskBarHeight = 20
     return (
         <>
             <div className="h-full">
-                <div className="pt-4 flex overflow-auto flex-nowrap text-nowrap">
+                <div className={`flex overflow-auto flex-nowrap text-nowrap h-[${tabHeight}px]`}>
                     <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map((p, i) => {
                         return (
@@ -48,7 +51,7 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className="text-xs bg-primary text-primary-foreground rounded-tr-md p-1 py-2">
+                <div className={`text-xs bg-primary text-primary-foreground rounded-tr-sm p-1 py-2 h-[${tableHeadHeight}px]`}>
                     <div className="flex gap-1">
                         <div className="w-[30px]"></div>
                         <div className="w-[30px]"></div>
@@ -74,7 +77,7 @@ export const TodoList = (
                         </div>
                     </div>
                 </div>
-                <Table className="w-full border border-primary/90 h-[calc(100%-110px)] bg-card rounded-b-md" index={currentIndex}>
+                <Table className={`w-full border border-primary/90 h-[calc(100%-${tabHeight + tableHeadHeight + taskBarHeight}px)] bg-card border-b-0`} index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -173,16 +176,16 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className="flex justify-between text-sm">
-                    <div>
+                <div className={`border border-t-gray-300 border-primary text-primary-foreground rounded-b-sm h-[${taskBarHeight}px]`}>
+                    <div className="flex justify-between text-sm text-gray-600 h-full px-2">
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
-                    </div>
-                    <div>
-                        {command ? (
-                            <span>{command}</span>
-                        ) : (
-                            <span>--{mode}--</span>
-                        )}
+                        <div className="flex items-center">
+                            {command ? (
+                                <span>{command}</span>
+                            ) : (
+                                <span>--{mode}--</span>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div >

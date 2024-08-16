@@ -112,10 +112,14 @@ export default function Home() {
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
 
   const handleToggleHelp = () => setHelp(!isHelp)
+  const headerHeight = "60px"
   return (
     <article className="h-screen bg-sky-50/50">
-      <Header user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
-      <div className={`px-4 w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : " h-[calc(100vh-100px)]"} `}>
+      <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
+      {/* {!isHelp && <div className="w-full text-slate-500 text-right pr-2 absolute bottom-1">
+        <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを開く<kbd>?</kbd></Button>
+      </div>} */}
+      <div className={`w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : `h-[calc(100vh-${headerHeight})]`}`}>
         <Todo
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}
@@ -143,9 +147,6 @@ export default function Home() {
           isTodos={filterdTodos.length > 0}
         />
       </div>
-      {!isHelp && <div className="w-full text-slate-500 text-right pr-2 absolute bottom-1">
-        <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを開く<kbd>?</kbd></Button>
-      </div>}
     </article >
   );
 }

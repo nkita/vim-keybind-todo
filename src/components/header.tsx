@@ -35,17 +35,17 @@ import * as React from "react";
 import { CircleCheck, CloudUpload, SaveAllIcon } from "lucide-react";
 import Link from "next/link";
 
-export default function Header({ user, userLoading, list, isSave, isUpdate, onClickSaveButton }: { user: User | undefined, userLoading: boolean, list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
+export default function Header({ user, userLoading, list, isSave, isUpdate, height, onClickSaveButton }: { height: string, user: User | undefined, userLoading: boolean, list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
     const { loginWithRedirect, logout } = useAuth0();
     const [addList, setAddList] = React.useState(false)
     return (
-        <div className="flex justify-between items-center w-full py-3 px-4">
+        <div className={`flex justify-between items-center w-full py-3 px-1 h-[${height}]`}>
             <div className="flex items-center gap-2 h-9">
                 <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">VTodo</h1>
             </div>
             <div className="gap-1 hidden">
                 {addList ? (
-                    <input type="text" placeholder="新しいタスクを追加" className={`p-1`}></input>
+                    <input type="text" placeholder="新しいタスクを追加" className={`p - 1`}></input>
                 ) : (
                     <div>
                         <Select>

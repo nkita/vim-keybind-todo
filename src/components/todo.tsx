@@ -588,9 +588,9 @@ export const Todo = (
         e.stopPropagation();
     }
     return (
-        <div className={`flex gap-2 w-full h-full`} onMouseDown={handleMainMouseDown}>
+        <div className={`flex gap-2 w-full h-full pb-1`} onMouseDown={handleMainMouseDown}>
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                <ResizablePanel defaultSize={80} minSize={4}>
+                <ResizablePanel defaultSize={80} minSize={4} className="pl-1">
                     <TodoList
                         filterdTodos={filterdTodos}
                         currentIndex={currentIndex}
@@ -607,8 +607,8 @@ export const Todo = (
                         register={register}
                     />
                 </ResizablePanel>
-                <ResizableHandle className="w-1 px-1 bg-border-0 outline-none ring-0" />
-                <ResizablePanel defaultSize={20} minSize={4} className=" mt-12" >
+                <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-primary/50 transition-all ease-in" />
+                <ResizablePanel defaultSize={20} minSize={4} className="pr-1" >
                     <Detail
                         todo={filterdTodos[currentIndex]}
                         prefix={prefix}

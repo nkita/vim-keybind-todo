@@ -172,21 +172,23 @@ export const Todo = (
                 detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
                 sort: targetTodo.sort
             }
-            let _todo: TodoProps[] = []
+            let _todos: TodoProps[] = []
             if (todoFunc.isEmpty(replace)) {
                 console.log(todoFunc.delete(todos, targetTodoId), currentIndex === 0 ? 0 : currentIndex - 1)
-                _todo = todoFunc.delete(todos, targetTodoId)
-                handleSetTodos(_todo)
+                _todos = todoFunc.delete(todos, targetTodoId)
+                handleSetTodos(_todos)
                 setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
             } else {
                 const t = todos.filter(_t => _t.id === replace.id)[0]
                 if (!isEqual(t, replace)) {
-                    _todo = todoFunc.modify(todos, replace)
-                    handleSetTodos(_todo)
+                    _todos = todoFunc.modify(todos, replace)
+                    handleSetTodos(_todos)
+                } else {
+                    _todos = todos
                 }
             }
             // ソートした後に編集すると位置ズレを起こすため修正
-            setCurrentIndex(todoFunc.getIndexById(_todo, targetTodoId))
+            setCurrentIndex(todoFunc.getIndexById(_todos, targetTodoId))
 
         }
         setPrefix('text')

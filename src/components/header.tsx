@@ -38,8 +38,9 @@ import Link from "next/link";
 export default function Header({ user, userLoading, list, isSave, isUpdate, height, onClickSaveButton }: { height: string, user: User | undefined, userLoading: boolean, list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
     const { loginWithRedirect, logout } = useAuth0();
     const [addList, setAddList] = React.useState(false)
+    const h = `h-[${height}]`
     return (
-        <div className={`flex justify-between items-center w-full py-3 px-1 h-[${height}]`}>
+        <div className={`flex justify-between items-center w-full py-3 px-1 ${h}`}>
             <div className="flex items-center gap-2 h-9">
                 <h1 className="border p-1 rounded-md bg-primary text-primary-foreground">VTodo</h1>
             </div>

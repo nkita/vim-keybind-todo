@@ -113,13 +113,14 @@ export default function Home() {
 
   const handleToggleHelp = () => setHelp(!isHelp)
   const headerHeight = "60px"
+  const mainPCHeight = `h-[calc(100vh-${headerHeight})]`
   return (
     <article className="h-screen bg-sky-50/50">
-      <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
+      <Header height={"60px"} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       {/* {!isHelp && <div className="w-full text-slate-500 text-right pr-2 absolute bottom-1">
         <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを開く<kbd>?</kbd></Button>
       </div>} */}
-      <div className={`w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : `h-[calc(100vh-${headerHeight})]`}`}>
+      <div className={`w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : mainPCHeight}`}>
         <Todo
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}

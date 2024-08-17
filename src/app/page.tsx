@@ -120,7 +120,8 @@ export default function Home() {
       {/* {!isHelp && <div className="w-full text-slate-500 text-right pr-2 absolute bottom-1">
         <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを開く<kbd>?</kbd></Button>
       </div>} */}
-      <div className={`w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : mainPCHeight}`}>
+      {/* <div className={`w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : mainPCHeight}`}> */}
+      <div className={`w-full ${mainPCHeight}`}>
         <Todo
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}

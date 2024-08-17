@@ -48,7 +48,7 @@ const Section = ({
         <section className={cn("m-2 overflow-auto h-full", className)}>
             <h2 className='flex text-sm text-accent-foreground items-center font-semibold'>{title}</h2>
             <div className='p-4 bg-popover text-popover-foreground border rounded-md h-[calc(100%-35px)] overflow-auto'>
-                <ul className='grid md:grid-cols-2 sm:grid-cols-1'>
+                <ul className='grid md:grid-cols-1 sm:grid-cols-1'>
                     {
                         Object.entries(keymap).map(([key, value]) => {
                             const enabled = value.enable?.mode.includes(mode)

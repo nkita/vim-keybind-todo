@@ -152,31 +152,41 @@ export const Todo = (
                 editDetail: ["content", "list"],
                 default: ["list", "content"]
             };
+
+            const targetTodo = filterdTodos[currentIndex]
+            const targetTodoId = targetTodo.id
             const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
-            const replaceText = getValues(`edit-${updatePosition}-text-${filterdTodos[currentIndex].id}`)
-            setValue(`edit-${otherPosition}-text-${filterdTodos[currentIndex].id}`, replaceText)
+
+            const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
+            setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
+
             const replace: TodoProps = {
-                id: filterdTodos[currentIndex].id,
-                is_complete: filterdTodos[currentIndex].is_complete,
-                priority: getValues(`edit-list-priority-${filterdTodos[currentIndex].id}`),
-                completionDate: filterdTodos[currentIndex].completionDate,
-                creationDate: filterdTodos[currentIndex].creationDate,
+                id: targetTodoId,
+                is_complete: targetTodo.is_complete,
+                priority: getValues(`edit-list-priority-${targetTodoId}`),
+                completionDate: targetTodo.completionDate,
+                creationDate: targetTodo.creationDate,
                 text: replaceText,
-                project: getValues(`edit-list-project-${filterdTodos[currentIndex].id}`),
-                context: getValues(`edit-list-context-${filterdTodos[currentIndex].id}`),
-                detail: getValues(`edit-content-detail-${filterdTodos[currentIndex].id}`) ?? "",
-                sort: filterdTodos[currentIndex].sort
+                project: getValues(`edit-list-project-${targetTodoId}`),
+                context: getValues(`edit-list-context-${targetTodoId}`),
+                detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
+                sort: targetTodo.sort
             }
-            console.log(replace)
+            let _todo: TodoProps[] = []
             if (todoFunc.isEmpty(replace)) {
-                handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
+                console.log(todoFunc.delete(todos, targetTodoId), currentIndex === 0 ? 0 : currentIndex - 1)
+                _todo = todoFunc.delete(todos, targetTodoId)
+                handleSetTodos(_todo)
                 setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
             } else {
                 const t = todos.filter(_t => _t.id === replace.id)[0]
-                if (!isEqual(t, replace)) handleSetTodos(todoFunc.modify(todos, replace))
+                if (!isEqual(t, replace)) {
+                    _todo = todoFunc.modify(todos, replace)
+                    handleSetTodos(_todo)
+                }
             }
             // ソートした後に編集すると位置ズレを起こすため修正
-            setCurrentIndex(todoFunc.getIndexById(filterdTodos, filterdTodos[currentIndex].id))
+            setCurrentIndex(todoFunc.getIndexById(_todo, targetTodoId))
 
         }
         setPrefix('text')

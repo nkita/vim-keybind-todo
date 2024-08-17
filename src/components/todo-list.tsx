@@ -37,13 +37,15 @@ export const TodoList = (
         register: UseFormRegister<FieldValues>
     }
 ) => {
+    const hcss = "h-[varpx]"
+    const hcssMain = "h-[calc(100%-varpx)]"
     const tabHeight = 30
     const tableHeadHeight = 35
     const taskBarHeight = 20
     return (
         <>
             <div className="h-full">
-                <div className={`flex overflow-auto flex-nowrap text-nowrap h-[${tabHeight}px]`}>
+                <div className={`flex overflow-auto flex-nowrap text-nowrap ${hcss.replace("var", tabHeight.toString())}`}>
                     <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map((p, i) => {
                         return (
@@ -51,7 +53,7 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`text-xs bg-primary text-primary-foreground rounded-tr-sm p-1 py-2 h-[${tableHeadHeight}px]`}>
+                <div className={`text-xs bg-primary text-primary-foreground rounded-tr-sm p-1 py-2  ${hcss.replace("var", tableHeadHeight.toString())}`}>
                     <div className="flex gap-1">
                         <div className="w-[30px]"></div>
                         <div className="w-[30px]"></div>
@@ -77,7 +79,7 @@ export const TodoList = (
                         </div>
                     </div>
                 </div>
-                <Table className={`w-full border border-primary/90 h-[calc(100%-${tabHeight + tableHeadHeight + taskBarHeight}px)] bg-card border-b-0`} index={currentIndex}>
+                <Table className={`w-full border border-primary/90 ${hcssMain.replace("var", (tabHeight + tableHeadHeight + taskBarHeight).toString())} bg-card border-b-0`} index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>

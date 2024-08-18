@@ -5,7 +5,7 @@ import { AuthProvider } from "@/provider/auth";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "VTodo | ショートカットを駆使した爆速Todoアプリ",
+  title: "Keyboard ToDo| ショートカットを駆使した爆速Todoアプリ",
   description: "ショートカットを駆使した爆速で管理できるTodoアプリです。",
 };
 

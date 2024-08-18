@@ -37,17 +37,19 @@ export const Detail = ({
                                 todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
                             }
                         </span>
-                        <Item
-                            t={todo}
-                            index={0}
-                            currentIndex={0}
-                            prefix={"text"}
-                            position="content"
-                            currentPrefix={prefix}
-                            mode={mode}
-                            className={`${todo["is_complete"] ? "text-muted-foreground/50" : "text-primary"} break-words`}
-                            label={todo.text}
-                            register={register} />
+                        <div onClick={_ => onClick("detailText")}>
+                            <Item
+                                t={todo}
+                                index={0}
+                                currentIndex={0}
+                                prefix={"text"}
+                                position="content"
+                                currentPrefix={prefix}
+                                mode={mode}
+                                className={`${todo["is_complete"] ? "text-muted-foreground/50" : "text-primary"} break-words`}
+                                label={todo.text}
+                                register={register} />
+                        </div>
                     </li>
                     <li className="h-full">
                         <div className={`flex text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")}>

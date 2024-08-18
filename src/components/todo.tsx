@@ -121,6 +121,7 @@ export const Todo = (
                 if (index === -1) {
                     index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex > 0 ? currentIndex - 1 : currentIndex
                 }
+                console.log("koko?", index)
                 setCurrentIndex(index)
                 setKeepPositionId(undefined)
             } else {
@@ -152,7 +153,6 @@ export const Todo = (
                 editDetail: ["content", "list"],
                 default: ["list", "content"]
             };
-
             const targetTodo = filterdTodos[currentIndex]
             const targetTodoId = targetTodo.id
             const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
@@ -174,7 +174,6 @@ export const Todo = (
             }
             let _todos: TodoProps[] = []
             if (todoFunc.isEmpty(replace)) {
-                console.log(todoFunc.delete(todos, targetTodoId), currentIndex === 0 ? 0 : currentIndex - 1)
                 _todos = todoFunc.delete(todos, targetTodoId)
                 handleSetTodos(_todos)
                 setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
@@ -183,13 +182,9 @@ export const Todo = (
                 if (!isEqual(t, replace)) {
                     _todos = todoFunc.modify(todos, replace)
                     handleSetTodos(_todos)
-                } else {
-                    _todos = todos
                 }
+                setCurrentIndex(todoFunc.getIndexById(filterdTodos, targetTodoId))
             }
-            // ソートした後に編集すると位置ズレを起こすため修正
-            setCurrentIndex(todoFunc.getIndexById(_todos, targetTodoId))
-
         }
         setPrefix('text')
         setMode('normal')
@@ -277,9 +272,9 @@ export const Todo = (
 
     // delete task
     useHotkeys(keymap['delete'].keys, (e) => {
-        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
+        handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
+        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex - 1
         setCurrentIndex(index)
-        handleSetTodos(todoFunc.delete(todos, filterdTodos[index].id))
     }, setKeyEnableDefine(keymap['delete'].enable))
 
     // change to edit mode
@@ -701,7 +696,7 @@ export const Item = (
                 {prefix === "detail" ? (
                     <textarea
                         tabIndex={-1}
-                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
+                        className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}
                         rows={10}
                         placeholder="詳細を入力…"
                         onFocus={e => e.currentTarget.setSelectionRange(0, val.length)}

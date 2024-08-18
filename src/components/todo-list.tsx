@@ -37,15 +37,16 @@ export const TodoList = (
         register: UseFormRegister<FieldValues>
     }
 ) => {
-    const hcss = "h-[varpx]"
-    const hcssMain = "h-[calc(100%-varpx)]"
-    const tabHeight = 30
-    const tableHeadHeight = 35
-    const taskBarHeight = 20
+    const hcssMainHeight = "h-[calc(100%-87px)]"
+    const tabHeight = "h-[30px]"
+    const tableHeadHeight = "h-[35px]"
+    const taskBarHeight = "h-[20px]"
     return (
         <>
+            <div className="absolute top-0 left-1/2 h-[60px]">
+            </div>
             <div className="h-full">
-                <div className={`flex overflow-auto flex-nowrap text-nowrap ${hcss.replace("var", tabHeight.toString())}`}>
+                <div className={`flex overflow-auto flex-nowrap text-nowrap ${tabHeight}`}>
                     <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map((p, i) => {
                         return (
@@ -53,7 +54,7 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`text-xs bg-primary text-primary-foreground rounded-tr-sm p-1 py-2  ${hcss.replace("var", tableHeadHeight.toString())}`}>
+                <div className={`text-xs bg-primary text-primary-foreground rounded-tr-sm p-1 py-2 ${tableHeadHeight}`}>
                     <div className="flex gap-1">
                         <div className="w-[30px]"></div>
                         <div className="w-[30px]"></div>
@@ -79,7 +80,7 @@ export const TodoList = (
                         </div>
                     </div>
                 </div>
-                <Table className={`w-full border border-primary/90 ${hcssMain.replace("var", (tabHeight + tableHeadHeight + taskBarHeight).toString())} bg-card border-b-0`} index={currentIndex}>
+                <Table className={`w-full border border-primary/90 ${hcssMainHeight} bg-card border-b-0`} index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -178,7 +179,7 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border border-t-gray-300 border-primary text-primary-foreground rounded-b-sm h-[${taskBarHeight}px]`}>
+                <div className={`border border-t-gray-300 border-primary text-primary-foreground rounded-b-sm ${taskBarHeight}]`}>
                     <div className="flex justify-between text-sm text-gray-600 h-full px-2">
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">

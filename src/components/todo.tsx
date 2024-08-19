@@ -1,5 +1,5 @@
 'use client'
-import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
+import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, ReactNode } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from '@/components/config'
@@ -14,6 +14,7 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
 
 export const Todo = (
     {
@@ -667,18 +668,23 @@ export const Item = (
     return (
         <>
             <div className={`${isView && "hidden"} ${className}`}>
-                {prefix === "detail" ? (
-                    <textarea
-                        tabIndex={-1}
-                        // className={_classNameCont}
-                        className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
-                        rows={10}
-                        placeholder="詳細を入力…"
-                        {...register(`edit-${position}-${prefix}-${t.id}`)}
-                    />
-                ) :
-                    (
-                        <>
+                {
+                    prefix === "detail" ? (
+                        <textarea
+                            tabIndex={-1}
+                            // className={_classNameCont}
+                            className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
+                            rows={10}
+                            placeholder="詳細を入力…"
+                            {...register(`edit-${position}-${prefix}-${t.id}`)}
+                        />
+                    ) : (
+                        (prefix === "project" || prefix === "context") ? (
+                            <Modal
+                                label={label}
+                                className={_classNameCont}
+                            />
+                        ) : (
                             <button
                                 autoFocus={currentIndex === index}
                                 className={_classNameCont}
@@ -686,8 +692,9 @@ export const Item = (
                             >
                                 {label}
                             </button>
-                        </>
-                    )}
+                        )
+                    )
+                }
             </div >
             <div className={`${!isView && "hidden"} ${className} font-bold h-full`} onMouseDown={e => e.stopPropagation()}>
                 {/* {(prefix === "project" || prefix === "context") ? (
@@ -715,6 +722,55 @@ export const Item = (
                     )}
                 {/* )} */}
             </div >
+        </>
+    )
+}
+
+const Modal = ({ label, className }: { label: string, className: string }) => {
+    let [isOpen, setIsOpen] = useState(false)
+
+    function open() {
+        setIsOpen(true)
+    }
+
+    function close() {
+        setIsOpen(false)
+    }
+
+    return (
+        <>
+            <button
+                onClick={open}
+                className={className}
+            >
+                {label}
+            </button>
+            <Dialog open={isOpen} as="div" className="relative z-10 focus:outline-none" onClose={close}>
+                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center p-4">
+                        <DialogPanel
+                            translate="yes"
+                            className="w-full max-w-md rounded-xl bg-white/5 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+                        >
+                            <DialogTitle as="h3" className="text-base/7 font-medium text-white">
+                                Payment successful
+                            </DialogTitle>
+                            <p className="mt-2 text-sm/6 text-white/50">
+                                Your payment has been successfully submitted. We’ve sent you an email with all of the details of your
+                                order.
+                            </p>
+                            <div className="mt-4">
+                                <button
+                                    className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-gray-700"
+                                    onClick={close}
+                                >
+                                    Got it, thanks!
+                                </button>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog>
         </>
     )
 }

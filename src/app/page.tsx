@@ -13,7 +13,7 @@ import { todoFunc } from "@/lib/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import { Button } from "@/components/ui/button";
 import { Keyboard } from "lucide-react";
-
+import { Modal } from "@/components/todo"
 export default function Home() {
   const { getAccessTokenSilently, user, isLoading: userLoading } = useAuth0();
   const [token, setToken] = useState("")

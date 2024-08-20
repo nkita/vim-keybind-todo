@@ -4,7 +4,7 @@ import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
-import { Item } from "./todo"
+import { Item, Modal } from "./todo"
 
 export const TodoList = (
     {
@@ -157,8 +157,8 @@ export const TodoList = (
                                                                 label={t.context}
                                                                 register={register} />
                                                         </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'project')} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
-                                                            <Item
+                                                        <TableCell className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                            <Modal
                                                                 t={t}
                                                                 index={index}
                                                                 currentIndex={currentIndex}
@@ -167,7 +167,9 @@ export const TodoList = (
                                                                 mode={mode}
                                                                 className="text-xs"
                                                                 label={t.project}
-                                                                register={register} />
+                                                                register={register}
+                                                                items={projects}
+                                                                onClick={onClick} />
                                                         </TableCell>
                                                     </TableRow>
                                                 )

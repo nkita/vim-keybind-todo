@@ -15,6 +15,7 @@ import {
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
+import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 
 export const Todo = (
     {
@@ -173,6 +174,7 @@ export const Todo = (
                 detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
                 sort: targetTodo.sort
             }
+
             let _todos: TodoProps[] = []
             if (todoFunc.isEmpty(replace)) {
                 _todos = todoFunc.delete(todos, targetTodoId)
@@ -292,7 +294,7 @@ export const Todo = (
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
         setPrefix('project')
-        setMode('edit')
+        setMode('modal')
     }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
 
     // change to context edit mode
@@ -573,9 +575,13 @@ export const Todo = (
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index)
         if (prefix === 'projectTab') changeProject(index)
-        if (['priority', 'context', 'text', 'project'].includes(prefix)) {
+        if (['priority', 'text'].includes(prefix)) {
             setPrefix(prefix)
             setMode('edit')
+        }
+        if (['context', 'project'].includes(prefix)) {
+            setPrefix(prefix)
+            setMode('modal')
         }
     }
     const handleClickDetailElement = (prefix: string) => {
@@ -644,7 +650,7 @@ export const Item = (
         label,
         className,
         register,
-        position = "list"
+        position = "list",
     }: {
         t: TodoProps
         index: number
@@ -679,20 +685,13 @@ export const Item = (
                             {...register(`edit-${position}-${prefix}-${t.id}`)}
                         />
                     ) : (
-                        (prefix === "project" || prefix === "context") ? (
-                            <Modal
-                                label={label}
-                                className={_classNameCont}
-                            />
-                        ) : (
-                            <button
-                                autoFocus={currentIndex === index}
-                                className={_classNameCont}
-                                {...register(`${position}-${prefix}-${t.id}`)}
-                            >
-                                {label}
-                            </button>
-                        )
+                        <button
+                            autoFocus={currentIndex === index}
+                            className={_classNameCont}
+                            {...register(`${position}-${prefix}-${t.id}`)}
+                        >
+                            {label}
+                        </button>
                     )
                 }
             </div >
@@ -726,15 +725,46 @@ export const Item = (
     )
 }
 
-const Modal = ({ label, className }: { label: string, className: string }) => {
-    let [isOpen, setIsOpen] = useState(false)
+export const Modal = (
+    {
+        t,
+        index,
+        currentIndex,
+        prefix,
+        currentPrefix,
+        mode,
+        className,
+        label,
+        register,
+        position = "list",
+        items,
+        onClick
+    }: {
+        t: TodoProps
+        index: number
+        label: string | undefined
+        currentIndex: number
+        items: string[]
+        mode: Mode
+        prefix: "text" | "priority" | "project" | "context" | "detail"
+        currentPrefix: string
+        className?: string | undefined
+        register: any
+        position?: "list" | "content"
+        onClick: (index: number, prefx: string) => void
+    }) => {
+
+    const isView = currentIndex === index
+        && currentPrefix === prefix
+        && mode === "modal"
+        && (position === "list" || position === "content")
 
     function open() {
-        setIsOpen(true)
+        onClick(currentIndex, prefix)
     }
 
     function close() {
-        setIsOpen(false)
+        onClick(currentIndex, "normal")
     }
 
     return (
@@ -745,28 +775,38 @@ const Modal = ({ label, className }: { label: string, className: string }) => {
             >
                 {label}
             </button>
-            <Dialog open={isOpen} as="div" className="relative z-10 focus:outline-none" onClose={close}>
-                <div className="fixed inset-0 z-10 w-screen overflow-y-auto">
+            {isView && <div className="fixed top-0 left-0 bg-gray-400 bg-opacity-50 z-10 w-full h-full backdrop-blur-sm" />}
+            <Dialog open={isView} as="div" className="relative z-20 focus:outline-none " onClose={close}>
+                <div className="fixed inset-0 z-20 w-screen overflow-y-auto">
                     <div className="flex min-h-full items-center justify-center p-4">
                         <DialogPanel
                             translate="yes"
-                            className="w-full max-w-md rounded-xl bg-white/5 p-6 backdrop-blur-2xl duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
+                            className="w-full max-w-md rounded-xl bg-white border  p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
                         >
-                            <DialogTitle as="h3" className="text-base/7 font-medium text-white">
-                                Payment successful
+                            <DialogTitle as="h3" className="text-base/7 font-medium">
+                                値を入力
                             </DialogTitle>
-                            <p className="mt-2 text-sm/6 text-white/50">
-                                Your payment has been successfully submitted. We’ve sent you an email with all of the details of your
-                                order.
+                            <p className="text-sm/6 py-2">
+                                <kbd>Enter</kbd>で確定  <br />
                             </p>
-                            <div className="mt-4">
-                                <button
-                                    className="inline-flex items-center gap-2 rounded-md bg-gray-700 py-1.5 px-3 text-sm/6 font-semibold text-white shadow-inner shadow-white/10 focus:outline-none data-[hover]:bg-gray-600 data-[focus]:outline-1 data-[focus]:outline-white data-[open]:bg-gray-700"
-                                    onClick={close}
-                                >
-                                    Got it, thanks!
-                                </button>
-                            </div>
+                            <p className="text-sm/6 pb-2">
+                                <kbd>Esc</kbd>でキャンセル
+                            </p>
+                            <DynamicSearchSelect
+                                {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
+                                value={label}
+                                autoFocus={true}
+                                tabIndex={0}
+                                addItem={e => console.log(e)}
+                                placeholder="empty"
+                                items={items}
+                                autoSave={false}
+                                onChange={function (...event: any[]): void {
+                                    throw new Error("Function not implemented.")
+                                }} onBlur={function (): void {
+                                    throw new Error("Function not implemented.")
+                                }} name={""} />
+
                         </DialogPanel>
                     </div>
                 </div>

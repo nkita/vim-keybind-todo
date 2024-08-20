@@ -208,7 +208,7 @@ export const keymap: Keymap = {
     },
     normalModefromEditDetail: {
         keys: ['Esc'],
-        enable: { mode: ["editDetail",] },
+        enable: { mode: ["editDetail", "modal"] },
         type: ["other"],
         description: "戻る"
     },

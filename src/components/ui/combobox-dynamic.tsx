@@ -21,7 +21,6 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
     ({
         items,
         value,
-        onBlur,
         autoFocus,
         placeholder,
         tabIndex = 0,
@@ -30,7 +29,6 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
         // deleteItem,
         ...props
     }, ref) => {
-        const { onChange } = props
         const [query, setQuery] = useState('')
         const filteredItems =
             query === ''
@@ -46,7 +44,7 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
             <Combobox value={value}>
                 <div className="relative mt-1">
                     <div className="relative w-full">
-                        <ComboboxInput onBlur={onBlur} tabIndex={tabIndex} ref={ref} displayValue={(item: string) => item} onChange={(event) => setQuery(event.target.value)} autoFocus={autoFocus} placeholder={placeholder}
+                        <ComboboxInput tabIndex={tabIndex} ref={ref} displayValue={(item: string) => item} onChange={(event) => setQuery(event.target.value)} autoFocus={autoFocus} placeholder={placeholder}
                             className="" />
                         <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">
                             <ChevronsUpDown
@@ -74,7 +72,7 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
                                 ) : (
                                     filteredItems.map((item: any) => {
                                         return (
-                                            <div key={item.id} className={`relative flex items-center`}>
+                                            <div key={item} className={`relative flex items-center`}>
                                                 <ComboboxOption value={item.emoji + item.label} className={({ active }) =>
                                                     `relative cursor-default select-none py-2 pl-4 pr-4  w-full ${active ? ' bg-accent text-accent-foreground cursor-pointer' : ''} rounded-md`
                                                 }>

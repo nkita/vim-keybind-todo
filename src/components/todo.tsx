@@ -15,6 +15,7 @@ import {
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
+import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 
 export const Todo = (
@@ -123,7 +124,6 @@ export const Todo = (
                 if (index === -1) {
                     index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex > 0 ? currentIndex - 1 : currentIndex
                 }
-                console.log("koko?", index)
                 setCurrentIndex(index)
                 setKeepPositionId(undefined)
             } else {
@@ -583,6 +583,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
+        if (prefix === 'normal') toNormalMode()
     }
     const handleClickDetailElement = (prefix: string) => {
         if (prefix === 'completion') completeTask(currentIndex)
@@ -725,7 +726,8 @@ export const Item = (
     )
 }
 
-export const Modal = (
+
+export const ModalSelect = (
     {
         t,
         index,
@@ -763,54 +765,37 @@ export const Modal = (
         onClick(currentIndex, prefix)
     }
 
-    function close() {
+    function close(val: boolean) {
         onClick(currentIndex, "normal")
     }
 
     return (
-        <>
-            <button
-                onClick={open}
-                className={className}
-            >
-                {label}
-            </button>
-            {isView && <div className="fixed top-0 left-0 bg-gray-400 bg-opacity-50 z-10 w-full h-full backdrop-blur-sm" />}
-            <Dialog open={isView} as="div" className="relative z-20 focus:outline-none " onClose={close}>
-                <div className="fixed inset-0 z-20 w-screen overflow-y-auto">
-                    <div className="flex min-h-full items-center justify-center p-4">
-                        <DialogPanel
-                            translate="yes"
-                            className="w-full max-w-md rounded-xl bg-white border  p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0"
-                        >
-                            <DialogTitle as="h3" className="text-base/7 font-medium">
-                                値を入力
-                            </DialogTitle>
-                            <p className="text-sm/6 py-2">
-                                <kbd>Enter</kbd>で確定  <br />
-                            </p>
-                            <p className="text-sm/6 pb-2">
-                                <kbd>Esc</kbd>でキャンセル
-                            </p>
-                            <DynamicSearchSelect
-                                {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
-                                value={label}
-                                autoFocus={true}
-                                tabIndex={0}
-                                addItem={e => console.log(e)}
-                                placeholder="empty"
-                                items={items}
-                                autoSave={false}
-                                onChange={function (...event: any[]): void {
-                                    throw new Error("Function not implemented.")
-                                }} onBlur={function (): void {
-                                    throw new Error("Function not implemented.")
-                                }} name={""} />
-
-                        </DialogPanel>
-                    </div>
-                </div>
-            </Dialog>
-        </>
+        <Modal
+            buttonLabel={label}
+            dialogTitle={"プロジェクト"}
+            className={className}
+            open={isView}
+            onClickOpen={open}
+            onClickClose={close}>
+            <div>
+                <p className="text-sm/6 py-3">
+                    <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
+                </p>
+                <DynamicSearchSelect
+                    {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
+                    value={label}
+                    autoFocus={true}
+                    tabIndex={0}
+                    addItem={e => console.log(e)}
+                    placeholder="empty"
+                    items={items}
+                    autoSave={false}
+                    onChange={function (...event: any[]): void {
+                        throw new Error("Function not implemented.")
+                    }} onBlur={function (): void {
+                        throw new Error("Function not implemented.")
+                    }} name={""} />
+            </div>
+        </Modal>
     )
 }

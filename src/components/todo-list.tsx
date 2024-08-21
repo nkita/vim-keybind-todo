@@ -4,7 +4,7 @@ import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
-import { Item, Modal } from "./todo"
+import { Item, ModalSelect } from "./todo"
 
 export const TodoList = (
     {
@@ -157,8 +157,8 @@ export const TodoList = (
                                                                 label={t.context}
                                                                 register={register} />
                                                         </TableCell>
-                                                        <TableCell className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
-                                                            <Modal
+                                                        <TableCell onClick={_ => onClick(currentIndex, "project")} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                            <ModalSelect
                                                                 t={t}
                                                                 index={index}
                                                                 currentIndex={currentIndex}

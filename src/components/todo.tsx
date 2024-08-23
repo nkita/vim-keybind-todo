@@ -17,6 +17,8 @@ import {
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
 import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
+import { Button } from "./ui/button"
+import { CircleX } from "lucide-react"
 
 export const Todo = (
     {
@@ -161,7 +163,6 @@ export const Todo = (
 
             const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
             setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
-
             const replace: TodoProps = {
                 id: targetTodoId,
                 is_complete: targetTodo.is_complete,
@@ -175,6 +176,7 @@ export const Todo = (
                 sort: targetTodo.sort
             }
 
+            console.log("koko?", replace.project)
             let _todos: TodoProps[] = []
             if (todoFunc.isEmpty(replace)) {
                 _todos = todoFunc.delete(todos, targetTodoId)
@@ -620,6 +622,7 @@ export const Todo = (
                         onClick={handleClickElement}
                         setCurrentIndex={setCurrentIndex}
                         register={register}
+                        rhfSetValue={setValue}
                     />
                 </ResizablePanel>
                 <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-primary/50 transition-all ease-in" />
@@ -738,6 +741,7 @@ export const ModalSelect = (
         className,
         label,
         register,
+        rhfSetValue,
         position = "list",
         items,
         onClick
@@ -752,50 +756,62 @@ export const ModalSelect = (
         currentPrefix: string
         className?: string | undefined
         register: any
+        rhfSetValue: any
         position?: "list" | "content"
         onClick: (index: number, prefx: string) => void
     }) => {
-
     const isView = currentIndex === index
         && currentPrefix === prefix
         && mode === "modal"
         && (position === "list" || position === "content")
 
     function open() {
+        console.log("modal open")
         onClick(currentIndex, prefix)
     }
 
-    function close(val: boolean) {
+    function close(_: boolean) {
+        console.log("modal close")
         onClick(currentIndex, "normal")
     }
 
+    const handleAddItem = (val: string) => {
+        console.log("handleAddItem:", val)
+        rhfSetValue(`edit-${position}-${prefix}-${t.id}`, val)
+        onClick(currentIndex, "normal")
+    }
     return (
-        <Modal
-            buttonLabel={label}
-            dialogTitle={"プロジェクト"}
-            className={className}
-            open={isView}
-            onClickOpen={open}
-            onClickClose={close}>
-            <div>
-                <p className="text-sm/6 py-3">
-                    <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
-                </p>
-                <DynamicSearchSelect
-                    {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
-                    value={label}
-                    autoFocus={true}
-                    tabIndex={0}
-                    addItem={e => console.log(e)}
-                    placeholder="empty"
-                    items={items}
-                    autoSave={false}
-                    onChange={function (...event: any[]): void {
-                        throw new Error("Function not implemented.")
-                    }} onBlur={function (): void {
-                        throw new Error("Function not implemented.")
-                    }} name={""} />
-            </div>
-        </Modal>
+        <>
+            <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: label ?? "" })} />
+            <Modal
+                buttonLabel={label}
+                dialogTitle={"プロジェクト"}
+                className={className}
+                open={isView}
+                onClickOpen={open}
+                onClickClose={close}>
+                <div>
+                    <p className="text-gray-500">
+                        <p className="text-sm pt-3 ">
+                            <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
+                            <br />
+                            <br />
+                            <kbd>↑</kbd> <kbd>↓</kbd>キーで選択
+                        </p>
+                        <p className="text-sm/10 pt-8">
+                            <span>現在の値：<span className="text-primary font-medium underline">{label}</span>{!label && "-"}</span>
+                        </p>
+                    </p>
+                    <DynamicSearchSelect
+                        autoFocus={true}
+                        tabIndex={0}
+                        addItem={handleAddItem}
+                        placeholder="プロジェクトを入力..."
+                        items={items}
+                        {...register(`${position}-${prefix}-${t.id}`)}
+                    />
+                </div>
+            </Modal>
+        </>
     )
 }

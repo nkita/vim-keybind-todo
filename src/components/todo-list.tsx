@@ -1,7 +1,7 @@
 'use client'
 import { Dispatch, MouseEvent, SetStateAction } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
-import { UseFormRegister, FieldValues } from "react-hook-form"
+import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
 import { Item, ModalSelect } from "./todo"
@@ -21,6 +21,7 @@ export const TodoList = (
         onClick,
         setCurrentIndex,
         register,
+        rhfSetValue,
     }: {
         filterdTodos: TodoProps[]
         currentIndex: number
@@ -35,6 +36,7 @@ export const TodoList = (
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
         register: UseFormRegister<FieldValues>
+        rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
     const hcssMainHeight = "h-[calc(100%-87px)]"
@@ -168,6 +170,7 @@ export const TodoList = (
                                                                 className="text-xs"
                                                                 label={t.project}
                                                                 register={register}
+                                                                rhfSetValue={rhfSetValue}
                                                                 items={projects}
                                                                 onClick={onClick} />
                                                         </TableCell>

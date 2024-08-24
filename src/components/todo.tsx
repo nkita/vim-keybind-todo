@@ -613,6 +613,7 @@ export const Todo = (
                         currentIndex={currentIndex}
                         prefix={prefix}
                         mode={mode}
+                        viewCompletion={viewCompletionTask}
                         projects={projects}
                         currentProject={currentProject}
                         sort={sort}

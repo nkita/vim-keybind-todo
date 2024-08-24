@@ -12,6 +12,7 @@ export const TodoList = (
         currentIndex,
         prefix,
         mode,
+        viewCompletion,
         projects,
         currentProject,
         sort,
@@ -27,6 +28,7 @@ export const TodoList = (
         currentIndex: number
         prefix: string
         mode: Mode
+        viewCompletion: boolean
         projects: string[]
         currentProject: string
         sort: Sort
@@ -39,7 +41,7 @@ export const TodoList = (
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
-    const hcssMainHeight = "h-[calc(100%-87px)]"
+    const hcssMainHeight = "h-[calc(100%-85px)]"
     const tabHeight = "h-[30px]"
     const tableHeadHeight = "h-[35px]"
     const taskBarHeight = "h-[20px]"
@@ -185,7 +187,8 @@ export const TodoList = (
                     </TableBody>
                 </Table>
                 <div className={`border border-t-gray-300 border-primary text-primary-foreground rounded-b-sm ${taskBarHeight}]`}>
-                    <div className="flex justify-between text-sm text-gray-600 h-full px-2">
+                    <div className="flex justify-between text-2sm text-gray-600 h-full px-2">
+                        <div className="text-3sm">表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">
                             {command ? (

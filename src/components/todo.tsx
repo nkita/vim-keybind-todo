@@ -174,7 +174,6 @@ export const Todo = (
                 sort: targetTodo.sort
             }
 
-            console.log("koko?", replace.project)
             let _todos: TodoProps[] = []
             if (todoFunc.isEmpty(replace)) {
                 _todos = todoFunc.delete(todos, targetTodoId)
@@ -606,23 +605,36 @@ export const Todo = (
         <div className={`flex gap-2 w-full h-full pb-1`} onMouseDown={handleMainMouseDown}>
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                 <ResizablePanel defaultSize={80} minSize={4} className="pl-1">
-                    <TodoList
-                        filterdTodos={filterdTodos}
-                        currentIndex={currentIndex}
-                        prefix={prefix}
-                        mode={mode}
-                        viewCompletion={viewCompletionTask}
-                        projects={projects}
-                        currentProject={currentProject}
-                        sort={sort}
-                        searchResultIndex={searchResultIndex}
-                        command={command}
-                        loading={loading}
-                        onClick={handleClickElement}
-                        setCurrentIndex={setCurrentIndex}
-                        register={register}
-                        rhfSetValue={setValue}
-                    />
+                    <div className={`${(isHelp && mode === "editDetail") ? "-z-10 hidden" : "w-full h-full"}`}>
+                        <TodoList
+                            filterdTodos={filterdTodos}
+                            currentIndex={currentIndex}
+                            prefix={prefix}
+                            mode={mode}
+                            viewCompletion={viewCompletionTask}
+                            projects={projects}
+                            currentProject={currentProject}
+                            sort={sort}
+                            searchResultIndex={searchResultIndex}
+                            command={command}
+                            loading={loading}
+                            onClick={handleClickElement}
+                            setCurrentIndex={setCurrentIndex}
+                            register={register}
+                            rhfSetValue={setValue}
+                        />
+                    </div>
+                    <div className={`${(isHelp && mode === "editDetail") ? "w-full h-[calc(100%-30px)]" : "-z-10 hidden"}`}>
+                        <div className="h-[30px]"></div>
+                        <Usage
+                            sort={sort}
+                            mode={mode}
+                            isHelp={isHelp}
+                            setHelp={setHelp}
+                            isTodos={filterdTodos.length > 0}
+                        />
+                    </div>
+
                 </ResizablePanel>
                 <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-primary/50 transition-all ease-in" />
                 <ResizablePanel defaultSize={20} minSize={4} className={"pr-1"} >
@@ -777,17 +789,14 @@ export const ModalSelect = (
         && (position === "list" || position === "content")
 
     function open() {
-        console.log("modal open")
         onClick(currentIndex, prefix)
     }
 
     function close(_: boolean) {
-        console.log("modal close")
         onClick(currentIndex, "normal")
     }
 
     const handleAddItem = (val: string) => {
-        console.log("handleAddItem:", val)
         rhfSetValue(`edit-${position}-${prefix}-${t.id}`, val)
         onClick(currentIndex, "normal")
     }

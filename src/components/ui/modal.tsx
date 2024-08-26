@@ -1,6 +1,6 @@
 import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
 import { MouseEvent, MouseEventHandler, ReactNode } from "react"
-
+import { cn } from "@/lib/utils"
 export const Modal = (
     {
         buttonLabel,
@@ -20,7 +20,6 @@ export const Modal = (
         onClickOpen: MouseEventHandler<HTMLButtonElement>
     }) => {
 
-
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         e.stopPropagation()
     }
@@ -29,7 +28,7 @@ export const Modal = (
         <>
             <button
                 onClick={onClickOpen}
-                className={className}
+                className={cn("truncate w-full", className)}
             >
                 {buttonLabel}
             </button>

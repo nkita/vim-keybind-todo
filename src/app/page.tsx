@@ -13,7 +13,7 @@ import { todoFunc } from "@/lib/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import { Button } from "@/components/ui/button";
 import { Keyboard } from "lucide-react";
-import { Modal } from "@/components/todo"
+
 export default function Home() {
   const { getAccessTokenSilently, user, isLoading: userLoading } = useAuth0();
   const [token, setToken] = useState("")
@@ -26,7 +26,6 @@ export default function Home() {
   const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
   const [mode, setMode] = useState<Mode>('normal')
   const [sort, setSort] = useState<Sort>(undefined)
-  const [isHelp, setHelp] = useLocalStorage("todo_is_help", false)
 
   const [todosLoading, setTodosLoading] = useState(true)
   const [listLoading, setListLoading] = useState(true)
@@ -111,16 +110,11 @@ export default function Home() {
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
 
-  const handleToggleHelp = () => setHelp(!isHelp)
   const headerHeight = "60px"
   const mainPCHeight = `h-[calc(100vh-60px)]` // 100vh - headerHeight
   return (
     <article className="h-screen bg-sky-50/50">
       <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
-      {/* {!isHelp && <div className="w-full text-slate-500 text-right pr-2 absolute bottom-1">
-        <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを開く<kbd>?</kbd></Button>
-      </div>} */}
-      {/* <div className={`w-full ${isHelp ? "h-screen sm:h-[calc(100vh-400px)]" : mainPCHeight}`}> */}
       <div className={`w-full ${mainPCHeight}`}>
         <Todo
           todos={!userLoading && user ? todos : todosLS}
@@ -134,19 +128,7 @@ export default function Home() {
           setMode={setMode}
           setSort={setSort}
           setIsUpdate={setIsUpdate}
-          toggleHelp={handleToggleHelp}
           onClickSaveButton={handleClickSaveButton}
-        />
-      </div>
-      <div className={`absolute bottom-0 w-full p-4 ${isHelp ? "hidden sm:block sm:h-4/6" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}>
-        <div className="flex justify-between">
-          <h1 className="flex gap-1 p-2 text-md font-semibold text-center"><Keyboard /> ショートカット</h1>
-          <Button variant={"link"} className="text-xs" onClick={_ => setHelp(!isHelp)}> ヘルプを閉じる<kbd>?</kbd></Button>
-        </div>
-        <Usage
-          sort={sort}
-          mode={mode}
-          isTodos={filterdTodos.length > 0}
         />
       </div>
     </article >

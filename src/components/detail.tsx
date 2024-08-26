@@ -27,8 +27,7 @@ export const Detail = ({
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
     return (
         <>
-            <div className="h-[30px]"></div>
-            <div className="p-4 w-full border rounded-sm bg-white border-primary/90 overflow-auto h-[calc(100%-30px)]" onMouseDown={onMouseDownEvent}>
+            <div className="p-4 w-full h-full border rounded-sm bg-white border-primary/90 overflow-auto" onMouseDown={onMouseDownEvent}>
                 <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
                     <li className="flex font-bold items-center gap-2" >

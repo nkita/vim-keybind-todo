@@ -14,11 +14,10 @@ import {
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
 import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
-import { Button } from "./ui/button"
-import { CircleX } from "lucide-react"
+import { Usage } from "./usage"
+import { useLocalStorage } from "@/hook/useLocalStrorage"
 
 export const Todo = (
     {
@@ -33,7 +32,6 @@ export const Todo = (
         setMode,
         setSort,
         setIsUpdate,
-        toggleHelp,
         onClickSaveButton
     }: {
         todos: TodoProps[]
@@ -47,7 +45,6 @@ export const Todo = (
         setMode: Dispatch<SetStateAction<Mode>>
         setSort: Dispatch<SetStateAction<Sort>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
-        toggleHelp: () => void;
         onClickSaveButton: () => void;
     }
 ) => {
@@ -60,6 +57,7 @@ export const Todo = (
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
+    const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const { register, setFocus, getValues, setValue } = useForm()
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
@@ -566,7 +564,7 @@ export const Todo = (
 
     // help toggle
     useHotkeys(keymap['viewHelp'].keys, (e) => {
-        toggleHelp()
+        setHelp(!isHelp)
     }, setKeyEnableDefine(keymap['viewHelp'].enable))
 
     /*******************
@@ -627,15 +625,27 @@ export const Todo = (
                     />
                 </ResizablePanel>
                 <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-primary/50 transition-all ease-in" />
-                <ResizablePanel defaultSize={20} minSize={4} className="pr-1" >
-                    <Detail
-                        todo={filterdTodos[currentIndex]}
-                        prefix={prefix}
-                        mode={mode}
-                        onMouseDownEvent={handleDetailMouseDown}
-                        onClick={handleClickDetailElement}
-                        register={register}
-                    />
+                <ResizablePanel defaultSize={20} minSize={4} className={"pr-1"} >
+                    <div className="h-[30px]"></div>
+                    <div className={`${(isHelp && mode !== "editDetail") ? "-z-10 hidden" : "w-full h-[calc(100%-30px)]"}`}>
+                        <Detail
+                            todo={filterdTodos[currentIndex]}
+                            prefix={prefix}
+                            mode={mode}
+                            onMouseDownEvent={handleDetailMouseDown}
+                            onClick={handleClickDetailElement}
+                            register={register}
+                        />
+                    </div>
+                    <div className={`${(isHelp && mode !== "editDetail") ? "w-full h-[calc(100%-30px)]" : "-z-10 hidden"}`}>
+                        <Usage
+                            sort={sort}
+                            mode={mode}
+                            isHelp={isHelp}
+                            setHelp={setHelp}
+                            isTodos={filterdTodos.length > 0}
+                        />
+                    </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </div>

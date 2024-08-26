@@ -76,10 +76,22 @@
   }
 
   kbd {
-    @apply px-2 py-1 text-xs shadow-sm font-thin text-gray-500 bg-gray-100 border border-gray-200 rounded-md dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500
+    @apply px-2 py-1 text-xs shadow-sm font-thin text-gray-500 bg-gray-100 border border-gray-200 rounded-md
   }
 }
 
+@layer utilities {
+  .hidden-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #fff #fff;
+  }
+
+  .hidden-scrollbar:hover {
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #fff;
+  }
+
+}
 
 .scroll-bar {
   scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0)

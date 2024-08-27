@@ -9,6 +9,7 @@ export const Detail = ({
     todo,
     mode,
     prefix,
+    isHelp,
     onClick,
     onMouseDownEvent,
     register
@@ -16,6 +17,7 @@ export const Detail = ({
     todo: TodoProps
     mode: string
     prefix: string
+    isHelp: boolean
     onClick: (prefix: string) => void
     onMouseDownEvent: (e: MouseEvent<HTMLDivElement>) => void
     register: UseFormRegister<FieldValues>
@@ -50,9 +52,9 @@ export const Detail = ({
                                 register={register} />
                         </div>
                     </li>
-                    <li className="h-full">
-                        <div className={`flex text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")}>
-                            <FaReceipt className="mt-2" />
+                    <li className="relative h-full w-full">
+                        {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
+                        <div className={`flex w-full text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")}>
                             <Item
                                 t={todo}
                                 index={0}

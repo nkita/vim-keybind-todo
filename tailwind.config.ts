@@ -110,7 +110,9 @@ const config = {
       fontSize: {
         '2sm': '0.75rem',
         '3sm': '0.70rem',
-        '4sm': '0.65rem'
+        '4sm': '0.65rem',
+        '5sm': '0.60rem',
+        '6sm': '0.55rem'
       }
     },
   },

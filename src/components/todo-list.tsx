@@ -50,11 +50,11 @@ export const TodoList = (
             <div className="absolute top-0 left-1/2 h-[60px]">
             </div>
             <div className="h-full">
-                <div className={`flex overflow-auto flex-nowrap text-nowrap ${tabHeight}`}>
+                <div className={`flex overflow-auto text-3sm flex-nowrap text-nowrap ${tabHeight}`}>
                     <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map((p, i) => {
                         return (
-                            <button onClick={_ => onClick(i, 'projectTab')} key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-sm px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
+                            <button onClick={_ => onClick(i, 'projectTab')} key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-3sm px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
                         )
                     })}
                 </div>

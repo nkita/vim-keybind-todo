@@ -23,11 +23,10 @@ export const Usage = ({
 
     return (
         <>
-            {/* <div className={`absolute  w-full p-4 ${isHelp ? "hidden sm:block sm:h-4/6" : "hidden"} border-t-2 shadow-2xl rounded-t-3xl bg-popover text-popover-foreground`}> */}
-            <div className={`h-full w-full p-4 border border-gray-950 rounded-sm bg-popover text-gray-500 group`}>
+            <div className={`h-full w-full p-4 border bg-white/80 border-gray-950 rounded-sm  group`}>
                 <div className="flex justify-between h-[40px] shadow-l">
-                    <h1 className="flex gap-1 p-2 text-md font-semibold text-center"><Keyboard />使い方</h1>
-                    <Button variant={"link"} className="text-xs text-gray-500" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
+                    <h1 className="flex gap-1 p-2 text-md  text-center"><Keyboard />使い方</h1>
+                    <Button variant={"link"} className="text-xs text-current" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
                 </div>
                 <hr className='pt-1 shadow-2xl' />
                 <article className="h-[calc(100%-40px)] overflow-auto hidden-scrollbar group-hover:visible-scrollbar">
@@ -61,8 +60,8 @@ const Section = ({
     return (
         <section className={cn("m-2 py-1", className)}>
             <h2 className='flex text-sm  items-center font-semibold'>{title}</h2>
-            <div className='p-3 bg-popover text-popover-foreground border rounded-md'>
-                <ul className=''>
+            <div className='p-3 border rounded-md'>
+                <ul>
                     {
                         Object.entries(keymap).map(([key, value]) => {
                             const enabled = value.enable?.mode.includes(mode)

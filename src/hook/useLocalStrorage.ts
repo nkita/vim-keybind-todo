@@ -6,7 +6,7 @@ export const useLocalStorage = <T>(key: string, defaultValue: T): [T, Dispatch<S
 
     useEffect(() => {
         const data = localStorage.getItem(key)
-        if (data) {
+        if (data && data !== "undefined") {
             setValue(JSON.parse(data))
         }
     }, [key])

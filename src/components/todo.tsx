@@ -51,6 +51,7 @@ export const Todo = (
 ) => {
     const [command, setCommand] = useState("")
     const [projects, setProjects] = useState<string[]>([])
+    const [labels, setLabels] = useState<string[]>([])
     const [currentProject, setCurrentProject] = useState("")
     const [viewCompletionTask, setViewCompletionTask] = useState(true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
@@ -83,8 +84,16 @@ export const Todo = (
     }
 
     useEffect(() => {
-        const filteredProjects = todos.map(t => t.project).filter(p => p !== undefined && p !== "") as string[];
-        setProjects(Array.from(new Set(filteredProjects)));
+        let projects: (string | undefined)[] = []
+        let labels: (string | undefined)[] = []
+        todos.forEach(t => {
+            projects.push(t.project)
+            labels.push(t.context)
+        })
+        const _p = projects.filter(p => p !== undefined && p !== "") as string[];
+        const _l = labels.filter(l => l !== undefined && l !== "") as string[];
+        setProjects(Array.from(new Set(_p)));
+        setLabels(Array.from(new Set(_l)))
     }, [todos])
 
     useEffect(() => {
@@ -300,7 +309,7 @@ export const Todo = (
     // change to context edit mode
     useHotkeys(keymap['editContext'].keys, (e) => {
         setPrefix('context')
-        setMode('edit')
+        setMode('modal')
     }, setKeyEnableDefine(keymap['editContext'].enable))
 
     // move to right project
@@ -613,6 +622,7 @@ export const Todo = (
                         mode={mode}
                         viewCompletion={viewCompletionTask}
                         projects={projects}
+                        labels={labels}
                         currentProject={currentProject}
                         sort={sort}
                         searchResultIndex={searchResultIndex}
@@ -801,14 +811,14 @@ export const ModalSelect = (
             <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: label ?? "" })} />
             <Modal
                 buttonLabel={label}
-                dialogTitle={"プロジェクト"}
+                dialogTitle={"選択"}
                 className={className}
                 open={isView}
                 onClickOpen={open}
                 onClickClose={close}>
                 <div>
-                    <p className="text-gray-500">
-                        <p className="text-sm pt-3 ">
+                    <div className="text-gray-500">
+                        <p className="pt-3 ">
                             <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
                             <br />
                             <br />
@@ -817,12 +827,12 @@ export const ModalSelect = (
                         <p className="text-sm/10 pt-8">
                             <span>現在の値：<span className="text-primary font-medium underline">{label}</span>{!label && "-"}</span>
                         </p>
-                    </p>
+                    </div>
                     <DynamicSearchSelect
                         autoFocus={true}
                         tabIndex={0}
                         addItem={handleAddItem}
-                        placeholder="プロジェクトを入力..."
+                        placeholder="値を入力..."
                         items={items}
                         {...register(`${position}-${prefix}-${t.id}`)}
                     />

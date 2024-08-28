@@ -39,7 +39,6 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
                     )
                 }), ""]
         const handleChange = (value: string) => {
-            console.log("koko?", value)
             if (value !== undefined && value !== null) addItem(value)
             setVal(val)
         }

@@ -102,11 +102,16 @@ export default function Home() {
       console.error(e)
     }
   }
+
+  /**
+   * オートセーブ
   const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 30000), [])
 
   useEffect(() => {
     if (token && currentListID && isUpdate) saveTodos(todos, prevTodos, currentListID, token, isUpdate)
   }, [saveTodos, isUpdate, todos, token, prevTodos, currentListID])
+
+   */
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
 

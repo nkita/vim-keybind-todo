@@ -14,6 +14,7 @@ export const TodoList = (
         mode,
         viewCompletion,
         projects,
+        labels,
         currentProject,
         sort,
         searchResultIndex,
@@ -30,6 +31,7 @@ export const TodoList = (
         mode: Mode
         viewCompletion: boolean
         projects: string[]
+        labels: string[]
         currentProject: string
         sort: Sort
         searchResultIndex: boolean[]
@@ -150,7 +152,8 @@ export const TodoList = (
                                                                 register={register} />
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-                                                            <Item
+
+                                                            <ModalSelect
                                                                 t={t}
                                                                 index={index}
                                                                 currentIndex={currentIndex}
@@ -159,7 +162,10 @@ export const TodoList = (
                                                                 mode={mode}
                                                                 className="text-xs"
                                                                 label={t.context}
-                                                                register={register} />
+                                                                register={register}
+                                                                rhfSetValue={rhfSetValue}
+                                                                items={labels}
+                                                                onClick={onClick} />
                                                         </TableCell>
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
                                                             <ModalSelect

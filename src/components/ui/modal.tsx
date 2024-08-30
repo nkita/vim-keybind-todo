@@ -28,7 +28,7 @@ export const Modal = (
         <>
             <button
                 onClick={onClickOpen}
-                className={cn("truncate w-full", className)}
+                className={cn(" w-full truncate", className)}
             >
                 {buttonLabel}
             </button>

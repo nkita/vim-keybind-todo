@@ -152,7 +152,6 @@ export const TodoList = (
                                                                 register={register} />
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-
                                                             <ModalSelect
                                                                 t={t}
                                                                 index={index}
@@ -160,7 +159,7 @@ export const TodoList = (
                                                                 prefix={"context"}
                                                                 currentPrefix={prefix}
                                                                 mode={mode}
-                                                                className="text-xs"
+                                                                className={`text-xs text-left `}
                                                                 label={t.context}
                                                                 register={register}
                                                                 rhfSetValue={rhfSetValue}
@@ -175,7 +174,7 @@ export const TodoList = (
                                                                 prefix={"project"}
                                                                 currentPrefix={prefix}
                                                                 mode={mode}
-                                                                className="text-xs"
+                                                                className="text-xs text-left"
                                                                 label={t.project}
                                                                 register={register}
                                                                 rhfSetValue={rhfSetValue}

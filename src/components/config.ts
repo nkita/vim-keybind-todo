@@ -20,7 +20,8 @@ export type Keymap = {
     append: KeymapItem;
     editText: KeymapItem;
     delete: KeymapItem;
-    editPriority: KeymapItem;
+    increasePriority: KeymapItem;
+    decreasePriority: KeymapItem;
     editProject: KeymapItem;
     editContext: KeymapItem;
     editTextLine: KeymapItem;
@@ -137,11 +138,17 @@ export const keymap: Keymap = {
         type: ["edit"],
         description: "タスクを削除"
     },
-    editPriority: {
-        keys: ['p',],
-        enable: { mode: ["normal"], withoutTask: false },
+    increasePriority: {
+        keys: ['='],
+        enable: { mode: ["normal"], withoutTask: false, useKey: true },
         type: ["edit"],
-        description: "優先度を編集"
+        description: "優先度を上げる"
+    },
+    decreasePriority: {
+        keys: ['-'],
+        enable: { mode: ["normal"], withoutTask: false, useKey: true },
+        type: ["edit"],
+        description: "優先度を下げる"
     },
     editProject: {
         keys: ['Shift+p'],

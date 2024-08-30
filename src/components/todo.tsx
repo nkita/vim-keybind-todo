@@ -218,6 +218,32 @@ export const Todo = (
         handleSetTodos(_todos)
     }
 
+    const priorityTask = (index: number, action: 'plus' | 'minus') => {
+        const _priority = filterdTodos[index].priority
+        let newPriority = 0
+        if (_priority && ['1', '2', '3'].includes(_priority)) {
+            let _p = Number(_priority)
+            newPriority = action === 'plus' ? _p + 1 : _p - 1
+            if (3 < newPriority) newPriority = 3
+            if (newPriority < 0) newPriority = 0
+        } else {
+            newPriority = action === "plus" ? 1 : 0
+        }
+        const _todos = todoFunc.modify(todos, {
+            id: filterdTodos[index].id,
+            is_complete: filterdTodos[index].is_complete,
+            priority: newPriority === 0 ? "" : newPriority.toString(),
+            completionDate: filterdTodos[index].completionDate,
+            creationDate: filterdTodos[index].creationDate,
+            text: filterdTodos[index].text,
+            project: filterdTodos[index].project,
+            context: filterdTodos[index].context,
+            detail: filterdTodos[index].detail,
+            sort: filterdTodos[index].sort
+        })
+        handleSetTodos(_todos)
+    }
+
     const changeProject = (index: number) => {
         setCurrentProject(index === -1 ? "" : projects[index])
         setCurrentIndex(0)
@@ -295,10 +321,17 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['editText'].enable))
 
     // change to priority edit mode
-    useHotkeys(keymap['editPriority'].keys, (e) => {
-        setPrefix('priority')
-        setMode('edit')
-    }, setKeyEnableDefine(keymap['editPriority'].enable))
+    // useHotkeys(keymap['editPriority'].keys, (e) => {
+    //     setPrefix('priority')
+    //     setMode('edit')
+    // }, setKeyEnableDefine(keymap['editPriority'].enable))
+    useHotkeys(keymap['increasePriority'].keys, (e) => {
+        priorityTask(currentIndex, 'plus')
+    }, setKeyEnableDefine(keymap['increasePriority'].enable))
+
+    useHotkeys(keymap['decreasePriority'].keys, (e) => {
+        priorityTask(currentIndex, 'minus')
+    }, setKeyEnableDefine(keymap['decreasePriority'].enable))
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {

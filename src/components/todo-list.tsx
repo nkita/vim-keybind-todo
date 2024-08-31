@@ -5,6 +5,7 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
 import { Item, ModalSelect } from "./todo"
+import { Star } from "lucide-react"
 
 export const TodoList = (
     {
@@ -126,19 +127,29 @@ export const TodoList = (
                                                     <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
-                                                            {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                            <div className="flex w-ful justify-center">
+                                                                {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                            </div>
                                                         </TableCell>
-                                                        <TableCell className="w-[30px] text-center" onDoubleClick={_ => onClick(index, 'priority')}>
-                                                            <Item
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"priority"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                label={t.priority ? t.priority : ""}
-                                                                className={"text-center text-xs"}
-                                                                register={register} />
+                                                        <TableCell className="w-[30px] text-center h-[30px]">
+                                                            {t.priority === "3" &&
+                                                                <div className="relative h-full w-full">
+                                                                    <Star className="absolute top-1 left-0 right-0 m-auto" size={10} />
+                                                                    <Star className="absolute bottom-1 left-1" size={10}/>
+                                                                    <Star className="absolute bottom-1 right-1" size={10} />
+                                                                </div>
+                                                            }
+                                                            {t.priority === "2" &&
+                                                                <div className="relative h-full w-full">
+                                                                    <Star className="absolute top-0 bottom-0 left-1 m-auto" size={10}/>
+                                                                    <Star className="absolute top-0 bottom-0 right-1 m-auto" size={10} />
+                                                                </div>
+                                                            }
+                                                            {t.priority === "1" &&
+                                                                <div className="relative h-full w-full">
+                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={10}/>
+                                                                </div>
+                                                            }
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className="w-[64%]">
                                                             <Item

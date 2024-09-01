@@ -120,7 +120,7 @@ export const Todo = (
                     }
                     if (_a === undefined || !_a) return 1
                     if (_b === undefined || !_b) return -1
-                    return _a.localeCompare(_b); // 文字列の比較にする
+                    return _b.localeCompare(_a); // 文字列の比較にする
                 });
             }
         }

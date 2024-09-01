@@ -169,12 +169,13 @@ export const Todo = (
             const targetTodoId = targetTodo.id
             const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
 
+            console.log("koko?")
             const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
             setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
             const replace: TodoProps = {
                 id: targetTodoId,
                 is_complete: targetTodo.is_complete,
-                priority: getValues(`edit-list-priority-${targetTodoId}`),
+                priority: targetTodo.priority,
                 completionDate: targetTodo.completionDate,
                 creationDate: targetTodo.creationDate,
                 text: replaceText,

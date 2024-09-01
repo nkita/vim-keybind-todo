@@ -169,7 +169,6 @@ export const Todo = (
             const targetTodoId = targetTodo.id
             const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
 
-            console.log("koko?")
             const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
             setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
             const replace: TodoProps = {
@@ -328,10 +327,12 @@ export const Todo = (
     // }, setKeyEnableDefine(keymap['editPriority'].enable))
     useHotkeys(keymap['increasePriority'].keys, (e) => {
         priorityTask(currentIndex, 'plus')
+        keepPosition()
     }, setKeyEnableDefine(keymap['increasePriority'].enable))
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
         priorityTask(currentIndex, 'minus')
+        keepPosition()
     }, setKeyEnableDefine(keymap['decreasePriority'].enable))
 
     // change to project edit mode

@@ -287,7 +287,7 @@ export const Todo = (
         handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable))
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {

@@ -134,20 +134,20 @@ export const TodoList = (
                                                         <TableCell className="w-[30px] text-center h-[30px]">
                                                             {t.priority === "3" &&
                                                                 <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-1 left-0 right-0 m-auto" size={10} />
-                                                                    <Star className="absolute bottom-1 left-1" size={10}/>
-                                                                    <Star className="absolute bottom-1 right-1" size={10} />
+                                                                    <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
+                                                                    <Star className="absolute bottom-1 left-1/2" size={9}/>
+                                                                    <Star className="absolute bottom-1 right-1/2" size={9} />
                                                                 </div>
                                                             }
                                                             {t.priority === "2" &&
                                                                 <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-1 m-auto" size={10}/>
-                                                                    <Star className="absolute top-0 bottom-0 right-1 m-auto" size={10} />
+                                                                    <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9}/>
+                                                                    <Star className="absolute top-0 bottom-0 right-1/2 m-auto" size={9} />
                                                                 </div>
                                                             }
                                                             {t.priority === "1" &&
                                                                 <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={10}/>
+                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9}/>
                                                                 </div>
                                                             }
                                                         </TableCell>

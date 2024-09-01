@@ -102,7 +102,7 @@ export const TodoList = (
                                 <TableCell className="w-[64%]">
                                     <input
                                         tabIndex={-1}
-                                        className={`p-1 text-left truncate outline-none bg-transparent font-semibold`}
+                                        className={`p-1 w-full text-left truncate outline-none bg-transparent font-semibold`}
                                         type="text"
                                         maxLength={prefix === 'priority' ? 1 : -1}
                                         {...register(`newtask`)}

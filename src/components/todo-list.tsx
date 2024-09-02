@@ -53,11 +53,11 @@ export const TodoList = (
             <div className="absolute top-0 left-1/2 h-[60px]">
             </div>
             <div className="h-full">
-                <div className={`flex overflow-auto text-3sm flex-nowrap text-nowrap ${tabHeight}`}>
-                    <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-sm px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
+                <div className={`flex overflow-auto text-xs flex-nowrap text-nowrap ${tabHeight}`}>
+                    <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-xs px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
                     {projects.map((p, i) => {
                         return (
-                            <button onClick={_ => onClick(i, 'projectTab')} key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-3sm px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-primary/10"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
+                            <button onClick={_ => onClick(i, 'projectTab')} key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-xs px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
                         )
                     })}
                 </div>
@@ -71,15 +71,15 @@ export const TodoList = (
                                 {sort === "priority" && <FaArrowUpZA />}
                             </div>
                         </div>
-                        <div className="w-[64%]">タスク</div>
-                        <div className="flex w-[13%]">
+                        <div className="w-[62%]">タスク</div>
+                        <div className="flex w-[14%] items-center">
                             <FaTag />
                             <div className="truncate">
                                 ラベル
                             </div>
-                            {sort === "context" && <FaArrowUpZA className="text-xs w-1" />}
+                            {sort === "context" && <FaArrowUpZA/>}
                         </div>
-                        <div className="flex w-[13%]">
+                        <div className="flex w-[14%] items-center">
                             <FaSitemap />
                             <div className="truncate">
                                 プロジェクト
@@ -124,7 +124,17 @@ export const TodoList = (
                                         {
                                             filterdTodos.map((t, index) => {
                                                 return (
-                                                    <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""} ${index % 2 == 1 ? "bg-slate-50" : ""}`} onClick={_ => setCurrentIndex(index)}>
+                                                    <TableRow key={t.id}
+                                                        className={`
+                                                            ${currentIndex === index ?
+                                                                "bg-sky-100" :
+                                                                index % 2 == 1 ?
+                                                                    "bg-slate-50" :
+                                                                    ""
+                                                            }
+                                                            ${searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""} 
+                                                    `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
                                                             <div className="flex w-ful justify-center">
@@ -170,7 +180,7 @@ export const TodoList = (
                                                                 prefix={"context"}
                                                                 currentPrefix={prefix}
                                                                 mode={mode}
-                                                                className={`text-xs text-left `}
+                                                                className={`text-left `}
                                                                 label={t.context}
                                                                 register={register}
                                                                 rhfSetValue={rhfSetValue}
@@ -185,7 +195,7 @@ export const TodoList = (
                                                                 prefix={"project"}
                                                                 currentPrefix={prefix}
                                                                 mode={mode}
-                                                                className="text-xs text-left"
+                                                                className="text-left"
                                                                 label={t.project}
                                                                 register={register}
                                                                 rhfSetValue={rhfSetValue}

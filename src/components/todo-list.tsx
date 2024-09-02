@@ -88,7 +88,7 @@ export const TodoList = (
                     </div>
                 </div>
                 <Table className={`w-full border border-primary/90 ${hcssMainHeight} bg-card border-b-0`} index={currentIndex}>
-                    <TableBody className="border-b bg-card text-card-foreground">
+                    <TableBody className="border-b bg-card text-card-foreground leading-6">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell>Loading...</TableCell>
@@ -124,7 +124,7 @@ export const TodoList = (
                                         {
                                             filterdTodos.map((t, index) => {
                                                 return (
-                                                    <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""}`} onClick={_ => setCurrentIndex(index)}>
+                                                    <TableRow key={t.id} className={`focus-within:bg-sky-100 ${searchResultIndex[index] ? "bg-yellow-50" : ""} ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""} ${index % 2 == 1 ? "bg-slate-50" : ""}`} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
                                                             <div className="flex w-ful justify-center">
@@ -135,19 +135,19 @@ export const TodoList = (
                                                             {t.priority === "3" &&
                                                                 <div className="relative h-full w-full">
                                                                     <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
-                                                                    <Star className="absolute bottom-1 left-1/2" size={9}/>
+                                                                    <Star className="absolute bottom-1 left-1/2" size={9} />
                                                                     <Star className="absolute bottom-1 right-1/2" size={9} />
                                                                 </div>
                                                             }
                                                             {t.priority === "2" &&
                                                                 <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9}/>
+                                                                    <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9} />
                                                                     <Star className="absolute top-0 bottom-0 right-1/2 m-auto" size={9} />
                                                                 </div>
                                                             }
                                                             {t.priority === "1" &&
                                                                 <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9}/>
+                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9} />
                                                                 </div>
                                                             }
                                                         </TableCell>

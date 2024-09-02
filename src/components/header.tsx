@@ -32,8 +32,9 @@ import {
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
-import { CircleCheck, CloudUpload, SaveAllIcon } from "lucide-react";
-import Link from "next/link";
+import { CircleCheck, CloudUpload } from "lucide-react";
+import { M_PLUS_1p } from "next/font/google";
+const titleFont = M_PLUS_1p({ weight: "700", subsets: ["latin"] })
 
 export default function Header({ user, userLoading, list, isSave, isUpdate, height, onClickSaveButton }: { height: string, user: User | undefined, userLoading: boolean, list: any, isSave: boolean, isUpdate: boolean, onClickSaveButton: () => void }) {
     const { loginWithRedirect, logout } = useAuth0();
@@ -42,7 +43,7 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
     return (
         <div className={`flex justify-between items-center w-full py-3 px-1 ${h}`}>
             <div className="flex items-center gap-2 h-9">
-                <h1 className="border p-1 border-primary text-sm font-semibold  italic rounded-sm">Keyboard ToDo</h1>
+                <h1 className={`p-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>キーボードでTODO</h1>
             </div>
             <div className="gap-1 hidden">
                 {addList ? (
@@ -82,8 +83,8 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
                             <Button onClick={_ => { }} size={"default"} variant={"outline"} className="gap-1" disabled><CircleCheck className="scale-75" />保存済み</Button>
                         )}
                         <DropdownMenu>
-                            <DropdownMenuTrigger className="rounded-full">
-                                <Avatar className="w-9 h-9 ring-1 ring-muted-foreground">
+                            <DropdownMenuTrigger className="rounded-full focus:outline-none">
+                                <Avatar className="w-9 h-9 ring-2 ring-muted-foreground">
                                     <AvatarImage src={user?.picture} alt={user?.name} />
                                     <AvatarFallback><FaRegUser /></AvatarFallback>
                                 </Avatar>

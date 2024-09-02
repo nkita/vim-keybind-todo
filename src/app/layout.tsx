@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/provider/auth";
-const inter = Inter({ subsets: ["latin"] });
+import { Zen_Kaku_Gothic_New } from "next/font/google";
+
+const inter = Zen_Kaku_Gothic_New({ weight: "400", subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Keyboard ToDo| ショートカットを駆使した爆速Todoアプリ",
+  title: "キーボードでToDo| ショートカットを駆使した爆速Todoアプリ",
   description: "ショートカットを駆使した爆速で管理できるTodoアプリです。",
 };
 

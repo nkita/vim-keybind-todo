@@ -38,12 +38,12 @@ export const Detail = ({
                                 todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
                             }
                         </span>
-                        <div onClick={_ => onClick("detailText")}>
+                        <div onClick={_ => onClick("detailText")} className="w-full">
                             <Item
                                 t={todo}
                                 index={0}
                                 currentIndex={0}
-                                prefix={"text"}
+                                prefix={"detailText"}
                                 position="content"
                                 currentPrefix={prefix}
                                 mode={mode}
@@ -64,7 +64,7 @@ export const Detail = ({
                                 currentPrefix={prefix}
                                 mode={mode}
                                 className="text-sm w-full h-full"
-                                label={""}
+                                label={todo.detail}
                                 register={register} />
                         </div>
                     </li>

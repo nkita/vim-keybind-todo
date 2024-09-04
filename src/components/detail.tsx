@@ -1,7 +1,7 @@
 import { TodoProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
 import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt } from "react-icons/fa6";
-import { UseFormRegister, FieldValues } from "react-hook-form"
+import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Item } from "./todo";
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 
@@ -12,6 +12,7 @@ export const Detail = ({
     isHelp,
     onClick,
     onMouseDownEvent,
+    setValue,
     register
 }: {
     todo: TodoProps
@@ -20,13 +21,20 @@ export const Detail = ({
     isHelp: boolean
     onClick: (prefix: string) => void
     onMouseDownEvent: (e: MouseEvent<HTMLDivElement>) => void
+    setValue: UseFormSetValue<FieldValues>
+    watch: UseFormRegister<FieldValues>
     register: UseFormRegister<FieldValues>
 }) => {
+    useEffect(() => {
+        if (todo) setValue(`edit-content-detail-${todo.id}`, todo.detail)
+    }, [todo, setValue]);
+
     if (!todo) return <></>
     const creationDate = todo["creationDate"]
     const creationDateLabel = creationDate ? getTimeAgo(new Date(creationDate)) : ""
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
+
     return (
         <>
             <div className="p-4 w-full h-full border rounded-sm bg-white border-primary/90 overflow-auto" onMouseDown={onMouseDownEvent}>
@@ -55,17 +63,14 @@ export const Detail = ({
                     <li className="relative h-full w-full">
                         {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
                         <div className={`flex w-full text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")}>
-                            <Item
-                                t={todo}
-                                index={0}
-                                currentIndex={0}
-                                prefix={"detail"}
-                                position="content"
-                                currentPrefix={prefix}
-                                mode={mode}
-                                className="text-sm w-full h-full"
-                                label={todo.detail}
-                                register={register} />
+                            <textarea
+                                tabIndex={-1}
+                                className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}
+                                rows={10}
+                                placeholder="詳細を入力…"
+                                onFocus={e => e.currentTarget.setSelectionRange(0, !todo ? 0 : !todo.detail ? 0 : todo.detail.length)}
+                                {...register(`edit-content-detail-${todo.id}`)}
+                            />
                         </div>
                     </li>
                     {todo.context &&

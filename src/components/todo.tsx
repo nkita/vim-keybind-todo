@@ -60,7 +60,7 @@ export const Todo = (
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
-    const { register, setFocus, getValues, setValue } = useForm()
+    const { register, setFocus, getValues, setValue, watch } = useForm()
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
@@ -143,7 +143,7 @@ export const Todo = (
                 if (mode === 'editOnSort') setFocus("newtask")
             }
         }
-    }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus])
+    }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
 
     /*****
@@ -170,7 +170,6 @@ export const Todo = (
             const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
 
             const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
-            console.log(replaceText)
             setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
             const replace: TodoProps = {
                 id: targetTodoId,
@@ -694,6 +693,8 @@ export const Todo = (
                                     isHelp={isHelp}
                                     onMouseDownEvent={handleDetailMouseDown}
                                     onClick={handleClickDetailElement}
+                                    setValue={setValue}
+                                    watch={watch}
                                     register={register}
                                 />
                             </div>
@@ -733,7 +734,7 @@ export const Item = (
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-sky-300"} `
+    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-sky-300 rounded hover:cursor-text"} `
     const isView = currentIndex === index
         && currentPrefix === prefix
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))

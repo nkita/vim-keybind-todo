@@ -160,6 +160,7 @@ export const Todo = (
     }
     const toNormalMode = () => {
         if (filterdTodos.length > 0) {
+
             const positions = {
                 editDetail: ["content", "list"],
                 default: ["list", "content"]
@@ -169,6 +170,7 @@ export const Todo = (
             const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
 
             const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
+            console.log(replaceText)
             setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
             const replace: TodoProps = {
                 id: targetTodoId,
@@ -629,7 +631,7 @@ export const Todo = (
     }
     const handleClickDetailElement = (prefix: string) => {
         if (prefix === 'completion') completeTask(currentIndex)
-        if (prefix === 'detail' || prefix === "detailText") {
+        if (prefix === 'detail' || prefix === "text") {
             setPrefix(prefix)
             setMode("editDetail")
         }
@@ -721,7 +723,7 @@ export const Item = (
         t: TodoProps
         index: number
         currentIndex: number
-        prefix: "text" | "priority" | "project" | "context" | "detail" | "detailText"
+        prefix: "text" | "priority" | "project" | "context" | "detail"
         currentPrefix: string
         mode: string
         label: any
@@ -731,12 +733,11 @@ export const Item = (
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _prefix = prefix === "detailText" ? "text" : prefix
     const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-sky-300"} `
     const isView = currentIndex === index
         && currentPrefix === prefix
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
-    const val = t[_prefix] ?? ""
+    const val = t[prefix] ?? ""
 
     return (
         <>
@@ -783,7 +784,7 @@ export const Item = (
                             type="text"
                             maxLength={prefix === 'priority' ? 1 : -1}
                             onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
-                            {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[_prefix] })}
+                            {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
                         />
                     )}
                 {/* )} */}

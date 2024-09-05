@@ -150,6 +150,7 @@ export const Todo = (
      * common function
      ****/
     const handleSetTodos = (_todos: TodoProps[]) => {
+        console.log(_todos)
         const _t = todoFunc.sortUpdate(_todos)
         setTodos(_t)
         _t.forEach(t => {
@@ -217,10 +218,11 @@ export const Todo = (
         handleSetTodos(_todos)
     }
 
-    const priorityTask = (index: number, action: 'plus' | 'minus') => {
-        const _priority = filterdTodos[index].priority
+    const priorityTask = (todos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
+        const targetTodo = todos.filter(t => t.id === targetId)[0]
+        const _priority = targetTodo.priority
         let newPriority = 0
-        if (_priority && ['1', '2', '3'].includes(_priority)) {
+        if (_priority !== undefined && ['1', '2', '3'].includes(_priority)) {
             let _p = Number(_priority)
             newPriority = action === 'plus' ? _p + 1 : _p - 1
             if (3 < newPriority) newPriority = 3
@@ -229,16 +231,16 @@ export const Todo = (
             newPriority = action === "plus" ? 1 : 0
         }
         const _todos = todoFunc.modify(todos, {
-            id: filterdTodos[index].id,
-            is_complete: filterdTodos[index].is_complete,
+            id: targetTodo.id,
+            is_complete: targetTodo.is_complete,
             priority: newPriority === 0 ? "" : newPriority.toString(),
-            completionDate: filterdTodos[index].completionDate,
-            creationDate: filterdTodos[index].creationDate,
-            text: filterdTodos[index].text,
-            project: filterdTodos[index].project,
-            context: filterdTodos[index].context,
-            detail: filterdTodos[index].detail,
-            sort: filterdTodos[index].sort
+            completionDate: targetTodo.completionDate,
+            creationDate: targetTodo.creationDate,
+            text: targetTodo.text,
+            project: targetTodo.project,
+            context: targetTodo.context,
+            detail: targetTodo.detail,
+            sort: targetTodo.sort
         })
         handleSetTodos(_todos)
     }
@@ -298,7 +300,7 @@ export const Todo = (
         handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable), [currentIndex, currentProject, viewCompletionTask])
+    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
@@ -325,14 +327,12 @@ export const Todo = (
     //     setMode('edit')
     // }, setKeyEnableDefine(keymap['editPriority'].enable))
     useHotkeys(keymap['increasePriority'].keys, (e) => {
-        priorityTask(currentIndex, 'plus')
-        keepPosition()
-    }, setKeyEnableDefine(keymap['increasePriority'].enable), [currentIndex])
+        priorityTask(todos, filterdTodos[currentIndex].id, 'plus')
+    }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filterdTodos, currentIndex])
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
-        priorityTask(currentIndex, 'minus')
-        keepPosition()
-    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [currentIndex])
+        priorityTask(todos, filterdTodos[currentIndex].id, 'minus')
+    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filterdTodos, currentIndex])
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {

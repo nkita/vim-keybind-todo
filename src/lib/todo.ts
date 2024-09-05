@@ -72,7 +72,6 @@ export const todoFunc = {
             pt.isArchived = true
             return pt
         })
-        console.log(todos, prevTodos)
         return [...updates, ...deletes]
     },
     sortUpdate: (todos: TodoProps[]) => {

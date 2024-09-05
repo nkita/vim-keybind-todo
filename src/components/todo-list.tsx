@@ -50,8 +50,7 @@ export const TodoList = (
     const taskBarHeight = "h-[20px]"
     return (
         <>
-            <div className="absolute top-0 left-1/2 h-[60px]">
-            </div>
+            <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
                 <div className={`flex overflow-auto text-xs flex-nowrap text-nowrap ${tabHeight}`}>
                     <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-xs px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
@@ -77,7 +76,7 @@ export const TodoList = (
                             <div className="truncate">
                                 ラベル
                             </div>
-                            {sort === "context" && <FaArrowUpZA/>}
+                            {sort === "context" && <FaArrowUpZA />}
                         </div>
                         <div className="flex w-[14%] items-center">
                             <FaSitemap />

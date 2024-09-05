@@ -266,27 +266,27 @@ export const Todo = (
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
         setCommand('')
         setMode('normal')
-    }, setKeyEnableDefine(keymap['up'].enable))
+    }, setKeyEnableDefine(keymap['up'].enable), [currentIndex])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
         if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
         setCommand('')
         setMode('normal')
-    }, setKeyEnableDefine(keymap['down'].enable))
+    }, setKeyEnableDefine(keymap['down'].enable), [currentIndex, filterdTodos])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insert'].enable))
+    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode])
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
@@ -298,21 +298,21 @@ export const Todo = (
         handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable))
+    }, setKeyEnableDefine(keymap['append'].enable), [currentIndex, currentProject, viewCompletionTask])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
         handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(filterdTodos.length)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['appendBottom'].enable))
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask])
 
     // delete task
     useHotkeys(keymap['delete'].keys, (e) => {
         handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex - 1
         setCurrentIndex(index)
-    }, setKeyEnableDefine(keymap['delete'].enable))
+    }, setKeyEnableDefine(keymap['delete'].enable), [todos, filterdTodos, currentIndex])
 
     // change to edit mode
     useHotkeys(keymap['editText'].keys, (e) => {
@@ -327,12 +327,12 @@ export const Todo = (
     useHotkeys(keymap['increasePriority'].keys, (e) => {
         priorityTask(currentIndex, 'plus')
         keepPosition()
-    }, setKeyEnableDefine(keymap['increasePriority'].enable))
+    }, setKeyEnableDefine(keymap['increasePriority'].enable), [currentIndex])
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
         priorityTask(currentIndex, 'minus')
         keepPosition()
-    }, setKeyEnableDefine(keymap['decreasePriority'].enable))
+    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [currentIndex])
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
@@ -356,7 +356,7 @@ export const Todo = (
                 if (_index < projects.length - 1) changeProject(_index + 1)
             }
         }
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable))
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [currentProject, projects])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
@@ -370,14 +370,14 @@ export const Todo = (
                 }
             }
         }
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable))
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [currentProject, projects])
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
         setCurrentIndex(index)
         completeTask(index)
-    }, setKeyEnableDefine(keymap['completion'].enable))
+    }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos])
 
     // change sort mode
     useHotkeys(keymap['sortMode'].keys, (e) => {
@@ -388,7 +388,7 @@ export const Todo = (
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
         keepPosition()
         setViewCompletionTask(!viewCompletionTask)
-    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable))
+    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask])
 
     /*******************
      * 
@@ -460,7 +460,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable))
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
         if (!e.isComposing) toNormalMode()
@@ -470,12 +470,12 @@ export const Todo = (
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
         setMode('number')
-    }, setKeyEnableDefine(keymap['numberMode'].enable))
+    }, setKeyEnableDefine(keymap['numberMode'].enable), [command])
 
     useHotkeys(keymap['numberInput'].keys, (e) => {
         setCommand(command + e.key)
         setMode('number')
-    }, setKeyEnableDefine(keymap['numberInput'].enable))
+    }, setKeyEnableDefine(keymap['numberInput'].enable), [command])
 
     useHotkeys(keymap['moveToTop'].keys, (e) => {
         setCurrentIndex(0)
@@ -483,7 +483,7 @@ export const Todo = (
 
     useHotkeys(keymap['moveToEnd'].keys, (e) => {
         setCurrentIndex(filterdTodos.length - 1)
-    }, setKeyEnableDefine(keymap['moveToEnd'].enable))
+    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filterdTodos])
 
     /******************
      *
@@ -507,7 +507,7 @@ export const Todo = (
         moveToLine(line)
         setMode('normal')
         setCommand('')
-    }, setKeyEnableDefine(keymap['moveToLine'].enable))
+    }, setKeyEnableDefine(keymap['moveToLine'].enable), [command])
 
     useHotkeys(keymap['appendToLine'].keys, (e) => {
         const line = parseInt(command)
@@ -519,7 +519,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['appendToLine'].enable))
+    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProject, viewCompletionTask])
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
         const line = parseInt(command)
@@ -531,7 +531,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['insertToLine'].enable))
+    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProject, viewCompletionTask])
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
@@ -543,7 +543,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['editProjectLine'].enable))
+    }, setKeyEnableDefine(keymap['editProjectLine'].enable), [command])
 
     useHotkeys(keymap['editContextLine'].keys, (e) => {
         const line = parseInt(command)
@@ -554,7 +554,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['editContextLine'].enable))
+    }, setKeyEnableDefine(keymap['editContextLine'].enable), [command])
 
     useHotkeys(keymap['editPriorityLine'].keys, (e) => {
         const line = parseInt(command)
@@ -565,7 +565,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['editPriorityLine'].enable))
+    }, setKeyEnableDefine(keymap['editPriorityLine'].enable), [command])
 
     useHotkeys(keymap['editTextLine'].keys, (e) => {
         const line = parseInt(command)
@@ -575,7 +575,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['editTextLine'].enable))
+    }, setKeyEnableDefine(keymap['editTextLine'].enable), [command])
 
     useHotkeys(keymap['editDetail'].keys, (e) => {
         setPrefix("detail")
@@ -603,12 +603,12 @@ export const Todo = (
                 : setSearchResultIndex([])
             setMode("normal")
         }
-    }, setKeyEnableDefine(keymap['searchEnter'].enable))
+    }, setKeyEnableDefine(keymap['searchEnter'].enable), [filterdTodos])
 
     // help toggle
     useHotkeys(keymap['viewHelp'].keys, (e) => {
         setHelp(!isHelp)
-    }, setKeyEnableDefine(keymap['viewHelp'].enable))
+    }, setKeyEnableDefine(keymap['viewHelp'].enable), [isHelp])
 
     /*******************
      * 

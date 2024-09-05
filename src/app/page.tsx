@@ -19,7 +19,7 @@ export default function Home() {
   const [token, setToken] = useState("")
   const [currentListID, setCurrentListID] = useState("")
   const [todos, setTodos] = useState<TodoProps[]>([])
-  const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo-ls-key", [])
+  const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo_data", [])
   const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
   const [isSave, setIsSave] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)

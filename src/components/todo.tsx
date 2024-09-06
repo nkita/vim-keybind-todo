@@ -311,8 +311,9 @@ export const Todo = (
 
     // delete task
     useHotkeys(keymap['delete'].keys, (e) => {
+        console.log(filterdTodos, currentIndex)
         handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
-        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex - 1
+        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)
     }, setKeyEnableDefine(keymap['delete'].enable), [todos, filterdTodos, currentIndex])
 

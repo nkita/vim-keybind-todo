@@ -23,5 +23,5 @@ export const postFetch = (url: string, token: string, body: Object) => {
 }
 
 export const useFetchList = (id: string, token: string) => useSWRImmutable(token ? [`${process.env.NEXT_PUBLIC_API}/api/list${id ? "/" + id : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchTodo = (list_id: string, token: string) => useSWRImmutable(token ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
+export const useFetchTodo = (list_id: string, token: string) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
 export const useFetchPostList = (body: Object, token: string) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)

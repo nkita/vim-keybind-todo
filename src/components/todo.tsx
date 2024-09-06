@@ -252,7 +252,7 @@ export const Todo = (
         setMode('normal')
     }
 
-    const keepPosition = (id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
+    const keepPosition = (filterdTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
 
     /** hotkeys  */
     /*******************
@@ -387,9 +387,9 @@ export const Todo = (
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
-        keepPosition()
+        keepPosition(filterdTodos, currentIndex)
         setViewCompletionTask(!viewCompletionTask)
-    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask])
+    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask, filterdTodos, currentIndex])
 
     /*******************
      * 
@@ -397,16 +397,16 @@ export const Todo = (
      * 
      *******************/
     useHotkeys(keymap['sortPriority'].keys, (e) => {
-        keepPosition()
+        keepPosition(filterdTodos, currentIndex)
         setSort("priority")
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortPriority'].enable))
+    }, setKeyEnableDefine(keymap['sortPriority'].enable), [currentIndex, filterdTodos])
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
-        keepPosition()
+        keepPosition(filterdTodos, currentIndex)
         setSort(undefined)
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortClear'].enable))
+    }, setKeyEnableDefine(keymap['sortClear'].enable), [filterdTodos, currentIndex])
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
         setSort("creationDate")
@@ -414,16 +414,16 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
 
     useHotkeys(keymap['sortContext'].keys, (e) => {
-        keepPosition()
+        keepPosition(filterdTodos, currentIndex)
         setSort("context")
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortContext'].enable))
+    }, setKeyEnableDefine(keymap['sortContext'].enable), [filterdTodos, currentIndex])
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
-        keepPosition()
+        keepPosition(filterdTodos, currentIndex)
         setSort("is_complete")
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortCompletion'].enable))
+    }, setKeyEnableDefine(keymap['sortCompletion'].enable), [filterdTodos, currentIndex])
 
 
     // change command mode
@@ -455,13 +455,13 @@ export const Todo = (
             if (!todoFunc.isEmpty(newtask)) {
                 handleSetTodos([newtask, ...todos])
                 setValue("newtask", "")
-                keepPosition(newId)
+                keepPosition(filterdTodos, currentIndex, newId)
             }
             setPrefix('text')
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject])
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
         if (!e.isComposing) toNormalMode()

@@ -64,7 +64,7 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
                 )}
             </div>
             {userLoading ? (
-                <Spinner className="p-1 w-9 h-9" />
+                <Spinner className="m-2 w-8 h-8" />
             ) :
                 !user ? (
                     <Button onClick={_ => loginWithRedirect()} size={"sm"} variant={"default"}>Log In</Button>

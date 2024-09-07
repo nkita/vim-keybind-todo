@@ -645,7 +645,7 @@ export const Todo = (
         e.stopPropagation();
     }
     return (
-        <div className={`flex gap-2 w-full h-full pb-1`} onMouseDown={handleMainMouseDown}>
+        <div className={`relative flex gap-2 w-full h-full pb-1`} onMouseDown={handleMainMouseDown}>
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                 <ResizablePanel defaultSize={80} minSize={4} className="relative pl-1">
                     <TodoList
@@ -669,36 +669,30 @@ export const Todo = (
                 </ResizablePanel>
                 <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-sky-500/50 transition-all ease-in" />
                 <ResizablePanel defaultSize={20} minSize={4} className={"relative"} >
-                    {loading ? (
-                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pr-2 border rounded-md bg-white`}>
-                            <div className="flex text-sm items-center justify-center h-full w-full ">Loading...</div>
+                    <>
+                        <div className={`absolute top-[30px] ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-[calc(100%-30px)] pr-1 rounded-sm`}>
+                            <Usage
+                                sort={sort}
+                                mode={mode}
+                                isHelp={isHelp}
+                                setHelp={setHelp}
+                                isTodos={filterdTodos.length > 0}
+                            />
                         </div>
-                    ) : (
-                        <>
-                            <div className={`absolute top-[30px] ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-[calc(100%-30px)] pr-1 rounded-sm`}>
-                                <Usage
-                                    sort={sort}
-                                    mode={mode}
-                                    isHelp={isHelp}
-                                    setHelp={setHelp}
-                                    isTodos={filterdTodos.length > 0}
-                                />
-                            </div>
-                            <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pr-1 ${(isHelp && mode !== "editDetail") && "blur-sm backdrop-blur-none"}`}>
-                                <Detail
-                                    todo={filterdTodos[currentIndex]}
-                                    prefix={prefix}
-                                    mode={mode}
-                                    isHelp={isHelp}
-                                    onMouseDownEvent={handleDetailMouseDown}
-                                    onClick={handleClickDetailElement}
-                                    setValue={setValue}
-                                    watch={watch}
-                                    register={register}
-                                />
-                            </div>
-                        </>
-                    )}
+                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pr-1 ${(isHelp && mode !== "editDetail") && "blur-sm backdrop-blur-none"}`}>
+                            <Detail
+                                todo={filterdTodos[currentIndex]}
+                                prefix={prefix}
+                                mode={mode}
+                                isHelp={isHelp}
+                                onMouseDownEvent={handleDetailMouseDown}
+                                onClick={handleClickDetailElement}
+                                setValue={setValue}
+                                watch={watch}
+                                register={register}
+                            />
+                        </div>
+                    </>
                 </ResizablePanel>
             </ResizablePanelGroup>
         </div >

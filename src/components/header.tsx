@@ -73,11 +73,13 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
                         {isUpdate ? (
                             <Button onClick={onClickSaveButton} size={"default"} className="bg-blue-500 text-white hover:bg-blue-600 gap-1">
                                 {isSave ? (
-                                    <Spinner className="p-1 w-6 h-6 fill-blue-400" />
+                                    <div className="pr-1">
+                                        <div className="animate-spin h-4 w-4 border-2 p-1 border-white rounded-full border-t-transparent"></div>
+                                    </div>
                                 ) : (
                                     <CloudUpload className="scale-75" />
                                 )}
-                                保存する <kbd className="bg-blue-400 text-blue-50 border-blue-300">Ctrl</kbd>+<kbd className="bg-blue-400 text-blue-50 border-blue-300">S</kbd>
+                                保存する<kbd className="flex items-center h-full">Ctrl</kbd>+<kbd className="flex items-center h-full">S</kbd>
                             </Button>
                         ) : (
                             <Button onClick={_ => { }} size={"default"} variant={"outline"} className="gap-1" disabled><CircleCheck className="scale-75" />保存済み</Button>

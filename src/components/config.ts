@@ -31,7 +31,7 @@ export type Keymap = {
     editContextLine: KeymapItem;
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
-    sortMode: KeymapItem;
+    // sortMode: KeymapItem;
     sortPriority: KeymapItem;
     sortCreationDate: KeymapItem;
     sortContext: KeymapItem;

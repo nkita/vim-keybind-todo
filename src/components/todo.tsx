@@ -150,7 +150,6 @@ export const Todo = (
      * common function
      ****/
     const handleSetTodos = (_todos: TodoProps[]) => {
-        console.log(_todos)
         const _t = todoFunc.sortUpdate(_todos)
         setTodos(_t)
         _t.forEach(t => {
@@ -311,7 +310,6 @@ export const Todo = (
 
     // delete task
     useHotkeys(keymap['delete'].keys, (e) => {
-        console.log(filterdTodos, currentIndex)
         handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)

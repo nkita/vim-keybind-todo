@@ -109,7 +109,7 @@ export const TodoList = (
                                     />
                                 </TableCell >
                                 <TableCell className="w-[13%]" ></TableCell>
-                                <TableCell className="w-[13%] p-1 font-light text-lab text-ex-project">{currentProject}</TableCell>
+                                <TableCell className="w-[13%] truncate font-light text-lab text-ex-project">{currentProject}</TableCell>
                             </TableRow>
                         }
                         {!loading &&

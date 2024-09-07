@@ -159,43 +159,50 @@ export const Todo = (
         setIsUpdate(todoFunc.diff(_t, prevTodos).length > 0)
     }
     const toNormalMode = () => {
-        if (filterdTodos.length > 0) {
+        if (filterdTodos.length === 0) {
+            setPrefix('text')
+            setMode('normal')
+        }
 
-            const positions = {
-                editDetail: ["content", "list"],
-                default: ["list", "content"]
-            };
-            const targetTodo = filterdTodos[currentIndex]
-            const targetTodoId = targetTodo.id
-            const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
+        const positions = {
+            editDetail: ["content", "list"],
+            default: ["list", "content"]
+        };
+        const targetTodo = filterdTodos[currentIndex]
+        if (targetTodo === undefined) {
+            setPrefix('text')
+            setMode('normal')
+        }
 
-            const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
-            setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
-            const replace: TodoProps = {
-                id: targetTodoId,
-                is_complete: targetTodo.is_complete,
-                priority: targetTodo.priority,
-                completionDate: targetTodo.completionDate,
-                creationDate: targetTodo.creationDate,
-                text: replaceText,
-                project: getValues(`edit-list-project-${targetTodoId}`),
-                context: getValues(`edit-list-context-${targetTodoId}`),
-                detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
-                sort: targetTodo.sort
-            }
-            let _todos: TodoProps[] = []
-            if (todoFunc.isEmpty(replace)) {
-                _todos = todoFunc.delete(todos, targetTodoId)
+        const targetTodoId = targetTodo.id
+        const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
+
+        const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
+        setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
+        const replace: TodoProps = {
+            id: targetTodoId,
+            is_complete: targetTodo.is_complete,
+            priority: targetTodo.priority,
+            completionDate: targetTodo.completionDate,
+            creationDate: targetTodo.creationDate,
+            text: replaceText,
+            project: getValues(`edit-list-project-${targetTodoId}`),
+            context: getValues(`edit-list-context-${targetTodoId}`),
+            detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
+            sort: targetTodo.sort
+        }
+        let _todos: TodoProps[] = []
+        if (todoFunc.isEmpty(replace)) {
+            _todos = todoFunc.delete(todos, targetTodoId)
+            handleSetTodos(_todos)
+            setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
+        } else {
+            const t = todos.filter(_t => _t.id === replace.id)[0]
+            if (!isEqual(t, replace)) {
+                _todos = todoFunc.modify(todos, replace)
                 handleSetTodos(_todos)
-                setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
-            } else {
-                const t = todos.filter(_t => _t.id === replace.id)[0]
-                if (!isEqual(t, replace)) {
-                    _todos = todoFunc.modify(todos, replace)
-                    handleSetTodos(_todos)
-                }
-                setCurrentIndex(todoFunc.getIndexById(filterdTodos, targetTodoId))
             }
+            setCurrentIndex(todoFunc.getIndexById(filterdTodos, targetTodoId))
         }
         setPrefix('text')
         setMode('normal')

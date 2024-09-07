@@ -162,21 +162,21 @@ export const Todo = (
         if (filterdTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
+            return
         }
-
-        const positions = {
-            editDetail: ["content", "list"],
-            default: ["list", "content"]
-        };
         const targetTodo = filterdTodos[currentIndex]
         if (targetTodo === undefined) {
             setPrefix('text')
             setMode('normal')
+            return
         }
-
-        const targetTodoId = targetTodo.id
+        const positions = {
+            editDetail: ["content", "list"],
+            default: ["list", "content"]
+        };
         const [updatePosition, otherPosition] = mode === "editDetail" ? positions.editDetail : positions.default
 
+        const targetTodoId = targetTodo.id
         const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
         setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
         const replace: TodoProps = {

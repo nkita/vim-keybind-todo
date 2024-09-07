@@ -121,6 +121,15 @@ export default function Home() {
     <article className="h-screen bg-sky-50/50">
       <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       <div className={`w-full ${mainPCHeight}`}>
+        {(listLoading || todosLoading || userLoading) &&
+          <div className={`absolute top-0  w-full h-full pr-2 bg-sky-50/50 backdrop-blur-sm z-50`}>
+            <div className="flex text-sm items-center justify-center h-full w-full ">
+              <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-white shadow-lg">
+                <span className="animate-bounce">Loading...</span>
+              </span>
+            </div>
+          </div>
+        }
         <Todo
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}

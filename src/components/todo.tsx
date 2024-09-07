@@ -92,8 +92,8 @@ export const Todo = (
         })
         const _p = projects.filter(p => p !== undefined && p !== "") as string[];
         const _l = labels.filter(l => l !== undefined && l !== "") as string[];
-        setProjects(Array.from(new Set(_p)));
-        setLabels(Array.from(new Set(_l)))
+        setProjects(prevProjects => Array.from(new Set([...prevProjects, ..._p])));
+        setLabels(prevLabels => Array.from(new Set([...prevLabels, ..._l])))
     }, [todos])
 
     useEffect(() => {

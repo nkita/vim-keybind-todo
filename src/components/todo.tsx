@@ -379,9 +379,9 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos])
 
     // change sort mode
-    useHotkeys(keymap['sortMode'].keys, (e) => {
-        setMode("sort")
-    }, setKeyEnableDefine(keymap['sortMode'].enable))
+    // useHotkeys(keymap['sortMode'].keys, (e) => {
+    //     setMode("sort")
+    // }, setKeyEnableDefine(keymap['sortMode'].enable))
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {

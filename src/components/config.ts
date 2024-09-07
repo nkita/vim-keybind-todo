@@ -164,12 +164,12 @@ export const keymap: Keymap = {
         type: ["edit"],
         description: "ラベルを編集"
     },
-    sortMode: {
-        keys: ['s'],
-        enable: { mode: ["normal"] },
-        type: ["sort"],
-        description: "ソート"
-    },
+    // sortMode: {
+    //     keys: ['s'],
+    //     enable: { mode: ["normal"] },
+    //     type: ["sort"],
+    //     description: "ソート"
+    // },
     sortPriority: {
         keys: ['p',],
         enable: { mode: ["sort"] },

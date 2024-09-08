@@ -36,13 +36,15 @@ export default function Home() {
     async function getToken() {
       try {
         const token = await getAccessTokenSilently()
-        if (token) setToken(token)
+        if (token) {
+          setToken(token)
+        }
       } catch (e) {
         setListLoading(false)
         setTodosLoading(false)
       }
     }
-    return (() => { getToken() })
+    getToken()
   }, [getAccessTokenSilently])
 
   useEffect(() => {

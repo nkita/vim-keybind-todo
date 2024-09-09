@@ -26,7 +26,10 @@ export const Detail = ({
     register: UseFormRegister<FieldValues>
 }) => {
     useEffect(() => {
-        if (todo) setValue(`edit-content-detail-${todo.id}`, todo.detail)
+        if (todo) {
+            setValue(`edit-content-detail-${todo.id}`, todo.detail)
+            setValue(`edit-content-text-${todo.id}`, todo.text)
+        }
     }, [todo, setValue]);
 
     if (!todo) return <></>
@@ -35,19 +38,35 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
+    const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-sky-300 rounded hover:cursor-text`
     return (
         <>
             <div className="p-4 w-full h-full border rounded-sm bg-white border-primary/90 overflow-auto" onMouseDown={onMouseDownEvent}>
                 <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
-                    <li className="flex font-bold items-center gap-2" >
+                    <li className="flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
                         <span className="w-4 h-4 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
                             }
                         </span>
                         <div onClick={_ => onClick("text")} className="w-full">
-                            <Item
+                            {mode === "editDetail" ? (
+                                <textarea
+                                    tabIndex={-1}
+                                    className={_classNameText}
+                                    rows={2}
+                                    placeholder="詳細を入力…"
+                                    {...register(`edit-content-text-${todo.id}`)}
+                                />
+                            ) : (
+                                <button
+                                    className={_classNameText}>
+                                    {todo.text}
+                                </button>
+                            )}
+
+                            {/* <Item
                                 t={todo}
                                 index={0}
                                 currentIndex={0}
@@ -57,7 +76,7 @@ export const Detail = ({
                                 mode={mode}
                                 className={`${todo["is_complete"] ? "text-muted-foreground/50" : "text-primary"} break-words`}
                                 label={todo.text}
-                                register={register} />
+                                register={register} /> */}
                         </div>
                     </li>
                     <li className="relative h-full w-full">
@@ -68,7 +87,6 @@ export const Detail = ({
                                 className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}
                                 rows={10}
                                 placeholder="詳細を入力…"
-                                onFocus={e => e.currentTarget.setSelectionRange(0, !todo ? 0 : !todo.detail ? 0 : todo.detail.length)}
                                 {...register(`edit-content-detail-${todo.id}`)}
                             />
                         </div>

@@ -473,6 +473,12 @@ export const Todo = (
         setCommand('')
     }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable))
 
+    useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
+        if (prefix !== "text") return
+        if (!e.isComposing) toNormalMode()
+        setCommand('')
+    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [prefix])
+
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
         setMode('number')
@@ -640,6 +646,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode("editDetail")
         }
+        if (prefix === "normal") toNormalMode()
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         toNormalMode()

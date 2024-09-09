@@ -39,6 +39,7 @@ export type Keymap = {
     sortClear: KeymapItem
     normalMode: KeymapItem;
     normalModefromEditDetail: KeymapItem;
+    normalModefromEditDetailText: KeymapItem;
     normalModeOnSort: KeymapItem;
     toggleCompletionTask: KeymapItem;
     numberMode: KeymapItem;
@@ -215,6 +216,12 @@ export const keymap: Keymap = {
     },
     normalModefromEditDetail: {
         keys: ['Esc'],
+        enable: { mode: ["editDetail", "modal"] },
+        type: ["other"],
+        description: "戻る"
+    },
+    normalModefromEditDetailText: {
+        keys: ['Enter'],
         enable: { mode: ["editDetail", "modal"] },
         type: ["other"],
         description: "戻る"

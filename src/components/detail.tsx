@@ -62,7 +62,7 @@ export const Detail = ({
                     </li>
                     <li className="relative h-full w-full">
                         {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
-                        <div className={`flex w-full text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")}>
+                        <div className={`flex w-full text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
                             <textarea
                                 tabIndex={-1}
                                 className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}

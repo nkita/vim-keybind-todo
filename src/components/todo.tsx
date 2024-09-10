@@ -661,7 +661,7 @@ export const Todo = (
     return (
         <div className={`relative flex gap-2 w-full h-full pb-1`} onMouseDown={handleMainMouseDown}>
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                <ResizablePanel defaultSize={80} minSize={4} className="relative pl-1">
+                <ResizablePanel defaultSize={60} minSize={4} className="relative pl-1">
                     <TodoList
                         filterdTodos={filterdTodos}
                         currentIndex={currentIndex}
@@ -682,7 +682,7 @@ export const Todo = (
                     />
                 </ResizablePanel>
                 <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-sky-500/50 transition-all ease-in" />
-                <ResizablePanel defaultSize={20} minSize={4} className={"relative"} >
+                <ResizablePanel defaultSize={40} minSize={4} className={"relative"} >
                     <>
                         <div className={`absolute top-[30px] ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-[calc(100%-30px)] pr-1 rounded-sm`}>
                             <Usage

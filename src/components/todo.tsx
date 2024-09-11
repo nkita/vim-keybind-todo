@@ -179,6 +179,7 @@ export const Todo = (
         const targetTodoId = targetTodo.id
         const replaceText = getValues(`edit-${updatePosition}-text-${targetTodoId}`)
         setValue(`edit-${otherPosition}-text-${targetTodoId}`, replaceText)
+        console.log(replaceText)
         const replace: TodoProps = {
             id: targetTodoId,
             is_complete: targetTodo.is_complete,

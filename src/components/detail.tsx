@@ -38,7 +38,7 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
-    const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-sky-300 rounded hover:cursor-text`
+    const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-sky-300 rounded hover:cursor-text resize-none`
     return (
         <>
             <div className="p-4 w-full h-full border rounded-sm bg-white border-primary/90 overflow-auto" onMouseDown={onMouseDownEvent}>
@@ -50,8 +50,8 @@ export const Detail = ({
                                 todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
                             }
                         </span>
-                        <div onClick={_ => onClick("text")} className="w-full">
-                            {mode === "editDetail" ? (
+                        <div onClick={_ => onClick("text")} className="w-full" onBlur={_ => onClick("normal")}>
+                            {(mode === "editDetail" && prefix === "text") ? (
                                 <textarea
                                     tabIndex={-1}
                                     className={_classNameText}
@@ -65,18 +65,6 @@ export const Detail = ({
                                     {todo.text}
                                 </button>
                             )}
-
-                            {/* <Item
-                                t={todo}
-                                index={0}
-                                currentIndex={0}
-                                prefix={"text"}
-                                position="content"
-                                currentPrefix={prefix}
-                                mode={mode}
-                                className={`${todo["is_complete"] ? "text-muted-foreground/50" : "text-primary"} break-words`}
-                                label={todo.text}
-                                register={register} /> */}
                         </div>
                     </li>
                     <li className="relative h-full w-full">

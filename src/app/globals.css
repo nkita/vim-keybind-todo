@@ -82,8 +82,7 @@
 
 @layer utilities {
   .hidden-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: #fff #fff;
+    scrollbar-width: none;
   }
 
   .hidden-scrollbar:hover {

@@ -1,5 +1,5 @@
 'use client'
-import { Dispatch, MouseEvent, SetStateAction } from "react"
+import { Dispatch, MouseEvent, SetStateAction, useEffect, useRef } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
@@ -48,15 +48,36 @@ export const TodoList = (
     const tabHeight = "h-[30px]"
     const tableHeadHeight = "h-[35px]"
     const taskBarHeight = "h-[20px]"
+
+
+    const Project = (
+        {
+            currentProject, index, project, onClick
+
+        }: {
+            currentProject: string, index: number, project: string, onClick: (index: number, prefix: string) => void
+        }
+    ) => {
+        const ref = useRef<HTMLButtonElement>(null)
+        useEffect(() => {
+            if (currentProject === project) {
+                ref.current?.scrollIntoView({ behavior: "smooth" })
+            }
+        }, [currentProject, project])
+        return (
+            <button ref={ref} onClick={_ => onClick(index, 'projectTab')} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-xs px-2 p-1 ${currentProject === project ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</div></button>
+        )
+    }
+
     return (
         <>
             <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
-                <div className={`flex overflow-auto text-xs flex-nowrap text-nowrap ${tabHeight}`}>
-                    <button onClick={_ => onClick(-1, 'projectTab')} className={`rounded-t-sm border-x border-t border-primary/90 text-xs px-2 p-1 ${!currentProject || !projects.length ? "bg-primary/90 text-primary-foreground" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaList />All</div></button>
+                <div className={`flex overflow-auto text-xs flex-nowrap text-nowrap hidden-scrollbar ${tabHeight}`}  >
+                    <Project currentProject={currentProject} index={-1} project={""} onClick={onClick} />
                     {projects.map((p, i) => {
                         return (
-                            <button onClick={_ => onClick(i, 'projectTab')} key={p} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-xs px-2 p-1 ${currentProject === p ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaSitemap />{p}</div></button>
+                            <Project key={p} currentProject={currentProject} index={i} project={p} onClick={onClick} />
                         )
                     })}
                 </div>

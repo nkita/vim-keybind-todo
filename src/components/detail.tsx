@@ -4,6 +4,7 @@ import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt } from "react-i
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Item } from "./todo";
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
+import TextareaAutosize from 'react-textarea-autosize';
 
 export const Detail = ({
     todo,
@@ -41,7 +42,7 @@ export const Detail = ({
     const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-sky-300 rounded hover:cursor-text resize-none`
     return (
         <>
-            <div className="p-4 w-full h-full border rounded-sm bg-white border-secondary overflow-auto shadow-md" onMouseDown={onMouseDownEvent}>
+            <div className="p-4 w-full max-h-full border border-slate-200 rounded-sm bg-white border-secondary overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
                 <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
                     <li className="flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
@@ -52,11 +53,13 @@ export const Detail = ({
                         </span>
                         <div onClick={_ => onClick("text")} className="w-full" onBlur={_ => onClick("normal")}>
                             {(mode === "editDetail" && prefix === "text") ? (
-                                <textarea
+                                <TextareaAutosize
                                     tabIndex={-1}
+                                    maxRows={4}
+                                    minRows={1}
                                     className={_classNameText}
-                                    rows={2}
-                                    placeholder="詳細を入力…"
+                                    placeholder="タスクを入力…"
+                                    maxLength={200}
                                     {...register(`edit-content-text-${todo.id}`)}
                                 />
                             ) : (
@@ -70,10 +73,12 @@ export const Detail = ({
                     <li className="relative h-full w-full">
                         {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
                         <div className={`flex w-full text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
-                            <textarea
+                            <TextareaAutosize
                                 tabIndex={-1}
+                                maxRows={15}
+                                minRows={5}
+                                maxLength={1000}
                                 className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}
-                                rows={10}
                                 placeholder="詳細を入力…"
                                 {...register(`edit-content-detail-${todo.id}`)}
                             />

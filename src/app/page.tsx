@@ -117,10 +117,10 @@ export default function Home() {
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
 
-  const headerHeight = "60px"
-  const mainPCHeight = `h-[calc(100vh-60px)]` // 100vh - headerHeight
+  const headerHeight = "80px"
+  const mainPCHeight = `h-[calc(100vh-80px)]` // 100vh - headerHeight
   return (
-    <article className="h-screen bg-sky-50/50">
+    <article className="h-screen bg-white">
       <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       <div className={`w-full ${mainPCHeight}`}>
         {(listLoading || todosLoading || userLoading) &&

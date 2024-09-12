@@ -44,11 +44,17 @@ export const TodoList = (
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
-    const hcssMainHeight = "h-[calc(100%-85px)]"
+    const hcssMainHeight = "h-[calc(100%-100px)]"
     const tabHeight = "h-[30px]"
-    const tableHeadHeight = "h-[35px]"
-    const taskBarHeight = "h-[20px]"
+    const tableHeadHeight = "h-[40px]"
+    const taskBarHeight = "h-[30px]"
 
+    const table_idx_width = "w-[30px]"
+    const table_completion_width = "w-[30px]"
+    const table_priority_width = "w-[30px]"
+    const table_task_width = "w-[calc(72%-90px)]"
+    const table_label_width = "w-[14%]"
+    const table_project_width = "w-[14%]"
 
     const Project = (
         {
@@ -65,7 +71,7 @@ export const TodoList = (
             }
         }, [currentProject, project])
         return (
-            <button ref={ref} onClick={_ => onClick(index, 'projectTab')} className={`rounded-t-sm border-r border-t border-b-0 border-primary/90 text-xs px-2 p-1 ${currentProject === project ? "bg-primary/90 text-primary-foreground border-b-accent" : "bg-card text-card-foreground hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</div></button>
+            <button ref={ref} onClick={_ => onClick(index, 'projectTab')} className={`text-md px-2 p-1 ${currentProject === project ? "border-b-2 border-blue-500 bg-card text-secondary-foreground " : " text-secondary-foreground/50 hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</div></button>
         )
     }
 
@@ -81,33 +87,31 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`text-xs bg-primary text-primary-foreground rounded-tr-sm p-1 py-2 ${tableHeadHeight}`}>
-                    <div className="flex gap-1">
-                        <div className="w-[30px]"></div>
-                        <div className="w-[30px]"></div>
-                        <div className="w-[30px] text-center">
-                            <div className={`flex items-center ${sort === "priority" && "font-semibold"}`}>
-                                優
-                                {sort === "priority" && <FaArrowUpZA />}
-                            </div>
+                <div className={`flex text-sm bg-secondary text-gray-700 border-b-0 border  rounded-t-md items-center ${tableHeadHeight}`}>
+                    <div className={table_idx_width}></div>
+                    <div className={table_completion_width}></div>
+                    <div className={`${table_priority_width} text-center`}>
+                        <div className={`flex justify-center items-center ${sort === "priority" && "font-semibold"}`}>
+                            優
+                            {sort === "priority" && <FaArrowUpZA />}
                         </div>
-                        <div className="w-[62%]">タスク</div>
-                        <div className="flex w-[14%] items-center">
-                            <FaTag />
-                            <div className="truncate">
-                                ラベル
-                            </div>
-                            {sort === "context" && <FaArrowUpZA />}
+                    </div>
+                    <div className={`${table_task_width} p-2`}>タスク</div>
+                    <div className={`flex items-center ${table_label_width}`}>
+                        <FaTag />
+                        <div className="truncate">
+                            ラベル
                         </div>
-                        <div className="flex w-[14%] items-center">
-                            <FaSitemap />
-                            <div className="truncate">
-                                プロジェクト
-                            </div>
+                        {sort === "context" && <FaArrowUpZA />}
+                    </div>
+                    <div className={`flex items-center ${table_project_width}`}>
+                        <FaSitemap />
+                        <div className="truncate">
+                            プロジェクト
                         </div>
                     </div>
                 </div>
-                <Table className={`w-full border border-primary/90 ${hcssMainHeight} bg-card border-b-0`} index={currentIndex}>
+                <Table className={`w-full border  ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground leading-6">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -116,10 +120,10 @@ export const TodoList = (
                         }
                         {(sort !== undefined && mode === "editOnSort") &&
                             <TableRow className={`bg-accent text-accent-foreground`}>
-                                <TableCell className="w-[30px]"></TableCell>
-                                <TableCell className="w-[30px]"></TableCell>
-                                <TableCell className="w-[30px]"></TableCell>
-                                <TableCell className="w-[64%]">
+                                <TableCell className={table_idx_width}></TableCell>
+                                <TableCell className={table_completion_width}></TableCell>
+                                <TableCell className={table_priority_width}></TableCell>
+                                <TableCell className={table_task_width}>
                                     <input
                                         tabIndex={-1}
                                         className={`p-1 w-full text-left truncate outline-none bg-transparent font-semibold`}
@@ -129,8 +133,8 @@ export const TodoList = (
                                     // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
                                     />
                                 </TableCell >
-                                <TableCell className="w-[13%]" ></TableCell>
-                                <TableCell className="w-[13%] truncate font-light text-lab text-ex-project">{currentProject}</TableCell>
+                                <TableCell className={table_project_width} ></TableCell>
+                                <TableCell className={`${table_label_width} truncate font-light text-lab text-ex-project`}>{currentProject}</TableCell>
                             </TableRow>
                         }
                         {!loading &&
@@ -146,22 +150,21 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ?
-                                                                "bg-sky-100" :
-                                                                index % 2 == 1 ?
-                                                                    "bg-slate-50" :
-                                                                    ""
-                                                            }
                                                             ${searchResultIndex[index] ? "bg-yellow-50" : ""}
                                                             ${t.is_complete ? "bg-muted text-muted-foreground/50 focus-within:text-muted-foreground" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
-                                                        <TableCell className="w-[30px] px-2 text-right">{index + 1}</TableCell>
-                                                        <TableCell onClick={_ => onClick(index, 'completion')} className="w-[30px] group hover:cursor-pointer">
+                                                        <TableCell className={`
+                                                            ${currentIndex === index ?
+                                                                "border-l-2 border-blue-400" : ""
+                                                            }
+                                                            ${table_idx_width} px-2 text-right
+                                                            `}>{index + 1}</TableCell>
+                                                        <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                                                             <div className="flex w-ful justify-center">
                                                                 {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className="w-[30px] text-center h-[30px]">
+                                                        <TableCell className={`${table_priority_width} text-center h-[30px]`}>
                                                             {t.priority === "3" &&
                                                                 <div className="relative h-full w-full">
                                                                     <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
@@ -181,7 +184,7 @@ export const TodoList = (
                                                                 </div>
                                                             }
                                                         </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className="w-[64%]">
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <Item
                                                                 t={t}
                                                                 index={index}
@@ -192,7 +195,7 @@ export const TodoList = (
                                                                 label={t.text}
                                                                 register={register} />
                                                         </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`w-[13%] text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                             <ModalSelect
                                                                 t={t}
                                                                 index={index}
@@ -207,7 +210,7 @@ export const TodoList = (
                                                                 items={labels}
                                                                 onClick={onClick} />
                                                         </TableCell>
-                                                        <TableCell onClick={_ => onClick(currentIndex, "project")} className={`w-[13%] text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                        <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
                                                             <ModalSelect
                                                                 t={t}
                                                                 index={index}
@@ -232,9 +235,9 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border border-t-gray-300 border-primary text-primary-foreground rounded-b-sm ${taskBarHeight}]`}>
-                    <div className="flex justify-between text-2sm text-gray-600 h-full px-2">
-                        <div className="text-3sm">表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
+                <div className={`border border-t-gray-300 bg-secondary text-gray-700 rounded-b-sm ${taskBarHeight}`}>
+                    <div className="flex justify-between items-center text-xs h-full px-2">
+                        <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">
                             {command ? (

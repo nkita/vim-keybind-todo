@@ -41,7 +41,7 @@ export const Detail = ({
     const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-sky-300 rounded hover:cursor-text resize-none`
     return (
         <>
-            <div className="p-4 w-full h-full border rounded-sm bg-white border-primary/90 overflow-auto" onMouseDown={onMouseDownEvent}>
+            <div className="p-4 w-full h-full border rounded-sm bg-white border-secondary overflow-auto shadow-md" onMouseDown={onMouseDownEvent}>
                 <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
                     <li className="flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >

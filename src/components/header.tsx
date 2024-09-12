@@ -41,7 +41,7 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
     const [addList, setAddList] = React.useState(false)
     const h = `h-[60px]`
     return (
-        <div className={`flex justify-between items-center w-full py-3 px-1 ${h}`}>
+        <div className={`flex justify-between items-center w-full py-3 px-8 ${h}`}>
             <div className="flex items-center gap-2 h-9">
                 <h1 className={`p-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>キーボードでTODO</h1>
             </div>

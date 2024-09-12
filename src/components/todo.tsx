@@ -659,9 +659,9 @@ export const Todo = (
         e.stopPropagation();
     }
     return (
-        <div className={`relative flex gap-2 w-full h-full pb-1`} onMouseDown={handleMainMouseDown}>
+        <div className={`relative flex gap-2 w-full h-full pb-1 pt-8`} onMouseDown={handleMainMouseDown}>
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                <ResizablePanel defaultSize={60} minSize={4} className="relative pl-1">
+                <ResizablePanel defaultSize={60} minSize={4} className="relative pl-8 pb-4">
                     <TodoList
                         filterdTodos={filterdTodos}
                         currentIndex={currentIndex}
@@ -681,10 +681,10 @@ export const Todo = (
                         rhfSetValue={setValue}
                     />
                 </ResizablePanel>
-                <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 cursor-ew-resize ring-0 hover:bg-sky-500/50 transition-all ease-in" />
+                <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 mb-4 cursor-ew-resize ring-0 hover:bg-sky-500/50 transition-all ease-in" />
                 <ResizablePanel defaultSize={40} minSize={4} className={"relative"} >
                     <>
-                        <div className={`absolute top-[30px] ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-[calc(100%-30px)] pr-1 rounded-sm`}>
+                        <div className={`absolute pb-4 pr-8 top-[30px] ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-[calc(100%-30px)] rounded-sm`}>
                             <Usage
                                 sort={sort}
                                 mode={mode}
@@ -693,7 +693,7 @@ export const Todo = (
                                 isTodos={filterdTodos.length > 0}
                             />
                         </div>
-                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pr-1 ${(isHelp && mode !== "editDetail") && "blur-sm backdrop-blur-none"}`}>
+                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pb-4 pr-8 ${(isHelp && mode !== "editDetail") && "blur-sm backdrop-blur-none"}`}>
                             <Detail
                                 todo={filterdTodos[currentIndex]}
                                 prefix={prefix}
@@ -749,7 +749,7 @@ export const Item = (
 
     return (
         <>
-            <div className={`${isView && "hidden"} ${className}`}>
+            <div className={`${isView && "hidden"} ${className} border border-white`}>
                 {
                     prefix === "detail" ? (
                         <>
@@ -773,7 +773,7 @@ export const Item = (
                     )
                 }
             </div >
-            <div className={`${!isView && "hidden"} ${className} font-bold h-full`} onMouseDown={e => e.stopPropagation()}>
+            <div className={`${!isView && "hidden"} ${className} border border-sky-300 rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
                 {prefix === "detail" ? (
                     <textarea
                         tabIndex={-1}

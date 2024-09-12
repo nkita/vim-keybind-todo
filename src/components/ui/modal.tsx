@@ -27,6 +27,7 @@ export const Modal = (
     return (
         <>
             <button
+                tabIndex={-1}
                 onClick={onClickOpen}
                 className={cn(" w-full truncate", className)}
             >

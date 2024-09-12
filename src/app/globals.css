@@ -81,14 +81,32 @@
 }
 
 @layer utilities {
-  .hidden-scrollbar {
-    scrollbar-width: none;
-  }
-
-  .hidden-scrollbar:hover {
+  .usage-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #ccc #fff;
   }
+
+  .table-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #fff;
+  }
+
+  .table-scrollbar:hover {
+    scrollbar-width: thin;
+    scrollbar-color: #ccc #fff;
+  }
+
+  .hidden-scrollbar {
+    scrollbar-width: none;
+    scrollbar-color: #ccc #fff;
+  }
+
+  /* 
+   .hidden-scrollbar:hover {
+     scrollbar-width: thin;
+     scrollbar-color: #ccc #fff;
+    }
+   */
 
 }
 

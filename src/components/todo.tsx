@@ -741,7 +741,7 @@ export const Item = (
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-sky-300 rounded hover:cursor-text"} `
+    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-sky-300 rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} `
     const isView = currentIndex === index
         && currentPrefix === prefix
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
@@ -749,7 +749,9 @@ export const Item = (
 
     return (
         <>
-            <div className={`${isView && "hidden"} ${className} border border-white`}>
+            <div className={`${isView && "hidden"} ${className} border
+             ${currentIndex === index ? "border-sky-50/10" : t["is_complete"] ? "border-muted/50" : "border-white"}
+             `}>
                 {
                     prefix === "detail" ? (
                         <>
@@ -773,7 +775,8 @@ export const Item = (
                     )
                 }
             </div >
-            <div className={`${!isView && "hidden"} ${className} border border-sky-300 rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
+            <div className={`${!isView && "hidden"} ${className} border
+             border-sky-300 rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
                 {prefix === "detail" ? (
                     <textarea
                         tabIndex={-1}

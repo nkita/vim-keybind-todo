@@ -126,7 +126,7 @@ export default function Home() {
         {(listLoading || todosLoading || userLoading) &&
           <div className={`absolute top-0  w-full h-full pr-2 bg-sky-50/50 backdrop-blur-sm z-50`}>
             <div className="flex text-sm items-center justify-center h-full w-full ">
-              <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-white shadow-lg">
+              <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                 <span className="animate-bounce">Loading...</span>
               </span>
             </div>

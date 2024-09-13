@@ -71,7 +71,7 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
                 ) : (
                     <div className="flex gap-2">
                         {isUpdate ? (
-                            <Button onClick={onClickSaveButton} size={"default"} className="bg-blue-500 text-white hover:bg-blue-600 gap-1">
+                            <Button onClick={onClickSaveButton} size={"default"} className="gap-1">
                                 {isSave ? (
                                     <div className="pr-1">
                                         <div className="animate-spin h-4 w-4 border-2 p-1 border-white rounded-full border-t-transparent"></div>
@@ -79,10 +79,10 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
                                 ) : (
                                     <CloudUpload className="scale-75" />
                                 )}
-                                保存する<kbd className="flex items-center h-full">Ctrl</kbd>+<kbd className="flex items-center h-full">S</kbd>
+                                保存する<kbd className="flex items-center h-full text-primary-foreground">Ctrl</kbd>+<kbd className="flex items-center h-full text-primary-foreground">S</kbd>
                             </Button>
                         ) : (
-                            <Button onClick={_ => { }} size={"default"} variant={"outline"} className="gap-1" disabled><CircleCheck className="scale-75" />保存済み</Button>
+                            <Button onClick={_ => { }} size={"default"} variant={"outline"} className="bg-muted text-muted-foreground gap-1" disabled><CircleCheck className="scale-75" />保存済み</Button>
                         )}
                         <DropdownMenu>
                             <DropdownMenuTrigger className="rounded-full focus:outline-none">

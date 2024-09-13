@@ -682,10 +682,10 @@ export const Todo = (
                         rhfSetValue={setValue}
                     />
                 </ResizablePanel>
-                <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 mb-4 cursor-ew-resize ring-0 hover:bg-sky-500/50 transition-all ease-in" />
+                <ResizableHandle className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
                 <ResizablePanel defaultSize={40} minSize={4} className={"relative"} >
                     <>
-                        <div className={`absolute pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-full`}>
+                        <div className={`absolute right-0 pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0"} z-10 h-full transition-all animate-slide-in-right`}>
                             <Usage
                                 sort={sort}
                                 mode={mode}
@@ -707,17 +707,17 @@ export const Todo = (
                                 register={register}
                             />
                         </div>
-                        <div className={`absolute bottom-4 right-0 ${(!isHelp && mode !== "editDetail") ? "z-10" : "hidden"} h-[30px]`}>
-                            <button
-                                onClick={_ => setHelp(true)}
-                                className="flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border bg-primary text-primary-foreground shadow-md">
-                                <kbd className="text-xs px-1 py-0">?</kbd>
-                                <span>ヘルプ表示</span>
-                            </button>
-                        </div>
                     </>
                 </ResizablePanel>
             </ResizablePanelGroup>
+            <div className={`absolute bottom-0 right-0 ${(!isHelp && mode !== "editDetail") ? "opacity-1" : "opacity-0"} z-10 fade-in-5 transition-all overflow-hidden`}>
+                <button
+                    onClick={_ => setHelp(true)}
+                    className="flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border bg-primary text-primary-foreground shadow-md">
+                    <kbd className="text-xs px-1 py-0">?</kbd>
+                    <span>ヘルプ表示</span>
+                </button>
+            </div>
         </div >
 
     )

@@ -714,7 +714,7 @@ export const Todo = (
                 <button
                     onClick={_ => setHelp(true)}
                     className="flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border bg-primary text-primary-foreground shadow-md">
-                    <kbd className="text-xs px-1 py-0">?</kbd>
+                    <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
                     <span>ヘルプ表示</span>
                 </button>
             </div>
@@ -750,7 +750,7 @@ export const Item = (
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-sky-300 rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} `
+    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-primary rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} `
     const isView = currentIndex === index
         && currentPrefix === prefix
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
@@ -758,56 +758,24 @@ export const Item = (
 
     return (
         <>
-            <div className={`${isView && "hidden"} ${className} border
-             ${currentIndex === index ? "border-sky-50/10" : t["is_complete"] ? "border-muted/50" : "border-white"}
-             `}>
-                {
-                    prefix === "detail" ? (
-                        <>
-                            <textarea
-                                tabIndex={-1}
-                                // className={_classNameCont}
-                                className={"font-normal w-full outline-none bg-gray-50 rounded-sm p-1 resize-none h-full"}
-                                rows={10}
-                                placeholder="詳細を入力…"
-                                defaultValue={label}
-                            />
-                        </>
-                    ) : (
-                        <button
-                            autoFocus={currentIndex === index}
-                            className={_classNameCont}
-                            {...register(`${position}-${prefix}-${t.id}`)}
-                        >
-                            {label}
-                        </button>
-                    )
-                }
+            <div className={`${isView && "hidden"} ${className} border border-transparent`}>
+                <button
+                    autoFocus={currentIndex === index}
+                    className={_classNameCont}
+                    {...register(`${position}-${prefix}-${t.id}`)}
+                >
+                    {label}
+                </button>
             </div >
-            <div className={`${!isView && "hidden"} ${className} border
-             border-sky-300 rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
-                {prefix === "detail" ? (
-                    <textarea
-                        tabIndex={-1}
-                        className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}
-                        rows={10}
-                        placeholder="詳細を入力…"
-                        onFocus={e => e.currentTarget.setSelectionRange(0, val.length)}
-                        defaultValue={label}
-                        {...register(`edit-${position}-${prefix}-${t.id}`)}
-                    />
-                ) :
-                    (
-                        <input
-                            tabIndex={-1}
-                            className={_classNameCont}
-                            type="text"
-                            maxLength={prefix === 'priority' ? 1 : -1}
-                            onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
-                            {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
-                        />
-                    )}
-                {/* )} */}
+            <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
+                <input
+                    tabIndex={-1}
+                    className={_classNameCont}
+                    type="text"
+                    maxLength={prefix === 'priority' ? 1 : -1}
+                    onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
+                    {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
+                />
             </div >
         </>
     )

@@ -39,10 +39,10 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
-    const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-sky-300 rounded hover:cursor-text resize-none`
+    const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
     return (
         <>
-            <div className="p-4 w-full max-h-full border border-slate-200 rounded-sm bg-white border-secondary overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
+            <div className="p-4 w-full max-h-full border rounded-sm bg-card text-card-foreground border-secondary overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
                 <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
                     <li className="flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
@@ -78,7 +78,7 @@ export const Detail = ({
                                 maxRows={15}
                                 minRows={5}
                                 maxLength={1000}
-                                className={"font-normal w-full outline-sky-300 bg-gray-50 rounded-sm p-1 resize-none h-full"}
+                                className={"font-normal w-full outline-primary bg-secondary text-secondary-foreground rounded-sm p-1 resize-none h-full"}
                                 placeholder="詳細を入力…"
                                 {...register(`edit-content-detail-${todo.id}`)}
                             />
@@ -98,7 +98,7 @@ export const Detail = ({
                             </div>
                         </li>
                     }
-                    <li className="text-sm flex justify-between  text-gray-500" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></li>
+                    <li className="text-sm flex justify-between  text-primary/80" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></li>
                 </ul>
             </div >
         </>

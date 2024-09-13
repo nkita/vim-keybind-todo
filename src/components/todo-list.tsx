@@ -72,7 +72,7 @@ export const TodoList = (
         }, [currentProject, project])
         return (
             <button ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-blue-500 bg-card text-secondary-foreground text-blue-500" : " text-secondary-foreground/50 hover:bg-sky-50"}`}>
+                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary bg-card text-card-foreground" : " text-secondary-foreground/50"}`}>
                 <span className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</span>
             </button>
         )
@@ -90,7 +90,7 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`flex text-sm bg-blue-500 text-white border-b-0 border  rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-sm bg-primary text-primary-foreground border-b-0 border rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -153,17 +153,17 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-blue-50/50" : ""}
+                                                            ${currentIndex === index ? "bg-secondary" : ""}
                                                             ${searchResultIndex[index] ? "bg-yellow-50" : ""}
-                                                            ${t.is_complete ? "bg-muted/50  text-muted-foreground/50 focus-within:text-muted-foreground" : ""} 
+                                                            ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
-                                                            ${currentIndex === index ? "border-l-2 border-blue-400" : ""}
+                                                            ${currentIndex === index ? "border-l-2 border-primary" : ""}
                                                             ${table_idx_width} px-2 text-right
                                                             `}>{index + 1}</TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                                                             <div className="flex w-ful justify-center">
-                                                                {t.is_complete ? <FaCircleCheck className="text-green-500 scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                                {t.is_complete ? <FaCircleCheck className="text-primary scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className={`${table_priority_width} text-center h-[30px]`}>

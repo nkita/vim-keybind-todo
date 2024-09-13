@@ -71,7 +71,10 @@ export const TodoList = (
             }
         }, [currentProject, project])
         return (
-            <button ref={ref} onClick={_ => onClick(index, 'projectTab')} className={`text-md px-2 p-1 ${currentProject === project ? "border-b-2 border-blue-500 bg-card text-secondary-foreground text-blue-500" : " text-secondary-foreground/50 hover:bg-sky-50"}`}><div className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</div></button>
+            <button ref={ref} onClick={_ => onClick(index, 'projectTab')}
+                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-blue-500 bg-card text-secondary-foreground text-blue-500" : " text-secondary-foreground/50 hover:bg-sky-50"}`}>
+                <span className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</span>
+            </button>
         )
     }
 
@@ -79,7 +82,7 @@ export const TodoList = (
         <>
             <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
-                <div className={`flex overflow-auto text-xs flex-nowrap text-nowrap hidden-scrollbar ${tabHeight}`}  >
+                <div className={`flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight}`}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={onClick} />
                     {projects.map((p, i) => {
                         return (
@@ -234,8 +237,8 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border border-t-gray-300 bg-secondary text-gray-700 rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-xs h-full px-2">
+                <div className={`border border-t-gray-300 bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
+                    <div className="flex justify-between items-center text-sm h-full px-2">
                         <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">

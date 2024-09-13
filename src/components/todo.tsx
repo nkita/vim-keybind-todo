@@ -19,6 +19,7 @@ import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 import { Usage } from "./usage"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { Skeleton } from "./ui/skeleton"
+import { Button } from "./ui/button"
 
 export const Todo = (
     {
@@ -684,7 +685,7 @@ export const Todo = (
                 <ResizableHandle className="pl-1 bg-border-0 outline-none mt-8 mb-4 cursor-ew-resize ring-0 hover:bg-sky-500/50 transition-all ease-in" />
                 <ResizablePanel defaultSize={40} minSize={4} className={"relative"} >
                     <>
-                        <div className={`absolute pb-4 pr-8 top-[30px] ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-[calc(100%-30px)] rounded-sm`}>
+                        <div className={`absolute pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "z-10" : "hidden"} w-full h-full`}>
                             <Usage
                                 sort={sort}
                                 mode={mode}
@@ -693,7 +694,7 @@ export const Todo = (
                                 isTodos={filterdTodos.length > 0}
                             />
                         </div>
-                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pb-4 pr-8 ${(isHelp && mode !== "editDetail") && "blur-sm backdrop-blur-none"}`}>
+                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pb-4 pr-8`}>
                             <Detail
                                 todo={filterdTodos[currentIndex]}
                                 prefix={prefix}
@@ -705,6 +706,14 @@ export const Todo = (
                                 watch={watch}
                                 register={register}
                             />
+                        </div>
+                        <div className={`absolute bottom-4 right-0 ${(!isHelp && mode !== "editDetail") ? "z-10" : "hidden"} h-[30px]`}>
+                            <button
+                                onClick={_ => setHelp(true)}
+                                className="flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border bg-primary text-primary-foreground shadow-md">
+                                <kbd className="text-xs px-1 py-0">?</kbd>
+                                <span>ヘルプ表示</span>
+                            </button>
                         </div>
                     </>
                 </ResizablePanel>

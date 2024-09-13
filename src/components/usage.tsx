@@ -23,7 +23,7 @@ export const Usage = ({
 
     return (
         <>
-            <div className={`h-full w-full p-4 border border-gray-300 bg-white rounded-2xl drop-shadow-xl rounded-r-none group`}>
+            <div className={`h-full w-full p-4 border bg-white rounded-2xl drop-shadow-xl rounded-r-none group`}>
                 <div className="flex justify-between h-[40px] shadow-l">
                     <h1 className="flex gap-1 p-2 text-md  text-center items-end"><Keyboard />使い方 </h1>
                     <Button variant={"link"} className="text-xs text-current" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>

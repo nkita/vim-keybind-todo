@@ -72,7 +72,7 @@ export const TodoList = (
         }, [currentProject, project])
         return (
             <button ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary bg-card text-card-foreground" : " text-secondary-foreground/50"}`}>
+                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"}`}>
                 <span className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</span>
             </button>
         )
@@ -82,7 +82,7 @@ export const TodoList = (
         <>
             <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
-                <div className={`flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight}`}  >
+                <div className={`flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight} bg-background text-foreground`}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={onClick} />
                     {projects.map((p, i) => {
                         return (

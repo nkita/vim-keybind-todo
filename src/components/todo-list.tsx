@@ -237,8 +237,8 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border border-t-gray-300 bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-sm h-full px-2">
+                <div className={`border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
+                    <div className="flex justify-between items-center text-xs h-full px-2">
                         <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">

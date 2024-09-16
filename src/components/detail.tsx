@@ -1,6 +1,6 @@
 import { TodoProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
-import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt } from "react-icons/fa6";
+import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt, FaCircleInfo } from "react-icons/fa6";
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Item } from "./todo";
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
@@ -43,7 +43,7 @@ export const Detail = ({
     return (
         <>
             <div className="p-4 w-full max-h-full border rounded-sm bg-card text-card-foreground border-secondary overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
-                <h2 className="text-primary/80 font-medium text-center pb-4">詳細</h2>
+                <h2 className="flex gap-2 items-center text-primary/80 font-medium pb-4"><FaCircleInfo />詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
                     <li className="flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
                         <span className="w-4 h-4 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>

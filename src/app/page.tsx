@@ -120,11 +120,11 @@ export default function Home() {
   const headerHeight = "80px"
   const mainPCHeight = `h-[calc(100vh-80px)]` // 100vh - headerHeight
   return (
-    <article className="h-screen ">
+    <article className="h-screen bg-muted/10">
       <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       <div className={`w-full ${mainPCHeight}`}>
         {(listLoading || todosLoading || userLoading) &&
-          <div className={`absolute top-0  w-full h-full pr-2 bg-sky-50/50 backdrop-blur-sm z-50`}>
+          <div className={`absolute top-0  w-full h-full pr-2 bg-muted/50 backdrop-blur-sm z-50`}>
             <div className="flex text-sm items-center justify-center h-full w-full ">
               <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                 <span className="animate-bounce">Loading...</span>

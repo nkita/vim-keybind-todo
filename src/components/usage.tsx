@@ -25,12 +25,12 @@ export const Usage = ({
         <>
             <div className={`h-full w-full p-4 border text-card-foreground bg-card rounded-2xl drop-shadow-xl rounded-r-none group`}>
                 <div className="flex justify-between h-[40px] shadow-l">
-                    <h1 className="flex gap-1 p-2 text-md  text-center items-end"><Keyboard />使い方 </h1>
-                    <Button variant={"link"} className="text-xs text-current" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
+                    <h1 className="flex gap-1 p-2 text-md  text-center items-end text-nowrap"><Keyboard />使い方 </h1>
+                    <Button variant={"link"} className="text-xs text-current text-nowrap" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
                 </div>
                 <hr className='pt-1 shadow-2xl' />
                 <span className='text-3sm text-card-foreground/80 pl-2'>※大文字・小文字は区別しています。</span>
-                <article className="flex flex-wrap h-[calc(100%-60px)] overflow-auto usage-scrollbar group-hover:visible-scrollbar">
+                <article className="flex flex-wrap h-[calc(100%-60px)] overflow-x-hidden usage-scrollbar group-hover:visible-scrollbar">
                     <Section title={<><Move className='scale-75' />移動</>} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
                     <Section title={<><Plus className='scale-75' /> 追加</>} type='add' sort={sort} mode={mode} isTodos={isTodos} />
                     <Section title={<><Pencil className='scale-75' />編集</>} type='edit' sort={sort} mode={mode} isTodos={isTodos} />

@@ -89,6 +89,9 @@ export const TodoList = (
                             <Project key={p} currentProject={currentProject} index={i} project={p} onClick={onClick} />
                         )
                     })}
+                    {projects.length === 0 &&
+                        <span className="flex items-center justify-end  w-full text-xs text-muted-foreground gap-1"><span>プロジェクトの追加：タスクを追加後</span><span> <kbd>Shift</kbd>+<kbd>p</kbd></span></span>
+                    }
                 </div>
                 <div className={`flex text-sm bg-primary text-primary-foreground border-b-0 border rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>

@@ -89,9 +89,6 @@ export const TodoList = (
                             <Project key={p} currentProject={currentProject} index={i} project={p} onClick={onClick} />
                         )
                     })}
-                    {projects.length === 0 &&
-                        <span className="flex items-center justify-end  w-full text-xs text-muted-foreground gap-1"><span>プロジェクトの追加：タスクを追加後</span><span> <kbd>Shift</kbd>+<kbd>p</kbd></span></span>
-                    }
                 </div>
                 <div className={`flex text-sm bg-primary text-primary-foreground border-b-0 border rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
@@ -201,34 +198,40 @@ export const TodoList = (
                                                                 register={register} />
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-                                                            <ModalSelect
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"context"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                className={`text-left `}
-                                                                label={t.context}
-                                                                register={register}
-                                                                rhfSetValue={rhfSetValue}
-                                                                items={labels}
-                                                                onClick={onClick} />
+                                                            <div className="flex">
+                                                                <div className={`flex items-center h-full text-xs ${!t.label && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
+                                                                <ModalSelect
+                                                                    t={t}
+                                                                    index={index}
+                                                                    currentIndex={currentIndex}
+                                                                    prefix={"context"}
+                                                                    currentPrefix={prefix}
+                                                                    mode={mode}
+                                                                    className={`text-left `}
+                                                                    label={t.context}
+                                                                    register={register}
+                                                                    rhfSetValue={rhfSetValue}
+                                                                    items={labels}
+                                                                    onClick={onClick} />
+                                                            </div>
                                                         </TableCell>
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
-                                                            <ModalSelect
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"project"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                className="text-left"
-                                                                label={t.project}
-                                                                register={register}
-                                                                rhfSetValue={rhfSetValue}
-                                                                items={projects}
-                                                                onClick={onClick} />
+                                                            <div className="flex">
+                                                                <div className={`flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
+                                                                <ModalSelect
+                                                                    t={t}
+                                                                    index={index}
+                                                                    currentIndex={currentIndex}
+                                                                    prefix={"project"}
+                                                                    currentPrefix={prefix}
+                                                                    mode={mode}
+                                                                    className="text-left"
+                                                                    label={t.project}
+                                                                    register={register}
+                                                                    rhfSetValue={rhfSetValue}
+                                                                    items={projects}
+                                                                    onClick={onClick} />
+                                                            </div>
                                                         </TableCell>
                                                     </TableRow>
                                                 )

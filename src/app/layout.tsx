@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/provider/auth";
 import { Zen_Kaku_Gothic_New } from "next/font/google";
+import { Toaster } from "@/components/ui/sonner"
 
 const inter = Zen_Kaku_Gothic_New({ weight: "400", subsets: ["latin"] })
 
@@ -18,7 +19,10 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          {children}
+          <Toaster position="top-center" richColors />
+        </body>
       </html>
     </AuthProvider>
   );

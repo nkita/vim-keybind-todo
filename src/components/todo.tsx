@@ -3,7 +3,7 @@ import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, React
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from '@/components/config'
-import { TodoProps, Sort, Mode } from "@/types"
+import { TodoEnablesProps, TodoProps, Sort, Mode } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
@@ -19,6 +19,8 @@ import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 import { Usage } from "./usage"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import Image from "next/image"
+import { toast } from "sonner"
+import jaJson from "@/dictionaries/ja.json"
 
 export const Todo = (
     {
@@ -59,6 +61,12 @@ export const Todo = (
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
+    const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
+        enableAddTodo: true,
+        todosLimit: 50,
+        completedTodosLimit: 50
+    })
+
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const { register, setFocus, getValues, setValue, watch } = useForm()
 
@@ -82,6 +90,13 @@ export const Todo = (
         }
         return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true, useKey: keyConf?.useKey ?? false }
     }
+
+    useEffect(() => {
+        setTodoEnables(prev => {
+            prev.enableAddTodo = todos.filter(t => !t.is_complete).length < prev.todosLimit
+            return prev
+        })
+    }, [todos])
 
     useEffect(() => {
         let projects: (string | undefined)[] = []
@@ -146,7 +161,6 @@ export const Todo = (
             }
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
-
 
     /*****
      * common function
@@ -287,35 +301,44 @@ export const Todo = (
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask])
+    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask, todoEnables])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos])
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos, todoEnables])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         setMode('editOnSort')
-    }, setKeyEnableDefine(keymap['insertTopOnSort'].enable))
+    }, setKeyEnableDefine(keymap['insertTopOnSort'].enable), [todoEnables])
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
+
         handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask])
+    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask, todoEnables])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
-        setCurrentIndex(filterdTodos.length)
-        setMode('edit')
-    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask])
+        if (!todoEnables.enableAddTodo) {
+            toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
+        } else {
+            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            setCurrentIndex(filterdTodos.length)
+            setMode('edit')
+        }
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask, todoEnables])
 
     // delete task
     useHotkeys(keymap['delete'].keys, (e) => {
@@ -382,9 +405,9 @@ export const Todo = (
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
-        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex
+        completeTask(currentIndex)
+        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)
-        completeTask(index)
     }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos])
 
     // change sort mode
@@ -662,6 +685,13 @@ export const Todo = (
     }
     return (
         <div className={`relative flex gap-2 w-full h-full pb-1 pt-8`} onMouseDown={handleMainMouseDown}>
+
+            {/** 　debug デバッグエリア */}
+            {/* <div className="absolute top-0 m-auto bg-yellow-100 ">
+                currentIndex:{currentIndex} prefix:{prefix} filterdTodolength:{filterdTodos.length}
+            </div> */}
+            {/** 　デバッグエリア */}
+
             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                 <ResizablePanel defaultSize={60} minSize={4} className="relative pl-8 pb-4">
                     <TodoList

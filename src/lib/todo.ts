@@ -62,7 +62,7 @@ export const todoFunc = {
         const updates = todos.filter(t => {
             const _t = prevTodos.filter(pt => pt.id === t.id)
             const flg = (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
-            if (flg) console.log("diff", t, _t[0])
+            // if (flg) console.log("diff", t, _t[0])
             return flg
             // return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
         })

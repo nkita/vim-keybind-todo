@@ -90,7 +90,7 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`flex text-sm bg-primary text-primary-foreground border-b-0 border rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex bg-primary text-primary-foreground border-b-0 border border-primary/50 rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -99,7 +99,7 @@ export const TodoList = (
                             {sort === "priority" && <FaArrowUpZA />}
                         </div>
                     </div>
-                    <div className={`${table_task_width} p-2`}>タスク</div>
+                    <div className={`${table_task_width} p-2 truncate`}>タスク</div>
                     <div className={`flex items-center ${table_label_width}`}>
                         <FaTag />
                         <div className="truncate">
@@ -114,7 +114,7 @@ export const TodoList = (
                         </div>
                     </div>
                 </div>
-                <Table className={`w-full border  ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
+                <Table className={`w-full border border-primary/50  ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground leading-6">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -199,7 +199,7 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                             <div className="flex">
-                                                                <div className={`flex items-center h-full text-xs ${!t.label && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
+                                                                <div className={`flex pl-2 items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
                                                                 <ModalSelect
                                                                     t={t}
                                                                     index={index}
@@ -207,7 +207,7 @@ export const TodoList = (
                                                                     prefix={"context"}
                                                                     currentPrefix={prefix}
                                                                     mode={mode}
-                                                                    className={`text-left `}
+                                                                    className={`text-left`}
                                                                     label={t.context}
                                                                     register={register}
                                                                     rhfSetValue={rhfSetValue}
@@ -217,7 +217,7 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
                                                             <div className="flex">
-                                                                <div className={`flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
+                                                                <div className={`flex pl-2 items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
                                                                 <ModalSelect
                                                                     t={t}
                                                                     index={index}
@@ -243,8 +243,8 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-xs h-full px-2">
+                <div className={`border border-primary/50 bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
+                    <div className="flex justify-between items-center text-sm h-full px-2 truncate">
                         <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">

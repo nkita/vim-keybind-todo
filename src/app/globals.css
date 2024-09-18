@@ -84,8 +84,7 @@
 }
 
 @layer utilities {
-  .usage-scrollbar {
-    scrollbar-width: thin;
+  .scrollbar {
     scrollbar-color: #ccc #fff;
   }
 

@@ -30,7 +30,7 @@ export const Usage = ({
                 </div>
                 <hr className='pt-1 shadow-2xl' />
                 <span className='text-3sm text-card-foreground/80 pl-2'>※大文字・小文字は区別しています。</span>
-                <article className="flex flex-wrap h-[calc(100%-60px)] overflow-x-hidden usage-scrollbar group-hover:visible-scrollbar">
+                <article className="flex flex-wrap h-[calc(100%-60px)] overflow-x-hidden scrollbar group-hover:visible-scrollbar">
                     <Section title={<><Move className='scale-75' />移動</>} type='focus' sort={sort} mode={mode} isTodos={isTodos} />
                     <Section title={<><Plus className='scale-75' /> 追加</>} type='add' sort={sort} mode={mode} isTodos={isTodos} />
                     <Section title={<><Pencil className='scale-75' />編集</>} type='edit' sort={sort} mode={mode} isTodos={isTodos} />

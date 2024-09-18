@@ -26,10 +26,13 @@ export const Detail = ({
     watch: UseFormRegister<FieldValues>
     register: UseFormRegister<FieldValues>
 }) => {
+
+    const [key, setKey] = useState("")
     useEffect(() => {
         if (todo) {
             setValue(`edit-content-detail-${todo.id}`, todo.detail)
             setValue(`edit-content-text-${todo.id}`, todo.text)
+            setKey(todo.id) // タスク切替時にAutosizeが正しく行われないため強制的に行う
         }
     }, [todo, setValue]);
 
@@ -39,19 +42,19 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
-    const _classNameText = `p-1 w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
+    const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
     return (
         <>
-            <div className="p-4 w-full max-h-full border rounded-sm bg-card text-card-foreground border-secondary overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
+            <div className="p-4 w-full max-h-full border rounded-sm bg-card text-card-foreground scrollbar overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
                 <h2 className="flex gap-2 items-center text-primary/80 font-medium pb-4"><FaCircleInfo />詳細</h2>
                 <ul className="flex flex-col gap-3 h-[90%]">
-                    <li className="flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
-                        <span className="w-4 h-4 flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
+                    <li className="p-1 h-full flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
+                        <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
                             }
                         </span>
-                        <div onClick={_ => onClick("text")} className="w-full" onBlur={_ => onClick("normal")}>
+                        <div onClick={_ => onClick("text")} className="flex items-center w-full" onBlur={_ => onClick("normal")}>
                             {(mode === "editDetail" && prefix === "text") ? (
                                 <TextareaAutosize
                                     tabIndex={-1}
@@ -72,14 +75,15 @@ export const Detail = ({
                     </li>
                     <li className="relative h-full w-full">
                         {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
-                        <div className={`flex w-full text-sm font-light gap-1 hover:cursor-pointer h-full`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
+                        <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
                             <TextareaAutosize
+                                key={key}
                                 tabIndex={-1}
                                 maxRows={15}
                                 minRows={5}
                                 maxLength={1000}
-                                className={"font-normal w-full outline-primary bg-secondary text-secondary-foreground rounded-sm p-1 resize-none h-full"}
-                                placeholder="詳細を入力…"
+                                className={`font-normal h-full w-full outline-primary border text-secondary-foreground rounded-sm p-2 resize-none `}
+                                placeholder={`"d" キーで編集…`}
                                 {...register(`edit-content-detail-${todo.id}`)}
                             />
                         </div>

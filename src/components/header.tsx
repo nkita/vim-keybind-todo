@@ -67,7 +67,7 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
                 <Spinner className="m-2 w-8 h-8" />
             ) :
                 !user ? (
-                    <Button onClick={_ => loginWithRedirect()} size={"sm"} variant={"default"}>Log In</Button>
+                    <Button onClick={_ => loginWithRedirect()} variant={"default"}>Log In</Button>
                 ) : (
                     <div className="flex gap-2">
                         {isUpdate ? (

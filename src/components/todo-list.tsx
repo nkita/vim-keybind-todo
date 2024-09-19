@@ -5,7 +5,7 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
 import { Item, ModalSelect } from "./todo"
-import { Star } from "lucide-react"
+import { CircleCheckIcon, Star } from "lucide-react"
 
 export const TodoList = (
     {
@@ -73,7 +73,9 @@ export const TodoList = (
         return (
             <button ref={ref} onClick={_ => onClick(index, 'projectTab')}
                 className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"}`}>
-                <span className="flex gap-1 items-center"><FaSitemap />{project ? project : "All"}</span>
+                <span className="flex gap-1 items-center">
+                    <FaSitemap />{project ? project : "All"}
+                </span>
             </button>
         )
     }

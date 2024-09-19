@@ -8,7 +8,7 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual } from "lodash";
+import { isEqual, sortBy } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -63,8 +63,7 @@ export const Todo = (
     const [log, setLog] = useState("")
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
-        todosLimit: 50,
-        completedTodosLimit: 50
+        todosLimit: 30,
     })
 
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
@@ -406,8 +405,10 @@ export const Todo = (
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         completeTask(currentIndex)
-        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
-        setCurrentIndex(index)
+        if (!viewCompletionTask) {
+            const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
+            setCurrentIndex(index)
+        }
     }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos])
 
     // change sort mode

@@ -19,5 +19,4 @@ export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "c
 export interface TodoEnablesProps {
     enableAddTodo: boolean
     todosLimit: number
-    completedTodosLimit: number
 }

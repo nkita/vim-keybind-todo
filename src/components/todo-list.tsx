@@ -82,7 +82,7 @@ export const TodoList = (
         <>
             <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
-                <div className={`flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight} bg-background text-foreground`}  >
+                <div className={`pb-1 flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight} bg-background text-foreground`}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={onClick} />
                     {projects.map((p, i) => {
                         return (

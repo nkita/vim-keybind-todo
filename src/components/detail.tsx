@@ -5,6 +5,7 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Item } from "./todo";
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
+import jaJson from "@/dictionaries/ja.json"
 
 export const Detail = ({
     todo,
@@ -61,7 +62,7 @@ export const Detail = ({
                                     maxRows={4}
                                     minRows={1}
                                     className={_classNameText}
-                                    placeholder="タスクを入力…"
+                                    placeholder={jaJson.詳細のタスクのplaceholder}
                                     maxLength={200}
                                     {...register(`edit-content-text-${todo.id}`)}
                                 />
@@ -83,7 +84,7 @@ export const Detail = ({
                                 minRows={5}
                                 maxLength={1000}
                                 className={`font-normal h-full w-full outline-primary border text-secondary-foreground rounded-sm p-2 resize-none `}
-                                placeholder={`"d" キーで編集…`}
+                                placeholder={jaJson.詳細のメモのplaceholder}
                                 {...register(`edit-content-detail-${todo.id}`)}
                             />
                         </div>

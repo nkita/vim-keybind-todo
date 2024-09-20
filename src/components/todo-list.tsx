@@ -92,7 +92,7 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`flex bg-primary text-primary-foreground border-b-0 border border-primary/50 rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-sm bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -109,14 +109,14 @@ export const TodoList = (
                         </div>
                         {sort === "context" && <FaArrowUpZA />}
                     </div>
-                    <div className={`flex items-center ${table_project_width}`}>
+                    <div className={`flex items-center ${table_project_width} pr-2`}>
                         <FaSitemap />
                         <div className="truncate">
                             プロジェクト
                         </div>
                     </div>
                 </div>
-                <Table className={`w-full border border-primary/50  ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
+                <Table className={`w-full border  ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
                     <TableBody className="border-b bg-card text-card-foreground leading-6">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -157,7 +157,7 @@ export const TodoList = (
                                                         className={`
                                                             ${currentIndex === index ? "bg-secondary" : ""}
                                                             ${searchResultIndex[index] ? "bg-yellow-50" : ""}
-                                                            ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground" : ""} 
+                                                            ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
                                                             ${currentIndex === index ? "border-l-2 border-primary" : ""}
@@ -217,7 +217,7 @@ export const TodoList = (
                                                                     onClick={onClick} />
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light`}>
+                                                        <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light pr-2`}>
                                                             <div className="flex">
                                                                 <div className={`flex pl-2 items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
                                                                 <ModalSelect
@@ -245,7 +245,7 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border border-primary/50 bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
+                <div className={`border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
                     <div className="flex justify-between items-center text-sm h-full px-2 truncate">
                         <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
                         <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />

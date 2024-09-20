@@ -44,15 +44,18 @@ export const Detail = ({
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
     const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
+    const hTitle = 'h-[10%]'
+    const hDetail = 'h-[70%]'
+    const hFooter = 'h-[20%]'
     return (
         <>
-            <div className="p-4 w-full max-h-full border rounded-sm bg-card text-card-foreground scrollbar overflow-auto shadow-lg" onMouseDown={onMouseDownEvent}>
-                <h2 className="flex gap-2 items-center text-primary/80 font-medium pb-4"><FaCircleInfo />詳細</h2>
-                <ul className="flex flex-col gap-3 h-[90%]">
-                    <li className="p-1 h-full flex font-bold items-center gap-2" onMouseDown={e => e.stopPropagation()} >
+            <div className="w-full h-full border-none  bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
+                <h2 className="flex h-[50px] gap-2 items-center text-primary/80 font-medium bg-card border-t border-x rounded-t-md px-5"><FaCircleInfo />詳細</h2>
+                <div className="flex flex-col h-[83%] ">
+                    <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-3 border-x bg-card " onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
-                                todo["is_complete"] ? <FaCircleCheck className="text-green-500 w-4 h-4" /> : <FaRegCircle className="w-5 h-5" />
+                                todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
                             }
                         </span>
                         <div onClick={_ => onClick("text")} className="flex items-center w-full" onBlur={_ => onClick("normal")}>
@@ -73,38 +76,39 @@ export const Detail = ({
                                 </button>
                             )}
                         </div>
-                    </li>
-                    <li className="relative h-full w-full">
-                        {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
-                        <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
-                            <TextareaAutosize
-                                key={key}
-                                tabIndex={-1}
-                                maxRows={15}
-                                minRows={5}
-                                maxLength={1000}
-                                className={`font-normal h-full w-full outline-primary border text-secondary-foreground rounded-sm p-2 resize-none `}
-                                placeholder={jaJson.詳細のメモのplaceholder}
-                                {...register(`edit-content-detail-${todo.id}`)}
-                            />
+                    </div>
+                    <div className="bg-card max-h-[calc(100%-120px)] w-full border-x px-5">
+                        <div className="relative h-full w-full py-2 border rounded-md focus-within:border-primary ">
+                            <div className="h-full overflow-auto rounded-md scrollbar ">
+                                {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
+                                <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
+                                    <TextareaAutosize
+                                        key={key}
+                                        tabIndex={-1}
+                                        minRows={5}
+                                        maxLength={1000}
+                                        className={`font-normal h-full w-full outline-none  text-secondary-foreground  p-2 resize-none `}
+                                        placeholder={jaJson.詳細のメモのplaceholder}
+                                        {...register(`edit-content-detail-${todo.id}`)}
+                                    />
+                                </div>
+                            </div>
                         </div>
-                    </li>
-                    {todo.context &&
-                        <li>
-                            <div className={`flex items-center text-ex-label text-sm font-light gap-1`}>
+                    </div>
+                    <div className="max-h-[70px] bg-card text-card-foreground py-3 px-5 border-x">
+                        {todo.context &&
+                            <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1`}>
                                 <FaTag /> {todo.context}
                             </div>
-                        </li>
-                    }
-                    {todo.project &&
-                        <li>
+                        }
+                        {todo.project &&
                             <div className={`flex items-center text-ex-project text-sm font-light gap-1`}>
                                 <FaSitemap />{todo.project}
                             </div>
-                        </li>
-                    }
-                    <li className="text-sm flex justify-between  text-primary/80" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></li>
-                </ul>
+                        }
+                    </div>
+                    <div className="text-sm h-[30px] pb-8 flex justify-between  text-primary/80 px-5 py-3 bg-card border-x border-b rounded-b-md  shadow-lg" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                </div>
             </div >
         </>
     )

@@ -90,7 +90,7 @@ export default function Home() {
       if (!isUpdate) return
       setIsSave(true)
       const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/todo`
-      const postData = todoFunc.diff(todos, prevTodos)
+      const postData = todoFunc.diff(todos, prevTodos).filter(d => !todoFunc.isEmpty(d))
       if (postData.length > 0) {
         postFetch(api, token, postData).then(_ => {
           setPrevTodos([...todos])

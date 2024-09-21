@@ -14,3 +14,9 @@ export function debounce<T extends (...args: any[]) => any>(func: T, delay: numb
     }, delay);
   };
 }
+
+
+export const debugLog = (...data: any) => {
+  const flg = process.env.NEXT_PUBLIC_DEBUG
+  if (flg === "true") console.log(...data)
+}

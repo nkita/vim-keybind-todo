@@ -21,6 +21,7 @@ import { useLocalStorage } from "@/hook/useLocalStrorage"
 import Image from "next/image"
 import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
+import { debugLog } from "@/lib/utils"
 
 export const Todo = (
     {
@@ -113,6 +114,7 @@ export const Todo = (
     }, [todos])
 
     useEffect(() => {
+        debugLog(`currentProject:${currentProject} `)
         let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
 
         if (!viewCompletionTask) {
@@ -144,6 +146,7 @@ export const Todo = (
     }, [todos, currentProject, sort, viewCompletionTask, setFilterdTodos])
 
     useEffect(() => {
+        debugLog(`currentIndex:${currentIndex} mode:${mode} keepPositionId:${keepPositionId} prefix:${prefix} mode:${mode} `)
         if (filterdTodos.length > 0 && currentIndex !== - 1) {
             if (keepPositionId && currentIndex !== filterdTodos.map(t => t.id).indexOf(keepPositionId ? keepPositionId : "")) {
                 let index = filterdTodos.map(t => t.id).indexOf(keepPositionId)
@@ -171,7 +174,10 @@ export const Todo = (
             setValue(`edit-content-text-${t.id}`, t.text)
             setValue(`edit-list-text-${t.id}`, t.text)
         })
-        setIsUpdate(todoFunc.diff(_t, prevTodos).length > 0)
+        const d = todoFunc.diff(_t, prevTodos).filter(d => !todoFunc.isEmpty(d))
+        debugLog(`diff:`, d)
+        debugLog(`isUpdate:${d.length > 0}`)
+        setIsUpdate(d.length > 0)
     }
     const toNormalMode = () => {
         if (filterdTodos.length === 0) {

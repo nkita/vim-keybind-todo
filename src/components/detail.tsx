@@ -44,9 +44,6 @@ export const Detail = ({
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
     const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
-    const hTitle = 'h-[10%]'
-    const hDetail = 'h-[70%]'
-    const hFooter = 'h-[20%]'
     return (
         <>
             <div className="w-full h-full border-none  bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>

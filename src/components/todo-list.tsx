@@ -4,7 +4,7 @@ import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
-import { Item, ModalSelect } from "./todo"
+import { Item, SelectModal } from "./todo"
 import { CircleCheckIcon, Star } from "lucide-react"
 
 export const TodoList = (
@@ -202,7 +202,7 @@ export const TodoList = (
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                             <div className="flex">
                                                                 <div className={`flex pl-2 items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
-                                                                <ModalSelect
+                                                                <SelectModal
                                                                     t={t}
                                                                     index={index}
                                                                     currentIndex={currentIndex}
@@ -220,7 +220,7 @@ export const TodoList = (
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light pr-2`}>
                                                             <div className="flex">
                                                                 <div className={`flex pl-2 items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
-                                                                <ModalSelect
+                                                                <SelectModal
                                                                     t={t}
                                                                     index={index}
                                                                     currentIndex={currentIndex}

@@ -44,6 +44,12 @@ export const Detail = ({
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
 
     const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
+
+    const handleClickDetail = () => {
+        if (mode !== "normal") onClick('normal')
+        onClick('detail')
+    }
+
     return (
         <>
             <div className="w-full h-full border-none  bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
@@ -78,7 +84,7 @@ export const Detail = ({
                         <div className="relative h-full w-full py-2 border rounded-md focus-within:border-primary ">
                             <div className="h-full overflow-auto rounded-md scrollbar ">
                                 {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
-                                <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={_ => onClick("detail")} onMouseDown={e => e.stopPropagation()}>
+                                <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={handleClickDetail} onMouseDown={e => e.stopPropagation()}>
                                     <TextareaAutosize
                                         key={key}
                                         tabIndex={-1}

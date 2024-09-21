@@ -33,8 +33,8 @@ export const Modal = (
             >
                 {buttonLabel}
             </button>
-            {open && <div className="fixed top-0 left-0 bg-gray-400 bg-opacity-50 z-20 w-full h-full backdrop-blur-sm" />}
-            <Dialog open={open} as="div" className="relative z-20 focus:outline-none " onClose={onClickClose} >
+            {open && <div className="fixed top-0 left-0 bg-gray-400 bg-opacity-50 z-50 w-full h-full backdrop-blur-sm" />}
+            <Dialog open={open} as="div" className="relative z-50 focus:outline-none " onClose={onClickClose} >
                 <div className="fixed inset-0 z-30 w-screen overflow-y-auto" onMouseDown={handleMouseDown}>
                     <div className="flex min-h-full items-center justify-center p-4">
                         <DialogPanel

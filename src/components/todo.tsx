@@ -22,17 +22,6 @@ import Image from "next/image"
 import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { DialogFooter } from "./ui/dialog"
 import { Button } from "./ui/button"
 import { DialogContent, DialogDescription } from "@radix-ui/react-dialog"

@@ -19,6 +19,7 @@ export type Keymap = {
     completion: KeymapItem;
     append: KeymapItem;
     editText: KeymapItem;
+    deleteModal: KeymapItem;
     delete: KeymapItem;
     increasePriority: KeymapItem;
     decreasePriority: KeymapItem;
@@ -132,10 +133,17 @@ export const keymap: Keymap = {
         type: ["edit"],
         description: "タスクを編集"
     },
-    delete: {
+    deleteModal: {
         keys: ['delete', 'backspace'],
         keysDisp: ["Del", "BS"],
         enable: { mode: ["normal"], withoutTask: false, useKey: true },
+        type: ["edit"],
+        description: "タスクを削除"
+    },
+    delete: {
+        keys: ['Enter'],
+        keysDisp: ["Enter"],
+        enable: { mode: ["modal"], withoutTask: false, useKey: true },
         type: ["edit"],
         description: "タスクを削除"
     },

@@ -26,7 +26,7 @@ export const Usage = ({
             <div className={`h-full w-full p-4 border text-card-foreground bg-card rounded-2xl drop-shadow-xl rounded-r-none group`}>
                 <div className="flex justify-between h-[40px] shadow-l">
                     <h1 className="flex gap-1 p-2 text-md  text-center items-end text-nowrap"><Keyboard />使い方 </h1>
-                    <Button variant={"link"} className="text-xs text-current text-nowrap" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
+                    <Button tabIndex={-1} variant={"link"} className="text-xs text-current text-nowrap" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
                 </div>
                 <hr className='pt-1 shadow-2xl' />
                 <span className='text-3sm text-card-foreground/80 pl-2'>※大文字・小文字は区別しています。</span>

@@ -74,6 +74,7 @@ export const Detail = ({
                                 />
                             ) : (
                                 <button
+                                    tabIndex={-1}
                                     className={_classNameText}>
                                     {todo.text}
                                 </button>

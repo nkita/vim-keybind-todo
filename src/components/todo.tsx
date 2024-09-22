@@ -668,6 +668,13 @@ export const Todo = (
         setHelp(!isHelp)
     }, setKeyEnableDefine(keymap['viewHelp'].enable), [isHelp])
 
+
+    /*******************
+     * Tab無効化
+     * *****************/
+
+    useHotkeys('Tab', () => { }, { enabled: true, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true })
+
     /*******************
      * 
      * Command mode
@@ -734,7 +741,7 @@ export const Todo = (
                         rhfSetValue={setValue}
                     />
                 </ResizablePanel>
-                <ResizableHandle className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
+                <ResizableHandle tabIndex={-1} className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
                 <ResizablePanel defaultSize={40} minSize={4} className={"relative"} >
                     <>
                         <div className={`absolute right-0 pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 text-nowrap"} z-20 h-full transition-all animate-slide-in-right`}>
@@ -767,6 +774,7 @@ export const Todo = (
             </ResizablePanelGroup>
             <div className={`absolute bottom-0 right-0 ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
                 <button
+                    tabIndex={-1}
                     onClick={_ => setHelp(true)}
                     className={`
                        flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border  shadow-md
@@ -825,10 +833,10 @@ export const Item = (
         <>
             <div className={`${isView && "hidden"} ${className} border border-transparent`}>
                 <button
+                    tabIndex={-1}
                     autoFocus={currentIndex === index}
                     className={_classNameCont}
-                    {...register(`${position}-${prefix}-${t.id}`)}
-                >
+                    {...register(`${position}-${prefix}-${t.id}`)}>
                     {label}
                 </button>
             </div >
@@ -838,6 +846,7 @@ export const Item = (
                     className={_classNameCont}
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
+                    onBlur={_ => console.log("離れた！！！！")}
                     onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
                     {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
                 />

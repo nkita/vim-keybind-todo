@@ -607,23 +607,12 @@ export const Todo = (
         const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('context')
-            setMode('edit')
+            setMode('modal')
         } else {
             setMode('normal')
         }
         setCommand('')
     }, setKeyEnableDefine(keymap['editContextLine'].enable), [command])
-
-    useHotkeys(keymap['editPriorityLine'].keys, (e) => {
-        const line = parseInt(command)
-        if (moveToLine(line)) {
-            setPrefix('priority')
-            setMode('edit')
-        } else {
-            setMode('normal')
-        }
-        setCommand('')
-    }, setKeyEnableDefine(keymap['editPriorityLine'].enable), [command])
 
     useHotkeys(keymap['editTextLine'].keys, (e) => {
         const line = parseInt(command)

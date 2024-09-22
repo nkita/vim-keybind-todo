@@ -731,34 +731,38 @@ export const Todo = (
                     />
                 </ResizablePanel>
                 <ResizableHandle tabIndex={-1} className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                <ResizablePanel defaultSize={40} minSize={4} className={"relative"} >
-                    <>
-                        <div className={`absolute right-0 pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 text-nowrap"} z-20 h-full transition-all animate-slide-in-right`}>
-                            <Usage
-                                sort={sort}
-                                mode={mode}
-                                isHelp={isHelp}
-                                setHelp={setHelp}
-                                isTodos={filterdTodos.length > 0}
-                            />
-                        </div>
-                        <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pb-4 pr-8 z-10`}>
-                            <Detail
-                                todo={filterdTodos[currentIndex]}
-                                prefix={prefix}
-                                mode={mode}
-                                isHelp={isHelp}
-                                onMouseDownEvent={handleDetailMouseDown}
-                                onClick={handleClickDetailElement}
-                                setValue={setValue}
-                                watch={watch}
-                                register={register}
-                            />
-                        </div>
-                        <div className={`flex items-end justify-center h-full z-0`}>
-                            <Image width={150} height={150} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/cute-todo.png`} alt={"todo"} className="opacity-40" />
-                        </div>
-                    </>
+                <ResizablePanel defaultSize={40} minSize={4} className={`relative`} >
+                    {loading ? (
+                        <></>
+                    ) : (
+                        <>
+                            <div className={`absolute right-0 pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 text-nowrap"} z-20 h-full transition-all animate-slide-in-right`}>
+                                <Usage
+                                    sort={sort}
+                                    mode={mode}
+                                    isHelp={isHelp}
+                                    setHelp={setHelp}
+                                    isTodos={filterdTodos.length > 0}
+                                />
+                            </div>
+                            <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pb-4 pr-8 z-10`}>
+                                <Detail
+                                    todo={filterdTodos[currentIndex]}
+                                    prefix={prefix}
+                                    mode={mode}
+                                    isHelp={isHelp}
+                                    onMouseDownEvent={handleDetailMouseDown}
+                                    onClick={handleClickDetailElement}
+                                    setValue={setValue}
+                                    watch={watch}
+                                    register={register}
+                                />
+                            </div>
+                        </>
+                    )}
+                    <div className={`flex items-end justify-center h-full z-0`}>
+                        <Image width={150} height={150} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/cute-todo.png`} alt={"todo"} className="opacity-40" />
+                    </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
             <div className={`absolute bottom-0 right-0 ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
@@ -835,7 +839,6 @@ export const Item = (
                     className={_classNameCont}
                     type="text"
                     maxLength={prefix === 'priority' ? 1 : -1}
-                    onBlur={_ => console.log("離れた！！！！")}
                     onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
                     {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
                 />

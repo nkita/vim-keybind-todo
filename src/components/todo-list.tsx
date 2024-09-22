@@ -71,7 +71,7 @@ export const TodoList = (
             }
         }, [currentProject, project])
         return (
-            <button ref={ref} onClick={_ => onClick(index, 'projectTab')}
+            <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
                 className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"}`}>
                 <span className="flex gap-1 items-center">
                     <FaSitemap />{project ? project : "All"}
@@ -248,7 +248,7 @@ export const TodoList = (
                 <div className={`border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
                     <div className="flex justify-between items-center text-sm h-full px-2 truncate">
                         <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
-                        <input {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
+                        <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">
                             {command ? (
                                 <span>{command}</span>

@@ -1,11 +1,11 @@
 'use client'
-import { Dispatch, MouseEvent, SetStateAction, useEffect, useRef } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
-import { Table, TableHeader, TableHead, TableRow, TableBody, TableCell } from "./ui/table"
-import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaList } from "react-icons/fa6";
-import { Item, SelectModal } from "./todo"
-import { CircleCheckIcon, Star } from "lucide-react"
+import { Table, TableRow, TableBody, TableCell } from "./ui/table"
+import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
+import { SelectModal } from "./select-modal"
+import { Item } from "./todo-list-item"
 
 export const TodoList = (
     {
@@ -223,6 +223,7 @@ export const TodoList = (
                                                                     register={register}
                                                                     rhfSetValue={rhfSetValue}
                                                                     items={labels}
+                                                                    title={"ラベル"}
                                                                     onClick={onClick} />
                                                             </div>
                                                         </TableCell>
@@ -241,6 +242,7 @@ export const TodoList = (
                                                                     register={register}
                                                                     rhfSetValue={rhfSetValue}
                                                                     items={projects}
+                                                                    title={"プロジェクト"}
                                                                     onClick={onClick} />
                                                             </div>
                                                         </TableCell>

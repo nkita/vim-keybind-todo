@@ -9,6 +9,7 @@ type SearchProps = {
     placeholder: string
     tabIndex?: number
     addItem: (label: string) => void
+    onClose: () => void
 }
 
 interface SearchSelectProps
@@ -24,6 +25,7 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
         addItem,
         onChange,
         onBlur,
+        onClose,
         ...props
     }, ref) => {
         const [val, setVal] = useState(value)
@@ -44,7 +46,7 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
         }
 
         return (
-            <Combobox onChange={handleChange} value={val} immediate={true}>
+            <Combobox onChange={handleChange} value={val} immediate={true} onClose={onClose}>
                 <div className="relative mt-1">
                     <div className="relative w-full">
                         <ComboboxInput

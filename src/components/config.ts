@@ -308,7 +308,8 @@ export const keymap: Keymap = {
         description: "指定した行のタスクを編集"
     },
     editDetail: {
-        keys: ['d'],
+        keys: ['shift+d'],
+        keysDisp: ['D'],
         enable: { mode: ["normal"], withoutTask: false },
         type: ["edit"],
         description: "詳細を編集する"

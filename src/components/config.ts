@@ -133,8 +133,8 @@ export const keymap: Keymap = {
         description: "タスクを編集"
     },
     deleteModal: {
-        keys: ['delete', 'backspace'],
-        keysDisp: ["Del", "BS"],
+        keys: ['delete'],
+        keysDisp: ["Del"],
         enable: { mode: ["normal"], withoutTask: false, useKey: true },
         type: ["edit"],
         description: "タスクを削除"

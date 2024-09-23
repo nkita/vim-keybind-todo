@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, ReactNode } from "react"
+import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from '@/components/config'
@@ -8,24 +8,19 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual, sortBy } from "lodash";
+import { isEqual } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable"
-import { Modal } from "./ui/modal"
-import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 import { Usage } from "./usage"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import Image from "next/image"
 import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
-import { DialogFooter } from "./ui/dialog"
-import { Button } from "./ui/button"
-import { DialogContent, DialogDescription } from "@radix-ui/react-dialog"
-
+import { DeleteModal } from "./delete-modal"
 
 export const Todo = (
     {
@@ -786,192 +781,5 @@ export const Todo = (
             />
 
         </div >
-    )
-}
-
-
-export const Item = (
-    {
-        t,
-        index,
-        mode,
-        currentIndex,
-        prefix,
-        currentPrefix,
-        label,
-        className,
-        register,
-        position = "list",
-    }: {
-        t: TodoProps
-        index: number
-        currentIndex: number
-        prefix: "text" | "priority" | "project" | "context" | "detail"
-        currentPrefix: string
-        mode: string
-        label: any
-        className?: string | undefined
-        register: any
-        position?: "list" | "content"
-    }
-) => {
-    const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-primary rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} `
-    const isView = currentIndex === index
-        && currentPrefix === prefix
-        && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
-    const val = t[prefix] ?? ""
-
-    return (
-        <>
-            <div className={`${isView && "hidden"} ${className} border border-transparent`}>
-                <button
-                    tabIndex={-1}
-                    autoFocus={currentIndex === index}
-                    className={_classNameCont}
-                    {...register(`${position}-${prefix}-${t.id}`)}>
-                    {label}
-                </button>
-            </div >
-            <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
-                <input
-                    tabIndex={-1}
-                    className={_classNameCont}
-                    type="text"
-                    maxLength={prefix === 'priority' ? 1 : -1}
-                    onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
-                    {...register(`edit-${position}-${prefix}-${t.id}`, { value: t[prefix] })}
-                />
-            </div >
-        </>
-    )
-}
-
-
-export const SelectModal = (
-    {
-        t,
-        index,
-        currentIndex,
-        prefix,
-        currentPrefix,
-        mode,
-        className,
-        label,
-        register,
-        rhfSetValue,
-        position = "list",
-        items,
-        onClick
-    }: {
-        t: TodoProps
-        index: number
-        label: string | undefined
-        currentIndex: number
-        items: string[]
-        mode: Mode
-        prefix: "text" | "priority" | "project" | "context" | "detail"
-        currentPrefix: string
-        className?: string | undefined
-        register: any
-        rhfSetValue: any
-        position?: "list" | "content"
-        onClick: (index: number, prefx: string) => void
-    }) => {
-    const isView = currentIndex === index
-        && currentPrefix === prefix
-        && mode === "modal"
-        && (position === "list" || position === "content")
-
-    function open() {
-        onClick(currentIndex, prefix)
-    }
-
-    function close(_: boolean) {
-        onClick(currentIndex, "normal")
-    }
-
-    const handleAddItem = (val: string) => {
-        rhfSetValue(`edit-${position}-${prefix}-${t.id}`, val)
-        onClick(currentIndex, "normal")
-    }
-    return (
-        <>
-            <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: label ?? "" })} />
-            <Modal
-                buttonLabel={label}
-                dialogTitle={"選択"}
-                className={className}
-                open={isView}
-                onClickOpen={open}
-                onClickClose={close}>
-                <div>
-                    <div className="text-gray-500">
-                        <p className="pt-3 ">
-                            <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
-                            <br />
-                            <br />
-                            <kbd>↑</kbd> <kbd>↓</kbd>キーで選択
-                        </p>
-                        <p className="text-sm/10 pt-8">
-                            <span>現在の値：<span className="text-primary font-medium underline">{label}</span>{!label && "-"}</span>
-                        </p>
-                    </div>
-                    <DynamicSearchSelect
-                        autoFocus={true}
-                        tabIndex={0}
-                        addItem={handleAddItem}
-                        placeholder="値を入力..."
-                        items={items}
-                        {...register(`${position}-${prefix}-${t.id}`)}
-                    />
-                </div>
-            </Modal>
-        </>
-    )
-}
-
-export const DeleteModal = (
-    {
-        currentIndex,
-        currentPrefix,
-        mode,
-        onClick,
-        onDelete
-    }: {
-        currentIndex: number
-        mode: Mode
-        currentPrefix: string
-        onClick: (prefx: string) => void
-        onDelete: (currentIndex: number) => void
-    }) => {
-    const isView = currentPrefix === "delete"
-        && mode === "modal"
-
-    const open = () => { }
-
-    const close = () => {
-        onClick("normal")
-    }
-
-    return (
-        <>
-            <Modal
-                buttonLabel={""}
-                dialogTitle={"タスクの削除"}
-                className={"hidden"}
-                open={isView}
-                onClickOpen={open}
-                onClickClose={close}>
-                <div className="pb-4 text-sm text-muted-foreground">
-                    本当に削除しますか？<br />
-                    削除したタスクは二度と復旧できません。
-                </div>
-                <DialogFooter>
-                    <Button variant='outline' onClick={close}><span className="flex items-center gap-2">キャンセル <kbd className="py-0">Esc</kbd></span></Button>
-                    <Button onClick={_ => onDelete(currentIndex)}><span className="flex items-center gap-2">削除する<kbd className="text-primary-foreground py-0">Enter</kbd></span></Button>
-                </DialogFooter>
-            </Modal>
-        </>
     )
 }

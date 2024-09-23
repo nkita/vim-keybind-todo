@@ -6,6 +6,7 @@ import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
+import { Star } from "lucide-react"
 
 export const TodoList = (
     {

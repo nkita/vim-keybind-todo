@@ -28,6 +28,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import Image from "next/image"
 
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
@@ -42,8 +43,9 @@ export default function Header({ user, userLoading, list, isSave, isUpdate, heig
     const h = `h-[60px]`
     return (
         <div className={`flex justify-between items-center w-full py-3 px-8 ${h}`}>
-            <div className="flex items-center gap-2 h-9">
-                <h1 className={`p-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>キーボードでTODO</h1>
+            <div className="flex items-center gap-1 h-9">
+                <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
+                <h1 className={`pr-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>キーボードでTODO</h1>
             </div>
             <div className="gap-1 hidden">
                 {addList ? (

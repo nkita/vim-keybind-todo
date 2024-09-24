@@ -2,7 +2,6 @@ import { TodoProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
 import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt, FaCircleInfo } from "react-icons/fa6";
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
-import { Item } from "./todo";
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"

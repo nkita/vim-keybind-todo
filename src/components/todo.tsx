@@ -697,7 +697,7 @@ export const Todo = (
     }
 
     return (
-        <div className={`relative flex gap-2 w-full h-full pb-1 pt-8`} onMouseDown={handleMainMouseDown}>
+        <div className={`relative flex gap-2 w-full h-full pb-1 pt-2`} onMouseDown={handleMainMouseDown}>
             {/** 　debug デバッグエリア */}
             {/* <div className="absolute top-0 m-auto bg-yellow-100 ">
                 currentIndex:{currentIndex} prefix:{prefix} filterdTodolength:{filterdTodos.length}
@@ -755,9 +755,6 @@ export const Todo = (
                             </div>
                         </>
                     )}
-                    <div className={`flex items-end justify-center h-full z-0`}>
-                        <Image width={150} height={150} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/cute-todo.png`} alt={"todo"} className="opacity-40" />
-                    </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
             <div className={`absolute bottom-0 right-0 ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>

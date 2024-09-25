@@ -6,7 +6,8 @@ import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { Star } from "lucide-react"
+import { Check, CircleCheck, List, Star } from "lucide-react"
+import { completionTaskProjectName } from "./config"
 
 export const TodoList = (
     {
@@ -75,7 +76,15 @@ export const TodoList = (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
                 className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"}`}>
                 <span className="flex gap-1 items-center">
-                    <FaSitemap />{project ? project : "All"}
+                    {project ? (
+                        project === completionTaskProjectName ? (
+                            <> <Check  className="w-3"/>{"完了済み"}</>
+                        ) : (
+                            <> <FaSitemap className="w-3" />{project}</>
+                        )
+                    ) : (
+                        <> <List className="w-3" />{"ALL"}</>
+                    )}
                 </span>
             </button>
         )

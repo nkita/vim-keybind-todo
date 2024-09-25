@@ -8,7 +8,7 @@ export type KeymapItem = {
     description: string
     options?: any
 }
-
+export const completionTaskProjectName = "__completion_task_project__"
 export type Keymap = {
     up: KeymapItem;
     down: KeymapItem;

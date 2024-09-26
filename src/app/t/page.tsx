@@ -141,31 +141,32 @@ export default function Home() {
   //***
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
-  const headerHeight = "80px"
-  const mainPCHeight = `h-[calc(100vh-80px)]` // 100vh - headerHeight
+  const mainPCHeight = `h-[calc(100vh-90px)]` // 100vh - headerHeight
   return (
-    <article className="h-screen bg-muted/10">
-      <Header height={headerHeight} user={user} userLoading={userLoading} list={fetch_list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
-      <div className={`w-full ${mainPCHeight}`}>
-        <Todo
-          todos={!userLoading && user ? todos : todosLS}
-          prevTodos={prevTodos}
-          filterdTodos={filterdTodos}
-          mode={mode}
-          sort={sort}
-          loading={listLoading || todosLoading || userLoading || fetch_todo_loading}
-          currentProject={currentProject}
-          setTodos={!userLoading && user ? setTodos : setTodosLS}
-          projects={projects}
-          labels={labels}
-          setFilterdTodos={setFilterdTodos}
-          setMode={setMode}
-          setSort={setSort}
-          setIsUpdate={setIsUpdate}
-          setCurrentProject={setCurrentProject}
-          onClickSaveButton={handleClickSaveButton}
-        />
-      </div>
-    </article >
+    <>
+      <Header user={user} userLoading={userLoading} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
+      <article className={`${mainPCHeight} bg-muted/10`}>
+        <div className={`w-full h-full`}>
+          <Todo
+            todos={!userLoading && user ? todos : todosLS}
+            prevTodos={prevTodos}
+            filterdTodos={filterdTodos}
+            mode={mode}
+            sort={sort}
+            loading={listLoading || todosLoading || userLoading || fetch_todo_loading}
+            currentProject={currentProject}
+            setTodos={!userLoading && user ? setTodos : setTodosLS}
+            projects={projects}
+            labels={labels}
+            setFilterdTodos={setFilterdTodos}
+            setMode={setMode}
+            setSort={setSort}
+            setIsUpdate={setIsUpdate}
+            setCurrentProject={setCurrentProject}
+            onClickSaveButton={handleClickSaveButton}
+          />
+        </div>
+      </article >
+    </>
   );
 }

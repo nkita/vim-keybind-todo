@@ -78,7 +78,7 @@ export const TodoList = (
                 <span className="flex gap-1 items-center">
                     {project ? (
                         project === completionTaskProjectName ? (
-                            <> <Check  className="w-3"/>{"完了済み"}</>
+                            <> <Check className="w-3" />{"完了済み"}</>
                         ) : (
                             <> <FaSitemap className="w-3" />{project}</>
                         )

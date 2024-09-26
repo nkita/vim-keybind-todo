@@ -103,10 +103,6 @@ export const Todo = (
 
     useEffect(() => {
         debugLog(`currentProject:${currentProject} `)
-        if (currentProject === completionTaskProjectName) {
-            setFilterdTodos(todos)
-            return
-        }
         let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
 
         if (!viewCompletionTask) {

@@ -6,21 +6,18 @@ import { TodoProps, Sort, Mode } from "@/types"
 import Header from "@/components/header";
 import { mutate } from "swr";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useFetchList, useFetchTodo, useFetchCompletedTodo, postFetch } from "@/lib/fetch";
+import { useFetchList, useFetchTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { todoFunc } from "@/lib/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
-import { completionTaskProjectName } from "@/components/config";
 
 export default function Home() {
   const { getAccessTokenSilently, user, isLoading: userLoading } = useAuth0();
   const [token, setToken] = useState("")
   const [currentListID, setCurrentListID] = useState("")
   const [todos, setTodos] = useState<TodoProps[]>([])
-  const [completionTodos, setCompletionTodos] = useState<TodoProps[]>([])
   const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo_data", [])
   const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
-  const [completionPrevTodos, setCompletionPrevTodos] = useState<TodoProps[]>([])
   const [isSave, setIsSave] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
   const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
@@ -30,13 +27,12 @@ export default function Home() {
   const [projects, setProjects] = useState<string[]>([])
   const [labels, setLabels] = useState<string[]>([])
   const [currentProject, setCurrentProject] = useState("")
-  const [isCompletionTasks, setIsCompletionTasks] = useState(false)
 
   const [todosLoading, setTodosLoading] = useState(true)
   const [listLoading, setListLoading] = useState(true)
-  const { data: list } = useFetchList("", token)
+  const { data: fetch_list } = useFetchList("", token)
   const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(currentListID, token)
-  const { data: fetch_completion_todo, isLoading: fetch_completion_todo_loading } = useFetchCompletedTodo(currentListID, 1, token)
+  // const { data: fetch_completion_todo, isLoading: fetch_completion_todo_loading } = useFetchCompletedTodo(currentListID, 1, token)
 
   useEffect(() => {
     async function getToken() {
@@ -56,13 +52,14 @@ export default function Home() {
   useEffect(() => {
     try {
       if (token) {
-        if (list === null) {
-          const apiListURL = `${process.env.NEXT_PUBLIC_API}/api/list`
+        const apiListURL = `${process.env.NEXT_PUBLIC_API}/api/list`
+        if (fetch_list === null) {
           postFetch(apiListURL, token, { name: "first list" })
           mutate(apiListURL)
           setListLoading(false)
-        } else if (list && list.length > 0) {
-          setCurrentListID(list[0].id)
+        } else if (fetch_list && fetch_list.length > 0) {
+          setCurrentListID(fetch_list[0].id)
+          mutate(`${apiListURL}/list/todo`)
           setListLoading(false)
         }
       }
@@ -70,7 +67,7 @@ export default function Home() {
       console.error(e)
       setListLoading(false)
     }
-  }, [list, token])
+  }, [fetch_list, token])
 
   useEffect(() => {
     try {
@@ -85,17 +82,6 @@ export default function Home() {
     }
   }, [user, userLoading, fetch_todo, token, currentListID])
 
-  useEffect(() => {
-    try {
-      if (fetch_completion_todo && token && currentListID) {
-        setCompletionTodos(fetch_completion_todo)
-        setCompletionPrevTodos(fetch_completion_todo)
-      }
-    } catch (e) {
-      console.error(e)
-    }
-  }, [user, userLoading, fetch_completion_todo, token, currentListID])
-
 
   useEffect(() => {
     let projects: (string | undefined)[] = []
@@ -106,15 +92,12 @@ export default function Home() {
     })
     const _p = projects.filter(p => p !== undefined && p !== "") as string[];
     const _l = labels.filter(l => l !== undefined && l !== "") as string[];
-    setProjects(Array.from(new Set([..._p, completionTaskProjectName])));
+    setProjects(Array.from(new Set([..._p])));
     setLabels(Array.from(new Set([..._l])))
     // setProjects(prevProjects => Array.from(new Set([...prevProjects, ..._p])));
     // setLabels(prevLabels => Array.from(new Set([...prevLabels, ..._l])))
   }, [todos])
 
-  useEffect(() => {
-    setIsCompletionTasks(currentProject === completionTaskProjectName)
-  }, [currentProject])
 
   const handleSaveTodos = async (
     todos: TodoProps[],
@@ -122,7 +105,6 @@ export default function Home() {
     listID: string,
     token: string,
     isUpdate: boolean,
-    isCompletionTasks: boolean
   ) => {
     try {
       if (!isUpdate) return
@@ -131,7 +113,7 @@ export default function Home() {
       const postData = todoFunc.diff(todos, prevTodos).filter(d => !todoFunc.isEmpty(d))
       if (postData.length > 0) {
         postFetch(api, token, postData).then(_ => {
-          isCompletionTasks ? setCompletionPrevTodos([...todos]) : setPrevTodos([...todos])
+          setPrevTodos([...todos])
           setIsUpdate(false)
         }).catch(e => console.error(e)).finally(() => {
           setIsSave(false)
@@ -149,13 +131,13 @@ export default function Home() {
   /**
    * オートセーブ
    * */
-  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate, isCompletionTasks) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate, isCompletionTasks), 3000), [])
+  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 3000), [])
 
   useEffect(() => {
     if (token && currentListID && isUpdate) {
-      isCompletionTasks ? saveTodos(completionTodos, completionPrevTodos, currentListID, token, isUpdate, isCompletionTasks) : saveTodos(todos, prevTodos, currentListID, token, isUpdate, isCompletionTasks)
+      saveTodos(todos, prevTodos, currentListID, token, isUpdate)
     }
-  }, [saveTodos, isUpdate, todos, completionTodos, token, prevTodos, completionPrevTodos, currentListID, isCompletionTasks])
+  }, [saveTodos, isUpdate, todos, token, prevTodos, currentListID])
   //***
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
@@ -163,17 +145,17 @@ export default function Home() {
   const mainPCHeight = `h-[calc(100vh-80px)]` // 100vh - headerHeight
   return (
     <article className="h-screen bg-muted/10">
-      <Header height={headerHeight} user={user} userLoading={userLoading} list={list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
+      <Header height={headerHeight} user={user} userLoading={userLoading} list={fetch_list} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
       <div className={`w-full ${mainPCHeight}`}>
         <Todo
-          todos={!userLoading && user ? isCompletionTasks ? completionTodos : todos : todosLS}
-          prevTodos={isCompletionTasks ? completionPrevTodos : prevTodos}
+          todos={!userLoading && user ? todos : todosLS}
+          prevTodos={prevTodos}
           filterdTodos={filterdTodos}
           mode={mode}
           sort={sort}
-          loading={listLoading || todosLoading || userLoading || fetch_todo_loading || fetch_completion_todo_loading}
+          loading={listLoading || todosLoading || userLoading || fetch_todo_loading}
           currentProject={currentProject}
-          setTodos={!userLoading && user ? isCompletionTasks ? setCompletionTodos : setTodos : setTodosLS}
+          setTodos={!userLoading && user ? setTodos : setTodosLS}
           projects={projects}
           labels={labels}
           setFilterdTodos={setFilterdTodos}

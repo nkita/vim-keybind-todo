@@ -709,7 +709,7 @@ export const Todo = (
         e.stopPropagation();
     }
     return (
-        <div className={`relative flex gap-2 w-full h-full pb-1 pt-2`} onMouseDown={handleMainMouseDown}>
+        <div className={`relative flex gap-2 w-full h-full pb-1 pt-4`} onMouseDown={handleMainMouseDown}>
             {/** 　debug デバッグエリア */}
             {/* <div className="absolute top-0 m-auto bg-yellow-100 ">
                 currentIndex:{currentIndex} prefix:{prefix} filterdTodolength:{filterdTodos.length}

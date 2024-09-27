@@ -26,10 +26,11 @@ import Image from "next/image"
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
-import { Check, CircleCheck, CloudUpload, ExternalLink, Link, List } from "lucide-react";
+import { Check, CircleCheck, CloudUpload, ExternalLink, List } from "lucide-react";
 import { M_PLUS_1p } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 const titleFont = M_PLUS_1p({ weight: "700", subsets: ["latin"] })
 
 export default function Header({
@@ -49,19 +50,17 @@ export default function Header({
     const h = `h-[80px]`
     return (
         <div className={`flex justify-between items-center w-full py-3 px-8 ${h}`}>
-            <div className="flex gap-8 items-center">
-                <div className="flex items-center gap-1 h-9">
-                    <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
-                    <h1 className={`pr-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>TODO</h1>
-                </div>
-                <div className="flex gap-2 items-center border p-1 rounded-full bg-card text-xs m-3 truncate">
-                    <ExButton path={"/t"}><List size={13} /> 進行中タスク</ExButton>
-                    <ExButton path={"/c"}><Check size={13} /> 完了タスク</ExButton>
-                    <ExButton path={""} className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExButton>
-                </div>
+            <div className="flex items-center gap-1 h-9">
+                <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
+                <h1 className={`pr-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>TODO</h1>
             </div>
-            <div className="flex gap-1 items-center">
-                {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined &&
+            <div className="flex gap-2 items-center border p-1 rounded-full bg-card text-xs m-3 truncate">
+                <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>
+                <ExLink path={"/c"}><Check size={13} /> 完了タスク</ExLink>
+                <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>
+            </div>
+            <div className="flex gap-1 items-center  justify-end w-[300px]">
+                {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                     <SaveButton isSave={isSave} isUpdate={isUpdate} onClickSaveButton={onClickSaveButton} />
                 }
                 <UserMenu user={user} userLoading={userLoading} />
@@ -137,11 +136,11 @@ const SaveButton = ({ isUpdate, isSave, onClickSaveButton }: { isUpdate: boolean
     )
 }
 
-const ExButton = ({ path, className = "", children, ...props }: { path: string, className?: string | undefined, children: React.ReactNode }) => {
+const ExLink = ({ path, className = "", children, ...props }: { path: string, className?: string | undefined, children: React.ReactNode }) => {
     const pathname = usePathname()
     return (
-        <button className={cn(`${pathname === path ? "bg-secondary text-secondary-foreground font-semibold " : ""}flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
+        <Link href={path} className={cn(`${pathname === path ? "bg-secondary text-secondary-foreground font-semibold " : ""}flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
             {children}
-        </button>
+        </Link>
     )
 }

@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 // const inter = Zen_Kaku_Gothic_New({ weight: "400", subsets: ["latin"] })
 
 import { Noto_Sans_JP } from "next/font/google";
+import { useEffect } from "react";
 
 const noto = Noto_Sans_JP({
   weight: ["400"],

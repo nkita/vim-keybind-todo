@@ -23,6 +23,7 @@ export const TodoList = (
         searchResultIndex,
         command,
         loading,
+        completionOnly,
         onClick,
         setCurrentIndex,
         register,
@@ -40,6 +41,7 @@ export const TodoList = (
         searchResultIndex: boolean[]
         command: string
         loading: Boolean
+        completionOnly?: boolean
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
         register: UseFormRegister<FieldValues>
@@ -268,7 +270,7 @@ export const TodoList = (
                 </Table>
                 <div className={`border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
                     <div className="flex justify-between items-center text-sm h-full px-2 truncate">
-                        <div>表示：{viewCompletion ? "全て" : "未完了のみ"}</div>
+                        <div> {!completionOnly && <> 表示：{viewCompletion ? "全て" : "未完了のみ"}</>}</div>
                         <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">
                             {command ? (

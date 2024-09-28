@@ -32,6 +32,7 @@ export const Todo = (
         currentProject,
         projects,
         labels,
+        completionOnly,
         setTodos,
         setFilterdTodos,
         setMode,
@@ -49,6 +50,7 @@ export const Todo = (
         currentProject: string
         projects: string[]
         labels: string[]
+        completionOnly?: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setFilterdTodos: Dispatch<SetStateAction<TodoProps[]>>
         setMode: Dispatch<SetStateAction<Mode>>
@@ -103,6 +105,10 @@ export const Todo = (
 
     useEffect(() => {
         debugLog(`currentProject:${currentProject} `)
+        if (completionOnly) {
+            if (todos.length > 0) setFilterdTodos(todos)
+            return
+        }
         let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
 
         if (!viewCompletionTask) {
@@ -131,7 +137,7 @@ export const Todo = (
             }
         }
         setFilterdTodos(_todos)
-    }, [todos, currentProject, sort, viewCompletionTask, setFilterdTodos])
+    }, [todos, currentProject, sort, completionOnly, viewCompletionTask, setFilterdTodos])
 
     useEffect(() => {
         debugLog(`currentIndex:${currentIndex} mode:${mode} keepPositionId:${keepPositionId} prefix:${prefix} mode:${mode} `)
@@ -435,6 +441,7 @@ export const Todo = (
 
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
+        if (completionOnly) return
         keepPosition(filterdTodos, currentIndex)
         setViewCompletionTask(!viewCompletionTask)
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask, filterdTodos, currentIndex])
@@ -735,6 +742,7 @@ export const Todo = (
                         setCurrentIndex={setCurrentIndex}
                         register={register}
                         rhfSetValue={setValue}
+                        completionOnly={completionOnly}
                     />
                 </ResizablePanel>
                 <ResizableHandle tabIndex={-1} className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />

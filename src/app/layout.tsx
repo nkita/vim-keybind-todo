@@ -6,7 +6,7 @@ import { Toaster } from "@/components/ui/sonner"
 // const inter = Zen_Kaku_Gothic_New({ weight: "400", subsets: ["latin"] })
 
 import { Noto_Sans_JP } from "next/font/google";
-import { useEffect } from "react";
+import { TodoProvider } from "@/provider/todo";
 
 const noto = Noto_Sans_JP({
   weight: ["400"],
@@ -27,12 +27,14 @@ export default function RootLayout({
 }>) {
   return (
     <AuthProvider>
-      <html lang="en">
-        <body className={noto.className}>
-          {children}
-          <Toaster position="top-center" richColors />
-        </body>
-      </html>
+      <TodoProvider>
+        <html lang="en">
+          <body className={noto.className}>
+            {children}
+            <Toaster position="top-center" richColors />
+          </body>
+        </html>
+      </TodoProvider>
     </AuthProvider>
   );
 }

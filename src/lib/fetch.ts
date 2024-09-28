@@ -11,7 +11,7 @@ export const getFetch = (url: string, token: string) => {
     }).then(res => res.json());
 }
 
-export const postFetch = (url: string, token: string, body: Object) => {
+export const postFetch = (url: string, token: string | null, body: Object) => {
     return fetch(url, {
         method: 'POST',
         headers: {
@@ -22,7 +22,7 @@ export const postFetch = (url: string, token: string, body: Object) => {
     }).then(res => res.json());
 }
 
-export const useFetchList = (id: string, token: string) => useSWRImmutable(token ? [`${process.env.NEXT_PUBLIC_API}/api/list${id ? "/" + id : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchTodo = (list_id: string, token: string) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchCompletedTodo = (list_id: string, page: number = 1, token: string) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo?completionOnly=true" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchPostList = (body: Object, token: string) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)
+export const useFetchList = (id: string | null, token: string | null) => useSWRImmutable(token && id ? [`${process.env.NEXT_PUBLIC_API}/api/list${id ? "/" + id : ""}`, token] : null, ([url, token]) => getFetch(url, token))
+export const useFetchTodo = (list_id: string | null, token: string | null) => useSWR(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
+export const useFetchCompletedTodo = (list_id: string | null, page: number = 1, token: string | null) => useSWR(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo?completionOnly=true" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
+export const useFetchPostList = (body: Object, token: string | null) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)

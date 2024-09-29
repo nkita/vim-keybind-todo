@@ -136,10 +136,10 @@ const SaveButton = ({ isUpdate, isSave, onClickSaveButton }: { isUpdate: boolean
     )
 }
 
-const ExLink = ({ path, className = "", children, ...props }: { path: string, className?: string | undefined, children: React.ReactNode }) => {
+const ExLink = ({ path, className = "", target, children, ...props }: { path: string, className?: string | undefined, target?: string, children: React.ReactNode }) => {
     const pathname = usePathname()
     return (
-        <Link href={path} className={cn(`${pathname === path ? "bg-secondary text-secondary-foreground font-semibold " : ""}flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
+        <Link href={path} target={target} className={cn(`${pathname === path ? "bg-secondary text-secondary-foreground font-semibold " : ""}flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
             {children}
         </Link>
     )

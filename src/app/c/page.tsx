@@ -90,13 +90,13 @@ export default function Home() {
   /**
    * オートセーブ
    * */
-  const saveTodos = useCallback(debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 3000), [])
+  const saveTodos = debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 3000)
 
   useEffect(() => {
     if (config.token && config.list && isUpdate) {
       saveTodos(todos, prevTodos, config.list, config.token, isUpdate)
     }
-  }, [saveTodos, isUpdate, todos, config, prevTodos, config.list])
+  }, [saveTodos, isUpdate, todos, config, prevTodos])
   //***
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)

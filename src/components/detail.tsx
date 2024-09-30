@@ -52,9 +52,8 @@ export const Detail = ({
     return (
         <>
             <div className="w-full h-full border-none  bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
-                <h2 className="flex h-[50px] gap-2 items-center text-primary/80 font-medium bg-card border-t border-x rounded-t-md px-5"><FaCircleInfo />詳細</h2>
-                <div className="flex flex-col h-[83%] ">
-                    <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-3 border-x bg-card " onMouseDown={e => e.stopPropagation()} >
+                <div className="flex flex-col h-[83%]">
+                    <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-5 border-t-4 border-t-primary border-x  rounded-md bg-card " onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
@@ -80,17 +79,17 @@ export const Detail = ({
                             )}
                         </div>
                     </div>
-                    <div className="bg-card max-h-[calc(100%-120px)] w-full border-x px-5">
-                        <div className="relative h-full w-full py-2 border rounded-md focus-within:border-primary ">
-                            <div className="h-full overflow-auto rounded-md scrollbar ">
+                    <div className="bg-card max-h-[calc(100%-100px)] w-full border-x px-5">
+                        <div className="relative h-full w-full border rounded-md focus-within:border-primary">
+                            <div className="h-full overflow-auto rounded-md scrollbar bg-yellow-300 ">
                                 {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
                                 <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={handleClickDetail} onMouseDown={e => e.stopPropagation()}>
                                     <TextareaAutosize
                                         key={key}
                                         tabIndex={-1}
                                         minRows={5}
-                                        maxLength={1000}
-                                        className={`font-normal h-full w-full outline-none  text-secondary-foreground  p-2 resize-none `}
+                                        maxLength={10000}
+                                        className={`font-normal h-full w-full outline-none  text-secondary-foreground px-2 resize-none overflow-hidden`}
                                         placeholder={jaJson.詳細のメモのplaceholder}
                                         {...register(`edit-content-detail-${todo.id}`)}
                                     />

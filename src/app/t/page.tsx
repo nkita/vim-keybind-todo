@@ -1,19 +1,17 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useCallback, useContext } from "react"
+import { useState, useEffect, useContext } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import Header from "@/components/header";
-import { mutate } from "swr";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useFetchList, useFetchTodo, postFetch } from "@/lib/fetch";
+import { useFetchTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { todoFunc } from "@/lib/todo";
 import { TodoContext } from "@/provider/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 
 export default function Home() {
-  const [token, setToken] = useState("")
   const [currentListID, setCurrentListID] = useState("")
   const [todos, setTodos] = useState<TodoProps[]>([])
   const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo_data", [])
@@ -29,7 +27,6 @@ export default function Home() {
   const [currentProject, setCurrentProject] = useState("")
 
   const [todosLoading, setTodosLoading] = useState(true)
-  const [listLoading, setListLoading] = useState(true)
   const config = useContext(TodoContext)
 
   const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(config.list, config.token)
@@ -66,8 +63,8 @@ export default function Home() {
   const handleSaveTodos = async (
     todos: TodoProps[],
     prevTodos: TodoProps[],
-    listID: string,
-    token: string,
+    listID: string | null,
+    token: string | null,
     isUpdate: boolean,
   ) => {
     try {
@@ -98,13 +95,13 @@ export default function Home() {
   const saveTodos = debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 3000)
 
   useEffect(() => {
-    if (token && currentListID && isUpdate) {
-      saveTodos(todos, prevTodos, currentListID, token, isUpdate)
+    if (config.token && config.list && isUpdate) {
+      saveTodos(todos, prevTodos, config.list, config.token, isUpdate)
     }
-  }, [saveTodos, isUpdate, todos, token, prevTodos, currentListID])
+  }, [saveTodos, isUpdate, todos, config, prevTodos])
   //***
 
-  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, currentListID, token, isUpdate)
+  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
   const mainPCHeight = `h-[calc(100vh-90px)]` // 100vh - headerHeight
   return (
     <>

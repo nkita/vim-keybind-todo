@@ -20,3 +20,8 @@ export interface TodoEnablesProps {
     enableAddTodo: boolean
     todosLimit: number
 }
+
+export type SaveTodosReturnProps = {
+    action: 'save' | 'skip'
+    error?: any
+}

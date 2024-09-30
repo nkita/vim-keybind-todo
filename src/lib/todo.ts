@@ -1,6 +1,7 @@
-import { TodoProps, Sort } from "@/types"
+import { TodoProps, Sort, SaveTodosReturnProps } from "@/types"
 import { yyyymmddhhmmss } from "./time"
 import { isEqual } from "lodash"
+import { postFetch } from "./fetch"
 
 interface options {
     project: string
@@ -97,5 +98,29 @@ export const todoFunc = {
     getIndexById: (todos: TodoProps[], id: string | undefined) => {
         const index = todos.map(t => t.id).indexOf(id ? id : "")
         return index >= 0 ? index : todos.length - 1
+    }
+}
+
+export const postSaveTodos = async (
+    todos: TodoProps[],
+    prevTodos: TodoProps[],
+    listID: string | null,
+    token: string | null,
+): Promise<SaveTodosReturnProps> => {
+
+    let r: SaveTodosReturnProps = { action: 'skip' }
+
+    try {
+        const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/todo`
+        const postData = todoFunc.diff(todos, prevTodos).filter(d => !todoFunc.isEmpty(d))
+        if (postData.length > 0) {
+            r['action'] = 'save'
+            await postFetch(api, token, postData).catch(e => console.error(e))
+        }
+        return r
+    } catch (e) {
+        r['action'] = 'save'
+        r['error'] = e
+        return r
     }
 }

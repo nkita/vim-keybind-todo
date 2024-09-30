@@ -2,27 +2,19 @@
 
 import { Todo } from "@/components/todo";
 import { useState, useEffect, useContext } from "react"
-import { TodoProps, Sort, Mode } from "@/types"
+import { TodoProps, Sort, Mode, SaveTodosReturnProps } from "@/types"
 import Header from "@/components/header";
 import { useFetchCompletedTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
-import { todoFunc } from "@/lib/todo";
-import { useLocalStorage } from "@/hook/useLocalStrorage";
+import { postSaveTodos, todoFunc } from "@/lib/todo";
 import { TodoContext } from "@/provider/todo";
 import { useAuth0 } from "@auth0/auth0-react";
+
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
-  const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo_data", [])
   const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
   const [isSave, setIsSave] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
-  const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
-  const [mode, setMode] = useState<Mode>('normal')
-  const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
-
-  const [projects, setProjects] = useState<string[]>([])
-  const [labels, setLabels] = useState<string[]>([])
-  const [currentProject, setCurrentProject] = useState("")
 
   const [todosLoading, setTodosLoading] = useState(true)
   const config = useContext(TodoContext)
@@ -42,21 +34,6 @@ export default function Home() {
     }
   }, [fetch_todo, config, todosLoading])
 
-
-  useEffect(() => {
-    let projects: (string | undefined)[] = []
-    let labels: (string | undefined)[] = []
-    todos.forEach(t => {
-      projects.push(t.project)
-      labels.push(t.context)
-    })
-    const _p = projects.filter(p => p !== undefined && p !== "") as string[];
-    const _l = labels.filter(l => l !== undefined && l !== "") as string[];
-    setProjects(Array.from(new Set([..._p])));
-    setLabels(Array.from(new Set([..._l])))
-  }, [todos])
-
-
   const handleSaveTodos = async (
     todos: TodoProps[],
     prevTodos: TodoProps[],
@@ -65,21 +42,16 @@ export default function Home() {
     isUpdate: boolean,
   ) => {
     try {
-      if (!isUpdate) return
-      setIsSave(true)
-      const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/todo`
-      const postData = todoFunc.diff(todos, prevTodos).filter(d => !todoFunc.isEmpty(d))
-      if (postData.length > 0) {
-        postFetch(api, token, postData).then(_ => {
-          setPrevTodos([...todos])
-          setIsUpdate(false)
-        }).catch(e => console.error(e)).finally(() => {
+      if (isUpdate) {
+        setIsSave(true)
+        postSaveTodos(todos, prevTodos, listID, token).then((r: SaveTodosReturnProps) => {
+          if (r['action'] === 'save') {
+            setIsUpdate(false)
+            setPrevTodos([...todos])
+          }
+        }).finally(() => {
           setIsSave(false)
-          // mutate(api)
         })
-      } else {
-        setIsSave(false)
-        setIsUpdate(false)
       }
     } catch (e) {
       console.error(e)
@@ -108,19 +80,9 @@ export default function Home() {
           <Todo
             todos={!userLoading && user ? todos : []}
             prevTodos={prevTodos}
-            filterdTodos={filterdTodos}
-            mode={mode}
-            sort={sort}
             loading={todosLoading || userLoading || fetch_todo_loading}
-            currentProject={currentProject}
-            setTodos={!userLoading && user ? setTodos : setTodosLS}
-            projects={projects}
-            labels={labels}
-            setFilterdTodos={setFilterdTodos}
-            setMode={setMode}
-            setSort={setSort}
+            setTodos={setTodos}
             setIsUpdate={setIsUpdate}
-            setCurrentProject={setCurrentProject}
             onClickSaveButton={handleClickSaveButton}
             completionOnly
           />

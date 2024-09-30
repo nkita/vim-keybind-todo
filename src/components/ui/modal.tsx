@@ -1,8 +1,7 @@
-import { Dialog, DialogPanel, DialogTitle, Description } from "@headlessui/react"
+import { Dialog, DialogTitle } from "@headlessui/react"
 import { MouseEvent, MouseEventHandler, ReactNode } from "react"
 import { cn } from "@/lib/utils"
-import { DialogDescription } from "@radix-ui/react-dialog"
-import { DialogHeader } from "./dialog"
+
 export const Modal = (
     {
         buttonLabel,

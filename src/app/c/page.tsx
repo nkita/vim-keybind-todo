@@ -1,11 +1,10 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useCallback, useContext } from "react"
+import { useState, useEffect, useContext } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import Header from "@/components/header";
-import { mutate } from "swr";
-import { useFetchList, useFetchTodo, useFetchCompletedTodo, postFetch } from "@/lib/fetch";
+import { useFetchCompletedTodo, postFetch } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { todoFunc } from "@/lib/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";

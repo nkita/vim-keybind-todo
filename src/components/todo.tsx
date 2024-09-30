@@ -25,38 +25,18 @@ export const Todo = (
     {
         todos,
         prevTodos,
-        filterdTodos,
-        mode,
-        sort,
         loading,
-        currentProject,
-        projects,
-        labels,
         completionOnly,
         setTodos,
-        setFilterdTodos,
-        setMode,
-        setSort,
         setIsUpdate,
-        setCurrentProject,
         onClickSaveButton
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
-        filterdTodos: TodoProps[]
-        mode: Mode
-        sort: Sort
         loading: Boolean
-        currentProject: string
-        projects: string[]
-        labels: string[]
         completionOnly?: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
-        setFilterdTodos: Dispatch<SetStateAction<TodoProps[]>>
-        setMode: Dispatch<SetStateAction<Mode>>
-        setSort: Dispatch<SetStateAction<Sort>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
-        setCurrentProject: Dispatch<SetStateAction<string>>
         onClickSaveButton: () => void;
     }
 ) => {
@@ -67,6 +47,14 @@ export const Todo = (
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
+    const [currentProject, setCurrentProject] = useState("")
+
+    const [projects, setProjects] = useState<string[]>([])
+    const [labels, setLabels] = useState<string[]>([])
+    const [mode, setMode] = useState<Mode>('normal')
+    const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
+    const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
+
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
         todosLimit: 30,
@@ -95,6 +83,20 @@ export const Todo = (
         }
         return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true, useKey: keyConf?.useKey ?? false }
     }
+
+    useEffect(() => {
+        let projects: (string | undefined)[] = []
+        let labels: (string | undefined)[] = []
+        todos.forEach(t => {
+            projects.push(t.project)
+            labels.push(t.context)
+        })
+        const _p = projects.filter(p => p !== undefined && p !== "") as string[];
+        const _l = labels.filter(l => l !== undefined && l !== "") as string[];
+        setProjects(Array.from(new Set([..._p])));
+        setLabels(Array.from(new Set([..._l])))
+    }, [todos])
+
 
     useEffect(() => {
         setTodoEnables(prev => {

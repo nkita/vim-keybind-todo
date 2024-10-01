@@ -9,6 +9,7 @@ import { debounce } from "@/lib/utils";
 import { postSaveTodos, todoFunc } from "@/lib/todo";
 import { TodoContext } from "@/provider/todo";
 import { useAuth0 } from "@auth0/auth0-react";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -20,6 +21,10 @@ export default function Home() {
   const config = useContext(TodoContext)
   const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchCompletedTodo(config.list, 1, config.token)
   const { user, isLoading: userLoading } = useAuth0();
+
+  useEffect(() => {
+    if (!userLoading && user === undefined) redirect('/t')
+  }, [user, userLoading])
 
   useEffect(() => {
     try {

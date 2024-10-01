@@ -25,6 +25,10 @@ export default function Home() {
   const { user, isLoading: userLoading } = useAuth0();
 
   useEffect(() => {
+    if (!userLoading && user === undefined) setTodosLoading(false)
+  }, [user, userLoading])
+
+  useEffect(() => {
     try {
       if (fetch_todo && config.token && config.list) {
         setTodos(fetch_todo)

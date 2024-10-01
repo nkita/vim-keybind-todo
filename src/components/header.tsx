@@ -1,7 +1,7 @@
 'use client'
 
 import { useAuth0, User } from "@auth0/auth0-react";
-import { FaRegUser, FaGear, FaArrowRightFromBracket, FaPlus, FaRotate, FaTrash } from "react-icons/fa6";
+import { FaRegUser, FaArrowRightFromBracket } from "react-icons/fa6";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     DropdownMenu,
@@ -11,22 +11,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
 import Image from "next/image"
 
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
-import { Check, CircleCheck, CloudUpload, ExternalLink, List } from "lucide-react";
+import { Check, CircleCheck, CloudUpload, ExternalLink, List, Lock, User2 } from "lucide-react";
 import { M_PLUS_1p } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -56,7 +46,7 @@ export default function Header({
             </div>
             <div className="flex gap-2 items-center border p-1 rounded-full bg-card text-xs m-3 truncate">
                 <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>
-                <ExLink path={"/c"}><Check size={13} /> 完了タスク</ExLink>
+                <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了タスク</ExLink>
                 <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>
             </div>
             <div className="flex gap-1 items-center  justify-end w-[300px]">
@@ -136,8 +126,13 @@ const SaveButton = ({ isUpdate, isSave, onClickSaveButton }: { isUpdate: boolean
     )
 }
 
-const ExLink = ({ path, className = "", target, children, ...props }: { path: string, className?: string | undefined, target?: string, children: React.ReactNode }) => {
+const ExLink = ({ path, className = "", target, lock, children, ...props }: { path: string, className?: string | undefined, target?: string, lock?: boolean, children: React.ReactNode }) => {
     const pathname = usePathname()
+    if (lock) {
+        return (
+            <button disabled className="flex text-muted-foreground items-center gap-1 px-3 py-2 rounded-full">{children}</button>
+        )
+    }
     return (
         <Link href={path} target={target} className={cn(`${pathname === path ? "primary-gradient font-semibold " : ""}flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
             {children}

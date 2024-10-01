@@ -76,7 +76,7 @@ export const TodoList = (
         }, [currentProject, project])
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"}`}>
+                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
                 <span className="flex gap-1 items-center">
                     {project ? (
                         project === completionTaskProjectName ? (
@@ -176,7 +176,7 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-secondary" : ""}
+                                                            ${currentIndex === index ? "bg-gradient-to-r from-primary/10 from-20% to-primary/5 to-50%" : ""}
                                                             ${searchResultIndex[index] ? "bg-yellow-50" : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>

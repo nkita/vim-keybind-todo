@@ -81,6 +81,10 @@
   kbd {
     @apply px-2 py-1 text-5sm shadow-sm font-thin text-primary bg-transparent border rounded-md
   }
+
+  .primary-gradient {
+    @apply bg-gradient-to-tr from-primary via-primary/70 from-10% via-95% to-100% to-primary text-primary-foreground
+  }
 }
 
 @layer utilities {

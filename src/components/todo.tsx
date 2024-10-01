@@ -347,7 +347,7 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask, todoEnables])
 
     // delete task
-    const deleteTask = (currentIndex: number) => {
+    const deleteTask = (currentIndex: number, filterdTodos: TodoProps[]) => {
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
@@ -362,9 +362,11 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['deleteModal'].enable), [todos, filterdTodos, currentIndex])
 
     useHotkeys(keymap['delete'].keys, (e) => {
+        if (prefix !== 'delete') return
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        deleteTask(currentIndex)
-    }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex])
+        console.log("kokokitano????", currentIndex, filterdTodos)
+        deleteTask(currentIndex, filterdTodos)
+    }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prefix])
 
     // change to edit mode
     useHotkeys(keymap['editText'].keys, (e) => {
@@ -783,16 +785,14 @@ export const Todo = (
                 <button
                     tabIndex={-1}
                     onClick={_ => setHelp(true)}
-                    className={`
-                       flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border  shadow-md
-                      ${mode !== "editDetail" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}
-                    `}>
+                    className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border  shadow-md bg-primary text-primary-foreground`}>
                     <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
                     <span>ヘルプ表示</span>
                 </button>
             </div>
             <DeleteModal
                 currentIndex={currentIndex}
+                filterdTodos={filterdTodos}
                 currentPrefix={prefix}
                 mode={mode}
                 onClick={handleClickDetailElement}

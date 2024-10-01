@@ -61,7 +61,7 @@ export default function Home() {
   /**
    * オートセーブ
    * */
-  const saveTodos = debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 3000)
+  const saveTodos = debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 5000)
 
   useEffect(() => {
     if (config.token && config.list && isUpdate) {

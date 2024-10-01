@@ -1,4 +1,4 @@
-import { Mode } from "@/types"
+import { Mode, TodoEnablesProps, TodoProps } from "@/types"
 import { Modal } from "./ui/modal"
 import { DialogFooter } from "./ui/dialog"
 import { Button } from "./ui/button"
@@ -6,6 +6,7 @@ export const DeleteModal = (
     {
         currentIndex,
         currentPrefix,
+        filterdTodos,
         mode,
         onClick,
         onDelete
@@ -13,8 +14,9 @@ export const DeleteModal = (
         currentIndex: number
         mode: Mode
         currentPrefix: string
+        filterdTodos: TodoProps[]
         onClick: (prefx: string) => void
-        onDelete: (currentIndex: number) => void
+        onDelete: (currentIndex: number, filterdTodos: TodoProps[]) => void
     }) => {
     const isView = currentPrefix === "delete"
         && mode === "modal"
@@ -40,7 +42,7 @@ export const DeleteModal = (
                 </div>
                 <DialogFooter>
                     <Button variant='outline' onClick={close}><span className="flex items-center gap-2">キャンセル <kbd className="py-0">Esc</kbd></span></Button>
-                    <Button onClick={_ => onDelete(currentIndex)}><span className="flex items-center gap-2">削除する<kbd className="text-primary-foreground py-0">Enter</kbd></span></Button>
+                    <Button onClick={_ => onDelete(currentIndex, filterdTodos)}><span className="flex items-center gap-2">削除する<kbd className="text-primary-foreground py-0">Enter</kbd></span></Button>
                 </DialogFooter>
             </Modal>
         </>

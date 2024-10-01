@@ -80,7 +80,7 @@ export const Detail = ({
                         </div>
                     </div>
                     <div className="bg-card max-h-[calc(100%-100px)] w-full border-x px-5">
-                        <div className="relative h-full w-full border rounded-md focus-within:border-primary">
+                        <div className="relative h-full w-full border p-1 rounded-md focus-within:border-primary">
                             <div className="h-full overflow-auto rounded-md scrollbar bg-yellow-300 ">
                                 {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
                                 <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={handleClickDetail} onMouseDown={e => e.stopPropagation()}>
@@ -89,7 +89,7 @@ export const Detail = ({
                                         tabIndex={-1}
                                         minRows={5}
                                         maxLength={10000}
-                                        className={`font-normal h-full w-full outline-none  text-secondary-foreground px-2 resize-none overflow-hidden`}
+                                        className={`font-normal h-full w-full outline-none py-1 text-secondary-foreground px-2 resize-none overflow-hidden`}
                                         placeholder={jaJson.詳細のメモのplaceholder}
                                         {...register(`edit-content-detail-${todo.id}`)}
                                     />

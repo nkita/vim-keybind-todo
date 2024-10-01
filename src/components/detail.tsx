@@ -53,7 +53,7 @@ export const Detail = ({
         <>
             <div className="w-full h-full border-none  bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
                 <div className="flex flex-col h-[83%]">
-                    <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-5 border-t-4 border-t-primary border-x  rounded-md bg-card " onMouseDown={e => e.stopPropagation()} >
+                    <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-5 border-t-4 border-t-primary border-x  rounded-t-md bg-card " onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />

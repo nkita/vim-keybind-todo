@@ -364,7 +364,6 @@ export const Todo = (
     useHotkeys(keymap['delete'].keys, (e) => {
         if (prefix !== 'delete') return
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        console.log("kokokitano????", currentIndex, filterdTodos)
         deleteTask(currentIndex, filterdTodos)
     }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prefix])
 

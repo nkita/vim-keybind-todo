@@ -23,8 +23,11 @@ export default function Home() {
   const { user, isLoading: userLoading } = useAuth0();
 
   useEffect(() => {
-    if (!userLoading && user === undefined) redirect('/t')
+    if (!userLoading && user === undefined) {
+      redirect('/t')
+    }
   }, [user, userLoading])
+
 
   useEffect(() => {
     try {

@@ -83,7 +83,10 @@ export const Detail = ({
                         <div className="relative h-full w-full border p-1 rounded-md focus-within:border-primary">
                             <div className="h-full overflow-auto rounded-md scrollbar bg-yellow-300 ">
                                 {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
-                                <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onClick={handleClickDetail} onMouseDown={e => e.stopPropagation()}>
+                                <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onMouseDown={e => {
+                                    handleClickDetail()
+                                    e.stopPropagation()
+                                }}>
                                     <TextareaAutosize
                                         key={key}
                                         tabIndex={-1}

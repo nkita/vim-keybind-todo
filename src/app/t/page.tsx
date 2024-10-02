@@ -79,7 +79,7 @@ export default function Home() {
   //***
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
-  const mainPCHeight = `h-[calc(100vh-90px)]` // 100vh - headerHeight
+  const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
   return (
     <>
       <Header user={user} userLoading={userLoading} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />

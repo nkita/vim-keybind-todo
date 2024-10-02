@@ -37,9 +37,9 @@ export default function Header({
     onClickSaveButton?: () => void
 }) {
 
-    const h = `h-[80px]`
+    const h = `h-[60px]`
     return (
-        <div className={`flex justify-between items-center w-full py-3 px-8 ${h}`}>
+        <div className={`flex justify-between items-center w-full px-8 ${h}`}>
             <div className="flex items-center gap-1 h-9">
                 <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
                 <h1 className={`pr-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>TODO</h1>

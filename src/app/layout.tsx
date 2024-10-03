@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <TodoProvider>
-        <html lang="en">
+        <html lang="ja">
           <body className={noto.className}>
             {children}
             <Toaster position="top-center" richColors />

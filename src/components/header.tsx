@@ -17,11 +17,9 @@ import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
 import { Check, CircleCheck, CloudUpload, ExternalLink, List, Lock, User2 } from "lucide-react";
-import { M_PLUS_1p } from "next/font/google";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-const titleFont = M_PLUS_1p({ weight: "700", subsets: ["latin"] })
 
 export default function Header({
     user,
@@ -42,7 +40,7 @@ export default function Header({
         <div className={`flex justify-between items-center w-full px-8 ${h}`}>
             <div className="flex items-center gap-1 h-9">
                 <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
-                <h1 className={`pr-1 border-primary text-sm font-semibold text-gray-500 ${titleFont.className}`}>TODO</h1>
+                <h1 className={`pr-1 border-primary text-gray-500 font-semibold text-sm`}>Shiba ToDo</h1>
             </div>
             <div className="flex gap-2 items-center border p-1 rounded-full bg-card text-xs m-3 truncate">
                 <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>

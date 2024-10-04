@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/provider/auth";
-// import { Zen_Kaku_Gothic_New } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner"
-// const inter = Zen_Kaku_Gothic_New({ weight: "400", subsets: ["latin"] })
 
 import { Noto_Sans_JP } from "next/font/google";
 import { TodoProvider } from "@/provider/todo";
@@ -28,7 +26,7 @@ export default function RootLayout({
   return (
     <AuthProvider>
       <TodoProvider>
-        <html lang="ja">
+        <html>
           <body className={noto.className}>
             {children}
             <Toaster position="top-center" richColors />

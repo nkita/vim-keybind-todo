@@ -40,7 +40,7 @@ export default function Header({
         <div className={`flex justify-between items-center w-full px-8 ${h}`}>
             <div className="flex items-center gap-1 h-9">
                 <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
-                <h1 className={`pr-1 border-primary text-gray-500 font-semibold text-sm`}>Shiba ToDo</h1>
+                <h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm`}>Shiba ToDo</h1>
             </div>
             <div className="flex gap-2 items-center border p-1 rounded-full bg-card text-xs m-3 truncate">
                 <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>
@@ -132,7 +132,7 @@ const ExLink = ({ path, className = "", target, lock, children, ...props }: { pa
         )
     }
     return (
-        <Link href={path} target={target} className={cn(`${pathname === path ? "primary-gradient font-semibold " : ""}flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
+        <Link href={path} target={target} className={cn(`${pathname === path ? "primary-gradient text-primary-foreground" : ""} flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
             {children}
         </Link>
     )

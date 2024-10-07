@@ -7,8 +7,8 @@ import { Noto_Sans_JP } from "next/font/google";
 import { TodoProvider } from "@/provider/todo";
 
 const noto = Noto_Sans_JP({
-  weight: ["400"],
-  style: "normal",
+  weight: ["400", "500", "600", "700", "800"],
+  style: ["normal"],
   subsets: ["latin"],
 });
 

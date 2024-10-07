@@ -20,8 +20,8 @@ export default function Home() {
         <div className={`flex justify-center w-full bg-[url('https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png')] `}>
             <div className="w-full max-w-[1024px]">
                 <div className={`flex justify-end items-center w-full px-8 h-[60px]`}>
-                    <div className="flex items-center">
-                        <span className="text-xs pr-1"> Feel free to follow me</span><Heart size={14} className="text-rose-400" />
+                    <div className="flex items-center gap-1">
+                        <span className="flex items-center text-xs"> Feel free to follow me<Heart size={14} className="text-rose-400" /></span>
                         <Link href={"/"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaXTwitter /></Link>
                         <Link href={"/"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaGithub /></Link>
                     </div>
@@ -54,19 +54,28 @@ export default function Home() {
                     <section className="pt-16 text-lg w-[93%]">
                         <h2 className="text-2xl font-bold text-center py-8">Shiba ToDoを選ぶ理由</h2>
                         <div className="flex justify-between py-8">
-                            <div className="w-[300px] h-[300px] bg-secondary"></div>
-                            <p className="p-8">
-                                <span>爆速でタスクを管理する、マウスの手間を減らす。心地よい体験を感じてみませんか？</span>
-                            </p>
+                            <div className="p-8 w-[20%]">
+                                <h3 className="font-bold">その１</h3>
+                                <p className="overflow-hidden">効率重視<br />ホームポジションで完結</p>
+                            </div>
+                            <div className="w-[80%] h-[300px] bg-secondary"></div>
                         </div>
 
                         <div className="flex justify-between py-8">
-                            <p className="p-8">
-                                <span>爆速でタスクを管理する、マウスの手間を減らす。心地よい体験を感じてみませんか？</span>
-                            </p>
-                            <div className="w-[300px] h-[300px] bg-secondary"></div>
+                            <div className="w-[80%] h-[300px] bg-secondary"></div>
+                            <div className="p-8 w-[20%]">
+                                <h3 className="font-bold">その2</h3>
+                                <p className="overflow-hidden">シンプルだからTodoだけに集中</p>
+                            </div>
                         </div>
 
+                        <div className="flex justify-between py-8">
+                            <div className="p-8 w-[20%]">
+                                <h3 className="font-bold">その3</h3>
+                                <p className="overflow-hidden">ログイン不要・無料で使い続けます</p>
+                            </div>
+                            <div className="w-[80%] h-[300px] bg-secondary"></div>
+                        </div>
 
                     </section>
 

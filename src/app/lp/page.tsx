@@ -72,7 +72,7 @@ export default function Home() {
                         <div className="flex justify-between py-8">
                             <div className="p-8 w-[20%]">
                                 <h3 className="font-bold">その3</h3>
-                                <p className="overflow-hidden">ログイン不要・無料で使い続けます</p>
+                                <p className="overflow-hidden">保存先はローカルでもクラウドでも無料で使い続けます</p>
                             </div>
                             <div className="w-[80%] h-[300px] bg-secondary"></div>
                         </div>

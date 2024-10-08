@@ -112,7 +112,8 @@ const config = {
         '3sm': '0.70rem',
         '4sm': '0.65rem',
         '5sm': '0.60rem',
-        '6sm': '0.55rem'
+        '6sm': '0.55rem',
+        '7sm': '0.30rem'
       }
     },
   },

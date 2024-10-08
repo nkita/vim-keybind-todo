@@ -55,6 +55,7 @@ export const Todo = (
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
 
+    const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
         todosLimit: 30,
@@ -278,6 +279,22 @@ export const Todo = (
     const keepPosition = (filterdTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
 
     /** hotkeys  */
+
+    useHotkeys('*', (e) => {
+        console.log(e.code, e.key, e)
+        const key = ["Shift", "Meta", "Tab", "Control", "Alt", "KanjiMode"].includes(e.key) ? "" : e.key
+        if (key) {
+            let strKey = key
+            if (e.altKey) strKey = "Alt + " + strKey
+            if (e.ctrlKey) strKey = "Ctrl + " + strKey
+            if (e.metaKey) strKey = "Meta + " + strKey
+            if (e.shiftKey) strKey = "Shift + " + strKey.toLocaleLowerCase()
+            setCurrentKeys((prev) => {
+                return [strKey, ...prev.slice(0, 2)]
+            })
+        }
+    }, { enabled: true }, [])
+
     /*******************
      * 
      * Normal mode
@@ -778,17 +795,32 @@ export const Todo = (
                             </div>
                         </>
                     )}
+                    <div className="absolute bottom-3 w-full">
+                        <div className="flex items-center justify-between ">
+                            <div className="flex gap-2 items-center">
+                                <span className="text-sm text-muted-foreground">入力キー:</span>
+                                {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
+                                <div className="flex gap-2 items-center">
+                                    {currentKeys.map((k, i) => {
+                                        if (i === 0) return <kbd className="text-sm text-primary transition-all fade-in-10">{k}</kbd>
+                                        if (i === 1) return <kbd className="text-5sm bg-muted text-muted-foreground fade-in-20">{k}</kbd>
+                                        return <kbd className="text-7sm bg-muted text-muted-foreground transition-all">{k}</kbd>
+                                    })}
+                                </div>
+                            </div>
+                            <div className={` ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
+                                <button
+                                    tabIndex={-1}
+                                    onClick={_ => setHelp(true)}
+                                    className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border  shadow-md bg-primary text-primary-foreground`}>
+                                    <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
+                                    <span>ヘルプ表示</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </ResizablePanel>
             </ResizablePanelGroup>
-            <div className={`absolute bottom-0 right-0 ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
-                <button
-                    tabIndex={-1}
-                    onClick={_ => setHelp(true)}
-                    className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border  shadow-md bg-primary text-primary-foreground`}>
-                    <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
-                    <span>ヘルプ表示</span>
-                </button>
-            </div>
             <DeleteModal
                 currentIndex={currentIndex}
                 filterdTodos={filterdTodos}

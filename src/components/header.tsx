@@ -42,7 +42,7 @@ export default function Header({
                 <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
                 <h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm`}>Shiba ToDo</h1>
             </div>
-            <div className="flex gap-2 items-center border p-1 rounded-full bg-card text-xs m-3 truncate">
+            <div className="flex gap-2 items-center border p-1 rounded-full text-xs m-3 truncate bg-card">
                 <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>
                 <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了タスク</ExLink>
                 <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>

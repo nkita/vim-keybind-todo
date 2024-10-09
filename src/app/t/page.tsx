@@ -83,7 +83,7 @@ export default function Home() {
   return (
     <>
       <Header user={user} userLoading={userLoading} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
-      <article className={`${mainPCHeight} bg-muted/10`}>
+      <article className={`${mainPCHeight}`}>
         <div className={`w-full h-full`}>
           <Todo
             todos={!userLoading && user ? todos : todosLS}

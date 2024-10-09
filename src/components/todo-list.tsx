@@ -76,7 +76,7 @@ export const TodoList = (
         }, [currentProject, project])
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
+                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} bg-transparent hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
                 <span className="flex gap-1 items-center">
                     {project ? (
                         project === completionTaskProjectName ? (
@@ -96,7 +96,7 @@ export const TodoList = (
         <>
             <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
-                <div className={`pb-1 flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight} bg-background text-foreground`}  >
+                <div className={`pb-1 flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight} bg-transparent text-foreground`}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={onClick} />
                     {projects.map((p, i) => {
                         return (

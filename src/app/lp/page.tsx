@@ -58,7 +58,15 @@ export default function Home() {
                                 <h3 className="font-bold">その１</h3>
                                 <p className="overflow-hidden">効率重視<br />ホームポジションで完結</p>
                             </div>
-                            <div className="w-[80%] h-[300px] bg-secondary"></div>
+                            <div className="w-[80%] h-[300px] bg-secondary">
+                                <Image
+                                    src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/tutorial01.gif`}
+                                    alt="Shiba Todo Logo"
+                                    className="w-[400px] sm:w-[500px]"
+                                    width={500} // 実際の画像サイズを指定しますが、表示サイズはTailwindで制御
+                                    height={500} // 実際の画像サイズ
+                                />
+                            </div>
                         </div>
 
                         <div className="flex justify-between py-8">

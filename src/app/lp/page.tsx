@@ -28,8 +28,8 @@ export default function Home() {
                 </div>
                 <main className="flex flex-col items-center justify-center gap-6">
                     <header className="pt-16 sm:pt-20 w-[500px]">
-                        <div className="text-center ">
-                            <h1 className="text-4xl sm:text-3xl">Shiba ToDo</h1>
+                        <div className="text-center animate-fade ease-in animate-delay-75 ">
+                            <h1 className="text-4xl sm:text-7xl">Shiba ToDo</h1>
                             <h1 className="py-4 text-muted-foreground">
                                 A lightning-fast task management system with Vim-like key bindings. Let's stop clicking around with the mouse.
                             </h1>
@@ -41,17 +41,28 @@ export default function Home() {
                                 src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`}
                                 alt="Shiba Todo Logo"
                                 className="w-[400px] sm:w-[500px]"
-                                width={500} // 実際の画像サイズを指定しますが、表示サイズはTailwindで制御
-                                height={500} // 実際の画像サイズ
+                                width={400} // 実際の画像サイズを指定しますが、表示サイズはTailwindで制御
+                                height={400} // 実際の画像サイズ
                             />
                         </div>
-                        <div className="flex gap-4 flex-col sm:flex-row">
-                            <Button variant={"secondary"} className="w-[180px]">ログインせずに使う</Button>
+                        <div className="flex gap-4 flex-col sm:flex-row animate-fade-up">
+                            <Button variant={"secondary"} className="w-[180px] hover:border hover:border-primary transition-all">ログインせずに使う</Button>
                             <Button className="w-[200px]" >ログインしてフルに使う</Button>
                         </div>
                     </div>
-
                     <section className="pt-16 text-lg w-[93%]">
+                        <h2 className="text-center py-8 text-4xl">Welcome 👋 Shiba ToDo</h2>
+                        <div className="flex justify-center pb-8">
+                            <div className="shadow-xl py-3 bg-primary/30 p-3 border border-primary/30 rounded-md">
+                                <Image
+                                    src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/service_image.png`}
+                                    alt="Shiba Todo Image"
+                                    className="w-[300px] sm:w-[800px]  rounded-md "
+                                    width={1242} // 実際の画像サイズを指定しますが、表示サイズはTailwindで制御
+                                    height={818} // 実際の画像サイズ
+                                />
+                            </div>
+                        </div>
                         <h2 className="text-2xl font-bold text-center py-8">Shiba ToDoを選ぶ理由</h2>
                         <div className="flex justify-between py-8">
                             <div className="p-8 w-[20%]">

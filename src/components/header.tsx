@@ -47,7 +47,7 @@ export default function Header({
                 <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了タスク</ExLink>
                 <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>
             </div>
-            <div className="flex gap-1 items-center  justify-end w-[300px]">
+            <div className="flex gap-1 items-center  justify-end ">
                 {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                     <SaveButton isSave={isSave} isUpdate={isUpdate} onClickSaveButton={onClickSaveButton} />
                 }

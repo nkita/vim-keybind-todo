@@ -31,7 +31,7 @@ export default function Home() {
                         <div className="text-center animate-fade ease-in animate-delay-75 ">
                             <h1 className="text-4xl sm:text-7xl">Shiba ToDo</h1>
                             <h1 className="py-4 text-muted-foreground">
-                                A lightning-fast task management system with Vim-like key bindings. Let's stop clicking around with the mouse.
+                                {" A lightning-fast task management system with Vim-like key bindings. Let's stop clicking around with the mouse."}
                             </h1>
                         </div>
                     </header>

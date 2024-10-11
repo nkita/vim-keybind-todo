@@ -14,7 +14,7 @@ const noto = Noto_Sans_JP({
 
 
 export const metadata: Metadata = {
-  title: "Shiba ToDo| ショートカットを駆使した爆速Todoアプリ",
+  title: "Shiba ToDo | ショートカットを駆使した爆速Todoアプリ",
   description: "ショートカットを駆使した爆速で管理できるTodoアプリです。",
 };
 

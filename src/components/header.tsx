@@ -40,7 +40,7 @@ export default function Header({
         <div className={`flex justify-between items-center w-full px-8 ${h}`}>
             <div className="flex items-center gap-1 h-9">
                 <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
-                <h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm`}>Shiba ToDo</h1>
+                <Link href="/lp"><h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm hover:text-primary transition-all delay-200`}>Shiba ToDo</h1></Link>
             </div>
             <div className="flex gap-2 items-center border p-1 rounded-full text-xs m-3 truncate bg-card">
                 <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>

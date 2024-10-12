@@ -8,9 +8,7 @@ export default function Home() {
     const [isFirstVisit, _] = useLocalStorage("todo_is_first_visit", undefined)
 
     useEffect(() => {
-        console.log(isFirstVisit)
-        if (isFirstVisit === undefined) return
-        if (isFirstVisit) {
+        if (isFirstVisit || isFirstVisit === undefined) {
             redirect("/lp")
         } else {
             redirect("/t")

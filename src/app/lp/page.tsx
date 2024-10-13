@@ -4,7 +4,7 @@ import { useLocalStorage } from "@/hook/useLocalStrorage";
 import { redirect, useRouter } from "next/navigation";
 import Image from "next/image"
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { FaXTwitter, FaGithub } from "react-icons/fa6";
 import { Heart } from "lucide-react";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -25,8 +25,8 @@ export default function Home() {
                 <header className={`flex justify-end items-center w-full px-8 h-[60px]`}>
                     <nav className="flex items-center gap-1">
                         <span className="flex items-center text-xs"> Feel free to follow me<Heart size={14} className="text-rose-400" /></span>
-                        <Link href={"https://x.com/nkitao7"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaXTwitter /></Link>
-                        <Link href={"https://github.com/nkita"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaGithub /></Link>
+                        <Link target="_blank" href={"https://x.com/nkitao7"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaXTwitter /></Link>
+                        <Link target="_blank" href={"https://github.com/nkita"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaGithub /></Link>
                     </nav>
                 </header>
                 <main className="flex flex-col items-center justify-center gap-6">
@@ -112,7 +112,7 @@ export default function Home() {
                 <div className="flex justify-center w-full pt-36">
                     <hr className="w-[93%]" />
                 </div>
-                <footer className="w-full h-[100px]  p-8">
+                <footer className="flex justify-between items-center w-full h-[100px]  p-8">
                     <div className="flex items-center gap-1">
                         <Image
                             src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`}
@@ -121,7 +121,12 @@ export default function Home() {
                             width={500} // 実際の画像サイズを指定しますが、表示サイズはTailwindで制御
                             height={500} // 実際の画像サイズ
                         />
-                        <span className="text-primary font-extrabold">Shiba ToDo</span>
+                        <span className="text-primary font-extrabold">Copyright©2024 Shiba Tools</span>
+                    </div>
+                    <div className="flex items-center">
+                        <Link className={buttonVariants({ variant: "link", size: "sm" })} href={"/"}>利用規約</Link>
+                        <Link className={buttonVariants({ variant: "link", size: "sm" })} href={"/"}>プライバシーポリシー</Link>
+                        <Link className={buttonVariants({ variant: "link", size: "sm" })} href={"/"}>お問い合わせ</Link>
                     </div>
                 </footer>
             </div >

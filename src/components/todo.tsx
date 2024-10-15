@@ -281,7 +281,6 @@ export const Todo = (
     /** hotkeys  */
 
     useHotkeys('*', (e) => {
-        console.log(e.code, e.key, e)
         const key = ["Shift", "Meta", "Tab", "Control", "Alt", "KanjiMode"].includes(e.key) ? "" : e.key
         if (key) {
             let strKey = key

@@ -48,10 +48,10 @@ export default function Home() {
                                 height={400} // 実際の画像サイズ
                             />
                         </div>
-                        <p className={`flex gap-4 ${isLoading ? "hidden" : ""} animate-fade-up sm:block hidden`}>
+                        <p className={`flex gap-4 ${isLoading ? "hidden" : "hidden sm:block"} animate-fade-up `}>
                             {user ? (
                                 <>
-                                    <Button disabled={isLoading} className="w-[200px]" onClick={_ => redirectTodo()}>はじめる</Button>
+                                    <Button disabled={isLoading} className="w-[208px]" onClick={_ => redirectTodo()}>はじめる</Button>
                                 </>
                             ) : (
                                 <>
@@ -65,7 +65,7 @@ export default function Home() {
                         <p className={`flex gap-4 flex-col sm:flex-row  ${isLoading ? "hidden" : "visible"} items-center animate-fade-up sm:hidden block w-[80%]`}>
                             {user ? (
                                 <>
-                                    <Button disabled={isLoading} className="" onClick={_ => redirectTodo()}>はじめる</Button>
+                                    <Button disabled={isLoading} className="w-[80%]" onClick={_ => redirectTodo()}>はじめる</Button>
                                 </>
                             ) : (
                                 <>
@@ -117,7 +117,7 @@ export default function Home() {
                                 <div className="flex justify-between">
                                     <div className="p-8 w-[80%]">
                                         <h3 className="font-bold">その3</h3>
-                                        <p className="overflow-hidden">効率性向上を支援する<br />豊富なショートカット<br /><span className="text-sm text-secondary-foreground"> ※今後も増加する予定</span></p>
+                                        <p className="overflow-hidden">効率性�����を支援する<br />豊富なショートカット<br /><span className="text-sm text-secondary-foreground"> ※今後も増加する予定</span></p>
                                     </div>
                                     <div className="w-[20%] h-[300px] bg-secondary"></div>
                                 </div>

@@ -14,9 +14,37 @@ const noto = Noto_Sans_JP({
 
 
 export const metadata: Metadata = {
-  title: "Shiba ToDo | ショートカットを駆使した爆速Todoアプリ",
-  description: "ショートカットを駆使した爆速で管理できるTodoアプリです。",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_DOMAIN || ""),
+  openGraph: {
+    images: [
+      {
+        url: `https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/og.png`,
+        width: 1200,
+        height: 630,
+        alt: "Shiba Todo Logo",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  title: "Shiba ToDo | シンプルで最速のタスク管理ツール",
+  description: "Shiba Todoは、キーボード操作を最優先に設計された究極にシンプルなタスク管理サービスです。ホームポジションから手を離さずに、タスクの作成から完了までを最短ステップでサポート。シンプルなUIでタスクに集中し、生産性を最大化します。",
 };
+
+export const viewport = {
+  themeColor: '#16A34A'
+}
 
 export default function RootLayout({
   children,

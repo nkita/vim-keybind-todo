@@ -17,7 +17,10 @@ export default function Home() {
         setIsFirstVisit(false)
         isLogin ? loginWithRedirect() : redirectTodo()
     }
-    const redirectTodo = () => { router.push("/t") }
+    const redirectTodo = () => {
+        setIsFirstVisit(false)
+        router.push("/t")
+    }
     return (
         <NormalPageTemplate>
             <main className="flex flex-col items-center justify-center gap-6">

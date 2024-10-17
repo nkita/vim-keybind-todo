@@ -56,9 +56,9 @@ export const TodoList = (
     const table_idx_width = "w-[30px]"
     const table_completion_width = "w-[30px]"
     const table_priority_width = "w-[30px]"
-    const table_task_width = "w-[calc(72%-90px)]"
-    const table_label_width = "w-[14%]"
-    const table_project_width = "w-[14%]"
+    const table_task_width = "w-[calc(60%-90px)]"
+    const table_label_width = "w-[20%]"
+    const table_project_width = "w-[20%]"
 
     const Project = (
         {
@@ -104,28 +104,28 @@ export const TodoList = (
                         )
                     })}
                 </div>
-                <div className={`flex text-sm bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
-                        <div className={`flex justify-center items-center ${sort === "priority" && "font-semibold"}`}>
+                        <span className={`flex justify-center items-center ${sort === "priority" && "font-semibold"}`}>
                             優
                             {sort === "priority" && <FaArrowUpZA />}
-                        </div>
+                        </span>
                     </div>
                     <div className={`${table_task_width} p-2 truncate`}>タスク</div>
                     <div className={`flex items-center ${table_label_width}`}>
                         <FaTag />
-                        <div className="truncate">
+                        <span className="truncate">
                             ラベル
-                        </div>
+                        </span >
                         {sort === "context" && <FaArrowUpZA />}
                     </div>
                     <div className={`flex items-center ${table_project_width} pr-2`}>
                         <FaSitemap />
-                        <div className="truncate">
+                        <span className="truncate">
                             プロジェクト
-                        </div>
+                        </span>
                     </div>
                 </div>
                 {loading &&
@@ -222,7 +222,7 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                             <div className="flex">
-                                                                <div className={`flex pl-2 items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
+                                                                <div className={`flex  items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
                                                                 <SelectModal
                                                                     t={t}
                                                                     index={index}
@@ -241,7 +241,7 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light pr-2`}>
                                                             <div className="flex">
-                                                                <div className={`flex pl-2 items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
+                                                                <div className={`flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
                                                                 <SelectModal
                                                                     t={t}
                                                                     index={index}

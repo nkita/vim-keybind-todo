@@ -800,9 +800,9 @@ export const Todo = (
                                 {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
                                 <div className="flex gap-2 items-center">
                                     {currentKeys.map((k, i) => {
-                                        if (i === 0) return <kbd key={'key' + i} className="text-sm text-primary transition-all fade-in-10">{k}</kbd>
-                                        if (i === 1) return <kbd key={'key' + i} className="text-5sm bg-muted text-muted-foreground fade-in-20">{k}</kbd>
-                                        return <kbd key={'key' + i} className="text-7sm bg-muted text-muted-foreground transition-all">{k}</kbd>
+                                        if (i === 0) return <kbd key={'key' + i} className="text-sm text-primary-foreground bg-primary">{k}</kbd>
+                                        if (i === 1) return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground ">{k}</kbd>
+                                        return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground transition-all">{k}</kbd>
                                     })}
                                 </div>
                             </div>

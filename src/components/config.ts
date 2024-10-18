@@ -55,6 +55,8 @@ export type Keymap = {
     searchEnter: KeymapItem;
     viewHelp: KeymapItem;
     save: KeymapItem;
+    undo: KeymapItem;
+    redo: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -351,5 +353,17 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: true },
         type: ["other"],
         description: "保存"
+    },
+    undo: {
+        keys: ['u'],
+        enable: { mode: ["normal"], withoutTask: true },
+        type: ["other"],
+        description: "前の状態に戻る(undo)"
+    },
+    redo: {
+        keys: ['Control+r'],
+        enable: { mode: ["normal"], withoutTask: true },
+        type: ["other"],
+        description: "前の状態に戻る(redo)"
     }
 }

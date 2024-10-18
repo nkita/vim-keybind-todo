@@ -7,16 +7,18 @@ export const DeleteModal = (
         currentIndex,
         currentPrefix,
         filterdTodos,
+        prevTodos,
         mode,
         onClick,
         onDelete
     }: {
         currentIndex: number
+        prevTodos: TodoProps[]
         mode: Mode
         currentPrefix: string
         filterdTodos: TodoProps[]
         onClick: (prefx: string) => void
-        onDelete: (currentIndex: number, filterdTodos: TodoProps[]) => void
+        onDelete: (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => void
     }) => {
     const isView = currentPrefix === "delete"
         && mode === "modal"
@@ -42,7 +44,7 @@ export const DeleteModal = (
                 </div>
                 <DialogFooter>
                     <Button variant='outline' onClick={close}><span className="flex items-center gap-2">キャンセル <kbd className="py-0">Esc</kbd></span></Button>
-                    <Button onClick={_ => onDelete(currentIndex, filterdTodos)}><span className="flex items-center gap-2">削除する<kbd className="text-primary-foreground py-0">Enter</kbd></span></Button>
+                    <Button onClick={_ => onDelete(currentIndex, filterdTodos, prevTodos)}><span className="flex items-center gap-2">削除する<kbd className="text-primary-foreground py-0">Enter</kbd></span></Button>
                 </DialogFooter>
             </Modal>
         </>

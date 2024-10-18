@@ -25,8 +25,11 @@ export default function Home() {
   const { user, isLoading: userLoading } = useAuth0();
 
   useEffect(() => {
-    if (!userLoading && user === undefined) setTodosLoading(false)
-  }, [user, userLoading])
+    if (!userLoading && user === undefined) {
+      setTodosLoading(false)
+      setPrevTodos([...todosLS])
+    }
+  }, [user, userLoading, todosLS])
 
   useEffect(() => {
     try {
@@ -77,6 +80,14 @@ export default function Home() {
     }
   }, [saveTodos, isUpdate, todos, config, prevTodos])
   //***
+
+  useEffect(() => {
+    if (!userLoading && !user && isUpdate) {
+      setIsUpdate(false)
+      setTodos([...todosLS])
+      setPrevTodos([...todosLS])
+    }
+  }, [user, userLoading, todosLS, isUpdate])
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight

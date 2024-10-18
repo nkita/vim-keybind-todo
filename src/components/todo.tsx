@@ -21,6 +21,8 @@ import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
 
+const MAX_UNDO_COUNT = 10
+
 export const Todo = (
     {
         todos,
@@ -61,7 +63,10 @@ export const Todo = (
         todosLimit: 30,
     })
 
+    const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
+    const [undoCount, setUndoCount] = useState(0)
+
     const { register, setFocus, getValues, setValue, watch } = useForm()
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
@@ -161,20 +166,27 @@ export const Todo = (
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
+    useEffect(() => {
+        return () => console.log(historyTodos)
+    }, [historyTodos])
+
     /*****
      * common function
      ****/
-    const handleSetTodos = (_todos: TodoProps[]) => {
+    const handleSetTodos = (_todos: TodoProps[], prevTodos: TodoProps[]) => {
         const _t = todoFunc.sortUpdate(_todos)
         setTodos(_t)
         _t.forEach(t => {
             setValue(`edit-content-text-${t.id}`, t.text)
             setValue(`edit-list-text-${t.id}`, t.text)
         })
-        const d = todoFunc.diff(_t, prevTodos).filter(d => !todoFunc.isEmpty(d))
+        const d = todoFunc.diff(_t, prevTodos).filter(t => !todoFunc.isEmpty(t))
         debugLog(`diff:`, d)
         debugLog(`isUpdate:${d.length > 0}`)
-        setIsUpdate(d.length > 0)
+        if (d.length > 0) {
+            setIsUpdate(true)
+            setHistoryTodos(prev => [prevTodos.filter(t => !todoFunc.isEmpty(t)), ...prev.slice(0, MAX_UNDO_COUNT)])
+        }
     }
     const toNormalMode = () => {
         if (filterdTodos.length === 0) {
@@ -212,13 +224,13 @@ export const Todo = (
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
             _todos = todoFunc.delete(todos, targetTodoId)
-            handleSetTodos(_todos)
+            handleSetTodos(_todos, prevTodos)
             setCurrentIndex(currentIndex === 0 ? 0 : currentIndex - 1)
         } else {
             const t = todos.filter(_t => _t.id === replace.id)[0]
             if (!isEqual(t, replace)) {
                 _todos = todoFunc.modify(todos, replace)
-                handleSetTodos(_todos)
+                handleSetTodos(_todos, prevTodos)
             }
             setCurrentIndex(todoFunc.getIndexById(filterdTodos, targetTodoId))
         }
@@ -226,7 +238,7 @@ export const Todo = (
         setMode('normal')
     }
 
-    const completeTask = (index: number) => {
+    const completeTask = (index: number, prevTodos: TodoProps[]) => {
         const _todos = todoFunc.modify(todos, {
             id: filterdTodos[index].id,
             is_complete: !filterdTodos[index].is_complete,
@@ -239,10 +251,10 @@ export const Todo = (
             detail: filterdTodos[index].detail,
             sort: filterdTodos[index].sort
         })
-        handleSetTodos(_todos)
+        handleSetTodos(_todos, prevTodos)
     }
 
-    const priorityTask = (todos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
+    const priorityTask = (todos: TodoProps[], prevTodos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
         const targetTodo = todos.filter(t => t.id === targetId)[0]
         const _priority = targetTodo.priority
         let newPriority = 0
@@ -266,7 +278,7 @@ export const Todo = (
             detail: targetTodo.detail,
             sort: targetTodo.sort
         })
-        handleSetTodos(_todos)
+        handleSetTodos(_todos, prevTodos)
     }
 
     const changeProject = (index: number) => {
@@ -279,7 +291,6 @@ export const Todo = (
     const keepPosition = (filterdTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
 
     /** hotkeys  */
-
     useHotkeys('*', (e) => {
         const key = ["Shift", "Meta", "Tab", "Control", "Alt", "KanjiMode"].includes(e.key) ? "" : e.key
         if (key) {
@@ -319,18 +330,18 @@ export const Todo = (
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask, todoEnables])
+    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos, todoEnables])
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos, prevTodos, todoEnables])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
@@ -344,10 +355,10 @@ export const Todo = (
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
 
-        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask, todoEnables])
+    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
@@ -355,16 +366,16 @@ export const Todo = (
         if (!todoEnables.enableAddTodo) {
             toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         } else {
-            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(filterdTodos.length)
             setMode('edit')
         }
-    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask, todoEnables])
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
     // delete task
-    const deleteTask = (currentIndex: number, filterdTodos: TodoProps[]) => {
+    const deleteTask = (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => {
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id))
+        handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id), prevTodos)
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)
         setMode('normal')
@@ -379,8 +390,8 @@ export const Todo = (
     useHotkeys(keymap['delete'].keys, (e) => {
         if (prefix !== 'delete') return
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        deleteTask(currentIndex, filterdTodos)
-    }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prefix])
+        deleteTask(currentIndex, filterdTodos, prevTodos)
+    }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prevTodos, prefix])
 
     // change to edit mode
     useHotkeys(keymap['editText'].keys, (e) => {
@@ -395,13 +406,13 @@ export const Todo = (
     // }, setKeyEnableDefine(keymap['editPriority'].enable))
     useHotkeys(keymap['increasePriority'].keys, (e) => {
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        priorityTask(todos, filterdTodos[currentIndex].id, 'plus')
-    }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filterdTodos, currentIndex])
+        priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
+    }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        priorityTask(todos, filterdTodos[currentIndex].id, 'minus')
-    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filterdTodos, currentIndex])
+        priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
+    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
@@ -445,12 +456,12 @@ export const Todo = (
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
-        completeTask(currentIndex)
+        completeTask(currentIndex, prevTodos)
         if (!viewCompletionTask) {
             const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
             setCurrentIndex(index)
         }
-    }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos])
+    }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos, prevTodos])
 
     // change sort mode
     // useHotkeys(keymap['sortMode'].keys, (e) => {
@@ -463,6 +474,13 @@ export const Todo = (
         keepPosition(filterdTodos, currentIndex)
         setViewCompletionTask(!viewCompletionTask)
     }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask, filterdTodos, currentIndex])
+
+
+    useHotkeys(keymap['undo'].keys, (e) => {
+        if (historyTodos.length === 0 || undoCount >= historyTodos.length) return
+        setTodos(historyTodos[undoCount])
+        setUndoCount(prev => prev >= historyTodos.length ? historyTodos.length : prev + 1)
+    }, setKeyEnableDefine(keymap['undo'].enable), [undoCount, historyTodos, prevTodos])
 
     /*******************
      * 
@@ -531,7 +549,7 @@ export const Todo = (
                 project: currentProject
             }
             if (!todoFunc.isEmpty(newtask)) {
-                handleSetTodos([newtask, ...todos])
+                handleSetTodos([newtask, ...todos], prevTodos)
                 setValue("newtask", "")
                 keepPosition(filterdTodos, currentIndex, newId)
             }
@@ -598,27 +616,27 @@ export const Todo = (
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            handleSetTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProject, viewCompletionTask])
+    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }))
+            handleSetTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line - 1)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProject, viewCompletionTask])
+    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
@@ -703,7 +721,7 @@ export const Todo = (
      * 
      *******************/
     const handleClickElement = (index: number, prefix: string) => {
-        if (prefix === 'completion') completeTask(index)
+        if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)
         if (['priority', 'text'].includes(prefix)) {
             setPrefix(prefix)
@@ -716,7 +734,7 @@ export const Todo = (
         if (prefix === 'normal') toNormalMode()
     }
     const handleClickDetailElement = (prefix: string) => {
-        if (prefix === 'completion') completeTask(currentIndex)
+        if (prefix === 'completion') completeTask(currentIndex, prevTodos)
         if (prefix === 'detail' || prefix === "text") {
             setPrefix(prefix)
             setMode("editDetail")
@@ -822,12 +840,12 @@ export const Todo = (
             <DeleteModal
                 currentIndex={currentIndex}
                 filterdTodos={filterdTodos}
+                prevTodos={prevTodos}
                 currentPrefix={prefix}
                 mode={mode}
                 onClick={handleClickDetailElement}
                 onDelete={deleteTask}
             />
-
         </div >
     )
 }

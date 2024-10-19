@@ -62,11 +62,12 @@ export const Todo = (
         enableAddTodo: true,
         todosLimit: 30,
     })
-
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
+    const [isSetHistoryTodos, setIsSetHistoryTodos] = useState<boolean>(false)
+
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [undoCount, setUndoCount] = useState(0)
-
+    const [isLastPosition, setIsLastPosition] = useState(false)
     const { register, setFocus, getValues, setValue, watch } = useForm()
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
@@ -162,13 +163,17 @@ export const Todo = (
                 if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
                 if (mode === 'normal') setFocus(`list-${prefix}-${id}`)
                 if (mode === 'editOnSort') setFocus("newtask")
+                setIsLastPosition(true)
             }
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
     useEffect(() => {
-        return () => console.log(historyTodos)
-    }, [historyTodos])
+        if (isLastPosition) {
+            if (currentIndex >= filterdTodos.length) setCurrentIndex(filterdTodos.length - 1)
+            setIsLastPosition(false)
+        }
+    }, [filterdTodos, currentIndex, isLastPosition])
 
     /*****
      * common function
@@ -185,9 +190,17 @@ export const Todo = (
         debugLog(`isUpdate:${d.length > 0}`)
         if (d.length > 0) {
             setIsUpdate(true)
-            setHistoryTodos(prev => [prevTodos.filter(t => !todoFunc.isEmpty(t)), ...prev.slice(0, MAX_UNDO_COUNT)])
+            setIsSetHistoryTodos(true)
         }
     }
+    useEffect(() => {
+        if (isSetHistoryTodos) {
+            setHistoryTodos(prev => [prevTodos.filter(t => !todoFunc.isEmpty(t)), ...prev.slice(0, MAX_UNDO_COUNT)])
+            setIsSetHistoryTodos(false)
+        }
+    }, [historyTodos, prevTodos, currentIndex, isSetHistoryTodos])
+
+
     const toNormalMode = () => {
         if (filterdTodos.length === 0) {
             setPrefix('text')
@@ -480,7 +493,7 @@ export const Todo = (
         if (historyTodos.length === 0 || undoCount >= historyTodos.length) return
         setTodos(historyTodos[undoCount])
         setUndoCount(prev => prev >= historyTodos.length ? historyTodos.length : prev + 1)
-    }, setKeyEnableDefine(keymap['undo'].enable), [undoCount, historyTodos, prevTodos])
+    }, setKeyEnableDefine(keymap['undo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
 
     /*******************
      * 

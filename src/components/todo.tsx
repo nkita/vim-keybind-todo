@@ -63,10 +63,9 @@ export const Todo = (
         todosLimit: 30,
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
-    const [isSetHistoryTodos, setIsSetHistoryTodos] = useState<boolean>(false)
+    const [undoCount, setUndoCount] = useState(0)
 
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
-    const [undoCount, setUndoCount] = useState(0)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const { register, setFocus, getValues, setValue, watch } = useForm()
 
@@ -190,16 +189,16 @@ export const Todo = (
         debugLog(`isUpdate:${d.length > 0}`)
         if (d.length > 0) {
             setIsUpdate(true)
-            setIsSetHistoryTodos(true)
+            setHistoryTodos(prev => {
+                const p = prev.slice(undoCount, MAX_UNDO_COUNT)
+                return [prevTodos.filter(t => !todoFunc.isEmpty(t)), ...p]
+            })
+            setUndoCount(0)
         }
     }
     useEffect(() => {
-        if (isSetHistoryTodos) {
-            setHistoryTodos(prev => [prevTodos.filter(t => !todoFunc.isEmpty(t)), ...prev.slice(0, MAX_UNDO_COUNT)])
-            setIsSetHistoryTodos(false)
-        }
-    }, [historyTodos, prevTodos, currentIndex, isSetHistoryTodos])
-
+        console.log("historyTodos", historyTodos)
+    }, [historyTodos])
 
     const toNormalMode = () => {
         if (filterdTodos.length === 0) {
@@ -493,6 +492,7 @@ export const Todo = (
         if (historyTodos.length === 0 || undoCount >= historyTodos.length) return
         setTodos(historyTodos[undoCount])
         setUndoCount(prev => prev >= historyTodos.length ? historyTodos.length : prev + 1)
+        setIsUpdate(true)
     }, setKeyEnableDefine(keymap['undo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
 
     /*******************

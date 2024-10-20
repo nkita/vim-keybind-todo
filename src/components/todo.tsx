@@ -190,8 +190,8 @@ export const Todo = (
         if (d.length > 0) {
             setIsUpdate(true)
             setHistoryTodos(prev => {
-                const p = prev.slice(undoCount, MAX_UNDO_COUNT)
-                return [prevTodos.filter(t => !todoFunc.isEmpty(t)), ...p]
+                const p = prev.slice(undoCount > 0 ? undoCount + 1 : 1, MAX_UNDO_COUNT)
+                return [_t, prevTodos.filter(t => !todoFunc.isEmpty(t)), ...p]
             })
             setUndoCount(0)
         }
@@ -489,11 +489,21 @@ export const Todo = (
 
 
     useHotkeys(keymap['undo'].keys, (e) => {
-        if (historyTodos.length === 0 || undoCount >= historyTodos.length) return
-        setTodos(historyTodos[undoCount])
-        setUndoCount(prev => prev >= historyTodos.length ? historyTodos.length : prev + 1)
+        if (historyTodos.length === 0 || undoCount >= historyTodos.length - 1) return
+        let u = undoCount + 1
+        setTodos(historyTodos[u])
+        setUndoCount(u)
         setIsUpdate(true)
-    }, setKeyEnableDefine(keymap['undo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['undo'].enable), [todos, undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
+
+    useHotkeys(keymap['redo'].keys, (e) => {
+        if (historyTodos.length === 0 || undoCount <= 0) return
+        const u = undoCount - 1
+        setTodos(historyTodos[u])
+        setUndoCount(u)
+        setIsUpdate(true)
+    }, setKeyEnableDefine(keymap['redo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
+
 
     /*******************
      * 

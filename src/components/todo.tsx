@@ -20,6 +20,9 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
+import { Check, List, Redo2, Undo2 } from "lucide-react"
+import { FaSitemap } from "react-icons/fa6";
+import { Button } from "@/components/ui/button";
 
 const MAX_UNDO_COUNT = 10
 
@@ -196,9 +199,6 @@ export const Todo = (
             setUndoCount(0)
         }
     }
-    useEffect(() => {
-        console.log("historyTodos", historyTodos)
-    }, [historyTodos])
 
     const toNormalMode = () => {
         if (filterdTodos.length === 0) {
@@ -774,101 +774,139 @@ export const Todo = (
         toNormalMode()
         e.stopPropagation();
     }
-    return (
-        <div className={`relative flex gap-2 w-full h-full pb-1 pt-4`} onMouseDown={handleMainMouseDown}>
-            {/** 　debug デバッグエリア */}
-            {/* <div className="absolute top-0 m-auto bg-yellow-100 ">
-                currentIndex:{currentIndex} prefix:{prefix} filterdTodolength:{filterdTodos.length}
-            </div> */}
-            {/** 　デバッグエリア */}
+    const Project = (
+        {
+            currentProject, index, project, onClick
 
-            <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                <ResizablePanel defaultSize={60} minSize={4} className="relative pl-8 pb-4">
-                    <TodoList
-                        filterdTodos={filterdTodos}
-                        currentIndex={currentIndex}
-                        prefix={prefix}
-                        mode={mode}
-                        viewCompletion={viewCompletionTask}
-                        projects={projects}
-                        labels={labels}
-                        currentProject={currentProject}
-                        sort={sort}
-                        searchResultIndex={searchResultIndex}
-                        command={command}
-                        loading={loading}
-                        onClick={handleClickElement}
-                        setCurrentIndex={setCurrentIndex}
-                        register={register}
-                        rhfSetValue={setValue}
-                        completionOnly={completionOnly}
-                    />
-                </ResizablePanel>
-                <ResizableHandle tabIndex={-1} className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                <ResizablePanel defaultSize={40} minSize={4} className={`relative`} >
-                    {loading ? (
-                        <></>
+        }: {
+            currentProject: string, index: number, project: string, onClick: (index: number, prefix: string) => void
+        }
+    ) => {
+        const ref = React.useRef<HTMLButtonElement>(null)
+        useEffect(() => {
+            if (currentProject === project) {
+                ref.current?.scrollIntoView({ behavior: "smooth" })
+            }
+        }, [currentProject, project])
+        return (
+            <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
+                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} bg-transparent hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
+                <span className="flex gap-1 items-center">
+                    {project ? (
+                        project === completionTaskProjectName ? (
+                            <> <Check className="w-3" />{"完了済み"}</>
+                        ) : (
+                            <> <FaSitemap className="w-3" />{project}</>
+                        )
                     ) : (
-                        <>
-                            <div className={`absolute right-0 pb-4 pl-10  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 text-nowrap"} z-20 h-full transition-all animate-slide-in-right`}>
-                                <Usage
-                                    sort={sort}
-                                    mode={mode}
-                                    isHelp={isHelp}
-                                    setHelp={setHelp}
-                                    isTodos={filterdTodos.length > 0}
-                                />
-                            </div>
-                            <div className={`absolute top-[30px] w-full h-[calc(100%-30px)] pb-4 pr-8 z-10`}>
-                                <Detail
-                                    todo={filterdTodos[currentIndex]}
-                                    prefix={prefix}
-                                    mode={mode}
-                                    isHelp={isHelp}
-                                    onMouseDownEvent={handleDetailMouseDown}
-                                    onClick={handleClickDetailElement}
-                                    setValue={setValue}
-                                    watch={watch}
-                                    register={register}
-                                />
-                            </div>
-                        </>
+                        <> <List className="w-3" />{"ALL"}</>
                     )}
-                    <div className="absolute bottom-3 w-full">
-                        <div className="flex items-center justify-between ">
-                            <div className="flex gap-2 items-center">
-                                <span className="text-sm text-muted-foreground">入力キー:</span>
-                                {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
+                </span>
+            </button>
+        )
+    }
+
+    return (
+        <div className="flex flex-col items-center w-full h-full px-8">
+            <div className="w-full items-end flex gap-2 h-[40px]">
+                <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground`}  >
+                    <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
+                    {projects.map((p, i) => {
+                        return (
+                            <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
+                        )
+                    })}
+                </div>
+            </div>
+            <div className={`relative  w-full h-[calc(100%-30px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
+                <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
+                    <ResizablePanel defaultSize={60} minSize={4} className="relative  pb-4">
+                        <TodoList
+                            filterdTodos={filterdTodos}
+                            currentIndex={currentIndex}
+                            prefix={prefix}
+                            mode={mode}
+                            viewCompletion={viewCompletionTask}
+                            projects={projects}
+                            labels={labels}
+                            currentProject={currentProject}
+                            sort={sort}
+                            searchResultIndex={searchResultIndex}
+                            command={command}
+                            loading={loading}
+                            onClick={handleClickElement}
+                            setCurrentIndex={setCurrentIndex}
+                            register={register}
+                            rhfSetValue={setValue}
+                            completionOnly={completionOnly}
+                        />
+                    </ResizablePanel>
+                    <ResizableHandle tabIndex={-1} className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
+                    <ResizablePanel defaultSize={40} minSize={4} className={`relative`} >
+                        {loading ? (
+                            <></>
+                        ) : (
+                            <>
+                                <div className={`absolute right-0 pb-4 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-20 h-full transition-all animate-fade-in`}>
+                                    <Usage
+                                        sort={sort}
+                                        mode={mode}
+                                        isHelp={isHelp}
+                                        setHelp={setHelp}
+                                        isTodos={filterdTodos.length > 0}
+                                    />
+                                </div>
+                                <div className={`w-full h-[calc(100%-30px)] border-none pb-4 z-10`}>
+                                    <Detail
+                                        todo={filterdTodos[currentIndex]}
+                                        prefix={prefix}
+                                        mode={mode}
+                                        isHelp={isHelp}
+                                        onMouseDownEvent={handleDetailMouseDown}
+                                        onClick={handleClickDetailElement}
+                                        setValue={setValue}
+                                        watch={watch}
+                                        register={register}
+                                    />
+                                </div>
+                            </>
+                        )}
+                        <div className="absolute bottom-3 w-full">
+                            <div className="flex items-center justify-between ">
                                 <div className="flex gap-2 items-center">
-                                    {currentKeys.map((k, i) => {
-                                        if (i === 0) return <kbd key={'key' + i} className="text-sm text-primary-foreground bg-primary">{k}</kbd>
-                                        if (i === 1) return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground ">{k}</kbd>
-                                        return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground transition-all">{k}</kbd>
-                                    })}
+                                    <span className="text-sm text-muted-foreground">入力キー:</span>
+                                    {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
+                                    <div className="flex gap-2 items-center">
+                                        {currentKeys.map((k, i) => {
+                                            if (i === 0) return <kbd key={'key' + i} className="text-sm text-primary-foreground bg-primary">{k}</kbd>
+                                            if (i === 1) return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground ">{k}</kbd>
+                                            return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground transition-all">{k}</kbd>
+                                        })}
+                                    </div>
+                                </div>
+                                <div className={` ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
+                                    <button
+                                        tabIndex={-1}
+                                        onClick={_ => setHelp(true)}
+                                        className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-full border  shadow-md bg-primary text-primary-foreground`}>
+                                        <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
+                                        <span>ヘルプ表示</span>
+                                    </button>
                                 </div>
                             </div>
-                            <div className={` ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
-                                <button
-                                    tabIndex={-1}
-                                    onClick={_ => setHelp(true)}
-                                    className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-l-xl border  shadow-md bg-primary text-primary-foreground`}>
-                                    <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
-                                    <span>ヘルプ表示</span>
-                                </button>
-                            </div>
                         </div>
-                    </div>
-                </ResizablePanel>
-            </ResizablePanelGroup>
-            <DeleteModal
-                currentIndex={currentIndex}
-                filterdTodos={filterdTodos}
-                prevTodos={prevTodos}
-                currentPrefix={prefix}
-                mode={mode}
-                onClick={handleClickDetailElement}
-                onDelete={deleteTask}
-            />
-        </div >
+                    </ResizablePanel>
+                </ResizablePanelGroup>
+                <DeleteModal
+                    currentIndex={currentIndex}
+                    filterdTodos={filterdTodos}
+                    prevTodos={prevTodos}
+                    currentPrefix={prefix}
+                    mode={mode}
+                    onClick={handleClickDetailElement}
+                    onDelete={deleteTask}
+                />
+            </div >
+        </div>
     )
 }

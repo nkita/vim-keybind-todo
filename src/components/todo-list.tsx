@@ -48,8 +48,7 @@ export const TodoList = (
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
-    const hcssMainHeight = "h-[calc(100%-100px)]"
-    const tabHeight = "h-[30px]"
+    const hcssMainHeight = "h-[calc(100%-70px)]"
     const tableHeadHeight = "h-[40px]"
     const taskBarHeight = "h-[30px]"
 
@@ -60,50 +59,10 @@ export const TodoList = (
     const table_label_width = "w-[20%]"
     const table_project_width = "w-[20%]"
 
-    const Project = (
-        {
-            currentProject, index, project, onClick
-
-        }: {
-            currentProject: string, index: number, project: string, onClick: (index: number, prefix: string) => void
-        }
-    ) => {
-        const ref = useRef<HTMLButtonElement>(null)
-        useEffect(() => {
-            if (currentProject === project) {
-                ref.current?.scrollIntoView({ behavior: "smooth" })
-            }
-        }, [currentProject, project])
-        return (
-            <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} bg-transparent hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
-                <span className="flex gap-1 items-center">
-                    {project ? (
-                        project === completionTaskProjectName ? (
-                            <> <Check className="w-3" />{"完了済み"}</>
-                        ) : (
-                            <> <FaSitemap className="w-3" />{project}</>
-                        )
-                    ) : (
-                        <> <List className="w-3" />{"ALL"}</>
-                    )}
-                </span>
-            </button>
-        )
-    }
 
     return (
         <>
-            <div className="absolute top-0 left-1/2 h-[60px]" />
             <div className="h-full">
-                <div className={`pb-1 flex overflow-auto flex-nowrap text-nowrap gap-4 hidden-scrollbar ${tabHeight} bg-transparent text-foreground`}  >
-                    <Project currentProject={currentProject} index={-1} project={""} onClick={onClick} />
-                    {projects.map((p, i) => {
-                        return (
-                            <Project key={p} currentProject={currentProject} index={i} project={p} onClick={onClick} />
-                        )
-                    })}
-                </div>
                 <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>

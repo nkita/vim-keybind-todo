@@ -40,7 +40,7 @@ export const Detail = ({
     const creationDate = todo["creationDate"]
     const creationDateLabel = creationDate ? getTimeAgo(new Date(creationDate)) : ""
     const compDate = todo["completionDate"]
-    const compDateLabel = compDate ? getTimeAgo(new Date(compDate)) : ""
+    const compDateLabel = compDate ? getTimeAgo(new Date(compDate.split('.')[0])) : ""
 
     const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
 

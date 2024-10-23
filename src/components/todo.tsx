@@ -817,7 +817,7 @@ export const Todo = (
     }
     return (
         <div className="flex flex-col items-center w-full h-full px-8">
-            <div className="w-full items-end flex gap-2 h-[40px]">
+            <div className="w-full items-end flex gap-2 h-[50px] pb-1">
                 <div className="flex items-center gap-2">
                     <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
@@ -832,7 +832,7 @@ export const Todo = (
                     })}
                 </div>
             </div>
-            <div className={`relative  w-full h-[calc(100%-30px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
+            <div className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                     <ResizablePanel defaultSize={60} minSize={4} className="relative  pb-4">
                         <TodoList
@@ -886,7 +886,8 @@ export const Todo = (
                             </>
                         )}
                         <div className="absolute bottom-3 w-full">
-                            <div className="flex items-center justify-between ">
+                            <div className="flex items-center justify-end">
+                                {/* 
                                 <div className="flex gap-2 items-center">
                                     <span className="text-sm text-muted-foreground">入力キー:</span>
                                     {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
@@ -897,7 +898,8 @@ export const Todo = (
                                             return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground transition-all">{k}</kbd>
                                         })}
                                     </div>
-                                </div>
+                                </div> 
+                                */}
                                 <div className={` ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
                                     <button
                                         tabIndex={-1}

@@ -490,18 +490,12 @@ export const Todo = (
 
     useHotkeys(keymap['undo'].keys, (e) => {
         if (historyTodos.length === 0 || undoCount >= historyTodos.length - 1) return
-        let u = undoCount + 1
-        setTodos(historyTodos[u])
-        setUndoCount(u)
-        setIsUpdate(true)
+        undo(undoCount, historyTodos)
     }, setKeyEnableDefine(keymap['undo'].enable), [todos, undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
 
     useHotkeys(keymap['redo'].keys, (e) => {
         if (historyTodos.length === 0 || undoCount <= 0) return
-        const u = undoCount - 1
-        setTodos(historyTodos[u])
-        setUndoCount(u)
-        setIsUpdate(true)
+        redo(undoCount, historyTodos)
     }, setKeyEnableDefine(keymap['redo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
 
 
@@ -806,9 +800,29 @@ export const Todo = (
         )
     }
 
+    const undo = (undoCount: number, historyTodos: TodoProps[][]) => {
+        let u = undoCount + 1
+        setTodos(historyTodos[u])
+        setUndoCount(u)
+        setIsUpdate(true)
+    }
+    const redo = (undoCount: number, historyTodos: TodoProps[][]) => {
+        const u = undoCount - 1
+        setTodos(historyTodos[u])
+        setUndoCount(u)
+        setIsUpdate(true)
+    }
+    const MenuButton = ({ children, disabled, onClick }: { children: React.ReactNode, disabled: boolean, onClick: () => void }) => {
+        return <button onClick={onClick} className="p-1 border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+    }
     return (
         <div className="flex flex-col items-center w-full h-full px-8">
             <div className="w-full items-end flex gap-2 h-[40px]">
+                <div className="flex items-center gap-2">
+                    <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                    <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                </div>
+                <div className="border-r mx-2 h-5"></div>
                 <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground`}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                     {projects.map((p, i) => {
@@ -876,7 +890,7 @@ export const Todo = (
                                 <div className="flex gap-2 items-center">
                                     <span className="text-sm text-muted-foreground">入力キー:</span>
                                     {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
-                                    <div className="flex gap-2 items-center">
+                                    <div className="flex gap-2 items-center text-nowrap">
                                         {currentKeys.map((k, i) => {
                                             if (i === 0) return <kbd key={'key' + i} className="text-sm text-primary-foreground bg-primary">{k}</kbd>
                                             if (i === 1) return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground ">{k}</kbd>
@@ -890,7 +904,7 @@ export const Todo = (
                                         onClick={_ => setHelp(true)}
                                         className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-full border  shadow-md bg-primary text-primary-foreground`}>
                                         <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
-                                        <span>ヘルプ表示</span>
+                                        <span className="text-nowrap">ヘルプ表示</span>
                                     </button>
                                 </div>
                             </div>

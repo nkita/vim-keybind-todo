@@ -38,7 +38,7 @@ export default function Header({
     const h = `h-[60px]`
     return (
         <div className={`flex justify-between items-center w-full px-8 ${h}`}>
-            <div className="flex items-center gap-1 h-9">
+            <div className="flex items-center gap-1 h-9 w-[260px]">
                 <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
                 <Link href="/lp"><h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm hover:text-primary transition-all delay-200`}>Shiba ToDo</h1></Link>
             </div>
@@ -47,7 +47,7 @@ export default function Header({
                 <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了タスク</ExLink>
                 <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>
             </div>
-            <div className="flex gap-1 items-center  justify-end ">
+            <div className="flex gap-1 items-center  justify-end w-[260px]">
                 {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                     <SaveButton isSave={isSave} isUpdate={isUpdate} onClickSaveButton={onClickSaveButton} />
                 }

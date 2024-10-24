@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2 } from "lucide-react"
+import { Check, FolderOpen, List, Plus, Redo2, Undo2 } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 
@@ -816,14 +816,24 @@ export const Todo = (
         return <button onClick={onClick} className="p-1 border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
     }
     return (
-        <div className="flex flex-col items-center w-full h-full px-8">
-            <div className="w-full items-end flex gap-2 h-[50px] pb-1">
+        <div className="flex flex-col items-center w-full h-full px-1 sm:px-8">
+            <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
                 <div className="flex items-center gap-2">
                     <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                 </div>
-                <div className="border-r mx-2 h-5"></div>
-                <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground`}  >
+                <div className="border-r mx-2 h-5 hidden sm:block"></div>
+                <div className={`flex sm:hidden  items-center  w-full justify-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar `}  >
+                    {!currentProject && <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />}
+                    {projects.map((p, i) => {
+                        if (p === currentProject) {
+                            return (
+                                <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
+                            )
+                        }
+                    })}
+                </div>
+                <div className={`hidden sm:flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground`}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                     {projects.map((p, i) => {
                         return (
@@ -855,8 +865,8 @@ export const Todo = (
                             completionOnly={completionOnly}
                         />
                     </ResizablePanel>
-                    <ResizableHandle tabIndex={-1} className="pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                    <ResizablePanel defaultSize={40} minSize={4} className={`relative`} >
+                    <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
+                    <ResizablePanel defaultSize={40} minSize={4} className={`relative hidden sm:block`} >
                         {loading ? (
                             <></>
                         ) : (
@@ -885,30 +895,15 @@ export const Todo = (
                                 </div>
                             </>
                         )}
-                        <div className="absolute bottom-3 w-full">
-                            <div className="flex items-center justify-end">
-                                {/* 
-                                <div className="flex gap-2 items-center">
-                                    <span className="text-sm text-muted-foreground">入力キー:</span>
-                                    {currentKeys.length === 0 && <span className="text-sm text-muted-foreground">何も入力されていません</span>}
-                                    <div className="flex gap-2 items-center text-nowrap">
-                                        {currentKeys.map((k, i) => {
-                                            if (i === 0) return <kbd key={'key' + i} className="text-sm text-primary-foreground bg-primary">{k}</kbd>
-                                            if (i === 1) return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground ">{k}</kbd>
-                                            return <kbd key={'key' + i} className="text-sm bg-muted text-muted-foreground transition-all">{k}</kbd>
-                                        })}
-                                    </div>
-                                </div> 
-                                */}
-                                <div className={` ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
-                                    <button
-                                        tabIndex={-1}
-                                        onClick={_ => setHelp(true)}
-                                        className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-full border  shadow-md bg-primary text-primary-foreground`}>
-                                        <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
-                                        <span className="text-nowrap">ヘルプ表示</span>
-                                    </button>
-                                </div>
+                        <div className="absolute bottom-3 w-full hidden sm:block ">
+                            <div className={`flex items-center justify-end ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
+                                <button
+                                    tabIndex={-1}
+                                    onClick={_ => setHelp(true)}
+                                    className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-full border  shadow-md bg-primary text-primary-foreground`}>
+                                    <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
+                                    <span className="text-nowrap">ヘルプ表示</span>
+                                </button>
                             </div>
                         </div>
                     </ResizablePanel>
@@ -922,6 +917,23 @@ export const Todo = (
                     onClick={handleClickDetailElement}
                     onDelete={deleteTask}
                 />
+                {/* <nav className="fixed bottom-0 left-0 right-0 bg-secondary text-secondary-foreground bg-gradient-to-t from-transparent to-secondary rounded-t-lg border-t block sm:hidden">
+                    <div className="flex justify-around items-center h-16">
+                        <Button variant="ghost" className="flex flex-col items-center" onClick={() => ('addTask')}>
+                            <Plus className="h-20 w-10" />
+                            <span className="text-xs">タスク追加</span>
+                        </Button>
+                        <Button variant="ghost" className="flex flex-col items-center" onClick={() => ('selectProject')}>
+                            <FolderOpen className="h-6 w-6" />
+                            <span className="text-xs">プロジェクト</span>
+                        </Button>
+                        <Button variant="ghost" className="flex flex-col items-center">
+                            <FolderOpen className="h-6 w-6" />
+                            <span className="text-xs">ホーム</span>
+                        </Button>
+                    </div>
+                </nav>
+ */}
             </div >
         </div>
     )

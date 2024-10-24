@@ -48,22 +48,21 @@ export const TodoList = (
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
-    const hcssMainHeight = "h-[calc(100%-70px)]"
+    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-70px)]"
     const tableHeadHeight = "h-[40px]"
     const taskBarHeight = "h-[30px]"
 
     const table_idx_width = "w-[30px]"
     const table_completion_width = "w-[30px]"
     const table_priority_width = "w-[30px]"
-    const table_task_width = "w-[calc(60%-90px)]"
-    const table_label_width = "w-[20%]"
-    const table_project_width = "w-[20%]"
-
+    const table_task_width = "w-[calc(100%-90px)] sm:w-[calc(60%-90px)]"
+    const table_label_width = "w-0 sm:w-[20%]"
+    const table_project_width = "w-0 sm:w-[20%]"
 
     return (
         <>
             <div className="h-full">
-                <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
+               <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -180,7 +179,7 @@ export const TodoList = (
                                                                 register={register} />
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-                                                            <div className="flex">
+                                                            <div className="hidden sm:flex">
                                                                 <div className={`flex  items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
                                                                 <SelectModal
                                                                     t={t}
@@ -199,7 +198,7 @@ export const TodoList = (
                                                             </div>
                                                         </TableCell>
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light pr-2`}>
-                                                            <div className="flex">
+                                                            <div className="hidden sm:flex">
                                                                 <div className={`flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
                                                                 <SelectModal
                                                                     t={t}
@@ -227,7 +226,7 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
+                <div className={`hidden sm:block border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
                     <div className="flex justify-between items-center text-sm h-full px-2 truncate">
                         <div> {!completionOnly && <> 表示：{viewCompletion ? "全て" : "未完了のみ"}</>}</div>
                         <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />

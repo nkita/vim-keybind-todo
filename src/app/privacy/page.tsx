@@ -6,9 +6,9 @@ export default function Home() {
     return (
         <NormalPageTemplate>
             <main className="container mx-auto px-4 pt-8">
-                <h1 className="text-3xl font-bold mb-6">プライバシーポリシー</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-6">プライバシーポリシー</h1>
                 <section>
-                    <h2 className="text-2xl font-semibold mt-6 mb-3">1. 個人情報の利用目的</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-6 mb-3">1. 個人情報の利用目的</h2>
                     <p>
                         当サイトでは、お問い合わせ時に名前やメールアドレスなどの個人情報を入力いただく場合がございます。
                         取得した個人情報は、以下の目的でのみ利用いたします：
@@ -21,7 +21,7 @@ export default function Home() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mt-6 mb-3">2. Google Analytics の利用について</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-6 mb-3">2. Google Analytics の利用について</h2>
                     <p>
                         当サイトでは、Googleによるアクセス解析ツール「Google Analytics」を使用しています。
                         Google Analyticsはデータの収集のためにCookieを使用していますが、このデータは匿名で収集されており、個人を特定するものではありません。
@@ -36,7 +36,7 @@ export default function Home() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mt-6 mb-3">3. Google認証の利用について</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-6 mb-3">3. Google認証の利用について</h2>
                     <p>
                         当サイトでは、ユーザー認証にGoogle認証（OAuth 2.0）を使用しています。
                         この認証方法では、以下の点にご留意ください：
@@ -60,7 +60,7 @@ export default function Home() {
                 </section>
 
                 <section>
-                    <h2 className="text-2xl font-semibold mt-6 mb-3">4. プライバシーポリシーの変更について</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-6 mb-3">4. プライバシーポリシーの変更について</h2>
                     <p>
                         当サイトは、個人情報に関して適用される日本の法令を遵守するとともに、本ポリシーの内容を適宜見直しおよび改善していきます。
                         修正された最新のプライバシーポリシーは常に本ページにて開示されます。

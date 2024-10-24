@@ -6,16 +6,16 @@ export default function Home() {
     return (
         <NormalPageTemplate>
             <main className="container mx-auto px-4 pt-8">
-                <h1 className="text-3xl font-bold mb-6">利用規約</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold mb-6">利用規約</h1>
 
                 <div className="prose max-w-none">
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">1. はじめに</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">1. はじめに</h2>
                     <p>
                         この利用規約（以下、「本規約」）は、ShibaTodo（以下、「作者」）がこのウェブサイト上で提供するTodoアプリケーション（以下、「本サービス」）の利用条件を定めるものです。
                         ご利用の皆さま（以下、「ユーザー」）には、本規約に従って、本サービスを個人、法人、商用、非商用を問わず無料でご利用いただけます。
                     </p>
 
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">2. アカウントと利用方法</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">2. アカウントと利用方法</h2>
                     <p>
                         本サービスは、以下の2つの方法でご利用いただけます：
                     </p>
@@ -31,7 +31,7 @@ export default function Home() {
                         ユーザーは、いつでも好みの利用方法を選択し、切り替えることができます。ただし、ログインなしで利用している場合のデータをGoogleアカウントに紐付けることはできませんので、ご注意ください。
                     </p>
 
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">3. データの取り扱い</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">3. データの取り扱い</h2>
                     <p>
                         Googleアカウントでログインした場合、ユーザーのTodoデータは作者が管理するサーバーに保存されます。作者は、このデータを厳重に管理し、本サービスの提供以外の目的で使用することはありません。
                     </p>
@@ -39,7 +39,7 @@ export default function Home() {
                         ログインせずに利用する場合、データはユーザーのブラウザ内に保存されます。この場合、作者はユーザーのデータにアクセスすることはできません。
                     </p>
 
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">4. 禁止事項</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">4. 禁止事項</h2>
                     <p>ユーザーは、本サービスの利用にあたり、以下の行為をしてはなりません。</p>
                     <ul>
                         <li>法令または公序良俗に違反する行為</li>
@@ -57,17 +57,17 @@ export default function Home() {
                         <li>その他、作者が不適切と判断する行為</li>
                     </ul>
 
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">5. サービス内容の変更等</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">5. サービス内容の変更等</h2>
                     <p>
                         作者は、ユーザーへの事前の告知なく、本サービスの内容を変更、追加または廃止することがあり、ユーザーはこれを承諾するものとします。
                     </p>
 
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">6. 利用規約の変更</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">6. 利用規約の変更</h2>
                     <p>
                         作者は、必要と判断した場合には、ユーザーに通知することなくいつでも本規約を変更することができるものとします。なお、本規約の変更後、本サービスの利用を開始した場合には、当該ユーザーは変更後の規約に同意したものとみなします。
                     </p>
 
-                    <h2 className="text-2xl font-semibold mt-8 mb-4">7. 保証の否認および免責事項</h2>
+                    <h2 className="text-xl sm:text-2xl font-semibold mt-8 mb-4">7. 保証の否認および免責事項</h2>
                     <p>
                         作者は、本サービスに事実上または法律上の瑕疵（安全性、信頼性、正確性、完全性、有効性、特定の目的への適合性、セキュリティなどに関する欠陥、エラーやバグ、権利侵害などを含みます。）がないことを明示的にも黙示的にも保証しておりません。
                     </p>

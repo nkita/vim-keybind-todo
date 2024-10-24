@@ -13,7 +13,7 @@ export default function NormalPageTemplate({ children }: { children: React.React
     return (
         <div className={`flex justify-center w-full`}>
             <div className="w-full max-w-[1024px]">
-                <header className={`flex justify-between items-center w-full px-8 h-[60px]`}>
+                <header className={`flex justify-between items-center w-full px-4 sm:px-8 h-[60px]`}>
                     <div className="flex items-center gap-1 ">
                         <Image
                             src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`}
@@ -27,10 +27,10 @@ export default function NormalPageTemplate({ children }: { children: React.React
                     <nav className="flex items-center gap-1">
                         <span className="flex items-center text-xs"> Feel free to follow me<Heart size={14} className="text-rose-400" /></span>
                         <Link target="_blank" href={"https://x.com/nkitao7"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaXTwitter /></Link>
-                        <Link target="_blank" href={"https://github.com/nkita"} className={`flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaGithub /></Link>
+                        <Link target="_blank" href={"https://github.com/nkita"} className={`flex items-center gap-1 pl-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} ><FaGithub /></Link>
                     </nav>
                 </header>
-                <div className="px-12">
+                <div className="sm:px-12">
                     {children}
                 </div>
                 <div className="flex justify-center w-full pt-36">

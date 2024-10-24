@@ -23,14 +23,14 @@ export default function Home() {
     }
     return (
         <NormalPageTemplate>
-            <main className="flex flex-col items-center justify-center gap-6">
+            <main className="flex flex-col items-center justify-center gap-6 ">
                 <section className="pt-16  sm:pt-20 md:w-[680px] sm:w-[580px] w-[450px]">
                     <div className="text-center animate-fade ease-in animate-delay-75 ">
-                        <h1 className="md:text-6xl sm:text-5xl text-4xl py-6">
+                        <h1 className="md:text-6xl sm:text-5xl text-3xl py-6">
                             ホームポジションで完結<br />
                             最速のタスク管理
                         </h1>
-                        <p className="py-8 text-muted-foreground">
+                        <p className="text-sm sm:text-base px-16 sm:px-0 py-8 text-muted-foreground">
                             {"Shiba Todoはキーボードファーストな最短でシンプルなタスク管理サービスです。ホームポジションから動かずにタスクの作成から完了まで最短であなたをサポートします。"}
                         </p>
                     </div>
@@ -77,21 +77,21 @@ export default function Home() {
                 </section>
 
                 <article className="flex flex-col gap-6 pt-16 text-lg w-[93%] items-center">
-                    <section className="flex flex-col items-center pb-8">
-                        <h2 className="text-center py-8 text-4xl ">Welcome <span className="animate-wiggle-more animate-infinite animate-ease-in inline-block">👋</span> Shiba ToDo</h2>
+                    <section className="flex flex-col items-center pb-8 px-8">
+                        <h2 className="text-center py-8 text-2xl sm:text-4xl ">Welcome <span className="animate-wiggle-more animate-infinite animate-ease-in inline-block">👋</span> Shiba ToDo</h2>
                         <div className="shadow-xl py-3 bg-primary/30 p-3 border border-primary/30 rounded-md">
                             <Image
                                 src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/service_image.png`}
                                 alt="Shiba Todo Image"
-                                className="w-[300px] sm:w-[800px] rounded-md"
+                                className="w-[400px] sm:w-[800px] rounded-md"
                                 width={1242} // 実際の画像サイズを指定しますが、表示サイズはTailwindで制御
                                 height={818} // 実際の画像サイズ
                             />
                         </div>
                     </section>
-                    <section className="content-center px-8">
-                        <h2 className="text-2xl font-bold text-left pb-8 pt-16">Shiba ToDoって何？</h2>
-                        <p className="text-left ">
+                    <section className="content-center px-2 sm:px-8">
+                        <h2 className="text-xl sm:text-2xl font-bold text-left pb-8 pt-16">Shiba ToDoって何？</h2>
+                        <p className="text-left">
                             {"タスク管理ツールです。"}<br />
                             {"いわゆるToDoアプリのようなタスク管理ツールをWebサービスとして提供します。"}<br />
                             {"他アプリとの差異は、よりタスク管理に集中してもらうためシンプルで最短で管理できるようUIに工夫をこらしています。"}

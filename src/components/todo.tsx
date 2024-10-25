@@ -912,10 +912,11 @@ export const Todo = (
                     prevTodos={prevTodos}
                     loading={loading}
                     completionOnly={completionOnly}
+                    viewCompletionTask={viewCompletionTask}
                     projects={projects}
-                    setTodos={setTodos}
-                    setIsUpdate={setIsUpdate}
-                    onClickSaveButton={onClickSaveButton}
+                    currentProject={currentProject}
+                    setViewCompletionTask={setViewCompletionTask}
+                    setCurrentProject={setCurrentProject}
                 />
             </div >
         </div>

@@ -20,9 +20,9 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, FolderOpen, List, Plus, Redo2, Undo2 } from "lucide-react"
+import { Check, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2 } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
-import { Button } from "@/components/ui/button";
+import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 
 const MAX_UNDO_COUNT = 10
 
@@ -823,17 +823,7 @@ export const Todo = (
                     <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                 </div>
                 <div className="border-r mx-2 h-5 hidden sm:block"></div>
-                <div className={`flex sm:hidden  items-center  w-full justify-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar `}  >
-                    {!currentProject && <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />}
-                    {projects.map((p, i) => {
-                        if (p === currentProject) {
-                            return (
-                                <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
-                            )
-                        }
-                    })}
-                </div>
-                <div className={`hidden sm:flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground`}  >
+                <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
                     <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                     {projects.map((p, i) => {
                         return (
@@ -917,23 +907,16 @@ export const Todo = (
                     onClick={handleClickDetailElement}
                     onDelete={deleteTask}
                 />
-                {/* <nav className="fixed bottom-0 left-0 right-0 bg-secondary text-secondary-foreground bg-gradient-to-t from-transparent to-secondary rounded-t-lg border-t block sm:hidden">
-                    <div className="flex justify-around items-center h-16">
-                        <Button variant="ghost" className="flex flex-col items-center" onClick={() => ('addTask')}>
-                            <Plus className="h-20 w-10" />
-                            <span className="text-xs">タスク追加</span>
-                        </Button>
-                        <Button variant="ghost" className="flex flex-col items-center" onClick={() => ('selectProject')}>
-                            <FolderOpen className="h-6 w-6" />
-                            <span className="text-xs">プロジェクト</span>
-                        </Button>
-                        <Button variant="ghost" className="flex flex-col items-center">
-                            <FolderOpen className="h-6 w-6" />
-                            <span className="text-xs">ホーム</span>
-                        </Button>
-                    </div>
-                </nav>
- */}
+                <BottomMenu
+                    todos={todos}
+                    prevTodos={prevTodos}
+                    loading={loading}
+                    completionOnly={completionOnly}
+                    projects={projects}
+                    setTodos={setTodos}
+                    setIsUpdate={setIsUpdate}
+                    onClickSaveButton={onClickSaveButton}
+                />
             </div >
         </div>
     )

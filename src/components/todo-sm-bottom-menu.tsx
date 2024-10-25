@@ -36,18 +36,20 @@ export const BottomMenu = (
         loading,
         completionOnly,
         projects,
-        setTodos,
-        setIsUpdate,
-        onClickSaveButton
+        currentProject,
+        viewCompletionTask,
+        setViewCompletionTask,
+        setCurrentProject,
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
         loading: Boolean
         completionOnly?: boolean
         projects: string[]
-        setTodos: Dispatch<SetStateAction<TodoProps[]>>
-        setIsUpdate: Dispatch<SetStateAction<boolean>>
-        onClickSaveButton: () => void;
+        currentProject: string
+        viewCompletionTask: boolean
+        setViewCompletionTask: Dispatch<SetStateAction<boolean>>
+        setCurrentProject: Dispatch<SetStateAction<string>>
     }
 ) => {
 
@@ -55,27 +57,19 @@ export const BottomMenu = (
     const [isDragging, setIsDragging] = useState(false);
     const [startY, setStartY] = useState(0);
     const [currentY, setCurrentY] = useState(0);
+    const [task, setTask] = useState("");
 
-    const openPanel = (panel: 'addTask' | 'selectProject' | 'setting') => {
-        setActivePanel(panel)
-    }
+    const openPanel = (panel: 'addTask' | 'selectProject' | 'setting') => setActivePanel(panel)
 
-    const closePanel = () => {
-        setActivePanel('none')
-    }
+
+    const closePanel = () => setActivePanel('none')
 
     const handleAddTask = (event: React.FormEvent) => {
         event.preventDefault()
-        // ここでタスク追加のロジックを実装
-        console.log("タスクが追加されました")
         closePanel()
     }
 
-    const handleProjectSelect = (value: string) => {
-        // ここでプロジェクト選択のロジックを実装
-        console.log(`プロジェクトが選択されました: ${value}`)
-        closePanel()
-    }
+    const handleProjectSelect = (value: string) => setCurrentProject(value)
 
     const handleTouchStart = (e: React.TouchEvent) => {
         setIsDragging(true);
@@ -110,6 +104,7 @@ export const BottomMenu = (
                     transition: isDragging ? 'none' : undefined,
                 }}
                 onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
             >
                 <div className="p-4 h-full flex flex-col"
                     onTouchStart={handleTouchStart}
@@ -142,7 +137,7 @@ export const BottomMenu = (
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Input placeholder="タスク名" />
+                            <Input placeholder="タスク名" value={task} onChange={(e) => setTask(e.target.value)} />
                             <Select>
                                 <SelectTrigger>
                                     <SelectValue placeholder="優先度" />
@@ -159,7 +154,7 @@ export const BottomMenu = (
                     )}
                     {activePanel === 'selectProject' && (
                         <div className="space-y-4">
-                            <Select onValueChange={handleProjectSelect}>
+                            <Select onValueChange={handleProjectSelect} defaultValue={currentProject} value={currentProject}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="プロジェクトを選択" />
                                 </SelectTrigger>
@@ -172,9 +167,9 @@ export const BottomMenu = (
                         </div>
                     )}
                     {activePanel === 'setting' && (
-                        <div className="flex items-center justify-between">
-                            <Switch id="view-completed-tasks" />
+                        <div className="flex items-center justify-between p-4">
                             <Label htmlFor="view-completed-tasks">完了タスクも表示</Label>
+                            <Switch id="view-completed-tasks" checked={completionOnly} onCheckedChange={setViewCompletionTask} />
                         </div>
                     )}
                 </div>

@@ -21,7 +21,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2, X } from "lucide-react"
+import { Monitor, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2, X } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -38,8 +38,11 @@ export const BottomMenu = (
         projects,
         currentProject,
         viewCompletionTask,
+        todoEnables,
+        setMode,
         setViewCompletionTask,
         setCurrentProject,
+        handleSetTodos,
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
@@ -48,8 +51,11 @@ export const BottomMenu = (
         projects: string[]
         currentProject: string
         viewCompletionTask: boolean
+        todoEnables: TodoEnablesProps
+        setMode: Dispatch<SetStateAction<Mode>>
         setViewCompletionTask: Dispatch<SetStateAction<boolean>>
         setCurrentProject: Dispatch<SetStateAction<string>>
+        handleSetTodos: (todos: TodoProps[], prevTodos: TodoProps[]) => void
     }
 ) => {
 
@@ -57,19 +63,32 @@ export const BottomMenu = (
     const [isDragging, setIsDragging] = useState(false);
     const [startY, setStartY] = useState(0);
     const [currentY, setCurrentY] = useState(0);
+    const [project, setProject] = useState("");
     const [task, setTask] = useState("");
+    const [priority, setPriority] = useState("");
 
-    const openPanel = (panel: 'addTask' | 'selectProject' | 'setting') => setActivePanel(panel)
+    const prefix = "st"
+    const openPanel = (panel: 'addTask' | 'selectProject' | 'setting') => {
+        setMode('modal')
+        setActivePanel(panel)
+    }
 
-
-    const closePanel = () => setActivePanel('none')
+    const closePanel = () => {
+        setActivePanel('none')
+        setMode('normal')
+    }
 
     const handleAddTask = (event: React.FormEvent) => {
-        event.preventDefault()
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
+        // if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
+        handleSetTodos(todoFunc.add(0, todos, { text: task, priority: priority, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        setTask("")
+        setPriority("")
+        setProject("")
         closePanel()
     }
 
-    const handleProjectSelect = (value: string) => setCurrentProject(value)
+    const handleProjectSelect = (value: string) => setCurrentProject(value.replace(prefix, ""))
 
     const handleTouchStart = (e: React.TouchEvent) => {
         setIsDragging(true);
@@ -127,7 +146,7 @@ export const BottomMenu = (
                     </div>
                     {activePanel === 'addTask' && (
                         <form onSubmit={handleAddTask} className="space-y-4">
-                            <Select>
+                            <Select name="project" value={project} onValueChange={(value) => setProject(value)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="プロジェクト" />
                                 </SelectTrigger>
@@ -137,30 +156,37 @@ export const BottomMenu = (
                                     ))}
                                 </SelectContent>
                             </Select>
-                            <Input placeholder="タスク名" value={task} onChange={(e) => setTask(e.target.value)} />
-                            <Select>
+                            <Input placeholder="タスク名" name="task" value={task} onChange={(e) => setTask(e.target.value)} />
+                            <Select name="priority" value={priority} onValueChange={(value) => setPriority(value)}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="優先度" />
+                                    <SelectValue placeholder="優先度"/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="0">{"なし"}</SelectItem>
-                                    <SelectItem value="1">{"低"}</SelectItem>
-                                    <SelectItem value="2">{"中"}</SelectItem>
-                                    <SelectItem value="3">{"高"}</SelectItem>
+                                    <SelectItem value={"1"}>{"低"}</SelectItem>
+                                    <SelectItem value={"2"}>{"中"}</SelectItem>
+                                    <SelectItem value={"3"}>{"高"}</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <Button type="submit" className="w-full">追加</Button>
+                            <div className="flex gap-2 py-4">
+                                <Button type="button" variant="outline" className="w-full" onClick={() => {
+                                    setTask("")
+                                    setPriority("")
+                                    setProject("")
+                                }}>クリア</Button>
+                                <Button type="submit" className="w-full">追加</Button>
+                            </div>
                         </form>
                     )}
                     {activePanel === 'selectProject' && (
                         <div className="space-y-4">
-                            <Select onValueChange={handleProjectSelect} defaultValue={currentProject} value={currentProject}>
+                            <Select onValueChange={handleProjectSelect} defaultValue={prefix + currentProject} value={prefix + currentProject}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="プロジェクトを選択" />
+                                    <SelectValue placeholder="ALL" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    <SelectItem value={prefix}>{"ALL"}</SelectItem>
                                     {projects.map((project, index) => (
-                                        <SelectItem key={index} value={project}>{project}</SelectItem>
+                                        <SelectItem key={index} value={prefix + project}>{project}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -177,8 +203,8 @@ export const BottomMenu = (
             <nav className="fixed bottom-0 left-0 right-0 bg-secondary text-secondary-foreground border-t block sm:hidden">
                 <div className="flex justify-around items-center h-16 text-primary">
                     <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('setting')}>
-                        <Settings className="h-6 w-6" />
-                        <span className="text-xs">設定</span>
+                        <Monitor className="h-6 w-6" />
+                        <span className="text-xs">表示</span>
                     </Button>
                     <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('selectProject')}>
                         <ArrowRightLeft className="h-6 w-6" />

@@ -4,6 +4,8 @@ import { isEqual } from "lodash"
 import { postFetch } from "./fetch"
 
 interface options {
+    text: string
+    priority: string
     project: string
     viewCompletionTask: boolean
 }
@@ -19,9 +21,10 @@ export const todoFunc = {
                     id: newId,
                     creationDate: yyyymmddhhmmss(new Date()),
                     completionDate: null,
-                    text: "",
+                    text: options.text ?? "",
+                    priority: options.priority ?? "",
                     detail: "",
-                    project: options.project,
+                    project: options.project ?? "",
                     is_complete: false
                 },
                 ...todos.slice(index === 0 ? 0 : todos.length)
@@ -35,9 +38,10 @@ export const todoFunc = {
                     id: newId,
                     creationDate: yyyymmddhhmmss(new Date()),
                     completionDate: null,
-                    text: "",
+                    text: options.text ?? "",
+                    priority: options.priority ?? "",
                     detail: "",
-                    project: options.project,
+                    project: options.project ?? "",
                     is_complete: false
                 },
                 ...todos.slice(_index + 1)

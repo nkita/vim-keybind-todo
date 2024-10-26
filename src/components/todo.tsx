@@ -816,7 +816,7 @@ export const Todo = (
         return <button onClick={onClick} className="p-1 border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
     }
     return (
-        <div className="flex flex-col items-center w-full h-full px-1 sm:px-8">
+        <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">
             <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
                 <div className="flex items-center gap-2">
                     <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
@@ -917,6 +917,9 @@ export const Todo = (
                     currentProject={currentProject}
                     setViewCompletionTask={setViewCompletionTask}
                     setCurrentProject={setCurrentProject}
+                    setMode={setMode}
+                    handleSetTodos={handleSetTodos}
+                    todoEnables={todoEnables}
                 />
             </div >
         </div>

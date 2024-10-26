@@ -4,10 +4,10 @@ import { isEqual } from "lodash"
 import { postFetch } from "./fetch"
 
 interface options {
-    text: string
-    priority: string
-    project: string
-    viewCompletionTask: boolean
+    text?: string
+    priority?: string
+    project?: string
+    viewCompletionTask?: boolean
 }
 export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: options) => {

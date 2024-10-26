@@ -62,7 +62,7 @@ export const TodoList = (
     return (
         <>
             <div className="h-full">
-               <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-md items-center ${tableHeadHeight}`}>
+               <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>

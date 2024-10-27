@@ -749,6 +749,7 @@ export const Todo = (
             setMode('modal')
         }
         if (prefix === 'normal') toNormalMode()
+        if (prefix === 'editDetail') setMode('editDetail')
     }
     const handleClickDetailElement = (prefix: string) => {
         if (prefix === 'completion') completeTask(currentIndex, prevTodos)
@@ -834,7 +835,7 @@ export const Todo = (
             </div>
             <div className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                    <ResizablePanel defaultSize={60} minSize={4} className="relative  pb-4">
+                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  pb-4 ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                         <TodoList
                             filterdTodos={filterdTodos}
                             currentIndex={currentIndex}
@@ -856,7 +857,7 @@ export const Todo = (
                         />
                     </ResizablePanel>
                     <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                    <ResizablePanel defaultSize={40} minSize={4} className={`relative hidden sm:block`} >
+                    <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} >
                         {loading ? (
                             <></>
                         ) : (

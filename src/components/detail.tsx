@@ -5,6 +5,8 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
+import { Plus, SquareXIcon, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const Detail = ({
     todo,
@@ -42,7 +44,7 @@ export const Detail = ({
     const compDate = todo["completionDate"]
     const compDateLabel = compDate ? getTimeAgo(new Date(compDate.split('.')[0])) : ""
 
-    const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none`
+    const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none p-1`
 
     const handleClickDetail = () => {
         if (mode !== "normal") onClick('normal')
@@ -51,7 +53,7 @@ export const Detail = ({
 
     return (
         <>
-            <div className="w-full h-full border-none  bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
+            <div className="w-full h-full bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
                 <div className="flex flex-col h-[83%]">
                     <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-5 border-t-4 border-t-primary border-x  rounded-t-md bg-card " onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
@@ -59,7 +61,7 @@ export const Detail = ({
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
                             }
                         </span>
-                        <div onClick={_ => onClick("text")} className="flex items-center w-full" onBlur={_ => onClick("normal")}>
+                        <div onClick={_ => onClick("text")} className="flex  items-center w-full" onBlur={_ => onClick("normal")}>
                             {(mode === "editDetail" && prefix === "text") ? (
                                 <TextareaAutosize
                                     tabIndex={-1}
@@ -77,9 +79,17 @@ export const Detail = ({
                                     {todo.text}
                                 </button>
                             )}
+                            <button onClick={e => {
+                                e.stopPropagation()
+                                e.preventDefault()
+                                onClick("normal")
+                            }} className="pl-2 text-muted-foreground w-5 sm:w-0 h-5 sm:h-0 block sm:hidden">
+                                <X className="h-5 w-5" />
+                            </button>
+
                         </div>
                     </div>
-                    <div className="bg-card max-h-[calc(100%-100px)] w-full border-x px-5">
+                    <div className="bg-card max-h-[calc(100%-150px)] w-full border-x px-5">
                         <div className="relative h-full w-full border p-1 rounded-md focus-within:border-primary">
                             <div className="h-full overflow-auto rounded-md scrollbar bg-yellow-300 ">
                                 {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
@@ -100,19 +110,27 @@ export const Detail = ({
                             </div>
                         </div>
                     </div>
-                    <div className="max-h-[70px] bg-card text-card-foreground py-3 px-5 border-x">
-                        {todo.context &&
+                    <div className="max-h-[100px] bg-card text-card-foreground py-3 px-5 border-x">
+                        {todo.context ? (
                             <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1`}>
                                 <FaTag /> {todo.context}
                             </div>
-                        }
-                        {todo.project &&
+                        ) : (
+                            <Button variant="outline" size="sm" className="flex my-2 gap-4 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
+                                <span className="flex items-center gap-1"> <Plus className="w-4 h-4" /> ラベルを追加</span> <FaTag />
+                            </Button>
+                        )}
+                        {todo.project ? (
                             <div className={`flex items-center text-ex-project text-sm font-light gap-1`}>
                                 <FaSitemap />{todo.project}
                             </div>
-                        }
+                        ) : (
+                            <Button variant="outline" size="sm" className="flex my-2 gap-4 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
+                                <span className="flex items-center gap-1"> <Plus className="w-4 h-4" /> プロジェクトを追加</span> <FaSitemap />
+                            </Button>
+                        )}
                     </div>
-                    <div className="text-sm h-[30px] pb-8 flex justify-between  text-primary/80 px-5 py-3 bg-card border-x border-b rounded-b-md  shadow-lg" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                    <div className="text-sm h-[40px] pt-5 pb-8  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
                 </div>
             </div >
         </>

@@ -6,7 +6,7 @@ import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { Check, CircleCheck, List, Star } from "lucide-react"
+import { Check, CircleCheck, List, MessageCircleMore, Star } from "lucide-react"
 import { completionTaskProjectName } from "./config"
 
 export const TodoList = (
@@ -62,7 +62,7 @@ export const TodoList = (
     return (
         <>
             <div className="h-full">
-               <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -168,15 +168,26 @@ export const TodoList = (
                                                             }
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
-                                                            <Item
-                                                                t={t}
-                                                                index={index}
-                                                                currentIndex={currentIndex}
-                                                                prefix={"text"}
-                                                                currentPrefix={prefix}
-                                                                mode={mode}
-                                                                label={t.text}
-                                                                register={register} />
+                                                            <div className="flex w-full justify-between items-center">
+                                                                <div className="truncate w-full pr-2 sm:pr-0">
+                                                                    <Item
+                                                                        t={t}
+                                                                        index={index}
+                                                                        currentIndex={currentIndex}
+                                                                        prefix={"text"}
+                                                                        currentPrefix={prefix}
+                                                                        mode={mode}
+                                                                        label={t.text}
+                                                                        register={register} />
+                                                                </div>
+                                                                <button onClick={e => {
+                                                                    e.stopPropagation()
+                                                                    e.preventDefault()
+                                                                    onClick(index, 'editDetail')
+                                                                }} className=" text-muted-foreground w-5 sm:w-0 h-5 sm:h-0 block sm:hidden">
+                                                                    <MessageCircleMore className="h-5 w-5" />
+                                                                </button>
+                                                            </div>
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
                                                             <div className="hidden sm:flex">

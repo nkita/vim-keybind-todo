@@ -130,13 +130,7 @@ export const BottomMenu = (
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                 >
-                    <div
-                        className="w-16 h-1 bg-gray-300 rounded-full mx-auto mb-2 cursor-grab active:cursor-grabbing"
-                        onTouchStart={handleTouchStart}
-                        onTouchMove={handleTouchMove}
-                        onTouchEnd={handleTouchEnd}
-                    />
-                    <div className="flex justify-between items-center mb-4">
+                   <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold">
                             {activePanel === 'addTask' ? 'タスクを追加' : activePanel === 'selectProject' ? 'プロジェクトを選択' : '設定'}
                         </h2>

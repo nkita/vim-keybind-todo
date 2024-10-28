@@ -200,7 +200,7 @@ export const Todo = (
         }
     }
 
-    const toNormalMode = () => {
+    const toNormalMode = (mode: Mode) => {
         if (filterdTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
@@ -552,9 +552,9 @@ export const Todo = (
      *******************/
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
-        if (!e.isComposing) toNormalMode()
+        if (!e.isComposing) toNormalMode(mode)
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalMode'].enable))
+    }, setKeyEnableDefine(keymap['normalMode'].enable), [mode])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
         if (!e.isComposing) {
@@ -577,15 +577,15 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
-        if (!e.isComposing) toNormalMode()
+        if (!e.isComposing) toNormalMode(mode)
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable))
+    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [mode])
 
     useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
         if (prefix !== "text") return
-        if (!e.isComposing) toNormalMode()
+        if (!e.isComposing) toNormalMode(mode)
         setCommand('')
-    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [prefix])
+    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [prefix, mode])
 
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
@@ -748,8 +748,11 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
-        if (prefix === 'normal') toNormalMode()
-        if (prefix === 'editDetail') setMode('editDetail')
+        if (prefix === 'normal') toNormalMode(mode)
+        if (prefix === 'editDetail') {
+            setCurrentIndex(index)
+            setMode('editDetail')
+        }
     }
     const handleClickDetailElement = (prefix: string) => {
         if (prefix === 'completion') completeTask(currentIndex, prevTodos)
@@ -757,16 +760,16 @@ export const Todo = (
             setPrefix(prefix)
             setMode("editDetail")
         }
-        if (prefix === "normal") toNormalMode()
+        if (prefix === "normal") toNormalMode(mode)
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode()
+        toNormalMode(mode)
         e.preventDefault()
         e.stopPropagation();
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode()
+        toNormalMode(mode)
         e.stopPropagation();
     }
     const Project = (

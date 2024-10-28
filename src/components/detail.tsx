@@ -83,8 +83,8 @@ export const Detail = ({
                                 e.stopPropagation()
                                 e.preventDefault()
                                 onClick("normal")
-                            }} className="pl-2 text-muted-foreground w-5 sm:w-0 h-5 sm:h-0 block sm:hidden">
-                                <X className="h-5 w-5" />
+                            }} className="text-muted-foreground w-5 sm:w-0 h-5 sm:h-0 block sm:hidden">
+                                <X className="h-5 w-5 m-1" />
                             </button>
 
                         </div>

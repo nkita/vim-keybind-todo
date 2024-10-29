@@ -114,7 +114,7 @@ export const BottomMenu = (
     return (
         <>
             {/* スライドアップパネル */}
-            <div className={`${activePanel !== 'none' ? 'block' : 'hidden'} fixed bottom-0 left-0 right-0 bg-black/50 z-10 h-[100%] `} />
+            <div className={`${activePanel !== 'none' ? 'block' : 'hidden'} fixed bottom-0 left-0 right-0 bg-black/50  z-10 h-[100%] `} onClick={closePanel} />
             <div
                 className={`fixed bottom-0 left-0 right-0 bg-background text-card-foreground shadow-lg transform transition-transform duration-200 ease-out z-20 ${activePanel !== 'none' ? 'translate-y-0' : 'translate-y-full'
                     }`}

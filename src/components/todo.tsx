@@ -826,7 +826,7 @@ export const Todo = (
     return (
         <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">
             {/* オーバーレイ */}
-            <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 ${mode === "modal" ? "z-30" : "z-10"} ${mode === "editDetail" || mode === "modal" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} />
+            <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 ${mode === "modal" ? "z-30" : "z-10"} ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} />
             {/* オーバーレイ */}
             <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
                 <div className="flex items-center gap-2">
@@ -867,7 +867,7 @@ export const Todo = (
                         />
                     </ResizablePanel>
                     <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                    <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" || mode === "modal" ? "block px-2 sm:px-0" : "hidden sm:block"}`} >
+                    <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} >
                         {loading ? (
                             <></>
                         ) : (

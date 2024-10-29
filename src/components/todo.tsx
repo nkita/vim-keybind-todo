@@ -200,7 +200,7 @@ export const Todo = (
         }
     }
 
-    const toNormalMode = (mode: Mode) => {
+    const toNormalMode = (mode: Mode, filterdTodos: TodoProps[], currentIndex: number) => {
         if (filterdTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
@@ -552,9 +552,9 @@ export const Todo = (
      *******************/
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
-        if (!e.isComposing) toNormalMode(mode)
+        if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalMode'].enable), [mode])
+    }, setKeyEnableDefine(keymap['normalMode'].enable), [mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
         if (!e.isComposing) {
@@ -577,15 +577,15 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
-        if (!e.isComposing) toNormalMode(mode)
+        if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [mode])
+    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
         if (prefix !== "text") return
-        if (!e.isComposing) toNormalMode(mode)
+        if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
         setCommand('')
-    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [prefix, mode])
+    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [prefix, mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
@@ -748,7 +748,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
-        if (prefix === 'normal') toNormalMode(mode)
+        if (prefix === 'normal') toNormalMode(mode, filterdTodos, currentIndex)
         if (prefix === 'editDetail') {
             setCurrentIndex(index)
             setMode('editDetail')
@@ -760,20 +760,20 @@ export const Todo = (
             setPrefix(prefix)
             setMode("editDetail")
         }
-        if (prefix === "normal") toNormalMode(mode)
+        if (prefix === "normal") toNormalMode(mode, filterdTodos, currentIndex)
         if (['context', 'project'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(mode)
+        toNormalMode(mode, filterdTodos, currentIndex)
         e.preventDefault()
         e.stopPropagation();
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(mode)
+        toNormalMode(mode, filterdTodos, currentIndex)
         e.stopPropagation();
     }
     const Project = (

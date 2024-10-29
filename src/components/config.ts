@@ -361,7 +361,7 @@ export const keymap: Keymap = {
         description: "前の状態に戻る(undo)"
     },
     redo: {
-        keys: ['Control+r'],
+        keys: ['r'],
         enable: { mode: ["normal"], withoutTask: true },
         type: ["other"],
         description: "前の状態に戻る(redo)"

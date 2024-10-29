@@ -6,7 +6,7 @@ import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { Check, CircleCheck, List, MessageCircleMore, Star } from "lucide-react"
+import { Check, Circle, CircleCheck, Dot, List, MessageCircleMore, Star } from "lucide-react"
 import { completionTaskProjectName } from "./config"
 
 export const TodoList = (
@@ -55,9 +55,9 @@ export const TodoList = (
     const table_idx_width = "w-[30px]"
     const table_completion_width = "w-[30px]"
     const table_priority_width = "w-[30px]"
-    const table_task_width = "w-[calc(100%-90px)] sm:w-[calc(60%-90px)]"
-    const table_label_width = "w-0 sm:w-[20%]"
-    const table_project_width = "w-0 sm:w-[20%]"
+    const table_task_width = "w-[calc(100%-90px)] sm:w-[calc(70%-90px)]"
+    const table_label_width = "w-0 sm:w-[15%] max-w-[20%]"
+    const table_project_width = "w-0 sm:w-[15%] max-w-[20%]"
 
     return (
         <>
@@ -180,13 +180,17 @@ export const TodoList = (
                                                                         label={t.text}
                                                                         register={register} />
                                                                 </div>
-                                                                <button onClick={e => {
-                                                                    e.stopPropagation()
-                                                                    e.preventDefault()
-                                                                    onClick(index, 'editDetail')
-                                                                }} className=" text-muted-foreground w-5 sm:w-0 h-5 sm:h-0 block sm:hidden">
-                                                                    <MessageCircleMore className="h-5 w-5" />
-                                                                </button>
+                                                                <div className="flex sm:hidden items-center gap-1 ">
+                                                                    {t.context && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
+                                                                    {t.project && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
+                                                                    <button onClick={e => {
+                                                                        e.stopPropagation()
+                                                                        e.preventDefault()
+                                                                        onClick(index, 'editDetail')
+                                                                    }} className=" text-muted-foreground ">
+                                                                        <MessageCircleMore className="h-5 w-5" />
+                                                                    </button>
+                                                                </div>
                                                             </div>
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>

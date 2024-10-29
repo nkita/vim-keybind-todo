@@ -63,13 +63,13 @@ export const SelectModal = (
                 onClickClose={close}>
                 <div>
                     <div className="text-gray-500">
-                        <p className="pt-3 ">
+                        <p className="pt-3 hidden sm:block ">
                             <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
                             <br />
                             <br />
                             <kbd>↑</kbd> <kbd>↓</kbd>キーで選択
                         </p>
-                        <p className="text-sm/10 pt-8">
+                        <p className="text-sm/10 pt-0 sm:pt-8">
                             <span>現在の{title}：<span className="text-primary font-medium underline">{label}</span>{!label && "-"}</span>
                         </p>
                     </div>

@@ -114,11 +114,12 @@ export const BottomMenu = (
     return (
         <>
             {/* スライドアップパネル */}
+            <div className={`${activePanel !== 'none' ? 'block' : 'hidden'} fixed bottom-0 left-0 right-0 bg-black/50 z-10 h-[100%] `} />
             <div
-                className={`fixed bottom-0 left-0 right-0 bg-secondary text-secondary-foreground shadow-lg transform transition-transform duration-200 ease-out z-20 ${activePanel !== 'none' ? 'translate-y-0' : 'translate-y-full'
+                className={`fixed bottom-0 left-0 right-0 bg-background text-card-foreground shadow-lg transform transition-transform duration-200 ease-out z-20 ${activePanel !== 'none' ? 'translate-y-0' : 'translate-y-full'
                     }`}
                 style={{
-                    height: '40%',
+                    height: '55%',
                     transform: isDragging ? `translateY(${(currentY - startY) > 0 ? currentY - startY : 0}px)` : undefined,
                     transition: isDragging ? 'none' : undefined,
                 }}
@@ -130,7 +131,7 @@ export const BottomMenu = (
                     onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                 >
-                   <div className="flex justify-between items-center mb-4">
+                    <div className="flex justify-between items-center mb-4">
                         <h2 className="text-xl font-semibold">
                             {activePanel === 'addTask' ? 'タスクを追加' : activePanel === 'selectProject' ? 'プロジェクトを選択' : '設定'}
                         </h2>
@@ -153,7 +154,7 @@ export const BottomMenu = (
                             <Input placeholder="タスク名" name="task" value={task} onChange={(e) => setTask(e.target.value)} />
                             <Select name="priority" value={priority} onValueChange={(value) => setPriority(value)}>
                                 <SelectTrigger>
-                                    <SelectValue placeholder="優先度"/>
+                                    <SelectValue placeholder="優先度" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value={"1"}>{"低"}</SelectItem>

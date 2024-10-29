@@ -5,7 +5,7 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
-import { Plus, SquareXIcon, X } from "lucide-react";
+import { CircleX, Plus, SquareXIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Detail = ({
@@ -46,22 +46,29 @@ export const Detail = ({
 
     const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none p-1`
 
+    const zIndex = "z-20"
+
     const handleClickDetail = () => {
         if (mode !== "normal") onClick('normal')
         onClick('detail')
+    }
+
+    const handleClickDelete = (prefix: 'context' | 'project') => {
+        setValue(`edit-list-${prefix}-${todo.id}`, '')
+        onClick('normal')
     }
 
     return (
         <>
             <div className="w-full h-full bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
                 <div className="flex flex-col h-[83%]">
-                    <div className="flex max-h-[120px] font-bold items-center gap-2 px-5 py-5 border-t-4 border-t-primary border-x  rounded-t-md bg-card " onMouseDown={e => e.stopPropagation()} >
+                    <div className={`flex max-h-[120px]  font-bold items-center gap-2 px-5 py-5 border-x border-t rounded-t-md bg-card ${zIndex} `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
                             }
                         </span>
-                        <div onClick={_ => onClick("text")} className="flex  items-center w-full" onBlur={_ => onClick("normal")}>
+                        <div onClick={_ => onClick("text")} className="flex  items-center w-full">
                             {(mode === "editDetail" && prefix === "text") ? (
                                 <TextareaAutosize
                                     tabIndex={-1}
@@ -89,7 +96,7 @@ export const Detail = ({
 
                         </div>
                     </div>
-                    <div className="bg-card max-h-[calc(100%-150px)] w-full border-x px-5">
+                    <div className={`bg-card max-h-[calc(100%-150px)] w-full border-x px-5 ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
                         <div className="relative h-full w-full border p-1 rounded-md focus-within:border-primary">
                             <div className="h-full overflow-auto rounded-md scrollbar bg-yellow-300 ">
                                 {isHelp && <div className="absolute bottom-1 right-5 flex text-black/80 items-center justify-end text-3sm"><kbd className="opacity-80">Esc</kbd>でもどる</div>}
@@ -110,27 +117,31 @@ export const Detail = ({
                             </div>
                         </div>
                     </div>
-                    <div className="max-h-[100px] bg-card text-card-foreground py-3 px-5 border-x">
+                    <div className={`max-h-[100px] bg-card text-card-foreground py-3 px-5 border-x ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
                         {todo.context ? (
-                            <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1`}>
+                            <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1 py-2`}>
                                 <FaTag /> {todo.context}
+                                <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete("context")}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
-                            <Button variant="outline" size="sm" className="flex my-2 gap-4 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
-                                <span className="flex items-center gap-1"> <Plus className="w-4 h-4" /> ラベルを追加</span> <FaTag />
+                            <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
+                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"><FaTag />ラベルを追加</span>
                             </Button>
                         )}
                         {todo.project ? (
-                            <div className={`flex items-center text-ex-project text-sm font-light gap-1`}>
-                                <FaSitemap />{todo.project}
+                            <div className={`flex items-center text-ex-project text-sm font-light gap-4 py-2`}>
+                                <span className="flex items-center gap-1"><FaSitemap />{todo.project} </span>
+                                <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete('project')}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
-                            <Button variant="outline" size="sm" className="flex my-2 gap-4 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
-                                <span className="flex items-center gap-1"> <Plus className="w-4 h-4" /> プロジェクトを追加</span> <FaSitemap />
+                            <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
+                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"> <FaSitemap />プロジェクトを追加 </span>
                             </Button>
                         )}
                     </div>
-                    <div className="text-sm h-[40px] pt-5 pb-8  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg" ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                    <div
+                        onMouseDown={e => e.stopPropagation()}
+                        className={`text-sm h-[45px] pt-2 pb-8  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
                 </div>
             </div >
         </>

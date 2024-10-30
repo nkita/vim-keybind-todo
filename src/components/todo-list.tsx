@@ -167,9 +167,9 @@ export const TodoList = (
                                                                 </div>
                                                             }
                                                         </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} onTouchStart={_ => onClick(index, 'text')} className={table_task_width}>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full justify-between items-center">
-                                                                <div className="truncate w-full pr-2 sm:pr-0">
+                                                                <div className="truncate w-full pr-2 sm:pr-0" onTouchStart={_ => onClick(index, 'text')}>
                                                                     <Item
                                                                         t={t}
                                                                         index={index}

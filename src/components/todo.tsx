@@ -842,9 +842,9 @@ export const Todo = (
 
     const handleTouchEnd = () => {
         // 右にスワイプ
-        if (touchEndX > touchStartX) handleMoveProject("right", projects, currentProject)
+        if (touchEndX > touchStartX) handleMoveProject("left", projects, currentProject)
         // 左にスワイプ
-        if (touchEndX < touchStartX) handleMoveProject("left", projects, currentProject)
+        if (touchEndX < touchStartX) handleMoveProject("right", projects, currentProject)
     };
     return (
         <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">

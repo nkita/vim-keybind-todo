@@ -34,9 +34,10 @@ export const Modal = (
             >
                 {buttonLabel}
             </button>
+
             {open && <div className="fixed top-0 left-0 bg-black/50 z-40 w-full h-full" />}
             <Dialog open={open} as="div" className="relative z-50 focus:outline-none " onClose={onClickClose} >
-                <div className="fixed inset-0 z-30 w-screen overflow-y-auto" onMouseDown={handleMouseDown}>
+                <div className="fixed inset-0 w-screen overflow-y-auto" onMouseDown={handleMouseDown}>
                     <div className="flex min-h-full items-center justify-center p-4">
                         <div
                             className="w-full max-w-md rounded-xl bg-white border p-6 duration-300 ease-out data-[closed]:transform-[scale(95%)] data-[closed]:opacity-0">

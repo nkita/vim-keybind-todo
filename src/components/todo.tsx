@@ -826,7 +826,10 @@ export const Todo = (
     return (
         <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">
             {/* オーバーレイ */}
-            <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 ${mode === "modal" ? "z-30" : "z-10"} ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} />
+            <div className={`
+                fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10
+                ${mode === "editDetail" ? "block sm:hidden" : "hidden"}
+            `} onMouseDown={handleMainMouseDown} />
             {/* オーバーレイ */}
             <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
                 <div className="flex items-center gap-2">
@@ -843,9 +846,9 @@ export const Todo = (
                     })}
                 </div>
             </div>
-            <div className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
+            <div  className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  pb-4 ${mode === "editDetail" || mode === "modal" ? "hidden sm:block" : "block"}`}>
+                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  pb-4 ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                         <TodoList
                             filterdTodos={filterdTodos}
                             currentIndex={currentIndex}
@@ -881,7 +884,7 @@ export const Todo = (
                                         isTodos={filterdTodos.length > 0}
                                     />
                                 </div>
-                                <div className={`w-full h-[calc(100%-30px)] border-none pb-4`}>
+                                <div className={`w-full h-[calc(100%-30px)] border-none z-20 pb-4`}>
                                     <Detail
                                         todo={filterdTodos[currentIndex]}
                                         prefix={prefix}

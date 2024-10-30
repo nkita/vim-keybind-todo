@@ -1,6 +1,7 @@
 import { TodoProps, Mode } from "@/types"
 import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
+import { useEffect, useState } from "react"
 
 export const SelectModal = (
     {
@@ -34,10 +35,15 @@ export const SelectModal = (
         title?: string,
         onClick: (index: number, prefx: string) => void
     }) => {
-    const isView = currentIndex === index
-        && currentPrefix === prefix
-        && mode === "modal"
-        && (position === "list" || position === "content")
+    const [isView, setIsView] = useState(false)
+    useEffect(() => {
+        setIsView(
+            currentIndex === index
+            && currentPrefix === prefix
+            && mode === "modal"
+            && (position === "list" || position === "content")
+        )
+    }, [currentIndex, index, currentPrefix, prefix, mode, position])
 
     function open() {
         onClick(currentIndex, prefix)

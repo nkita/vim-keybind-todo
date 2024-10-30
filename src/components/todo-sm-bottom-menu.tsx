@@ -116,8 +116,7 @@ export const BottomMenu = (
             {/* スライドアップパネル */}
             <div className={`${activePanel !== 'none' ? 'block' : 'hidden'} fixed bottom-0 left-0 right-0 bg-black/50  z-10 h-[100%] `} onClick={closePanel} />
             <div
-                className={`fixed bottom-0 left-0 right-0 bg-background text-card-foreground shadow-lg transform transition-transform duration-200 ease-out z-20 ${activePanel !== 'none' ? 'translate-y-0' : 'translate-y-full'
-                    }`}
+                className={`fixed bottom-0 left-0 right-0 bg-background text-card-foreground rounded-xl shadow-lg transform transition-transform duration-200 ease-out z-20 ${activePanel !== 'none' ? 'translate-y-0' : 'translate-y-full'}`}
                 style={{
                     height: '55%',
                     transform: isDragging ? `translateY(${(currentY - startY) > 0 ? currentY - startY : 0}px)` : undefined,
@@ -146,6 +145,11 @@ export const BottomMenu = (
                                     <SelectValue placeholder="プロジェクト" />
                                 </SelectTrigger>
                                 <SelectContent>
+                                    {projects.length === 0 &&
+                                        <div className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm text-muted-foreground bg-muted outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                                            現在選択できるプロジェクトはありません。
+                                        </div>
+                                    }
                                     {projects.map((project, index) => (
                                         <SelectItem key={index} value={project}>{project}</SelectItem>
                                     ))}
@@ -195,8 +199,8 @@ export const BottomMenu = (
                     )}
                 </div>
             </div>
-            <nav className="fixed bottom-0 left-0 right-0 bg-secondary text-secondary-foreground border-t block sm:hidden">
-                <div className="flex justify-around items-center h-16 text-primary">
+            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-t-slate-400/50 rounded-t-2xl drop-shadow-xl block sm:hidden">
+                <div className="flex justify-around items-center h-16 text-secondary-foreground/80">
                     <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('setting')}>
                         <Monitor className="h-6 w-6" />
                         <span className="text-xs">表示</span>

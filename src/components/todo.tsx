@@ -442,28 +442,12 @@ export const Todo = (
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        if (projects.length > 0) {
-            if (!currentProject) {
-                changeProject(0)
-            } else {
-                const _index = projects.indexOf(currentProject)
-                if (_index < projects.length - 1) changeProject(_index + 1)
-            }
-        }
+        handleMoveProject("right", projects, currentProject)
     }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [currentProject, projects])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        if (projects.length > 0) {
-            if (currentProject) {
-                const _index = projects.indexOf(currentProject)
-                if (_index === 0) {
-                    changeProject(-1)
-                } else {
-                    changeProject(_index - 1)
-                }
-            }
-        }
+        handleMoveProject("left", projects, currentProject)
     }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [currentProject, projects])
 
     // change to edit mode
@@ -741,6 +725,7 @@ export const Todo = (
         if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)
         if (['priority', 'text'].includes(prefix)) {
+            setCurrentIndex(index)
             setPrefix(prefix)
             setMode('edit')
         }
@@ -775,6 +760,26 @@ export const Todo = (
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         toNormalMode(mode, filterdTodos, currentIndex)
         e.stopPropagation();
+    }
+
+    const handleMoveProject = (direction: "right" | "left", projects: string[], currentProject: string) => {
+        if (projects.length <= 0) return
+        if (direction === "right") {
+            if (!currentProject) {
+                changeProject(0)
+            } else {
+                const _index = projects.indexOf(currentProject)
+                if (_index < projects.length - 1) changeProject(_index + 1)
+            }
+        } else {
+            if (!currentProject) return
+            const _index = projects.indexOf(currentProject)
+            if (_index === 0) {
+                changeProject(-1)
+            } else {
+                changeProject(_index - 1)
+            }
+        }
     }
     const Project = (
         {
@@ -823,6 +828,24 @@ export const Todo = (
     const MenuButton = ({ children, disabled, onClick }: { children: React.ReactNode, disabled: boolean, onClick: () => void }) => {
         return <button onClick={onClick} className="p-1 border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
     }
+
+    const [touchStartX, setTouchStartX] = useState(0);
+    const [touchEndX, setTouchEndX] = useState(0);
+
+    const handleTouchStart = (event: React.TouchEvent) => {
+        setTouchStartX(event.changedTouches[0].screenX);
+    };
+
+    const handleTouchMove = (event: React.TouchEvent) => {
+        setTouchEndX(event.changedTouches[0].screenX);
+    };
+
+    const handleTouchEnd = () => {
+        // 右にスワイプ
+        if (touchEndX > touchStartX) handleMoveProject("right", projects, currentProject)
+        // 左にスワイプ
+        if (touchEndX < touchStartX) handleMoveProject("left", projects, currentProject)
+    };
     return (
         <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">
             {/* オーバーレイ */}
@@ -846,28 +869,37 @@ export const Todo = (
                     })}
                 </div>
             </div>
-            <div  className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`} onMouseDown={handleMainMouseDown}>
+            <div className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`}
+                onMouseDown={handleMainMouseDown}
+            >
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                     <ResizablePanel defaultSize={60} minSize={4} className={`relative  pb-4 ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
-                        <TodoList
-                            filterdTodos={filterdTodos}
-                            currentIndex={currentIndex}
-                            prefix={prefix}
-                            mode={mode}
-                            viewCompletion={viewCompletionTask}
-                            projects={projects}
-                            labels={labels}
-                            currentProject={currentProject}
-                            sort={sort}
-                            searchResultIndex={searchResultIndex}
-                            command={command}
-                            loading={loading}
-                            onClick={handleClickElement}
-                            setCurrentIndex={setCurrentIndex}
-                            register={register}
-                            rhfSetValue={setValue}
-                            completionOnly={completionOnly}
-                        />
+                        <div
+                            onTouchStart={handleTouchStart}
+                            onTouchMove={handleTouchMove}
+                            onTouchEnd={handleTouchEnd}
+                            className="h-full w-full"
+                        >
+                            <TodoList
+                                filterdTodos={filterdTodos}
+                                currentIndex={currentIndex}
+                                prefix={prefix}
+                                mode={mode}
+                                viewCompletion={viewCompletionTask}
+                                projects={projects}
+                                labels={labels}
+                                currentProject={currentProject}
+                                sort={sort}
+                                searchResultIndex={searchResultIndex}
+                                command={command}
+                                loading={loading}
+                                onClick={handleClickElement}
+                                setCurrentIndex={setCurrentIndex}
+                                register={register}
+                                rhfSetValue={setValue}
+                                completionOnly={completionOnly}
+                            />
+                        </div>
                     </ResizablePanel>
                     <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
                     <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} >

@@ -43,8 +43,8 @@ export default function Header({
                 <Link href="/lp"><h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm hover:text-primary transition-all delay-200`}>Shiba ToDo</h1></Link>
             </div>
             <div className="hidden sm:flex gap-2 items-center border p-1 rounded-full text-xs m-3 truncate bg-card">
-                <ExLink path={"/t"}><List size={13} /> 進行中タスク</ExLink>
-                <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了タスク</ExLink>
+                <ExLink path={"/t"}><List size={13} /> 進行中</ExLink>
+                <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了</ExLink>
                 <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>
             </div>
             <div className="flex gap-1 items-center  justify-end w-[260px]">

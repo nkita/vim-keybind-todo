@@ -34,7 +34,6 @@ export const Modal = (
             >
                 {buttonLabel}
             </button>
-
             {open && <div className="fixed top-0 left-0 bg-black/50 z-40 w-full h-full" />}
             <Dialog open={open} as="div" className="relative z-50 focus:outline-none " onClose={onClickClose} >
                 <div className="fixed inset-0 w-screen overflow-y-auto" onMouseDown={handleMouseDown}>

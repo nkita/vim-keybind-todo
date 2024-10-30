@@ -736,6 +736,7 @@ export const Todo = (
         if (prefix === 'normal') toNormalMode(mode, filterdTodos, currentIndex)
         if (prefix === 'editDetail') {
             setCurrentIndex(index)
+            setPrefix('detail')
             setMode('editDetail')
         }
     }
@@ -841,10 +842,12 @@ export const Todo = (
     };
 
     const handleTouchEnd = () => {
+        const swipeThreshold = 100; // スワイプ感度の閾値
+        const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
-        if (touchEndX > touchStartX) handleMoveProject("left", projects, currentProject)
+        if (swipeDistance > swipeThreshold) handleMoveProject("left", projects, currentProject);
         // 左にスワイプ
-        if (touchEndX < touchStartX) handleMoveProject("right", projects, currentProject)
+        if (swipeDistance < -swipeThreshold) handleMoveProject("right", projects, currentProject);
     };
     return (
         <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">

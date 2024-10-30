@@ -842,12 +842,15 @@ export const Todo = (
     };
 
     const handleTouchEnd = () => {
-        const swipeThreshold = 100; // スワイプ感度の閾値
+        const swipeThreshold = 20; // スワイプ感度の閾値
+        if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
         if (swipeDistance > swipeThreshold) handleMoveProject("left", projects, currentProject);
         // 左にスワイプ
         if (swipeDistance < -swipeThreshold) handleMoveProject("right", projects, currentProject);
+        setTouchStartX(0);
+        setTouchEndX(0);
     };
     return (
         <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">

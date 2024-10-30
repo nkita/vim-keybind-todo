@@ -141,7 +141,7 @@ export const Detail = ({
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={`text-sm h-[45px] pt-2 pb-8  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                        className={`text-sm h-[45px] pt-8 pb-12  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
                 </div>
             </div >
         </>

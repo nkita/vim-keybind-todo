@@ -74,7 +74,7 @@ export const TodoList = (
     return (
         <>
             <div className="h-full">
-                <div className={`flex text-xs font-semibold bg-primary text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-xs font-semibold bg-primary/85 text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -146,13 +146,13 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-primary/5" : ""}
+                                                            ${currentIndex === index ? "bg-accent" : ""}
                                                             ${searchResultIndex[index] ? "bg-yellow-50" : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
                                                             ${currentIndex === index ? "border-l-2 border-primary" : ""}
-                                                            ${table_idx_width} px-2 text-right
+                                                            ${table_idx_width} px-2 text-sm text-right
                                                             `}>{index + 1}</TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                                                             <div className="flex w-ful justify-center">
@@ -256,8 +256,8 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`hidden sm:block border bg-secondary text-secondary-foreground rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-sm h-full px-2 truncate">
+                <div className={`hidden sm:block border bg-card text-primary rounded-b-sm ${taskBarHeight}`}>
+                    <div className="flex justify-between items-center text-xs h-full px-2 truncate">
                         <div> {!completionOnly && <> 表示：{viewCompletion ? "全て" : "未完了のみ"}</>}</div>
                         <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">

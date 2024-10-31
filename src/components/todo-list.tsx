@@ -1,5 +1,5 @@
 'use client'
-import { Dispatch, SetStateAction, useEffect, useRef } from "react"
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
@@ -58,6 +58,18 @@ export const TodoList = (
     const table_task_width = "w-[calc(100%-90px)] sm:w-[calc(70%-90px)]"
     const table_label_width = "w-0 sm:w-[15%] max-w-[20%]"
     const table_project_width = "w-0 sm:w-[15%] max-w-[20%]"
+
+    const [touchStartX, setTouchStartX] = useState(0);
+    const [touchMoveX, setTouchMoveX] = useState(0);
+
+    const handleTouchStart = (event: React.TouchEvent) => setTouchStartX(event.changedTouches[0].screenX);
+    const handleTouchMove = (event: React.TouchEvent) => setTouchMoveX(event.changedTouches[0].screenX);
+
+    const handleTouchEnd = (index: number, prefix: string) => {
+        if (touchMoveX === 0) onClick(index, prefix)
+        setTouchStartX(0);
+        setTouchMoveX(0);
+    };
 
     return (
         <>
@@ -169,7 +181,10 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full justify-between items-center">
-                                                                <div className="truncate w-full pr-2 sm:pr-0" onTouchStart={_ => onClick(index, 'text')}>
+                                                                <div className="truncate w-full pr-2 sm:pr-0"
+                                                                    onTouchStart={handleTouchStart}
+                                                                    onTouchMove={handleTouchMove}
+                                                                    onTouchEnd={_ => handleTouchEnd(index, 'text')}>
                                                                     <Item
                                                                         t={t}
                                                                         index={index}

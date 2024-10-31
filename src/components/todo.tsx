@@ -842,7 +842,7 @@ export const Todo = (
     };
 
     const handleTouchEnd = () => {
-        const swipeThreshold = 20; // スワイプ感度の閾値
+        const swipeThreshold = 10; // スワイプ感度の閾値
         if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
@@ -884,8 +884,7 @@ export const Todo = (
                             onTouchStart={handleTouchStart}
                             onTouchMove={handleTouchMove}
                             onTouchEnd={handleTouchEnd}
-                            className="h-full w-full"
-                        >
+                            className="h-full w-full">
                             <TodoList
                                 filterdTodos={filterdTodos}
                                 currentIndex={currentIndex}

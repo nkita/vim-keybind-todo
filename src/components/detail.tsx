@@ -129,7 +129,7 @@ export const Detail = ({
                             </Button>
                         )}
                         {todo.project ? (
-                            <div className={`flex items-center text-ex-project text-sm font-light gap-4 py-2`}>
+                            <div className={`flex items-center text-ex-project text-sm font-light gap-4 pt-2`}>
                                 <span className="flex items-center gap-1"><FaSitemap />{todo.project} </span>
                                 <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete('project')}><X className="w-4 h-4" /></Button>
                             </div>
@@ -141,7 +141,7 @@ export const Detail = ({
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={`text-sm h-[45px] pt-8 pb-12  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                        className={`text-sm h-[45px] pt-4 pb-12  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-lg ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
                 </div>
             </div >
         </>

@@ -20,9 +20,11 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2 } from "lucide-react"
+import { Check, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2, ExternalLink } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
+import { Button } from "./ui/button"
+import Link from "next/link"
 
 const MAX_UNDO_COUNT = 10
 
@@ -938,13 +940,21 @@ export const Todo = (
                         )}
                         <div className="absolute bottom-3 w-full hidden sm:block ">
                             <div className={`flex items-center justify-end ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
-                                <button
-                                    tabIndex={-1}
+                                <ExLink
+                                    type="link"
+                                    href={"https://shiba-tools.dev"}
+                                    target="_blank">
+                                    Shiba Tools<ExternalLink size={13} />
+                                </ExLink>
+                                /
+                                <ExLink
+                                    type="button"
+                                    variant={"outline"}
                                     onClick={_ => setHelp(true)}
-                                    className={`flex gap-1 items-center text-xs justify-end px-3 py-2 rounded-full border  shadow-md bg-primary text-primary-foreground`}>
-                                    <kbd className="text-xs px-1 py-0 text-primary-foreground">?</kbd>
+                                    className={`flex gap-1 text-xs `}>
+                                    <kbd className="h-5 w-5 flex items-center justify-center">?</kbd>
                                     <span className="text-nowrap">ヘルプ表示</span>
-                                </button>
+                                </ExLink>
                             </div>
                         </div>
                     </ResizablePanel>
@@ -975,4 +985,18 @@ export const Todo = (
             </div >
         </div>
     )
+}
+const ExLink = ({ href, className = "", target, lock, children, type, ...props }: { href: string, className?: string | undefined, type?: "button" | "link", target?: string, lock?: boolean, children: React.ReactNode }) => {
+    if (type === "link") {
+        return (
+            <Link href={href} target={target}
+                className={`flex text-muted-foreground text-sm items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} {...props} >
+                {children}
+            </Link>
+        )
+    } else {
+        return <button tabIndex={-1}
+            className={`flex text-sm text-muted-foreground items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} {...props} >
+            {children}</button>
+    }
 }

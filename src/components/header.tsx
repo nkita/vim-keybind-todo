@@ -45,7 +45,6 @@ export default function Header({
             <div className="hidden sm:flex gap-2 items-center border p-1 rounded-full text-xs m-3 truncate bg-card">
                 <ExLink path={"/t"}><List size={13} /> 進行中</ExLink>
                 <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了</ExLink>
-                <ExLink path={"https://shiba-tools.dev"} target="_blank" className="underline font-bold"> Shiba Tools<ExternalLink size={13} /></ExLink>
             </div>
             <div className="flex gap-1 items-center  justify-end w-[260px]">
                 {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&

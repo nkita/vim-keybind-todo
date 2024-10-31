@@ -48,9 +48,9 @@ export const TodoList = (
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
-    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-70px)]"
+    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-80px)]"
     const tableHeadHeight = "h-[40px]"
-    const taskBarHeight = "h-[30px]"
+    const taskBarHeight = "h-[40px]"
 
     const table_idx_width = "w-[30px]"
     const table_completion_width = "w-[30px]"
@@ -59,15 +59,11 @@ export const TodoList = (
     const table_label_width = "w-0 sm:w-[15%] max-w-[20%]"
     const table_project_width = "w-0 sm:w-[15%] max-w-[20%]"
 
-    const [touchStartX, setTouchStartX] = useState(0);
     const [touchMoveX, setTouchMoveX] = useState(0);
-
-    const handleTouchStart = (event: React.TouchEvent) => setTouchStartX(event.changedTouches[0].screenX);
     const handleTouchMove = (event: React.TouchEvent) => setTouchMoveX(event.changedTouches[0].screenX);
 
     const handleTouchEnd = (index: number, prefix: string) => {
         if (touchMoveX === 0) onClick(index, prefix)
-        setTouchStartX(0);
         setTouchMoveX(0);
     };
 
@@ -182,7 +178,6 @@ export const TodoList = (
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full justify-between items-center">
                                                                 <div className="truncate w-full pr-2 sm:pr-0"
-                                                                    onTouchStart={handleTouchStart}
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>
                                                                     <Item
@@ -256,8 +251,8 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`hidden sm:block border bg-card text-primary rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-xs h-full px-2 truncate">
+                <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm ${taskBarHeight}`}>
+                    <div className="flex justify-between items-center text-sm h-full px-2 truncate">
                         <div> {!completionOnly && <> 表示：{viewCompletion ? "全て" : "未完了のみ"}</>}</div>
                         <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">

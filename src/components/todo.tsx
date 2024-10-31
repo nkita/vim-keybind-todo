@@ -949,8 +949,7 @@ export const Todo = (
                                 /
                                 <ExLink
                                     type="button"
-                                    variant={"outline"}
-                                    onClick={_ => setHelp(true)}
+                                    onClick={() => setHelp(true)}
                                     className={`flex gap-1 text-xs `}>
                                     <kbd className="h-5 w-5 flex items-center justify-center">?</kbd>
                                     <span className="text-nowrap">ヘルプ表示</span>
@@ -986,17 +985,45 @@ export const Todo = (
         </div>
     )
 }
-const ExLink = ({ href, className = "", target, lock, children, type, ...props }: { href: string, className?: string | undefined, type?: "button" | "link", target?: string, lock?: boolean, children: React.ReactNode }) => {
-    if (type === "link") {
+const ExLink = ({
+    href,
+    className = "",
+    target,
+    lock,
+    children,
+    type,
+    onClick,
+    ...props
+}: {
+    href?: string,
+    className?: string | undefined,
+    type?: "button" | "link",
+    target?: string,
+    lock?: boolean,
+    onClick?: () => void,
+    children: React.ReactNode
+}) => {
+    if (type === "link" && href) {
         return (
-            <Link href={href} target={target}
-                className={`flex text-accent-foreground/60 hover:underline hover:text-accent-foreground text-sm items-center gap-1 px-3 transition-all fade-in-5`} {...props} >
+            <Link
+                href={href}
+                target={target}
+                className={`flex text-accent-foreground/60 hover:underline hover:text-accent-foreground text-sm items-center gap-1 px-3 transition-all fade-in-5`}
+                {...props}
+            >
                 {children}
             </Link>
         )
     } else {
-        return <button tabIndex={-1}
-            className={`flex text-sm text-accent-foreground/60 hover:text-accent-foreground items-center gap-1 px-3 transition-all fade-in-5`} {...props} >
-            {children}</button>
+        return (
+            <button
+                tabIndex={-1}
+                onClick={onClick}
+                className={`flex text-sm text-accent-foreground/60 hover:text-accent-foreground items-center gap-1 px-3 transition-all fade-in-5`}
+                {...props}
+            >
+                {children}
+            </button>
+        )
     }
 }

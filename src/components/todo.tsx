@@ -877,11 +877,11 @@ export const Todo = (
                     })}
                 </div>
             </div>
-            <div className={`relative  w-full h-[calc(100%-50px)] pb-1 pt-1`}
+            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`}
                 onMouseDown={handleMainMouseDown}
             >
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  pb-4 ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
+                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                         <div
                             onTouchStart={handleTouchStart}
                             onTouchMove={handleTouchMove}
@@ -914,7 +914,7 @@ export const Todo = (
                             <></>
                         ) : (
                             <>
-                                <div className={`absolute right-0 pb-4 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30 h-full transition-all animate-fade-in`}>
+                                <div className={`absolute right-0 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30 h-full transition-all animate-fade-in`}>
                                     <Usage
                                         sort={sort}
                                         mode={mode}
@@ -923,7 +923,7 @@ export const Todo = (
                                         isTodos={filterdTodos.length > 0}
                                     />
                                 </div>
-                                <div className={`w-full h-[calc(100%-30px)] border-none z-20 pb-4`}>
+                                <div className={`w-full h-[calc(100%-30px)] border-none z-20`}>
                                     <Detail
                                         todo={filterdTodos[currentIndex]}
                                         prefix={prefix}
@@ -938,7 +938,7 @@ export const Todo = (
                                 </div>
                             </>
                         )}
-                        <div className="absolute bottom-3 w-full hidden sm:block ">
+                        <div className="absolute bottom-0 w-full hidden sm:block ">
                             <div className={`flex items-center justify-end ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
                                 <ExLink
                                     type="link"
@@ -990,13 +990,13 @@ const ExLink = ({ href, className = "", target, lock, children, type, ...props }
     if (type === "link") {
         return (
             <Link href={href} target={target}
-                className={`flex text-muted-foreground text-sm items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} {...props} >
+                className={`flex text-accent-foreground/60 hover:underline hover:text-accent-foreground text-sm items-center gap-1 px-3 transition-all fade-in-5`} {...props} >
                 {children}
             </Link>
         )
     } else {
         return <button tabIndex={-1}
-            className={`flex text-sm text-muted-foreground items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`} {...props} >
+            className={`flex text-sm text-accent-foreground/60 hover:text-accent-foreground items-center gap-1 px-3 transition-all fade-in-5`} {...props} >
             {children}</button>
     }
 }

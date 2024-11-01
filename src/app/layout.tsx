@@ -6,6 +6,9 @@ import { Toaster } from "@/components/ui/sonner"
 import { Noto_Sans_JP } from "next/font/google";
 import { TodoProvider } from "@/provider/todo";
 
+
+import Script from "next/script";
+
 const noto = Noto_Sans_JP({
   weight: ["400", "500", "600", "700", "800"],
   style: ["normal"],
@@ -51,11 +54,22 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const gaid = process.env.GAID
   return (
     <AuthProvider>
       <TodoProvider>
         <html>
           <body className={noto.className}>
+            <Script src={"https://www.googletagmanager.com/gtag/js?id=" + gaid} />
+            <Script id="google-analytics">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+ 
+                gtag('config', "${gaid}");
+            `}
+            </Script>
             {children}
             <Toaster position="top-center" richColors />
           </body>

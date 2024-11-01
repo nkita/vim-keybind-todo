@@ -1,28 +1,11 @@
 'use client'
-import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
-import { useHotkeys, } from "react-hotkeys-hook"
-import { useForm } from "react-hook-form"
-import { keymap, completionTaskProjectName } from '@/components/config'
-import { TodoEnablesProps, TodoProps, Sort, Mode } from "@/types"
+import React, { useState, Dispatch, SetStateAction } from "react"
+import { TodoEnablesProps, TodoProps, Mode } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { Input } from "@/components/ui/input";
-import { yyyymmddhhmmss } from "@/lib/time"
-import { TodoList } from "./todo-list"
-import { Detail } from "./detail"
-import { isEqual } from "lodash";
-import {
-    ResizableHandle,
-    ResizablePanel,
-    ResizablePanelGroup,
-} from "@/components/ui/resizable"
-import { Usage } from "./usage"
-import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
-import { debugLog } from "@/lib/utils"
-import { DeleteModal } from "./delete-modal"
-import { Monitor, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2, X } from "lucide-react"
-import { FaSitemap } from "react-icons/fa6";
+import { Monitor, ArrowRightLeft, Plus, X } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"

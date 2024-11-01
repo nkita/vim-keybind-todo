@@ -132,8 +132,8 @@ export const TodoList = (
                         {!loading &&
                             <>
                                 {filterdTodos.length === 0 ? (
-                                    <TableRow className="text-center text-muted-foreground text-xs">
-                                        <TableCell className="p-2"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
+                                    <TableRow className="text-center  text-muted-foreground text-xs">
+                                        <TableCell className="p-2 border-none"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
                                     </TableRow>
                                 ) : (
                                     <>
@@ -142,8 +142,7 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-accent" : ""}
-                                                            ${searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
@@ -252,14 +251,14 @@ export const TodoList = (
                     </TableBody>
                 </Table>
                 <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-sm h-full px-2 truncate">
-                        <div> {!completionOnly && <> 表示：{viewCompletion ? "全て" : "未完了のみ"}</>}</div>
+                    <div className="flex justify-between items-center text-xs text-muted-foreground h-full px-2 truncate">
+                        <span > {!completionOnly && <> 最近完了したタスク：<span className="font-bold">{viewCompletion ? "表示" : "非表示"}</span></>}</span>
                         <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
                         <div className="flex items-center">
                             {command ? (
                                 <span>{command}</span>
                             ) : (
-                                <span>--{mode}--</span>
+                                <span>モード：<span className="font-bold">{mode}</span></span>
                             )}
                         </div>
                     </div>

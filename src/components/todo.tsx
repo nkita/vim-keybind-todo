@@ -20,11 +20,11 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2, ExternalLink } from "lucide-react"
+import { Check, List, Redo2, Undo2, ExternalLink, Save } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
-import { Button } from "./ui/button"
 import Link from "next/link"
+import { useAuth0 } from "@auth0/auth0-react"
 
 const MAX_UNDO_COUNT = 10
 
@@ -34,6 +34,8 @@ export const Todo = (
         prevTodos,
         loading,
         completionOnly,
+        isSave,
+        isUpdate,
         setTodos,
         setIsUpdate,
         onClickSaveButton
@@ -42,6 +44,8 @@ export const Todo = (
         prevTodos: TodoProps[]
         loading: Boolean
         completionOnly?: boolean
+        isSave: boolean
+        isUpdate: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
         onClickSaveButton: () => void;
@@ -73,7 +77,7 @@ export const Todo = (
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const { register, setFocus, getValues, setValue, watch } = useForm()
-
+    const { user, isLoading } = useAuth0()
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
         let enabledSort = true
@@ -866,6 +870,16 @@ export const Todo = (
                 <div className="flex items-center gap-2">
                     <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+
+                    {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                        <MenuButton onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                            {(isSave && isUpdate) ? (
+                                <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                            ) : (
+                                <Save size={16} />
+                            )}
+                        </MenuButton>
+                    }
                 </div>
                 <div className="border-r mx-2 h-5 hidden sm:block"></div>
                 <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
@@ -877,9 +891,7 @@ export const Todo = (
                     })}
                 </div>
             </div>
-            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`}
-                onMouseDown={handleMainMouseDown}
-            >
+            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`} onMouseDown={handleMainMouseDown}>
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                     <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                         <div
@@ -982,7 +994,7 @@ export const Todo = (
                     todoEnables={todoEnables}
                 />
             </div >
-        </div>
+        </div >
     )
 }
 const ExLink = ({

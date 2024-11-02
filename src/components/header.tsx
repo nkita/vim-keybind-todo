@@ -24,15 +24,9 @@ import Link from "next/link";
 export default function Header({
     user,
     userLoading,
-    isSave,
-    isUpdate,
-    onClickSaveButton
 }: {
     user: User | undefined,
     userLoading: boolean,
-    isSave?: boolean | undefined,
-    isUpdate?: boolean | undefined,
-    onClickSaveButton?: () => void
 }) {
 
     const h = `h-[60px]`
@@ -47,9 +41,6 @@ export default function Header({
                 <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了</ExLink>
             </div>
             <div className="flex gap-1 items-center  justify-end w-[260px]">
-                {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                    <SaveButton isSave={isSave} isUpdate={isUpdate} onClickSaveButton={onClickSaveButton} />
-                }
                 <UserMenu user={user} userLoading={userLoading} />
             </div>
         </div >
@@ -99,27 +90,6 @@ const UserMenu = ({ user, userLoading }: { user: User | undefined, userLoading: 
             )
             }
         </>
-    )
-}
-
-const SaveButton = ({ isUpdate, isSave, onClickSaveButton }: { isUpdate: boolean, isSave: boolean, onClickSaveButton: () => void }) => {
-    return (
-        <div className="flex gap-2">
-            {isUpdate ? (
-                <Button onClick={onClickSaveButton} size={"default"} className="gap-1">
-                    {isSave ? (
-                        <div className="pr-1">
-                            <div className="animate-spin h-4 w-4 border-2 p-1 border-white rounded-full border-t-transparent"></div>
-                        </div>
-                    ) : (
-                        <CloudUpload className="scale-75" />
-                    )}
-                    保存する<kbd className="flex items-center h-full text-primary-foreground">Ctrl</kbd>+<kbd className="flex items-center h-full text-primary-foreground">S</kbd>
-                </Button>
-            ) : (
-                <Button onClick={_ => { }} size={"default"} variant={"outline"} className="bg-muted text-muted-foreground gap-1" disabled><CircleCheck className="scale-75" />保存済み</Button>
-            )}
-        </div>
     )
 }
 

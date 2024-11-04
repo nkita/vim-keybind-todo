@@ -31,9 +31,9 @@ const Table = React.forwardRef<
         />
         <section className="w-full h-[150px] hidden sm:flex gap-8 md:gap-4 text-xs text-muted-foreground truncate justify-center items-center">
           <div className="flex flex-col h-full justify-center items-center gap-2">
-            <kbd>j</kbd>
-            <span className="flex flex-col items-center"><ArrowUpDown className="h-4" /><span className="hidden md:inline">タスクの移動</span></span>
             <kbd>k</kbd>
+            <span className="flex flex-col items-center"><ArrowUpDown className="h-4" /><span className="hidden md:inline">タスクの移動</span></span>
+            <kbd>j</kbd>
           </div>
           <div className="flex flex-col justify-center items-center gap-2 h-full">
             <div className="flex gap-2 items-center">

@@ -22,7 +22,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 
 export default function Header({
     user,
@@ -31,18 +31,27 @@ export default function Header({
     user: User | undefined,
     userLoading: boolean,
 }) {
-    const latestDate = 20241104
-    const [checkInfoDate, setCheckInfoDate] = useLocalStorage("todo_info", undefined)
-    const [badge, setBadge] = React.useState(false)
-    const h = `h-[60px]`
-    React.useEffect(() => {
-        setBadge(checkInfoDate === undefined || latestDate > checkInfoDate)
-    }, [checkInfoDate])
-
-    const { data: pullRequests, error } = useSWR(
+    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_info_date", undefined)
+    const [isBadge, setIsBadge] = React.useState(false)
+    const { data: pullRequests, error } = useSWRImmutable(
         'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
         url => fetch(url).then(res => res.json())
     );
+
+    React.useEffect(() => {
+        if (pullRequests && pullRequests.length > 0) {
+            const latestDate = new Date(pullRequests[0].closed_at).getTime()
+            setIsBadge(checkInfoDate === undefined || latestDate > checkInfoDate)
+        }
+    }, [checkInfoDate, pullRequests])
+
+    const handleClickBell = () => {
+        if (pullRequests && pullRequests.length > 0) {
+            setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
+        }
+    }
+
+    const h = `h-[60px]`
 
     return (
         <div className={`flex justify-between items-center w-full px-2 sm:px-8 ${h}`}>
@@ -56,8 +65,8 @@ export default function Header({
             </div>
             <div className="flex gap-5 items-center justify-end w-[260px]">
                 <div className="relative">
-                    {badge && <span className="absolute right-1 top-1 bg-destructive rounded-full text-xs w-2 h-2"></span>}
-                    <Popover>
+                    {isBadge && <span className="absolute right-1 top-1 bg-destructive rounded-full text-xs w-2 h-2"></span>}
+                    <Popover onOpenChange={handleClickBell}>
                         <PopoverTrigger className="rounded-full p-1 text-secondary-foreground"><Bell className="h-7" /></PopoverTrigger>
                         <PopoverContent align="end" className="shadow-xl">
                             {

@@ -6,7 +6,7 @@ import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { Check, Circle, CircleCheck, Dot, List, MessageCircleMore, Star } from "lucide-react"
+import { ArrowRightFromLine, Check, Circle, CircleCheck, Dot, List, MessageCircleMore, Space, Star } from "lucide-react"
 import { completionTaskProjectName } from "./config"
 
 export const TodoList = (
@@ -176,6 +176,11 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full justify-between items-center">
+                                                                <span className="align-middle text-muted-foreground/10 flex">
+                                                                    {t.indent !== undefined && t.indent >= 1 && <Space className="w-4" />}
+                                                                    {t.indent !== undefined && t.indent >= 2 && <Space className="w-4" />}
+                                                                    {t.indent !== undefined && t.indent >= 3 && <Space className="w-4"/>}
+                                                                </span>
                                                                 <div className="truncate w-full pr-2 sm:pr-0"
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>

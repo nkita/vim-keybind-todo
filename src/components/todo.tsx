@@ -237,7 +237,9 @@ export const Todo = (
             project: getValues(`edit-list-project-${targetTodoId}`),
             context: getValues(`edit-list-context-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
-            sort: targetTodo.sort
+            sort: targetTodo.sort,
+            indent: targetTodo.indent,
+            limitDate: targetTodo.limitDate
         }
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
@@ -267,7 +269,9 @@ export const Todo = (
             project: filterdTodos[index].project,
             context: filterdTodos[index].context,
             detail: filterdTodos[index].detail,
-            sort: filterdTodos[index].sort
+            sort: filterdTodos[index].sort,
+            indent: filterdTodos[index].indent,
+            limitDate: filterdTodos[index].limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -294,11 +298,40 @@ export const Todo = (
             project: targetTodo.project,
             context: targetTodo.context,
             detail: targetTodo.detail,
-            sort: targetTodo.sort
+            sort: targetTodo.sort,
+            indent: targetTodo.indent,
+            limitDate: targetTodo.limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
 
+    const indentTask = (todos: TodoProps[], prevTodos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
+        const targetTodo = todos.filter(t => t.id === targetId)[0]
+        const _target = targetTodo.indent
+        let indent = 0
+        if (_target !== undefined && [1, 2, 3].includes(_target)) {
+            indent = action === 'plus' ? _target + 1 : _target - 1
+            if (3 < indent) indent = 3
+            if (indent < 0) indent = 0
+        } else {
+            indent = action === "plus" ? 1 : 0
+        }
+        const _todos = todoFunc.modify(todos, {
+            id: targetTodo.id,
+            is_complete: targetTodo.is_complete,
+            priority: targetTodo.priority,
+            completionDate: targetTodo.completionDate,
+            creationDate: targetTodo.creationDate,
+            text: targetTodo.text,
+            project: targetTodo.project,
+            context: targetTodo.context,
+            detail: targetTodo.detail,
+            sort: targetTodo.sort,
+            indent: indent,
+            limitDate: targetTodo.limitDate
+        })
+        handleSetTodos(_todos, prevTodos)
+    }
     const changeProject = (index: number) => {
         setCurrentProject(index === -1 ? "" : projects[index])
         setCurrentIndex(0)
@@ -488,6 +521,13 @@ export const Todo = (
         redo(undoCount, historyTodos)
     }, setKeyEnableDefine(keymap['redo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
 
+    useHotkeys(keymap['indent'].keys, (e) => {
+        indentTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
+    }, setKeyEnableDefine(keymap['indent'].enable), [todos, prevTodos, filterdTodos, currentIndex])
+
+    useHotkeys(keymap['unIndnet'].keys, (e) => {
+        indentTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
+    }, setKeyEnableDefine(keymap['unIndnet'].enable), [todos, prevTodos, filterdTodos, currentIndex])
 
     /*******************
      * 

@@ -109,8 +109,6 @@ export default function Header({
                             }
                         </PopoverContent>
                     </Popover>
-                    <Link href="/info" target="_blank" className="text-muted-foreground hover:text-card-foreground">
-                    </Link>
                 </div>
                 <UserMenu user={user} userLoading={userLoading} />
             </div>

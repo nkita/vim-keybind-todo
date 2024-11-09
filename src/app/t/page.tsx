@@ -93,12 +93,14 @@ export default function Home() {
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
   return (
     <>
-      <Header user={user} userLoading={userLoading} isSave={isSave} isUpdate={isUpdate} onClickSaveButton={handleClickSaveButton} />
+      <Header user={user} userLoading={userLoading} />
       <article className={`${mainPCHeight}`}>
         <div className={`w-full h-full`}>
           <Todo
             todos={!userLoading && user ? todos : todosLS}
             prevTodos={prevTodos}
+            isSave={isSave}
+            isUpdate={isUpdate}
             loading={todosLoading || userLoading || fetch_todo_loading}
             setTodos={!userLoading && user ? setTodos : setTodosLS}
             setIsUpdate={setIsUpdate}

@@ -10,6 +10,8 @@ export interface TodoProps {
     context?: string    // @context    
     isArchived?: boolean
     sort?: number
+    limitDate?: string
+    indent?: number
 }
 
 

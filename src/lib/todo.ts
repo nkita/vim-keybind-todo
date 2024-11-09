@@ -25,7 +25,7 @@ export const todoFunc = {
                     priority: options.priority ?? "",
                     detail: "",
                     project: options.project ?? "",
-                    is_complete: false
+                    is_complete: false,
                 },
                 ...todos.slice(index === 0 ? 0 : todos.length)
             ]
@@ -60,6 +60,8 @@ export const todoFunc = {
             project: t.id === replace.id ? replace.project : t.project,
             context: t.id === replace.id ? replace.context : t.context,
             sort: t.id === replace.id ? replace.sort : t.sort,
+            indent: t.id === replace.id ? replace.indent : t.indent,
+            limitDate: t.id === replace.id ? replace.limitDate : t.limitDate,
         }
     }),
     delete: (todos: TodoProps[], id: string) => todos.filter(t => t.id !== id),

@@ -57,6 +57,8 @@ export type Keymap = {
     save: KeymapItem;
     undo: KeymapItem;
     redo: KeymapItem;
+    indent: KeymapItem;
+    unIndnet: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -365,5 +367,17 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: true },
         type: ["other"],
         description: "前の状態に戻る(redo)"
+    },
+    indent: {
+        keys: ['Tab'],
+        enable: { mode: ["normal"], withoutTask: false, useKey: true },
+        type: ["other"],
+        description: "インデントを下げる"
+    },
+    unIndnet: {
+        keys: ['Shift+Tab'],
+        enable: { mode: ["normal"], withoutTask: false, useKey: true },
+        type: ["other"],
+        description: "インデントを上げる"
     }
 }

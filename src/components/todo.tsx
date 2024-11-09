@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, ExternalLink, Save } from "lucide-react"
+import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
@@ -910,7 +910,6 @@ export const Todo = (
                 <div className="flex items-center gap-2">
                     <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
-
                     {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                         <MenuButton onClick={() => onClickSaveButton} disabled={!isUpdate}>
                             {(isSave && isUpdate) ? (
@@ -920,6 +919,8 @@ export const Todo = (
                             )}
                         </MenuButton>
                     }
+                    <MenuButton onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 3} ><IndentIncrease size={16} /></MenuButton>
+                    <MenuButton onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
                 </div>
                 <div className="border-r mx-2 h-5 hidden sm:block"></div>
                 <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >

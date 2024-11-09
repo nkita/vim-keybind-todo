@@ -176,7 +176,7 @@ export const TodoList = (
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full justify-between items-center">
-                                                                <span className="align-middle text-muted-foreground/10 flex">
+                                                                <span className="text-primary/30 flex">
                                                                     {t.indent !== undefined && t.indent >= 1 && <Space className="w-4" />}
                                                                     {t.indent !== undefined && t.indent >= 2 && <Space className="w-4" />}
                                                                     {t.indent !== undefined && t.indent >= 3 && <Space className="w-4"/>}

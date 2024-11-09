@@ -25,6 +25,8 @@ import { FaSitemap } from "react-icons/fa6";
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+// import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
 
@@ -872,8 +874,19 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, disabled, onClick }: { children: React.ReactNode, disabled: boolean, onClick: () => void }) => {
-        return <button onClick={onClick} className="p-1 border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled: boolean, label?: string, onClick: () => void }) => {
+        return (
+            <TooltipProvider>
+                <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                        <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                    </TooltipTrigger>
+                    <TooltipContent className="text-xs">
+                        {label}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        )
     }
 
     const [touchStartX, setTouchStartX] = useState(0);
@@ -908,10 +921,10 @@ export const Todo = (
             {/* オーバーレイ */}
             <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
                 <div className="flex items-center gap-2">
-                    <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
-                    <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                    <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                    <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                     {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                        <MenuButton onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                        <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                             {(isSave && isUpdate) ? (
                                 <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
                             ) : (
@@ -919,8 +932,8 @@ export const Todo = (
                             )}
                         </MenuButton>
                     }
-                    <MenuButton onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 3} ><IndentIncrease size={16} /></MenuButton>
-                    <MenuButton onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 3} ><IndentIncrease size={16} /></MenuButton>
+                    <MenuButton label="アウントデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
                 </div>
                 <div className="border-r mx-2 h-5 hidden sm:block"></div>
                 <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >

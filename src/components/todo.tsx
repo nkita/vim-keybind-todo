@@ -20,11 +20,13 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, ArrowRightLeft, Settings, List, Plus, Redo2, Undo2, ExternalLink } from "lucide-react"
+import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease } from "lucide-react"
 import { FaSitemap } from "react-icons/fa6";
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
-import { Button } from "./ui/button"
 import Link from "next/link"
+import { useAuth0 } from "@auth0/auth0-react"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+// import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
 
@@ -34,6 +36,8 @@ export const Todo = (
         prevTodos,
         loading,
         completionOnly,
+        isSave,
+        isUpdate,
         setTodos,
         setIsUpdate,
         onClickSaveButton
@@ -42,6 +46,8 @@ export const Todo = (
         prevTodos: TodoProps[]
         loading: Boolean
         completionOnly?: boolean
+        isSave: boolean
+        isUpdate: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
         onClickSaveButton: () => void;
@@ -73,7 +79,7 @@ export const Todo = (
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const { register, setFocus, getValues, setValue, watch } = useForm()
-
+    const { user, isLoading } = useAuth0()
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
         let enabledSort = true
@@ -233,7 +239,9 @@ export const Todo = (
             project: getValues(`edit-list-project-${targetTodoId}`),
             context: getValues(`edit-list-context-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
-            sort: targetTodo.sort
+            sort: targetTodo.sort,
+            indent: targetTodo.indent,
+            limitDate: targetTodo.limitDate
         }
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
@@ -263,7 +271,9 @@ export const Todo = (
             project: filterdTodos[index].project,
             context: filterdTodos[index].context,
             detail: filterdTodos[index].detail,
-            sort: filterdTodos[index].sort
+            sort: filterdTodos[index].sort,
+            indent: filterdTodos[index].indent,
+            limitDate: filterdTodos[index].limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -290,11 +300,40 @@ export const Todo = (
             project: targetTodo.project,
             context: targetTodo.context,
             detail: targetTodo.detail,
-            sort: targetTodo.sort
+            sort: targetTodo.sort,
+            indent: targetTodo.indent,
+            limitDate: targetTodo.limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
 
+    const indentTask = (todos: TodoProps[], prevTodos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
+        const targetTodo = todos.filter(t => t.id === targetId)[0]
+        const _target = targetTodo.indent
+        let indent = 0
+        if (_target !== undefined && [1, 2, 3].includes(_target)) {
+            indent = action === 'plus' ? _target + 1 : _target - 1
+            if (3 < indent) indent = 3
+            if (indent < 0) indent = 0
+        } else {
+            indent = action === "plus" ? 1 : 0
+        }
+        const _todos = todoFunc.modify(todos, {
+            id: targetTodo.id,
+            is_complete: targetTodo.is_complete,
+            priority: targetTodo.priority,
+            completionDate: targetTodo.completionDate,
+            creationDate: targetTodo.creationDate,
+            text: targetTodo.text,
+            project: targetTodo.project,
+            context: targetTodo.context,
+            detail: targetTodo.detail,
+            sort: targetTodo.sort,
+            indent: indent,
+            limitDate: targetTodo.limitDate
+        })
+        handleSetTodos(_todos, prevTodos)
+    }
     const changeProject = (index: number) => {
         setCurrentProject(index === -1 ? "" : projects[index])
         setCurrentIndex(0)
@@ -484,6 +523,13 @@ export const Todo = (
         redo(undoCount, historyTodos)
     }, setKeyEnableDefine(keymap['redo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
 
+    useHotkeys(keymap['indent'].keys, (e) => {
+        indentTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
+    }, setKeyEnableDefine(keymap['indent'].enable), [todos, prevTodos, filterdTodos, currentIndex])
+
+    useHotkeys(keymap['unIndnet'].keys, (e) => {
+        indentTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
+    }, setKeyEnableDefine(keymap['unIndnet'].enable), [todos, prevTodos, filterdTodos, currentIndex])
 
     /*******************
      * 
@@ -828,8 +874,19 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, disabled, onClick }: { children: React.ReactNode, disabled: boolean, onClick: () => void }) => {
-        return <button onClick={onClick} className="p-1 border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled: boolean, label?: string, onClick: () => void }) => {
+        return (
+            <TooltipProvider>
+                <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                        <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                    </TooltipTrigger>
+                    <TooltipContent className="text-xs">
+                        {label}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
+        )
     }
 
     const [touchStartX, setTouchStartX] = useState(0);
@@ -864,8 +921,19 @@ export const Todo = (
             {/* オーバーレイ */}
             <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
                 <div className="flex items-center gap-2">
-                    <MenuButton onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
-                    <MenuButton onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                    <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                    <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                    {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                        <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                            {(isSave && isUpdate) ? (
+                                <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                            ) : (
+                                <Save size={16} />
+                            )}
+                        </MenuButton>
+                    }
+                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 3} ><IndentIncrease size={16} /></MenuButton>
+                    <MenuButton label="アウントデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
                 </div>
                 <div className="border-r mx-2 h-5 hidden sm:block"></div>
                 <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
@@ -877,9 +945,7 @@ export const Todo = (
                     })}
                 </div>
             </div>
-            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`}
-                onMouseDown={handleMainMouseDown}
-            >
+            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`} onMouseDown={handleMainMouseDown}>
                 <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                     <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                         <div
@@ -982,7 +1048,7 @@ export const Todo = (
                     todoEnables={todoEnables}
                 />
             </div >
-        </div>
+        </div >
     )
 }
 const ExLink = ({

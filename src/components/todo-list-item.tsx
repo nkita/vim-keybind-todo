@@ -26,7 +26,7 @@ export const Item = (
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-primary rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} `
+    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-primary rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} ${label ? "" : "text-gray-400 focus:text-gray-600"}`
     const isView = currentIndex === index
         && currentPrefix === prefix
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
@@ -40,7 +40,7 @@ export const Item = (
                     autoFocus={currentIndex === index}
                     className={_classNameCont}
                     {...register(`${position}-${prefix}-${t.id}`)}>
-                    {label}
+                    {label ? label : "入力してください..."}
                 </button>
             </div >
             <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>

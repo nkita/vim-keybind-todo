@@ -94,6 +94,7 @@ export const todoFunc = {
                 case "completionDate":
                 case "text":
                 case "priority":
+                case "detail":
                 case "context":
                     if (value) isEmpty = false
                     break;

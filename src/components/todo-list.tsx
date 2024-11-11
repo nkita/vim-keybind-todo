@@ -139,6 +139,11 @@ export const TodoList = (
                                     <>
                                         {
                                             filterdTodos.map((t, index) => {
+                                                let nextTabIndent = 0
+                                                const nextIndex = index + 1
+                                                if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
+                                                    nextTabIndent = filterdTodos[nextIndex].indent === undefined ? 0 : filterdTodos[nextIndex].indent
+                                                }
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
@@ -175,11 +180,12 @@ export const TodoList = (
                                                             }
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
-                                                            <div className="flex w-full justify-between items-center">
-                                                                <span className="text-primary/30 flex">
-                                                                    {t.indent !== undefined && t.indent >= 1 && <Space className="w-4" />}
-                                                                    {t.indent !== undefined && t.indent >= 2 && <Space className="w-4" />}
-                                                                    {t.indent !== undefined && t.indent >= 3 && <Space className="w-4"/>}
+                                                            <div className="flex w-full h-full justify-between items-center">
+                                                                <span className="text-primary/70 flex text-xl">
+                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent === 0 && <span>└</span>}
+                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent > 0 && <span>├</span>}
+                                                                    {t.indent !== undefined && t.indent >= 2 && <span>─</span>}
+                                                                    {t.indent !== undefined && t.indent >= 3 && <span>──</span>}
                                                                 </span>
                                                                 <div className="truncate w-full pr-2 sm:pr-0"
                                                                     onTouchMove={handleTouchMove}

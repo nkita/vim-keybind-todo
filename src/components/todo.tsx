@@ -71,7 +71,7 @@ export const Todo = (
     const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
-        todosLimit: 30,
+        todosLimit: 100,
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)

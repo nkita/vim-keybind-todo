@@ -3,15 +3,17 @@ import { yyyymmddhhmmss } from "./time"
 import { isEqual } from "lodash"
 import { postFetch } from "./fetch"
 
-interface options {
+export interface options {
     text?: string
     priority?: string
     project?: string
     viewCompletionTask?: boolean
+    indent?: number
 }
 export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: options) => {
         const newId = self.crypto.randomUUID()
+        const _indent = options.indent ?? 0
         let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
         if (!options.viewCompletionTask) _todos = _todos.filter(t => t.is_complete !== true)
         if (index === 0 || index >= _todos.length) {
@@ -26,6 +28,7 @@ export const todoFunc = {
                     detail: "",
                     project: options.project ?? "",
                     is_complete: false,
+                    indent: options.indent ?? 0,
                 },
                 ...todos.slice(index === 0 ? 0 : todos.length)
             ]
@@ -42,7 +45,8 @@ export const todoFunc = {
                     priority: options.priority ?? "",
                     detail: "",
                     project: options.project ?? "",
-                    is_complete: false
+                    is_complete: false,
+                    indent: options.indent ?? 0,
                 },
                 ...todos.slice(_index + 1)
             ]

@@ -135,7 +135,7 @@ export const Detail = ({
                             </Button>
                         )}
                         {todo.project ? (
-                            <div className={`flex items-center text-ex-project text-sm font-light gap-4 pt-2`}>
+                            <div className={`flex items-center text-ex-project text-sm font-light gap-1 pt-3`}>
                                 <span className="flex items-center gap-1"><FaSitemap />{todo.project} </span>
                                 <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete('project')}><X className="w-4 h-4" /></Button>
                             </div>

@@ -153,7 +153,7 @@ export const TodoList = (
                                                 let nextTabIndent = 0
                                                 const nextIndex = index + 1
                                                 if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
-                                                    nextTabIndent = filterdTodos[nextIndex].indent === undefined ? 0 : filterdTodos[nextIndex].indent
+                                                    nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                 }
                                                 return (
                                                     <TableRow key={t.id}

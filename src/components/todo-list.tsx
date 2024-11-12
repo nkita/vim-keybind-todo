@@ -159,6 +159,7 @@ export const TodoList = (
                                                     <TableRow key={t.id}
                                                         className={`
                                                             ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${mode === "select" && currentIndex === index ? "font-extrabold border-2" : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`

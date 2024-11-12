@@ -1,6 +1,6 @@
 import { TodoProps, Sort, SaveTodosReturnProps } from "@/types"
 import { yyyymmddhhmmss } from "./time"
-import { isEqual } from "lodash"
+import { isEqual, replace } from "lodash"
 import { postFetch } from "./fetch"
 
 export interface options {
@@ -109,7 +109,21 @@ export const todoFunc = {
     getIndexById: (todos: TodoProps[], id: string | undefined) => {
         const index = todos.map(t => t.id).indexOf(id ? id : "")
         return index >= 0 ? index : todos.length - 1
+    },
+    /**
+     * TodoProps配列内のTodoを入れ替え元IDと入れ替え後IDを指定して入れ替える
+     */
+    swap: (todos: TodoProps[], fromId: string, toId: string) => {
+        const fromIndex = todos.map(t => t.id).indexOf(fromId)
+        const toIndex = todos.map(t => t.id).indexOf(toId)
+        if (fromIndex < 0 || toIndex < 0) return todos
+        const _todos = [...todos]
+        const from = _todos[fromIndex]
+        _todos[fromIndex] = _todos[toIndex]
+        _todos[toIndex] = from
+        return _todos
     }
+
 }
 
 export const postSaveTodos = async (

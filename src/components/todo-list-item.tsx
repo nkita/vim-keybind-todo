@@ -1,4 +1,5 @@
 import { TodoProps } from "@/types"
+import { ArrowRight, ArrowRightCircle, StickyNote } from "lucide-react"
 import { MouseEvent } from "react"
 export const Item = (
     {
@@ -40,7 +41,10 @@ export const Item = (
                     autoFocus={currentIndex === index}
                     className={_classNameCont}
                     {...register(`${position}-${prefix}-${t.id}`)}>
-                    {label ? label : "入力してください..."}
+                    <span className="flex items-center gap-1">
+                        <span className="truncate">{label ? label : "入力してください..."}</span>
+                        {t.detail && <span className="text-xs text-primary hidden sm:inline"><StickyNote className="inline w-3 h-3 scale-x-90" /></span>}
+                    </span>
                 </button>
             </div >
             <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>

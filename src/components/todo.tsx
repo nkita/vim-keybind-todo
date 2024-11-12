@@ -71,13 +71,14 @@ export const Todo = (
     const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
-        todosLimit: 30,
+        todosLimit: 100,
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
 
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [isLastPosition, setIsLastPosition] = useState(false)
+    const [selectTaskId, setSelectId] = useState<string | undefined>(undefined)
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
@@ -369,21 +370,43 @@ export const Todo = (
     useHotkeys(keymap['up'].keys, (e) => {
         if (0 < currentIndex) setCurrentIndex(currentIndex - 1)
         setCommand('')
-        setMode('normal')
-    }, setKeyEnableDefine(keymap['up'].enable), [currentIndex])
+        if (mode === "select") {
+            if (currentIndex <= 0 || !selectTaskId) return
+            handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex - 1].id), prevTodos)
+        } else {
+            setMode('normal')
+        }
+    }, setKeyEnableDefine(keymap['up'].enable), [currentIndex, mode, selectTaskId])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
         if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
         setCommand('')
-        setMode('normal')
-    }, setKeyEnableDefine(keymap['down'].enable), [currentIndex, filterdTodos])
+        if (mode === "select") {
+            if (currentIndex >= filterdTodos.length - 1 || !selectTaskId) return
+            handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex + 1].id), prevTodos)
+        } else {
+            setMode("normal")
+        }
+    }, setKeyEnableDefine(keymap['down'].enable), [todos, currentIndex, filterdTodos, mode, selectTaskId])
+
+    useHotkeys(keymap['moveToTop'].keys, (e) => {
+        setCurrentIndex(0)
+        if (mode !== "select") setMode('normal')
+    }, setKeyEnableDefine(keymap['moveToTop'].enable), [mode])
+
+    useHotkeys(keymap['moveToEnd'].keys, (e) => {
+        setCurrentIndex(filterdTodos.length - 1)
+        if (mode !== "select") setMode('normal')
+    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filterdTodos, mode])
+
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        const _indent = filterdTodos[currentIndex].indent ?? 0
+        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
     }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
@@ -407,8 +430,8 @@ export const Todo = (
     useHotkeys(keymap['append'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-
-        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        const _indent = currentIndex + 1 < filterdTodos.length ? filterdTodos[currentIndex + 1].indent ?? 0 : 0
+        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
     }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask, todoEnables, prevTodos])
@@ -586,6 +609,7 @@ export const Todo = (
     useHotkeys(keymap['normalMode'].keys, (e) => {
         if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
         setCommand('')
+        setSelectId(undefined)
     }, setKeyEnableDefine(keymap['normalMode'].enable), [mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
@@ -628,14 +652,6 @@ export const Todo = (
         setCommand(command + e.key)
         setMode('number')
     }, setKeyEnableDefine(keymap['numberInput'].enable), [command])
-
-    useHotkeys(keymap['moveToTop'].keys, (e) => {
-        setCurrentIndex(0)
-    }, setKeyEnableDefine(keymap['moveToTop'].enable))
-
-    useHotkeys(keymap['moveToEnd'].keys, (e) => {
-        setCurrentIndex(filterdTodos.length - 1)
-    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filterdTodos])
 
     /******************
      *
@@ -769,6 +785,20 @@ export const Todo = (
      * Command mode
      * 
      *******************/
+
+    /*******************
+     * 
+     * Select mode
+     * 
+     *******************/
+
+    useHotkeys(keymap['select'].keys, (e) => {
+        setSelectId(filterdTodos[currentIndex].id)
+        setMode('select')
+    }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
+
+
+
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)

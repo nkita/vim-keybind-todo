@@ -1,17 +1,19 @@
 import { TodoProps, Sort, SaveTodosReturnProps } from "@/types"
 import { yyyymmddhhmmss } from "./time"
-import { isEqual } from "lodash"
+import { isEqual, replace } from "lodash"
 import { postFetch } from "./fetch"
 
-interface options {
+export interface options {
     text?: string
     priority?: string
     project?: string
     viewCompletionTask?: boolean
+    indent?: number
 }
 export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: options) => {
         const newId = self.crypto.randomUUID()
+        const _indent = options.indent ?? 0
         let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
         if (!options.viewCompletionTask) _todos = _todos.filter(t => t.is_complete !== true)
         if (index === 0 || index >= _todos.length) {
@@ -26,6 +28,7 @@ export const todoFunc = {
                     detail: "",
                     project: options.project ?? "",
                     is_complete: false,
+                    indent: options.indent ?? 0,
                 },
                 ...todos.slice(index === 0 ? 0 : todos.length)
             ]
@@ -42,7 +45,8 @@ export const todoFunc = {
                     priority: options.priority ?? "",
                     detail: "",
                     project: options.project ?? "",
-                    is_complete: false
+                    is_complete: false,
+                    indent: options.indent ?? 0,
                 },
                 ...todos.slice(_index + 1)
             ]
@@ -94,6 +98,7 @@ export const todoFunc = {
                 case "completionDate":
                 case "text":
                 case "priority":
+                case "detail":
                 case "context":
                     if (value) isEmpty = false
                     break;
@@ -104,7 +109,21 @@ export const todoFunc = {
     getIndexById: (todos: TodoProps[], id: string | undefined) => {
         const index = todos.map(t => t.id).indexOf(id ? id : "")
         return index >= 0 ? index : todos.length - 1
+    },
+    /**
+     * TodoProps配列内のTodoを入れ替え元IDと入れ替え後IDを指定して入れ替える
+     */
+    swap: (todos: TodoProps[], fromId: string, toId: string) => {
+        const fromIndex = todos.map(t => t.id).indexOf(fromId)
+        const toIndex = todos.map(t => t.id).indexOf(toId)
+        if (fromIndex < 0 || toIndex < 0) return todos
+        const _todos = [...todos]
+        const from = _todos[fromIndex]
+        _todos[fromIndex] = _todos[toIndex]
+        _todos[toIndex] = from
+        return _todos
     }
+
 }
 
 export const postSaveTodos = async (

@@ -48,6 +48,9 @@ export const TodoList = (
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
+
+    const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
+    const [table_project_width, set_table_project_width] = useState("w-0 sm:w-[15%] max-w-[20%]")
     const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-80px)]"
     const tableHeadHeight = "h-[40px]"
     const taskBarHeight = "h-[40px]"
@@ -55,9 +58,8 @@ export const TodoList = (
     const table_idx_width = "w-[30px]"
     const table_completion_width = "w-[30px]"
     const table_priority_width = "w-[30px]"
-    const table_task_width = "w-[calc(100%-90px)] sm:w-[calc(70%-90px)]"
     const table_label_width = "w-0 sm:w-[15%] max-w-[20%]"
-    const table_project_width = "w-0 sm:w-[15%] max-w-[20%]"
+    // const table_project_width = "w-0 sm:w-[15%] max-w-[20%]"
 
     const [touchMoveX, setTouchMoveX] = useState(0);
     const handleTouchMove = (event: React.TouchEvent) => setTouchMoveX(event.changedTouches[0].screenX);
@@ -67,6 +69,15 @@ export const TodoList = (
         setTouchMoveX(0);
     };
 
+    useEffect(() => {
+        const hidden = "hidden"
+        const wTaskALL = "w-[calc(100%-90px)] sm:w-[calc(70%-90px)]"
+        const wTaskProject = "w-[calc(100%-90px)] sm:w-[calc(85%-90px)]"
+        const wProject = "w-0 sm:w-[15%] max-w-[20%]"
+
+        set_table_project_width(currentProject === "" ? wProject : hidden)
+        set_table_task_width(currentProject === "" ? wTaskALL : wTaskProject)
+    }, [currentProject])
     return (
         <>
             <div className="h-full">
@@ -104,7 +115,7 @@ export const TodoList = (
                     </div>
                 }
                 <Table className={`w-full border ${loading && "hidden"} ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
-                    <TableBody className="border-b bg-card text-card-foreground leading-6">
+                    <TableBody className="border-b bg-card text-card-foreground leading-4">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -139,10 +150,16 @@ export const TodoList = (
                                     <>
                                         {
                                             filterdTodos.map((t, index) => {
+                                                let nextTabIndent = 0
+                                                const nextIndex = index + 1
+                                                if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
+                                                    nextTabIndent = filterdTodos[nextIndex].indent ?? 0
+                                                }
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
                                                             ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${mode === "select" && currentIndex === index ? "font-extrabold border-2" : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
@@ -175,11 +192,12 @@ export const TodoList = (
                                                             }
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
-                                                            <div className="flex w-full justify-between items-center">
-                                                                <span className="text-primary/30 flex">
-                                                                    {t.indent !== undefined && t.indent >= 1 && <Space className="w-4" />}
-                                                                    {t.indent !== undefined && t.indent >= 2 && <Space className="w-4" />}
-                                                                    {t.indent !== undefined && t.indent >= 3 && <Space className="w-4"/>}
+                                                            <div className="flex w-full h-full justify-between  items-center">
+                                                                <span className="text-primary/90 flex text-md">
+                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent === 0 && <span>└─</span>}
+                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent > 0 && <span>├─</span>}
+                                                                    {t.indent !== undefined && t.indent >= 2 && <span>──</span>}
+                                                                    {t.indent !== undefined && t.indent >= 3 && <span>──</span>}
                                                                 </span>
                                                                 <div className="truncate w-full pr-2 sm:pr-0"
                                                                     onTouchMove={handleTouchMove}
@@ -193,6 +211,7 @@ export const TodoList = (
                                                                         mode={mode}
                                                                         label={t.text}
                                                                         register={register} />
+                                                                    {t.project && mode === "normal" && currentIndex !== index && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
                                                                 </div>
                                                                 <div className="flex sm:hidden items-center gap-1 ">
                                                                     {t.context && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}

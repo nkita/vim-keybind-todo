@@ -17,12 +17,13 @@ import Image from "next/image"
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 import * as React from "react";
-import { Bell, Check, ExternalLink, List, Lock } from "lucide-react";
+import { Bell, Check, ExternalLink, List, Lock, Sparkle } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import useSWRImmutable from "swr/immutable";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Header({
     user,
@@ -60,8 +61,9 @@ export default function Header({
                 <Link href="/lp"><h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm hover:text-primary transition-all delay-200`}>Shiba ToDo</h1></Link>
             </div>
             <div className="hidden sm:flex gap-2 items-center border p-1 rounded-full text-xs m-3 truncate bg-card">
-                <ExLink path={"/t"}><List size={13} /> 進行中</ExLink>
-                <ExLink path={"/c"} lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了</ExLink>
+                <ExLink path={"/me"} lock={true} label="これまでのタスクの履歴を表示します">{!user ? <Lock size={13} /> : <Sparkle size={13} />} 軌跡</ExLink>
+                <ExLink path={"/t"} label="進行中のタスクの一覧を表示します"><List size={13} /> 進行中</ExLink>
+                <ExLink path={"/c"} label="完了したタスクの一覧を表示します。過去完了したタスクの復元もこちらから" lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了</ExLink>
             </div>
             <div className="flex gap-5 items-center justify-end w-[260px]">
                 <div className="relative">
@@ -162,16 +164,34 @@ const UserMenu = ({ user, userLoading }: { user: User | undefined, userLoading: 
     )
 }
 
-const ExLink = ({ path, className = "", target, lock, children, ...props }: { path: string, className?: string | undefined, target?: string, lock?: boolean, children: React.ReactNode }) => {
+const ExLink = ({ path, label, className = "", target, lock, children, ...props }: { path: string, label?: string, className?: string | undefined, target?: string, lock?: boolean, children: React.ReactNode }) => {
     const pathname = usePathname()
     if (lock) {
         return (
-            <button disabled className="flex text-muted-foreground items-center gap-1 px-3 py-2 rounded-full">{children}</button>
+            <TooltipProvider>
+                <Tooltip delayDuration={100}>
+                    <TooltipTrigger asChild>
+                        <button disabled className="flex text-muted-foreground items-center gap-1 px-3 py-2 rounded-full">{children}</button>
+                    </TooltipTrigger>
+                    <TooltipContent className="text-xs">
+                        {label}
+                    </TooltipContent>
+                </Tooltip>
+            </TooltipProvider>
         )
     }
     return (
-        <Link href={path} target={target} className={cn(`${pathname === path ? "primary-gradient text-primary-foreground" : ""} flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
-            {children}
-        </Link>
+        <TooltipProvider>
+            <Tooltip delayDuration={100}>
+                <TooltipTrigger asChild>
+                    <Link href={path} target={target} className={cn(`${pathname === path ? "primary-gradient text-primary-foreground" : ""} flex items-center gap-1 px-3 py-2 rounded-full hover:bg-secondary transition-all fade-in-5`, className)} {...props} >
+                        {children}
+                    </Link>
+                </TooltipTrigger>
+                <TooltipContent className="text-xs">
+                    {label}
+                </TooltipContent>
+            </Tooltip>
+        </TooltipProvider>
     )
 }

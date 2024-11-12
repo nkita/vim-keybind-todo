@@ -59,20 +59,21 @@ export type Keymap = {
     redo: KeymapItem;
     indent: KeymapItem;
     unIndnet: KeymapItem;
+    select: KeymapItem;
 };
 
 export const keymap: Keymap = {
     up: {
         keys: ['k', 'ArrowUp'],
         keysDisp: ['k'],
-        enable: { mode: ["normal", "sort", "number"], withoutTask: false },
+        enable: { mode: ["normal", "sort", "number", "select"], withoutTask: false },
         type: ["focus"],
         description: "上へ移動"
     },
     down: {
         keys: ['j', 'ArrowDown'],
         keysDisp: ['j'],
-        enable: { mode: ["normal", "sort", "number"], withoutTask: false },
+        enable: { mode: ["normal", "sort", "number", "select"], withoutTask: false },
         type: ["focus"],
         description: "下へ移動"
     },
@@ -215,7 +216,7 @@ export const keymap: Keymap = {
     },
     normalMode: {
         keys: ['Esc', 'Enter'],
-        enable: { mode: ["edit", "command", "sort", 'number'] },
+        enable: { mode: ["edit", "command", "sort", 'number', 'select'] },
         type: ["other"],
         description: "戻る"
     },
@@ -267,14 +268,14 @@ export const keymap: Keymap = {
     moveToTop: {
         keys: ['0'],
         keysDisp: ['0'],
-        enable: { mode: ["normal"], withoutTask: false },
+        enable: { mode: ["normal", "select"], withoutTask: false },
         type: ["focus"],
         description: "先頭に移動"
     },
     moveToEnd: {
         keys: ['shift+g'],
         keysDisp: ['G'],
-        enable: { mode: ["normal"], withoutTask: false },
+        enable: { mode: ["normal", "select"], withoutTask: false },
         type: ["focus"],
         description: "最終行に移動"
     },
@@ -379,5 +380,11 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: false, useKey: true },
         type: ["other"],
         description: "インデントを上げる"
+    },
+    select: {
+        keys: ['s'],
+        enable: { mode: ["normal"], withoutTask: false },
+        type: ["focus"],
+        description: "タスク選択(select)モード"
     }
 }

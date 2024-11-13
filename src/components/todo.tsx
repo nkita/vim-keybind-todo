@@ -8,7 +8,7 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual } from "lodash";
+import { isEqual, findIndex, get } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -78,7 +78,7 @@ export const Todo = (
 
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [isLastPosition, setIsLastPosition] = useState(false)
-    const [selectTaskId, setSelectId] = useState<string | undefined>(undefined)
+    const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
@@ -111,8 +111,8 @@ export const Todo = (
         })
         const _p = projects.filter(p => p !== undefined && p !== "") as string[];
         const _l = labels.filter(l => l !== undefined && l !== "") as string[];
-        setProjects(Array.from(new Set([..._p])));
-        setLabels(Array.from(new Set([..._l])))
+        setProjects(Array.from(new Set([..._p])).sort());
+        setLabels(Array.from(new Set([..._l])).sort())
     }, [todos])
 
 
@@ -172,7 +172,7 @@ export const Todo = (
             } else {
                 const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
                 if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
-                if (mode === 'normal') setFocus(`list-${prefix}-${id}`)
+                if (mode === 'normal' || mode === "select") setFocus(`list-${prefix}-${id}`)
                 if (mode === 'editOnSort') setFocus("newtask")
                 setIsLastPosition(true)
             }
@@ -209,7 +209,8 @@ export const Todo = (
         }
     }
 
-    const toNormalMode = (mode: Mode, filterdTodos: TodoProps[], currentIndex: number) => {
+    const toNormalMode = (todos: TodoProps[], prevTodos: TodoProps[], mode: Mode, filterdTodos: TodoProps[], currentIndex: number) => {
+
         if (filterdTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
@@ -244,6 +245,7 @@ export const Todo = (
             indent: targetTodo.indent,
             limitDate: targetTodo.limitDate
         }
+
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
             _todos = todoFunc.delete(todos, targetTodoId)
@@ -339,7 +341,6 @@ export const Todo = (
         setCurrentProject(index === -1 ? "" : projects[index])
         setCurrentIndex(0)
         setCommand('')
-        setMode('normal')
     }
 
     const keepPosition = (filterdTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
@@ -373,10 +374,8 @@ export const Todo = (
         if (mode === "select") {
             if (currentIndex <= 0 || !selectTaskId) return
             handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex - 1].id), prevTodos)
-        } else {
-            setMode('normal')
         }
-    }, setKeyEnableDefine(keymap['up'].enable), [currentIndex, mode, selectTaskId])
+    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
@@ -385,21 +384,54 @@ export const Todo = (
         if (mode === "select") {
             if (currentIndex >= filterdTodos.length - 1 || !selectTaskId) return
             handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex + 1].id), prevTodos)
-        } else {
-            setMode("normal")
         }
-    }, setKeyEnableDefine(keymap['down'].enable), [todos, currentIndex, filterdTodos, mode, selectTaskId])
+    }, setKeyEnableDefine(keymap['down'].enable), [todos, currentIndex, filterdTodos, mode, selectTaskId, prevTodos])
 
     useHotkeys(keymap['moveToTop'].keys, (e) => {
         setCurrentIndex(0)
-        if (mode !== "select") setMode('normal')
-    }, setKeyEnableDefine(keymap['moveToTop'].enable), [mode])
+        // if (mode !== "select") setMode('normal')
+        if (mode === "select") {
+            if (currentIndex <= 0 || !selectTaskId) return
+            handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, selectTaskId), 0), prevTodos)
+        }
+    }, setKeyEnableDefine(keymap['moveToTop'].enable), [mode, selectTaskId, todos, prevTodos])
 
     useHotkeys(keymap['moveToEnd'].keys, (e) => {
         setCurrentIndex(filterdTodos.length - 1)
-        if (mode !== "select") setMode('normal')
-    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filterdTodos, mode])
+        if (mode === "select") {
+            if (currentIndex >= filterdTodos.length - 1 || !selectTaskId) return
+            handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, selectTaskId), todos.length - 1), prevTodos)
+        }
+        // if (mode !== "select") setMode('normal')
+    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filterdTodos, mode, selectTaskId, todos, prevTodos])
 
+    // move to right project
+    useHotkeys(keymap['moveProjectRight'].keys, (e) => {
+        const nextProjectIndex = getNextProjectIndex("right", projects, currentProject)
+        if (nextProjectIndex !== undefined) {
+            const nextProject = projects[nextProjectIndex]
+            if (mode === "select" && selectTaskId !== undefined) {
+                let updateTodos = todoFunc.update(todos, selectTaskId, { project: nextProject })
+                updateTodos = todoFunc.move(updateTodos, findIndex(updateTodos, ["id", selectTaskId]), findIndex(updateTodos, ["project", nextProject]))
+                handleSetTodos(updateTodos, prevTodos)
+            }
+            handleMoveProject("right", projects, currentProject)
+        }
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [currentProject, projects, todos, prevTodos, mode, selectTaskId])
+
+    // move to left project
+    useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
+        const nextProjectIndex = getNextProjectIndex("left", projects, currentProject)
+        if (nextProjectIndex !== undefined) {
+            const nextProject = nextProjectIndex >= 0 ? projects[nextProjectIndex] : ""
+            if (mode === "select" && selectTaskId !== undefined) {
+                let updateTodos = todoFunc.update(todos, selectTaskId, { project: nextProject })
+                updateTodos = todoFunc.move(updateTodos, findIndex(updateTodos, ["id", selectTaskId]), findIndex(updateTodos, ["project", nextProject]))
+                handleSetTodos(updateTodos, prevTodos)
+            }
+            handleMoveProject("left", projects, currentProject)
+        }
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [currentProject, projects, todos, prevTodos, mode, selectTaskId])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
@@ -504,16 +536,6 @@ export const Todo = (
         setMode('modal')
     }, setKeyEnableDefine(keymap['editContext'].enable))
 
-    // move to right project
-    useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        handleMoveProject("right", projects, currentProject)
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [currentProject, projects])
-
-    // move to left project
-    useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        handleMoveProject("left", projects, currentProject)
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [currentProject, projects])
-
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         completeTask(currentIndex, prevTodos)
@@ -607,10 +629,14 @@ export const Todo = (
      *******************/
     // change to normal mode
     useHotkeys(keymap['normalMode'].keys, (e) => {
-        if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
-        setCommand('')
-        setSelectId(undefined)
-    }, setKeyEnableDefine(keymap['normalMode'].enable), [mode, filterdTodos, currentIndex])
+        if (mode === "select") {
+            setSelectTaskId(undefined)
+            setMode("normal")
+        } else {
+            if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            setCommand('')
+        }
+    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
         if (!e.isComposing) {
@@ -633,15 +659,15 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
-        if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
+        if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [mode, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
         if (prefix !== "text") return
-        if (!e.isComposing) toNormalMode(mode, filterdTodos, currentIndex)
+        if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         setCommand('')
-    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [prefix, mode, filterdTodos, currentIndex])
+    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [todos, prevTodos, prefix, mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
@@ -793,7 +819,7 @@ export const Todo = (
      *******************/
 
     useHotkeys(keymap['select'].keys, (e) => {
-        setSelectId(filterdTodos[currentIndex].id)
+        setSelectTaskId(filterdTodos[currentIndex].id)
         setMode('select')
     }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
 
@@ -811,7 +837,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
-        if (prefix === 'normal') toNormalMode(mode, filterdTodos, currentIndex)
+        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         if (prefix === 'editDetail') {
             setCurrentIndex(index)
             setPrefix('detail')
@@ -824,42 +850,52 @@ export const Todo = (
             setPrefix(prefix)
             setMode("editDetail")
         }
-        if (prefix === "normal") toNormalMode(mode, filterdTodos, currentIndex)
+        if (prefix === "normal") toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         if (['context', 'project'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(mode, filterdTodos, currentIndex)
+        toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         e.preventDefault()
         e.stopPropagation();
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(mode, filterdTodos, currentIndex)
+        toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         e.stopPropagation();
     }
 
-    const handleMoveProject = (direction: "right" | "left", projects: string[], currentProject: string) => {
+    const getNextProjectIndex = (direction: "right" | "left", projects: string[], currentProject: string) => {
         if (projects.length <= 0) return
         if (direction === "right") {
             if (!currentProject) {
-                changeProject(0)
+                return 0
             } else {
                 const _index = projects.indexOf(currentProject)
-                if (_index < projects.length - 1) changeProject(_index + 1)
+                if (_index < projects.length - 1) return _index + 1
             }
         } else {
             if (!currentProject) return
             const _index = projects.indexOf(currentProject)
             if (_index === 0) {
-                changeProject(-1)
+                return -1
             } else {
-                changeProject(_index - 1)
+                return _index - 1
             }
         }
     }
+
+    const getProject = (projects: string[], index: number) => {
+        return index === -1 ? "" : projects[index]
+    }
+    const handleMoveProject = (direction: "right" | "left", projects: string[], currentProject: string) => {
+        const index = getNextProjectIndex(direction, projects, currentProject)
+        if (index === undefined) return
+        changeProject(index)
+    }
+
     const Project = (
         {
             currentProject, index, project, onClick

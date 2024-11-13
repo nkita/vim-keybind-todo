@@ -68,6 +68,16 @@ export const todoFunc = {
             limitDate: t.id === replace.id ? replace.limitDate : t.limitDate,
         }
     }),
+    /**
+     *  TodoProps配列とTodoPropsのIDとObjectを引数に
+     * 　変更後のTodoProps配列を返却する
+     */
+    update: (todos: TodoProps[], id: string, replace: Object) => todos.map(t => {
+        return {
+            ...t,
+            ...t.id === id ? replace : {}
+        }
+    }),
     delete: (todos: TodoProps[], id: string) => todos.filter(t => t.id !== id),
     diff: (todos: TodoProps[], prevTodos: TodoProps[]) => {
         const updates = todos.filter(t => {
@@ -122,8 +132,21 @@ export const todoFunc = {
         _todos[fromIndex] = _todos[toIndex]
         _todos[toIndex] = from
         return _todos
-    }
+    },
+    /**
+     * TodoProps配列内のTodoをfromIndexからtoIndexの位置に移動する
+     */
+    move: (todos: TodoProps[], fromIndex: number, toIndex: number) => {
+        if (fromIndex < 0 || toIndex < 0) return todos
+        if (fromIndex >= todos.length) fromIndex = todos.length - 1
+        if (toIndex >= todos.length) toIndex = todos.length - 1
+        const _todos = [...todos]
+        const from = _todos[fromIndex]
+        _todos.splice(fromIndex, 1)
+        _todos.splice(toIndex, 0, from)
+        return _todos
 
+    }
 }
 
 export const postSaveTodos = async (

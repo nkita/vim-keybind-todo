@@ -1,13 +1,12 @@
 'use client'
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { ArrowRightFromLine, Check, Circle, CircleCheck, Dot, List, MessageCircleMore, Space, Star } from "lucide-react"
-import { completionTaskProjectName } from "./config"
+import { MessageCircleMore, Star } from "lucide-react"
 
 export const TodoList = (
     {
@@ -115,7 +114,7 @@ export const TodoList = (
                     </div>
                 }
                 <Table className={`w-full border ${loading && "hidden"} ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
-                    <TableBody className="border-b bg-card text-card-foreground leading-4">
+                    <TableBody className="border-b bg-card text-card-foreground leading-5">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -159,7 +158,7 @@ export const TodoList = (
                                                     <TableRow key={t.id}
                                                         className={`
                                                             ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
-                                                            ${mode === "select" && currentIndex === index ? "font-extrabold border-2" : ""}
+                                                            ${mode === "select" && currentIndex === index ? " font-extrabold ring-primary border-2 " : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`

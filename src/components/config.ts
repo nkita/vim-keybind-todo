@@ -80,14 +80,14 @@ export const keymap: Keymap = {
     moveProjectRight: {
         keys: ['l', 'ArrowRight'],
         keysDisp: ['l'],
-        enable: { mode: ["normal", "sort", "number"], },
+        enable: { mode: ["normal", "sort", "number", "select"], },
         type: ["focus"],
         description: "プロジェクトタブを右に移動"
     },
     moveProjectLeft: {
         keys: ['h', 'ArrowLeft'],
         keysDisp: ['h'],
-        enable: { mode: ["normal", "sort", "number"] },
+        enable: { mode: ["normal", "sort", "number", "select"] },
         type: ["focus"],
         description: "プロジェクトタブを左に移動"
     },

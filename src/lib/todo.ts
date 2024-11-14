@@ -3,15 +3,16 @@ import { yyyymmddhhmmss } from "./time"
 import { isEqual, replace } from "lodash"
 import { postFetch } from "./fetch"
 
-export interface options {
-    text?: string
-    priority?: string
-    project?: string
-    viewCompletionTask?: boolean
-    indent?: number
+export interface Options {
+    text?: string;
+    priority?: string;
+    project?: string;
+    viewCompletionTask?: boolean;
+    indent?: number;
 }
+
 export const todoFunc = {
-    add: (index: number, todos: TodoProps[], options: options) => {
+    add: (index: number, todos: TodoProps[], options: Options) => {
         const newId = self.crypto.randomUUID()
         const _indent = options.indent ?? 0
         let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)

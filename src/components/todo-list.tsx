@@ -1,5 +1,5 @@
 'use client'
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
@@ -193,10 +193,16 @@ export const TodoList = (
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full h-full justify-between  items-center">
                                                                 <span className="text-primary/90 flex text-md">
-                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent === 0 && <span>└─</span>}
-                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent > 0 && <span>├─</span>}
-                                                                    {t.indent !== undefined && t.indent >= 2 && <span>──</span>}
-                                                                    {t.indent !== undefined && t.indent >= 3 && <span>──</span>}
+                                                                    {t.indent !== undefined &&
+                                                                        <>
+                                                                            {t.indent === 1 &&
+                                                                                <>
+                                                                                    {nextTabIndent === 0 && <span className="pl-2">└─</span>}
+                                                                                    {nextTabIndent > 0 && <span className="pl-2">├─</span>}
+                                                                                </>
+                                                                            }
+                                                                        </>
+                                                                    }
                                                                 </span>
                                                                 <div className="truncate w-full pr-2 sm:pr-0"
                                                                     onTouchMove={handleTouchMove}

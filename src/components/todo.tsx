@@ -312,15 +312,10 @@ export const Todo = (
 
     const indentTask = (todos: TodoProps[], prevTodos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
         const targetTodo = todos.filter(t => t.id === targetId)[0]
-        const _target = targetTodo.indent
-        let indent = 0
-        if (_target !== undefined && [1, 2, 3].includes(_target)) {
-            indent = action === 'plus' ? _target + 1 : _target - 1
-            if (3 < indent) indent = 3
-            if (indent < 0) indent = 0
-        } else {
-            indent = action === "plus" ? 1 : 0
-        }
+        let indent = targetTodo.indent ?? 0
+        if (action === 'plus') indent = 1
+        if (action === 'minus') indent = 0
+
         const _todos = todoFunc.modify(todos, {
             id: targetTodo.id,
             is_complete: targetTodo.is_complete,
@@ -407,31 +402,13 @@ export const Todo = (
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        const nextProjectIndex = getNextProjectIndex("right", projects, currentProject)
-        if (nextProjectIndex !== undefined) {
-            const nextProject = projects[nextProjectIndex]
-            if (mode === "select" && selectTaskId !== undefined) {
-                let updateTodos = todoFunc.update(todos, selectTaskId, { project: nextProject })
-                updateTodos = todoFunc.move(updateTodos, findIndex(updateTodos, ["id", selectTaskId]), findIndex(updateTodos, ["project", nextProject]))
-                handleSetTodos(updateTodos, prevTodos)
-            }
-            handleMoveProject("right", projects, currentProject)
-        }
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [currentProject, projects, todos, prevTodos, mode, selectTaskId])
+        handleMoveProject("right", projects, currentProject)
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [projects, currentProject])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        const nextProjectIndex = getNextProjectIndex("left", projects, currentProject)
-        if (nextProjectIndex !== undefined) {
-            const nextProject = nextProjectIndex >= 0 ? projects[nextProjectIndex] : ""
-            if (mode === "select" && selectTaskId !== undefined) {
-                let updateTodos = todoFunc.update(todos, selectTaskId, { project: nextProject })
-                updateTodos = todoFunc.move(updateTodos, findIndex(updateTodos, ["id", selectTaskId]), findIndex(updateTodos, ["project", nextProject]))
-                handleSetTodos(updateTodos, prevTodos)
-            }
-            handleMoveProject("left", projects, currentProject)
-        }
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [currentProject, projects, todos, prevTodos, mode, selectTaskId])
+        handleMoveProject("left", projects, currentProject)
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [projects, currentProject])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
@@ -887,9 +864,6 @@ export const Todo = (
         }
     }
 
-    const getProject = (projects: string[], index: number) => {
-        return index === -1 ? "" : projects[index]
-    }
     const handleMoveProject = (direction: "right" | "left", projects: string[], currentProject: string) => {
         const index = getNextProjectIndex(direction, projects, currentProject)
         if (index === undefined) return
@@ -998,7 +972,7 @@ export const Todo = (
                             )}
                         </MenuButton>
                     }
-                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 3} ><IndentIncrease size={16} /></MenuButton>
+                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
                     <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
                 </div>
                 <div className="border-r mx-2 h-5 hidden sm:block"></div>

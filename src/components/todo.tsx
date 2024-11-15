@@ -516,10 +516,7 @@ export const Todo = (
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         completeTask(currentIndex, prevTodos)
-        if (!viewCompletionTask) {
-            const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
-            setCurrentIndex(index)
-        }
+        if (!viewCompletionTask && currentIndex >= filterdTodos.length - 1) setCurrentIndex(filterdTodos.length - 1)
     }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos, prevTodos])
 
     // change sort mode

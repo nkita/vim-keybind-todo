@@ -6,7 +6,7 @@ import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { MessageCircleMore, Star } from "lucide-react"
+import { ChevronsUpDown, MessageCircleMore, Move, MoveVertical, Star } from "lucide-react"
 
 export const TodoList = (
     {
@@ -158,7 +158,7 @@ export const TodoList = (
                                                     <TableRow key={t.id}
                                                         className={`
                                                             ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
-                                                            ${mode === "select" && currentIndex === index ? " font-extrabold ring-primary border-2 " : ""}
+                                                            ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
@@ -167,7 +167,13 @@ export const TodoList = (
                                                             `}>{index + 1}</TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                                                             <div className="flex w-ful justify-center">
-                                                                {t.is_complete ? <FaCircleCheck className="text-primary scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                                {mode === "select" && currentIndex === index ? (
+                                                                    <ChevronsUpDown className="text-primary h-4 group-hover:text-gray-300" />
+                                                                ) : (
+                                                                    <>
+                                                                        {t.is_complete ? <FaCircleCheck className="text-primary group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 group-hover:text-green-500" />}
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </TableCell>
                                                         <TableCell className={`${table_priority_width} text-center h-[30px]`}>

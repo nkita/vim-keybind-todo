@@ -20,8 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease } from "lucide-react"
-import { FaSitemap } from "react-icons/fa6";
+import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
@@ -889,7 +888,7 @@ export const Todo = (
                         project === completionTaskProjectName ? (
                             <> <Check className="w-3" />{"完了済み"}</>
                         ) : (
-                            <> <FaSitemap className="w-3" />{project}</>
+                            <> <Box className="w-3" />{project}</>
                         )
                     ) : (
                         <> <List className="w-3" />{"ALL"}</>

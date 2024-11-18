@@ -5,7 +5,7 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
-import { CircleX, Plus, SquareXIcon, X } from "lucide-react";
+import { Box, CircleX, Plus, SquareXIcon, Tag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Detail = ({
@@ -126,22 +126,22 @@ export const Detail = ({
                     <div className={`max-h-[150px] bg-card text-card-foreground py-3 px-5 border-x ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
                         {todo.context ? (
                             <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1 py-2`}>
-                                <FaTag /> {todo.context}
+                                <Tag className="h-4"/> {todo.context}
                                 <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete("context")}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
                             <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
-                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"><FaTag />ラベルを追加</span>
+                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"><Tag className="h-4" />ラベルを追加</span>
                             </Button>
                         )}
                         {todo.project ? (
                             <div className={`flex items-center text-ex-project text-sm font-light gap-1 pt-3`}>
-                                <span className="flex items-center gap-1"><FaSitemap />{todo.project} </span>
+                                <span className="flex items-center gap-1"><Box className="h-4"/>{todo.project} </span>
                                 <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete('project')}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
                             <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
-                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"> <FaSitemap />プロジェクトを追加 </span>
+                                <Plus className="w-4 h-4" /><span className="flex items-center"><Box className="h-4"/>プロジェクトを追加 </span>
                             </Button>
                         )}
                     </div>

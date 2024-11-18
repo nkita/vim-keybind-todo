@@ -3,10 +3,10 @@ import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
 import { TodoProps, Sort, Mode } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
-import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
+import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
-import { ChevronsUpDown, MessageCircleMore, Move, MoveVertical, Star } from "lucide-react"
+import { Box, ChevronsUpDown, MessageCircleMore, Move, MoveVertical, Star, Tag } from "lucide-react"
 
 export const TodoList = (
     {
@@ -91,14 +91,14 @@ export const TodoList = (
                     </div>
                     <div className={`${table_task_width} p-2 truncate`}>タスク</div>
                     <div className={`flex items-center ${table_label_width}`}>
-                        <FaTag />
+                        <Tag className="h-3" />
                         <span className="truncate">
                             ラベル
                         </span >
                         {sort === "context" && <FaArrowUpZA />}
                     </div>
                     <div className={`flex items-center ${table_project_width} pr-2`}>
-                        <FaSitemap />
+                        <Box className="h-3" />
                         <span className="truncate">
                             プロジェクト
                         </span>

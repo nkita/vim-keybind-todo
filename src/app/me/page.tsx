@@ -6,7 +6,7 @@ import { TodoProps, SaveTodosReturnProps } from "@/types"
 import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchTodo, postFetch } from "@/lib/fetch";
-import { debounce } from "@/lib/utils";
+import { cn, debounce } from "@/lib/utils";
 import { postSaveTodos } from "@/lib/todo";
 import { TodoContext } from "@/provider/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
@@ -102,25 +102,99 @@ export default function Me() {
             <ExLink href="http://example.com" ><LinkIcon className="w-4 h-4" /></ExLink>
           </ul>
         </div>
-        <div className="flex gap-2 pb-8">
-          <Card className="text-sm w-[50%]">
-            <CardHeader><CardTitle className="flex items-center gap-1 text-md"><Hourglass className="h-5" />進行中</CardTitle></CardHeader>
-            <CardContent className="text-5xl text-right">10</CardContent>
-          </Card>
-          <Card className="text-sm w-[50%]">
-            <CardHeader><CardTitle className="flex items-center gap-1 text-md"><CircleCheck className="h-5" />完了</CardTitle></CardHeader>
-            <CardContent className="text-5xl text-right">12,380</CardContent>
-          </Card>
+        <div className="space-y-8 pb-8">
+          <div className="flex gap-2">
+            <Card className="text-sm w-[50%]">
+              <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
+              <CardContent className="text-5xl text-right">10</CardContent>
+            </Card>
+            <Card className="text-sm w-[50%]">
+              <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
+              <CardContent className="text-5xl text-right">12,380</CardContent>
+            </Card>
+          </div>
+          <div>
+            <span className="text-lg flex items-center gap-1 pb-4"><Footprints className="h-4" />My Projects</span>
+            <Card className="text-sm w-[100%]">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-1 text-lg text-ex-project">
+                  <Box className="h-[20px]" /><span>プライベート ｄふぁｓｄｆ</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+
+                <div className="flex justify-between items-start">
+                  <div className="flex flex-wrap gap-2 px-4 pt-4">
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>進捗中</ExLabelBadge>
+                    <ExLabelBadge>完了</ExLabelBadge>
+                    <ExLabelBadge>準備中</ExLabelBadge>
+                  </div>
+                  <div className=" text-xl p-6">
+                    <span className="flex items-center justify-between"><Hourglass className="h-4" /><span className="text-right">12</span></span>
+                    <span className="flex items-center justify-between"><CircleCheck className="h-4" /><span className="text-right">1002</span></span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-1 px-4">
+                  <div className="flex pt-4">
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>2024/12/11</span><span>〜</span><span>2025/12/11</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-        <div className="flex gap-2 pb-8">
-          <Card className="text-sm w-[100%]">
-            <CardHeader><CardTitle className="flex items-center gap-1 text-md"><Footprints className="h-5" />My Projects</CardTitle></CardHeader>
-            <CardContent className="flex flex-wrap gap-2">
-              <ExBadge>なし</ExBadge>
-              <ExBadge>プライベート</ExBadge>
-            </CardContent>
-          </Card>
-        </div>
+
+        {/*  まだ早い
+        <div className="py-8">
+          <span className="text-lg flex items-center gap-1 pb-4"><Footprints className="h-5" />My Projects</span>
+          <div className="space-y-4">
+            <Card className="text-sm w-[100%]">
+              <CardHeader><CardTitle className="flex items-center gap-1 text-md text-ex-project"><Box className="h-4" />その他</CardTitle></CardHeader>
+              <CardContent>
+                <p className="flex justify-between">
+                  <span>2024/1/3 〜 2024/3/4</span>
+                  <span className="flex gap-2">
+                    <span className="flex gap-1 items-center"><Hourglass className="h-4" />20</span>
+                    <span className="flex gap-1 items-center"><CircleCheck className="h-4" />30</span>
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+            <Card className="text-sm w-[100%]">
+              <CardHeader><CardTitle className="flex items-center gap-1 text-md text-ex-project"><Box className="h-4" />その他</CardTitle></CardHeader>
+              <CardContent>
+                <p className="flex justify-between">
+                  <span>2024/1/3 〜 2024/3/4</span>
+                  <span className="flex gap-2">
+                    <span className="flex gap-1 items-center"><Hourglass className="h-4" />20</span>
+                    <span className="flex gap-1 items-center"><CircleCheck className="h-4" />30</span>
+                  </span>
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div> */}
         <hr />
         <div className="space-y-8">
           <div className="flex justify-between text-sm items-center pt-4">
@@ -248,10 +322,14 @@ const ExLink = ({ href, label, rel, target, children, ...props }: { href: string
   )
 }
 
-const ExBadge = ({ children, ...props }: { children: React.ReactNode }) => {
+const ExBadge = ({ children, className, ...props }: { className?: string, children: React.ReactNode }) => {
   return (
     <Badge variant={"outline"}  {...props}>
-      <span className="flex items-center gap-1 text-ex-project"><Box className="w-4" />{children}</span>
+      <span className={cn("flex items-center gap-1", className)}>{children}</span>
     </Badge>
   )
+}
+
+const ExLabelBadge = ({ children, className, ...props }: { className?: string, children: React.ReactNode }) => {
+  return <ExBadge className={cn("text-ex-label text-xs ", className)}><Tag className="h-3" /> {children}</ExBadge>
 }

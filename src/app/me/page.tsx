@@ -13,7 +13,7 @@ import { useLocalStorage } from "@/hook/useLocalStrorage";
 import { redirect } from "next/navigation";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Activity, Box, BoxIcon, CircleCheck, Footprints, History, Hourglass, Link as LinkIcon, Mail, Tag, User, X } from "lucide-react";
+import { Activity, Box, BoxIcon, Calendar, Check, Circle, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -210,7 +210,7 @@ export default function Me() {
               </SelectContent>
             </Select>
           </div>
-          <div className={`flex justify-center w-full pb-8`}>
+          <div className={`flex justify-center w-full`}>
             <Card className="flex justify-center w-full p-4 max-w-[800px]">
               <ActivityCalendar
                 eventHandlers={{
@@ -259,8 +259,52 @@ export default function Me() {
               />
             </Card>
           </div>
-          <div>
-            <span className="text-lg flex items-center gap-1"><History className="h-5" />タイムライン</span>
+          <div className="flex flex-col gap-4">
+            <section>
+              <h1 className="text-lg flex items-center gap-1 sticky top-0 h-[100px] bg-background"><History className="h-5" />タイムライン</h1>
+              <div className="pl-2">
+
+                <h2 className="sticky top-[100px] h-[40px] bg-background ">2024年12月</h2>
+                <div className="border-l border-l-primary m-4 p-4 mt-0">
+
+                  {/* 作成 */}
+                  <div className="p-4 mb-4">
+                    <div className="text-xs text-secondary-foreground flex justify-between py-1">
+                      <span className="flex items-center text-primary">
+                        <Rocket className="h-4" /> 作成
+                      </span>
+                      <span className="flex gap-2 ">
+                        <span className="flex items-center"><Calendar className="h-3" />3日</span>
+                        <span className="flex items-center"><Clock className="h-3" /> 23:00:01</span>
+                      </span>
+                    </div>
+                    <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
+                      あたらしいタスクを追加ここにはタスクの内容が表示される
+                      <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
+                    </h3>
+                  </div>
+
+                  {/* 完了 */}
+                  <div className="p-4 border bg-card shadow-lg rounded-lg mb-4">
+                    <div className="text-xs text-secondary-foreground flex justify-between py-1">
+                      <span className="flex items-center text-primary">
+                        <Check className="h-4 " />完了
+                      </span>
+                      <span className="flex gap-2 ">
+                        <span className="flex items-center"><Calendar className="h-3" />3日</span>
+                        <span className="flex items-center"><Clock className="h-3" /> 23:00:01</span>
+                      </span>
+                    </div>
+                    <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
+                      あたらしいタスクを追加
+                      <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
+                    </h3>
+                  </div>
+
+                </div>
+                <div className="flex w-full justify-center py-12"><Button size={"lg"}>Read more</Button></div>
+              </div>
+            </section>
             {/* <Card className="text-sm">
             <CardHeader>
               <CardTitle className="text-base text-ex-project flex gap-1 items-center"><Box className="h-5"/>プライベート</CardTitle>

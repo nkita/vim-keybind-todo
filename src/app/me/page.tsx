@@ -29,6 +29,7 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Chart } from "react-google-charts";
+import { activity, summary, timeline } from "@/app/me/sample_data"
 
 export default function Me() {
 
@@ -45,38 +46,6 @@ export default function Me() {
     setMousePosition({ x: event.clientX, y: event.clientY });
   };
   const [popup, setPopup] = useState(false);
-  const data = [
-    {
-      date: '2024-01-01',
-      count: 0,
-      level: 0,
-    },
-    {
-      date: '2024-06-22',
-      count: 2,
-      level: 1,
-    },
-    {
-      date: '2024-06-23',
-      count: 2,
-      level: 2,
-    },
-    {
-      date: '2024-06-24',
-      count: 2,
-      level: 3,
-    },
-    {
-      date: '2024-06-25',
-      count: 16,
-      level: 4,
-    },
-    {
-      date: '2024-11-29',
-      count: 11,
-      level: 3,
-    },
-  ];
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
   return (
     <>
@@ -106,62 +75,52 @@ export default function Me() {
           <div className="flex gap-2">
             <Card className="text-sm w-[50%]">
               <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
-              <CardContent className="text-5xl text-right">10</CardContent>
+              <CardContent className="text-5xl text-right">{summary.in_progress}</CardContent>
             </Card>
             <Card className="text-sm w-[50%]">
               <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
-              <CardContent className="text-5xl text-right">12,380</CardContent>
+              <CardContent className="text-5xl text-right">{summary.completed}</CardContent>
             </Card>
           </div>
           <div>
             <span className="text-lg flex items-center gap-1 pb-4"><Footprints className="h-4" />My Projects</span>
-            <Card className="text-sm w-[100%]">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-1 text-lg text-ex-project">
-                  <Box className="h-[20px]" /><span>プライベート ｄふぁｓｄｆ</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <div className="space-y-8">
 
-                <div className="flex justify-between items-start">
-                  <div className="flex flex-wrap gap-2 px-4 pt-4">
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>進捗中</ExLabelBadge>
-                    <ExLabelBadge>完了</ExLabelBadge>
-                    <ExLabelBadge>準備中</ExLabelBadge>
-                  </div>
-                  <div className=" text-xl p-6">
-                    <span className="flex items-center justify-between"><Hourglass className="h-4" /><span className="text-right">12</span></span>
-                    <span className="flex items-center justify-between"><CircleCheck className="h-4" /><span className="text-right">1002</span></span>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1 px-4">
-                  <div className="flex pt-4">
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                    <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>2024/12/11</span><span>〜</span><span>2025/12/11</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+              {summary.projects.map((project, index) => (
+                <Card key={index} className="text-sm w-[100%]">
+                  <CardContent>
+                    <div className="flex items-start gap-1  pt-6 justify-between">
+                      <div>
+                        <div className="flex items-start gap-1 text-ex-project pr-1">
+                          <div className="w-[20px]"><Box className="h-[18px]" /></div><span>{project.name}</span>
+                        </div>
+                        {project.tags.length > 0 &&
+                          <div className="flex flex-wrap gap-2 px-4 py-6">
+                            {project.tags.map((tag, index) => (
+                              <ExLabelBadge key={index}>{tag}</ExLabelBadge>
+                            ))}
+                          </div>
+                        }
+                      </div>
+                      <div className=" text-xl">
+                        <span className="flex items-center justify-between gap-1"><Hourglass className="h-4" /><span className="text-right">{project.in_progress}</span></span>
+                        <span className="flex items-center justify-between gap-1"><CircleCheck className="h-4" /><span className="text-right">{project.completed}</span></span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1 px-4 ">
+                      <div className="flex py-2">
+                        <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                        <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>{project.start}</span><span>〜</span><span>{project.end}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+              }
+            </div>
           </div>
         </div>
 
@@ -195,8 +154,7 @@ export default function Me() {
             </Card>
           </div>
         </div> */}
-        <hr />
-        <div className="space-y-8">
+        < div className="space-y-8" >
           <div className="flex justify-between text-sm items-center pt-4">
             <span className="text-lg flex items-center gap-1"><Activity className="h-5" />アクティビティ</span>
             <Select>
@@ -216,7 +174,7 @@ export default function Me() {
                 eventHandlers={{
                   onMouseOver: (event) => (activity) => { },
                 }}
-                data={data}
+                data={activity}
                 showWeekdayLabels
                 maxLevel={9}
                 fontSize={12}
@@ -267,39 +225,23 @@ export default function Me() {
                 <h2 className="sticky top-[100px] h-[40px] bg-background ">2024年12月</h2>
                 <div className="border-l border-l-primary m-4 p-4 mt-0">
 
-                  {/* 作成 */}
-                  <div className="p-4 mb-4">
-                    <div className="text-xs text-secondary-foreground flex justify-between py-1">
-                      <span className="flex items-center text-primary">
-                        <Rocket className="h-4" /> 作成
-                      </span>
-                      <span className="flex gap-2 ">
-                        <span className="flex items-center"><Calendar className="h-3" />3日</span>
-                        <span className="flex items-center"><Clock className="h-3" /> 23:00:01</span>
-                      </span>
+                  {timeline.map((item, index) => (
+                    <div key={index} className={`p-4 mb-4 ${item.is_complete ? 'border bg-card shadow-lg rounded-lg' : ''}`}>
+                      <div className="text-xs text-secondary-foreground flex justify-between py-1">
+                        <span className={`flex items-center ${item.is_complete ? 'text-primary' : ''}`}>
+                          {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : '作成'}
+                        </span>
+                        <span className="flex gap-2">
+                          <span className="flex items-center"><Calendar className="h-3" />{item.creationDate}</span>
+                          <span className="flex items-center"><Clock className="h-3" /> {item.creationDate}</span>
+                        </span>
+                      </div>
+                      <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
+                        {item.text}
+                        <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
+                      </h3>
                     </div>
-                    <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
-                      あたらしいタスクを追加ここにはタスクの内容が表示される
-                      <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
-                    </h3>
-                  </div>
-
-                  {/* 完了 */}
-                  <div className="p-4 border bg-card shadow-lg rounded-lg mb-4">
-                    <div className="text-xs text-secondary-foreground flex justify-between py-1">
-                      <span className="flex items-center text-primary">
-                        <Check className="h-4 " />完了
-                      </span>
-                      <span className="flex gap-2 ">
-                        <span className="flex items-center"><Calendar className="h-3" />3日</span>
-                        <span className="flex items-center"><Clock className="h-3" /> 23:00:01</span>
-                      </span>
-                    </div>
-                    <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
-                      あたらしいタスクを追加
-                      <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
-                    </h3>
-                  </div>
+                  ))}
 
                 </div>
                 <div className="flex w-full justify-center py-12"><Button size={"lg"}>Read more</Button></div>

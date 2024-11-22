@@ -1,4 +1,5 @@
 import { TodoProps } from "@/types";
+import { update } from "lodash";
 
 export const summary = {
     "in_progress": 10,
@@ -73,13 +74,13 @@ export const activity = [
 ];
 
 
-export const timeline: TodoProps[] = [
+export const timeline_page1 = [
     {
         id: '1',
         is_complete: false,
         priority: 'A',
         completionDate: null,
-        creationDate: '2024-01-01',
+        creationDate: '2024-12-01',
         text: 'Complete the project documentation',
         detail: 'Finish writing the documentation for the new project',
         project: '+documentation',
@@ -88,12 +89,13 @@ export const timeline: TodoProps[] = [
         sort: 1,
         limitDate: '2024-01-10',
         indent: 0,
+        updateDate: '2024-12-22T16:23:09.000Z',
     },
     {
         id: '2',
         is_complete: true,
         priority: 'B',
-        completionDate: '2024-06-22',
+        completionDate: '2024-11-22',
         creationDate: '2024-06-20',
         text: 'Review pull requests',
         detail: 'Review the pending pull requests in the repository',
@@ -103,6 +105,7 @@ export const timeline: TodoProps[] = [
         sort: 2,
         limitDate: '2024-06-21',
         indent: 0,
+        updateDate: '2024-12-11T16:23:09.000Z',
     },
     {
         id: '3',
@@ -118,6 +121,7 @@ export const timeline: TodoProps[] = [
         sort: 3,
         limitDate: '2024-06-30',
         indent: 0,
+        updateDate: '2024-12-11T16:23:09.000Z',
     },
     {
         id: '4',
@@ -133,6 +137,7 @@ export const timeline: TodoProps[] = [
         sort: 4,
         limitDate: '2024-07-05',
         indent: 0,
+        updateDate: '2024-12-01T16:23:09.000Z',
     },
     {
         id: '5',
@@ -148,6 +153,7 @@ export const timeline: TodoProps[] = [
         sort: 5,
         limitDate: '2024-07-09',
         indent: 0,
+        updateDate: '2024-12-01T16:23:09.000Z',
     },
     {
         id: '6',
@@ -163,6 +169,7 @@ export const timeline: TodoProps[] = [
         sort: 6,
         limitDate: '2024-07-20',
         indent: 0,
+        updateDate: '2024-11-21T16:23:09.000Z',
     },
     {
         id: '7',
@@ -178,6 +185,7 @@ export const timeline: TodoProps[] = [
         sort: 7,
         limitDate: '2024-07-25',
         indent: 0,
+        updateDate: '2024-11-21T16:23:09.000Z',
     },
     {
         id: '8',
@@ -193,6 +201,7 @@ export const timeline: TodoProps[] = [
         sort: 8,
         limitDate: '2024-07-29',
         indent: 0,
+        updateDate: '2024-11-21T16:23:09.000Z',
     },
     {
         id: '9',
@@ -208,6 +217,7 @@ export const timeline: TodoProps[] = [
         sort: 9,
         limitDate: '2024-08-05',
         indent: 0,
+        updateDate: '2024-11-20T16:23:09.000Z',
     },
     {
         id: '10',
@@ -223,5 +233,89 @@ export const timeline: TodoProps[] = [
         sort: 10,
         limitDate: '2024-08-15',
         indent: 0,
+        updateDate: '2024-11-20T16:23:09.000Z',
     }
 ];
+
+export const timeline_page2 = [
+    {
+        id: '11',
+        is_complete: false,
+        priority: 'K',
+        completionDate: null,
+        creationDate: '2024-08-20',
+        text: 'Conduct code review',
+        detail: 'Review the code for the new feature implementation',
+        project: '+codeReview',
+        context: '@work',
+        isArchived: false,
+        sort: 11,
+        limitDate: '2024-08-25',
+        indent: 0,
+        updateDate: '2024-10-21T16:23:09.000Z',
+    },
+    {
+        id: '12',
+        is_complete: true,
+        priority: 'L',
+        completionDate: '2024-08-30',
+        creationDate: '2024-08-28',
+        text: 'Deploy new version',
+        detail: 'Deploy the new version of the application to production',
+        project: '+deployment',
+        context: '@office',
+        isArchived: false,
+        sort: 12,
+        limitDate: '2024-08-29',
+        indent: 0,
+        updateDate: '2024-10-20T16:23:09.000Z',
+    },
+    {
+        id: '13',
+        is_complete: false,
+        priority: 'M',
+        completionDate: null,
+        creationDate: '2024-09-01',
+        text: 'Write unit tests',
+        detail: 'Write unit tests for the new feature',
+        project: '+testing',
+        context: '@home',
+        isArchived: false,
+        sort: 13,
+        limitDate: '2024-09-05',
+        indent: 0,
+        updateDate: '2024-10-11T16:23:09.000Z',
+    },
+    {
+        id: '14',
+        is_complete: false,
+        priority: 'N',
+        completionDate: null,
+        creationDate: '2024-09-10',
+        text: 'Update documentation',
+        detail: 'Update the project documentation with the latest changes',
+        project: '+documentation',
+        context: '@work',
+        isArchived: false,
+        sort: 14,
+        limitDate: '2024-09-15',
+        indent: 0,
+        updateDate: '2024-10-11T16:23:09.000Z',
+    },
+    {
+        id: '15',
+        is_complete: true,
+        priority: 'O',
+        completionDate: '2024-09-20',
+        creationDate: '2024-09-18',
+        text: 'Fix minor bugs',
+        detail: 'Fix minor bugs reported by users',
+        project: '+bugfix',
+        context: '@office',
+        isArchived: false,
+        sort: 15,
+        limitDate: '2024-09-19',
+        indent: 0,
+        updateDate: '2024-10-11T16:23:09.000Z',
+    }
+]

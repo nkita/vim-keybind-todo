@@ -12,6 +12,7 @@ export interface TodoProps {
     sort?: number
     limitDate?: string
     indent?: number
+    updateDate?: string
 }
 
 

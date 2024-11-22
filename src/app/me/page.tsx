@@ -1,7 +1,7 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useContext, Component } from "react"
+import { useState, useEffect, useContext, Component, Fragment } from "react"
 import { TodoProps, SaveTodosReturnProps } from "@/types"
 import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -29,7 +29,7 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Chart } from "react-google-charts";
-import { activity, summary, timeline } from "@/app/me/sample_data"
+import { activity, summary, timeline_page1, timeline_page2 } from "@/app/me/sample_data"
 
 export default function Me() {
 
@@ -40,6 +40,8 @@ export default function Me() {
     }
   }, [user, userLoading])
 
+
+  const [timeline, setTimeline] = useState(timeline_page1)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (event) => {
@@ -47,6 +49,10 @@ export default function Me() {
   };
   const [popup, setPopup] = useState(false);
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
+  const handleClickReadmore = () => {
+    setTimeline(prev => [...prev, ...timeline_page2])
+  }
+
   return (
     <>
       <Header user={user} userLoading={userLoading} />
@@ -83,9 +89,8 @@ export default function Me() {
             </Card>
           </div>
           <div>
-            <span className="text-lg flex items-center gap-1 pb-4"><Footprints className="h-4" />My Projects</span>
+            <span className="text-lg flex items-center gap-1 "><Footprints className="h-4" />My Projects</span>
             <div className="space-y-8">
-
               {summary.projects.map((project, index) => (
                 <Card key={index} className="text-sm w-[100%]">
                   <CardContent>
@@ -108,10 +113,6 @@ export default function Me() {
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 px-4 ">
-                      <div className="flex py-2">
-                        <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                        <span className="bg-primary/30 w-[10px] h-[10px] border m-[0.2px]"></span>
-                      </div>
                       <div className="flex justify-between">
                         <span>{project.start}</span><span>〜</span><span>{project.end}</span>
                       </div>
@@ -154,7 +155,7 @@ export default function Me() {
             </Card>
           </div>
         </div> */}
-        < div className="space-y-8" >
+        <div className="space-y-8" >
           <div className="flex justify-between text-sm items-center pt-4">
             <span className="text-lg flex items-center gap-1"><Activity className="h-5" />アクティビティ</span>
             <Select>
@@ -217,34 +218,66 @@ export default function Me() {
               />
             </Card>
           </div>
-          <div className="flex flex-col gap-4">
+          <div>
             <section>
-              <h1 className="text-lg flex items-center gap-1 sticky top-0 h-[100px] bg-background"><History className="h-5" />タイムライン</h1>
+              <h1 className="text-lg flex items-center gap-1 sticky top-0 h-[80px] w-full bg-background"><History className="h-5" />タイムライン</h1>
               <div className="pl-2">
-
-                <h2 className="sticky top-[100px] h-[40px] bg-background ">2024年12月</h2>
-                <div className="border-l border-l-primary m-4 p-4 mt-0">
-
-                  {timeline.map((item, index) => (
-                    <div key={index} className={`p-4 mb-4 ${item.is_complete ? 'border bg-card shadow-lg rounded-lg' : ''}`}>
-                      <div className="text-xs text-secondary-foreground flex justify-between py-1">
-                        <span className={`flex items-center ${item.is_complete ? 'text-primary' : ''}`}>
-                          {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : '作成'}
-                        </span>
-                        <span className="flex gap-2">
-                          <span className="flex items-center"><Calendar className="h-3" />{item.creationDate}</span>
-                          <span className="flex items-center"><Clock className="h-3" /> {item.creationDate}</span>
-                        </span>
+                {timeline.map((item, index) => {
+                  const prevUpdateDate = timeline[index - 1]?.updateDate.split("-")
+                  const updateDate = item.updateDate.split("-")
+                  const isLabel = !prevUpdateDate || (prevUpdateDate[0] !== updateDate[0] || prevUpdateDate && prevUpdateDate[1] !== updateDate[1])
+                  return (
+                    <Fragment key={index}>
+                      {updateDate && isLabel && <h2 className="sticky top-[80px] h-[40px] bg-background ">{`${updateDate[0]}年${updateDate[1]}月`}</h2>}
+                      <div className={`p-4 mb-4  ${item.is_complete ? 'ml-4 border bg-card rounded-lg' : 'ml-4 '}`}>
+                        <div className="text-xs text-secondary-foreground flex justify-between py-1">
+                          <span className={`flex items-center ${item.is_complete ? 'text-primary' : ''}`}>
+                            {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
+                          </span>
+                          <span className="flex gap-2">
+                            <span className="flex items-center"><Calendar className="h-4 text-muted-foreground" />{updateDate[2].split("T")[0]}日</span>
+                            <span className="flex items-center"><Clock className="h-4 text-muted-foreground" /> {updateDate[2].split("T")[1].split(".")[0]}</span>
+                          </span>
+                        </div>
+                        <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
+                          {item.text}
+                          <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
+                        </h3>
                       </div>
-                      <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
-                        {item.text}
-                        <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
-                      </h3>
-                    </div>
-                  ))}
+                    </Fragment>
+                  )
+                })}
 
-                </div>
-                <div className="flex w-full justify-center py-12"><Button size={"lg"}>Read more</Button></div>
+                {/* {timeline.map((item, index) => {
+                  const prevUpdateDate = timeline[index - 1]?.updateDate.split("-")
+                  const updateDate = item.updateDate.split("-")
+                  const isLabel = !prevUpdateDate || (prevUpdateDate[0] !== updateDate[0] || prevUpdateDate && prevUpdateDate[1] !== updateDate[1])
+                  console.log(prevUpdateDate, updateDate, isLabel)
+                  return (
+                    <div key={index} >
+                      {updateDate && isLabel && <h2 className="sticky top-[100px] h-[40px] bg-background ">{`${updateDate[0]}年${updateDate[1]}月`}</h2>}
+                      <div className="border-l border-l-primary m-4 p-4 mt-0">
+                        <div className={`p-4 mb-4 ${item.is_complete ? 'border bg-card shadow-lg rounded-lg' : ''}`}>
+                          <div className="text-xs text-secondary-foreground flex justify-between py-1">
+                            <span className={`flex items-center ${item.is_complete ? 'text-primary' : ''}`}>
+                              {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
+                            </span>
+                            <span className="flex gap-2">
+                              <span className="flex items-center"><Calendar className="h-3" />{item.creationDate}</span>
+                              <span className="flex items-center"><Clock className="h-3" /> {item.creationDate}</span>
+                            </span>
+                          </div>
+                          <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
+                            {item.text}
+                            <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })} */}
+
+                <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
               </div>
             </section>
             {/* <Card className="text-sm">

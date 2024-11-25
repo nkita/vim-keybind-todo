@@ -219,27 +219,33 @@ export default function Me() {
             </Card>
           </div>
           <div>
-            <section>
-              <h1 className="text-lg flex items-center gap-1 sticky top-0 h-[80px] w-full bg-background"><History className="h-5" />タイムライン</h1>
+            <section className="relative">
+              <h1 className="text-lg flex items-center gap-1 sticky top-0 h-[60px] w-full bg-background z-10"><History className="h-5" />タイムライン</h1>
+              <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>
               <div className="pl-2">
                 {timeline.map((item, index) => {
                   const prevUpdateDate = timeline[index - 1]?.updateDate.split("-")
+                  const prevYMD = prevUpdateDate && [prevUpdateDate[0], prevUpdateDate[1], prevUpdateDate[2].split("T")[0]].join("-")
                   const updateDate = item.updateDate.split("-")
-                  const isLabel = !prevUpdateDate || (prevUpdateDate[0] !== updateDate[0] || prevUpdateDate && prevUpdateDate[1] !== updateDate[1])
+                  const updateYMD = [updateDate[0], updateDate[1], updateDate[2].split("T")[0]].join("-")
+                  const isLabel = prevYMD !== updateYMD
                   return (
                     <Fragment key={index}>
-                      {updateDate && isLabel && <h2 className="sticky top-[80px] h-[40px] bg-background ">{`${updateDate[0]}年${updateDate[1]}月`}</h2>}
-                      <div className={`p-4 mb-4  ${item.is_complete ? 'ml-4 border bg-card rounded-lg' : 'ml-4 '}`}>
-                        <div className="text-xs text-secondary-foreground flex justify-between py-1">
-                          <span className={`flex items-center ${item.is_complete ? 'text-primary' : ''}`}>
-                            {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
-                          </span>
+                      {updateDate && isLabel &&
+                        <div className={`sticky top-[60px] bg-transparent flex items-center `}>
+                          <h2 className="border border-b border-primary/30 rounded-md bg-background pl-2 pr-8 py-1 text-sm flex items-center gap-2"><Calendar className="h-4" />{updateYMD}</h2>
+                        </div>
+                      }
+                      <div className={`py-6 pl-6 my-4  ${item.is_complete ? 'ml-8 border border-primary bg-card rounded-lg' : 'ml-8 border bg-background rounded-lg'}`}>
+                        <div className="text-xs text-secondary-foreground flex justify-between">
                           <span className="flex gap-2">
-                            <span className="flex items-center"><Calendar className="h-4 text-muted-foreground" />{updateDate[2].split("T")[0]}日</span>
                             <span className="flex items-center"><Clock className="h-4 text-muted-foreground" /> {updateDate[2].split("T")[1].split(".")[0]}</span>
                           </span>
                         </div>
-                        <h3 className="flex items-center gap-2 align-middle py-3 pl-2">
+                        <span className={`flex items-center ${item.is_complete ? 'text-primary' : 'text-muted-foreground'} text-xs pt-3`}>
+                          {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
+                        </span>
+                        <h3 className="flex items-center gap-2 align-middle pb-3 pl-2">
                           {item.text}
                           <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
                         </h3>
@@ -276,8 +282,6 @@ export default function Me() {
                     </div>
                   )
                 })} */}
-
-                <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
               </div>
             </section>
             {/* <Card className="text-sm">
@@ -298,6 +302,7 @@ export default function Me() {
           </div>
         </div>
         {/* マウスオーバーで表示されるポップアップ*/}
+        <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
         {popup &&
           <div
             className="absolute z-50 w-48 h-24 bg-white shadow-lg rounded-md"

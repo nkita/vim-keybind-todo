@@ -56,11 +56,11 @@ export default function Me() {
   return (
     <>
       <Header user={user} userLoading={userLoading} />
-      <div className={`w-full px-6 pt-12 gap-4 max-w-[1024px] justify-center m-auto `} onMouseMove={handleMouseMove}>
-        <article className="md:flex w-full gap-6">
-          <div className="sticky w-[20%]">
-            <div className="flex sm:flex-col pb-6 sm:gap-4">
-              <Avatar className="h-16 w-16 ring-1 ring-muted-foreground">
+      <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1024px] justify-center m-auto `} onMouseMove={handleMouseMove}>
+        <article className="md:flex w-full gap-6 px-4">
+          <div className="md:w-[20%]">
+            <div className="flex items-center md:flex-col pb-6 sm:gap-4">
+              <Avatar className="h-24 md:h-40 sm:h-32 w-24 md:w-40 sm:w-32 ring-1 ring-muted-foreground">
                 <AvatarImage src={user?.picture} alt={user?.name} />
                 <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
               </Avatar>
@@ -69,20 +69,18 @@ export default function Me() {
                 <p className="text-sm text-muted-foreground">{user?.email ?? "my id"}</p>
               </div>
             </div>
-            <p className="rounded-md py-4 text-sm">
+            <p className="rounded-md py-2 text-sm">
               ここに短いプロフィールが記載される。自分の伝えたいこととかがここに記載される
             </p>
-            <div className="py-8">
-              <ul className="text-sm flex flex-col gap-2">
-                <ExLink href="http://example.com" ><Mail className="w-4 h-4" /></ExLink>
-                <ExLink href="http://example.com" ><X className="w-4 h-4" /></ExLink>
-                <ExLink href="http://example.com" ><LinkIcon className="w-4 h-4" /></ExLink>
-              </ul>
-            </div>
+            <ul className="text-sm space-y-2">
+              <ExLink href="http://example.com" ><Mail className="w-4 h-4" /></ExLink>
+              <ExLink href="http://example.com" ><X className="w-4 h-4" /></ExLink>
+              <ExLink href="http://example.com" ><LinkIcon className="w-4 h-4" /></ExLink>
+            </ul>
           </div>
           <div className="w-full md:w-[80%]">
-            <span className="text-lg flex items-center gap-1 ">My Tasks</span>
-            <div className="space-y-8 pb-8">
+            <ExH>My Tasks</ExH>
+            <div className="space-y-8">
               <div className="flex gap-2">
                 <Card className="text-sm w-full">
                   <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
@@ -94,10 +92,10 @@ export default function Me() {
                 </Card>
               </div>
               <div>
-                <span className="text-lg flex items-center gap-1 "><Footprints className="h-4" />My Projects</span>
-                <div className="space-y-8">
+                <ExH><Footprints className="h-4" />My Projects</ExH>
+                <div className="flex flex-wrap gap-3 ">
                   {summary.projects.map((project, index) => (
-                    <Card key={index} className="text-sm w-[100%]">
+                    <Card key={index} className="text-sm ">
                       <CardContent>
                         <div className="flex items-start gap-1  pt-6 justify-between">
                           <div>
@@ -130,11 +128,11 @@ export default function Me() {
               </div>
             </div>
 
-            <div className="pb-6 w-full" >
-              <div className="flex justify-between text-sm items-center py-4">
-                <span className="text-lg flex items-center gap-1"><Activity className="h-5" />アクティビティ</span>
+            <div className="w-full" >
+              <ExH><Activity className="h-5" />アクティビティ</ExH>
+              <div className="flex justify-end pb-2">
                 <Select>
-                  <SelectTrigger className="w-[100px] text-xs" >
+                  <SelectTrigger className="w-[100px] text-xs text-" >
                     <SelectValue placeholder="2024年" />
                   </SelectTrigger>
                   <SelectContent>
@@ -144,7 +142,7 @@ export default function Me() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="flex justify-center bg-card border rounded-md p-4 shadow-sm">
+              <div className=" bg-card border rounded-md p-4 shadow-sm">
                 <ActivityCalendar
                   eventHandlers={{
                     onMouseOver: (event) => (activity) => { },
@@ -193,10 +191,10 @@ export default function Me() {
               </div>
             </div>
 
-            <div className="space-y-8" >
+            <div className="space-y-8 pt-16" >
               <div>
                 <section className="relative">
-                  <h1 className="text-lg flex items-center gap-1 sticky top-0 h-[60px] w-full bg-background z-10"><History className="h-5" />タイムライン</h1>
+                  <ExH className="pt-0 pb-4 sticky top-0 h-[60px] bg-background z-10"><History className="h-5" />タイムライン</ExH>
                   <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>
                   <div className="pl-2">
                     {timeline.map((item, index) => {
@@ -212,16 +210,16 @@ export default function Me() {
                               <h2 className="border border-b border-primary/30 rounded-md bg-background pl-2 pr-8 py-1 text-sm flex items-center gap-2"><Calendar className="h-4" />{updateYMD}</h2>
                             </div>
                           }
-                          <div className={`py-6 pl-6 my-4  ${item.is_complete ? 'ml-8 border border-primary bg-card rounded-lg' : 'ml-8 border bg-background rounded-lg'}`}>
-                            <div className="text-xs text-secondary-foreground flex justify-between">
+                          <div className={`py-3 pl-6 my-4  ${item.is_complete ? 'ml-8 border border-primary bg-card rounded-lg' : 'ml-8 border bg-background rounded-lg'}`}>
+                            <div className="text-xs text-secondary-foreground flex gap-4 items-center">
                               <span className="flex gap-2">
                                 <span className="flex items-center"><Clock className="h-4 text-muted-foreground" /> {updateDate[2].split("T")[1].split(".")[0]}</span>
                               </span>
+                              <span className={`flex items-center ${item.is_complete ? 'text-primary' : 'text-muted-foreground'} text-xs`}>
+                                {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
+                              </span>
                             </div>
-                            <span className={`flex items-center ${item.is_complete ? 'text-primary' : 'text-muted-foreground'} text-xs pt-3`}>
-                              {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
-                            </span>
-                            <h3 className="flex items-center gap-2 align-middle pb-3 pl-2">
+                            <h3 className="flex items-center gap-2 align-middle pl-2 py-1">
                               {item.text}
                               <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
                             </h3>
@@ -291,4 +289,8 @@ const ExBadge = ({ children, className, ...props }: { className?: string, childr
 
 const ExLabelBadge = ({ children, className, ...props }: { className?: string, children: React.ReactNode }) => {
   return <ExBadge className={cn("text-ex-label text-xs ", className)}><Tag className="h-3" /> {children}</ExBadge>
+}
+
+const ExH = ({ children, className, ...props }: { className?: string, children: React.ReactNode }) => {
+  return <h2 className={cn("text-lg flex items-center gap-1 pt-8 pb-4", className)}>{children}</h2>
 }

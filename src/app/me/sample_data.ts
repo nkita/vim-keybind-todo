@@ -40,7 +40,8 @@ export const summary = {
     ]
 }
 
-export const activity = [
+export const activityYear = ['2024']
+export const activityDate = [
     {
         date: '2024-01-01',
         count: 0,

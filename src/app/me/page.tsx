@@ -29,7 +29,7 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Chart } from "react-google-charts";
-import { activity, summary, timeline_page1, timeline_page2 } from "@/app/me/sample_data"
+import { activityDate, activityYear, summary, timeline_page1, timeline_page2 } from "@/app/me/sample_data"
 
 export default function Me() {
 
@@ -58,13 +58,13 @@ export default function Me() {
       <Header user={user} userLoading={userLoading} />
       <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1024px] justify-center m-auto `} onMouseMove={handleMouseMove}>
         <article className="md:flex w-full gap-6 px-4">
-          <div className="md:w-[20%]">
-            <div className="flex items-center md:flex-col pb-6 sm:gap-4">
-              <Avatar className="h-24 md:h-40 sm:h-32 w-24 md:w-40 sm:w-32 ring-1 ring-muted-foreground">
+          <div className="flex items-start justify-start flex-col md:w-[30%] pb-8">
+            <div className="flex justify-start items-center md:flex-col pb-6 sm:gap-4">
+              <Avatar className="h-24 md:h-48 sm:h-36 w-24 md:w-48 sm:w-36 ring-1 ring-muted-foreground">
                 <AvatarImage src={user?.picture} alt={user?.name} />
                 <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
               </Avatar>
-              <div className="sm:px-0 px-8">
+              <div className=" sm:px-0 px-8 w-full">
                 <h1 className="text-2xl">{user?.name ?? "Anonymous"}</h1>
                 <p className="text-sm text-muted-foreground">{user?.email ?? "my id"}</p>
               </div>
@@ -78,8 +78,8 @@ export default function Me() {
               <ExLink href="http://example.com" ><LinkIcon className="w-4 h-4" /></ExLink>
             </ul>
           </div>
-          <div className="w-full md:w-[80%]">
-            <ExH>My Tasks</ExH>
+          <div className="w-full md:w-[70%]">
+            <ExH className="pt-0">My Tasks</ExH>
             <div className="space-y-8">
               <div className="flex gap-2">
                 <Card className="text-sm w-full">
@@ -93,7 +93,9 @@ export default function Me() {
               </div>
               <div>
                 <ExH><Footprints className="h-4" />My Projects</ExH>
-                <div className="flex flex-wrap gap-3 ">
+                {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
+                {summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
+                <div className="space-y-3">
                   {summary.projects.map((project, index) => (
                     <Card key={index} className="text-sm ">
                       <CardContent>
@@ -130,72 +132,79 @@ export default function Me() {
 
             <div className="w-full" >
               <ExH><Activity className="h-5" />アクティビティ</ExH>
-              <div className="flex justify-end pb-2">
-                <Select>
-                  <SelectTrigger className="w-[100px] text-xs text-" >
-                    <SelectValue placeholder="2024年" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">2023年</SelectItem>
-                    <SelectItem value="dark">2022年</SelectItem>
-                    <SelectItem value="system">2021年</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className=" bg-card border rounded-md p-4 shadow-sm">
-                <ActivityCalendar
-                  eventHandlers={{
-                    onMouseOver: (event) => (activity) => { },
-                  }}
-                  data={activity}
-                  showWeekdayLabels
-                  maxLevel={9}
-                  fontSize={12}
-                  blockSize={10}
-                  theme={{
-                    "light": [
-                      "#fafafa",
-                      "#bbf7d0",
-                      "#86efac",
-                      "#4ade80",
-                      "#22c55e",
-                      "#16a34a",
-                      "#15803d",
-                      "#166534",
-                      "#14532d",
-                      "#124e28",
-                    ],
-                    "dark": [
-                      "#fff",
-                      "#bbf7d0",
-                      "#86efac",
-                      "#4ade80",
-                      "#22c55e",
-                      "#16a34a",
-                      "#15803d",
-                      "#166534",
-                      "#14532d",
-                      "#124e28",
-                    ]
-                  }}
-                  labels={{
-                    months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-                    weekdays: ["日", "月", "火", "水", "木", "金", "土"],
-                    totalCount: "✅ {{count}}件（{{year}}年）",
-                    legend: {
-                      less: "🌱",
-                      more: "🌳",
-                    }
-                  }}
-                />
-              </div>
+              {activityYear.length > 0 ? (
+                <>
+                  <div className="flex justify-end pb-2">
+                    <Select>
+                      <SelectTrigger className="w-[100px] text-xs text-" >
+                        <SelectValue placeholder="2024年" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {activityYear.map((year) => (
+                          <SelectItem value={year} key={year}>{year}年</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className=" bg-card border rounded-md p-4 shadow-sm">
+                    <ActivityCalendar
+                      eventHandlers={{
+                        onMouseOver: (event) => (activity) => { },
+                      }}
+                      data={activityDate}
+                      showWeekdayLabels
+                      maxLevel={9}
+                      fontSize={12}
+                      blockSize={10}
+                      theme={{
+                        "light": [
+                          "#fafafa",
+                          "#bbf7d0",
+                          "#86efac",
+                          "#4ade80",
+                          "#22c55e",
+                          "#16a34a",
+                          "#15803d",
+                          "#166534",
+                          "#14532d",
+                          "#124e28",
+                        ],
+                        "dark": [
+                          "#fff",
+                          "#bbf7d0",
+                          "#86efac",
+                          "#4ade80",
+                          "#22c55e",
+                          "#16a34a",
+                          "#15803d",
+                          "#166534",
+                          "#14532d",
+                          "#124e28",
+                        ]
+                      }}
+                      labels={{
+                        months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                        weekdays: ["日", "月", "火", "水", "木", "金", "土"],
+                        totalCount: "✅ {{count}}件（{{year}}年）",
+                        legend: {
+                          less: "🌱",
+                          more: "🌳",
+                        }
+                      }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div className="pl-4">No activity.</div>
+              )}
             </div>
 
-            <div className="space-y-8 pt-16" >
+            <div className="space-y-8 pt-8" >
               <div>
                 <section className="relative">
                   <ExH className="pt-0 pb-4 sticky top-0 h-[60px] bg-background z-10"><History className="h-5" />タイムライン</ExH>
-                  <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>
+                  {!timeline || timeline.length <= 0 && <div className="pl-4">No timeline.</div>}
+                  {timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
                   <div className="pl-2">
                     {timeline.map((item, index) => {
                       const prevUpdateDate = timeline[index - 1]?.updateDate.split("-")

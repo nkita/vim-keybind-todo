@@ -48,15 +48,15 @@ export default function Me() {
       <Header user={user} userLoading={userLoading} />
       <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1024px] justify-center m-auto `} onMouseMove={handleMouseMove}>
         <article className="md:flex w-full gap-6 px-4">
-          <div className="flex items-start justify-start flex-col md:w-[30%] pb-8 ">
-            <div className="sticky top-20">
-              <div className="flex justify-start md:flex-col sm:gap-2 pb-6">
+          <div className="flex flex-col md:w-[30%] pb-6">
+            <div className="m-0 sticky top-20">
+              <div className="flex items-center md:flex-col sm:gap-2 pb-6 w-full">
                 <Avatar className="h-24 md:h-40 sm:h-36 w-24 md:w-40 sm:w-36 bg-card p-5">
                   <AvatarImage src={userInfo?.image} alt={userInfo?.nickname} />
                   <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
                 </Avatar>
-                <div className="flex items-center">
-                  <div className="sm:px-0 px-8 w-full bottom-0">
+                <div className="flex items-center justify-center w-full px-8">
+                  <div className="sm:px-0 px-6 w-full bottom-0 ">
                     <h1 className="text-2xl">{userInfo?.nickname ?? "Anonymous"}</h1>
                     <p className="text-sm text-muted-foreground">{userInfo?.id ?? "my id"}</p>
                   </div>

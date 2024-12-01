@@ -1,35 +1,25 @@
 'use client'
 
-import { Todo } from "@/components/todo";
-import { useState, useEffect, useContext, Component, Fragment } from "react"
-import { TodoProps, SaveTodosReturnProps } from "@/types"
+import { useState, useEffect, Fragment } from "react"
 import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useFetchTodo, postFetch } from "@/lib/fetch";
-import { cn, debounce } from "@/lib/utils";
-import { postSaveTodos } from "@/lib/todo";
-import { TodoContext } from "@/provider/todo";
-import { useLocalStorage } from "@/hook/useLocalStrorage";
-import { redirect } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Activity, Box, BoxIcon, Calendar, Check, Circle, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
+import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { Chart } from "react-google-charts";
-import { activityDate, activityYear, summary, timeline_page1, timeline_page2 } from "@/app/me/sample_data"
+import { activityDate, activityYear, summary, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
 
 export default function Me() {
 
@@ -58,25 +48,29 @@ export default function Me() {
       <Header user={user} userLoading={userLoading} />
       <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1024px] justify-center m-auto `} onMouseMove={handleMouseMove}>
         <article className="md:flex w-full gap-6 px-4">
-          <div className="flex items-start justify-start flex-col md:w-[30%] pb-8">
-            <div className="flex justify-start items-center md:flex-col pb-6 sm:gap-4">
-              <Avatar className="h-24 md:h-48 sm:h-36 w-24 md:w-48 sm:w-36 ring-1 ring-muted-foreground">
-                <AvatarImage src={user?.picture} alt={user?.name} />
-                <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
-              </Avatar>
-              <div className=" sm:px-0 px-8 w-full">
-                <h1 className="text-2xl">{user?.name ?? "Anonymous"}</h1>
-                <p className="text-sm text-muted-foreground">{user?.email ?? "my id"}</p>
+          <div className="flex items-start justify-start flex-col md:w-[30%] pb-8 ">
+            <div className="sticky top-20">
+              <div className="flex justify-start md:flex-col sm:gap-2 pb-6">
+                <Avatar className="h-24 md:h-40 sm:h-36 w-24 md:w-40 sm:w-36 bg-card p-5">
+                  <AvatarImage src={userInfo?.image} alt={userInfo?.nickname} />
+                  <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
+                </Avatar>
+                <div className="flex items-center">
+                  <div className="sm:px-0 px-8 w-full bottom-0">
+                    <h1 className="text-2xl">{userInfo?.nickname ?? "Anonymous"}</h1>
+                    <p className="text-sm text-muted-foreground">{userInfo?.id ?? "my id"}</p>
+                  </div>
+                </div>
               </div>
+              <p className="rounded-md py-2 text-sm">
+                {userInfo?.profile ?? "No profile"}
+              </p>
+              <ul className="text-sm space-y-2">
+                {userInfo?.links.map((link, index) => (
+                  <ExLink href={link} key={index} ><LinkIcon className="w-4 h-4" /></ExLink>
+                ))}
+              </ul>
             </div>
-            <p className="rounded-md py-2 text-sm">
-              ここに短いプロフィールが記載される。自分の伝えたいこととかがここに記載される
-            </p>
-            <ul className="text-sm space-y-2">
-              <ExLink href="http://example.com" ><Mail className="w-4 h-4" /></ExLink>
-              <ExLink href="http://example.com" ><X className="w-4 h-4" /></ExLink>
-              <ExLink href="http://example.com" ><LinkIcon className="w-4 h-4" /></ExLink>
-            </ul>
           </div>
           <div className="w-full md:w-[70%]">
             <ExH className="pt-0">My Tasks</ExH>

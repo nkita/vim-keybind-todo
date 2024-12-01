@@ -1,4 +1,5 @@
 import { TodoProps } from "@/types";
+import { profile } from "console";
 import { update } from "lodash";
 
 export const summary = {
@@ -320,3 +321,14 @@ export const timeline_page2 = [
         updateDate: '2024-10-11T16:23:09.000Z',
     }
 ]
+
+export const userInfo = {
+    id: 'nkita',
+    nickname: 'Nkita',
+    image: "https://shiba-todo.s3.ap-northeast-1.amazonaws.com/logo.png",
+    profile: "ここに短いプロフィールが記載される。自分の伝えたいこととかがここに記載される",
+    links: [
+        "https://twitter.com/nkita",
+        "http://example.com",
+    ]
+}

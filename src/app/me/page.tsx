@@ -34,7 +34,12 @@ export default function Me() {
   const [timeline, setTimeline] = useState(timeline_page1)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-  const handleMouseMove = (event) => {
+  interface MousePosition {
+    x: number;
+    y: number;
+  }
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
     setMousePosition({ x: event.clientX, y: event.clientY });
   };
   const [popup, setPopup] = useState(false);

@@ -38,7 +38,8 @@ export const summary = {
             "start": "2024-03-01",
             "end": "2024-12-31"
         }
-    ]
+    ],
+    years: ['2024']
 }
 
 export const activityYear = ['2024']

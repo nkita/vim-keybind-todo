@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { activityDate, activityYear, summary, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
+import { activityDate, summary, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
 
 export default function Me() {
 
@@ -131,7 +131,7 @@ export default function Me() {
 
             <div className="w-full" >
               <ExH><Activity className="h-5" />アクティビティ</ExH>
-              {activityYear.length > 0 ? (
+              {summary.years.length > 0 ? (
                 <>
                   <div className="flex justify-end pb-2">
                     <Select>
@@ -139,7 +139,7 @@ export default function Me() {
                         <SelectValue placeholder="2024年" />
                       </SelectTrigger>
                       <SelectContent>
-                        {activityYear.map((year) => (
+                        {summary.years.map((year) => (
                           <SelectItem value={year} key={year}>{year}年</SelectItem>
                         ))}
                       </SelectContent>

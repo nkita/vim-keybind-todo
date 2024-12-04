@@ -26,3 +26,4 @@ export const useFetchList = (id: string | null, token: string | null) => useSWRI
 export const useFetchTodo = (list_id: string | null, token: string | null) => useSWR(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
 export const useFetchCompletedTodo = (list_id: string | null, page: number = 1, token: string | null) => useSWR(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo?completionOnly=true" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
 export const useFetchPostList = (body: Object, token: string | null) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)
+export const useFetchSummary = (token: string | null) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/summary`, token] : null, ([url, token]) => getFetch(url, token))

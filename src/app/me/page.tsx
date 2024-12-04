@@ -1,13 +1,13 @@
 'use client'
 
-import { useState, useEffect, Fragment } from "react"
+import { useState, useEffect, Fragment, useContext } from "react"
 import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import {
@@ -19,11 +19,16 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { activityDate, summary, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
+import { activityDate, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
+import { useFetchSummary } from "@/lib/fetch";
+import { TodoContext } from "@/provider/todo";
+import { ProjectProps } from "@/types";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Me() {
 
   const { user, isLoading: userLoading } = useAuth0();
+  const config = useContext(TodoContext)
   useEffect(() => {
     if (!userLoading && user === undefined) {
       // redirect('/t')
@@ -31,6 +36,7 @@ export default function Me() {
   }, [user, userLoading])
 
 
+  const { data: summary, isLoading: summaryLoading } = useFetchSummary(config.token)
   const [timeline, setTimeline] = useState(timeline_page1)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -47,7 +53,6 @@ export default function Me() {
   const handleClickReadmore = () => {
     setTimeline(prev => [...prev, ...timeline_page2])
   }
-
   return (
     <>
       <Header user={user} userLoading={userLoading} />
@@ -83,55 +88,54 @@ export default function Me() {
               <div className="flex gap-2">
                 <Card className="text-sm w-full">
                   <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
-                  <CardContent className="text-5xl text-right">{summary.in_progress}</CardContent>
+                  <CardContent className="text-5xl text-right">
+                    {summaryLoading || !summary && <Skeleton className="h-10 w-full" />}
+                    {summary && summary.in_progress}
+                  </CardContent>
                 </Card>
-                <Card className="text-sm w-full">
+                <Card className="text-sm w-full text-primary">
                   <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
-                  <CardContent className="text-5xl text-right">{summary.completed}</CardContent>
+                  <CardContent className="text-5xl text-right">
+                    {summaryLoading || summary === undefined && <Skeleton className="h-10 w-full" />}
+                    {summary && summary.completed}
+                  </CardContent>
                 </Card>
               </div>
               <div>
                 <ExH><Footprints className="h-4" />My Projects</ExH>
                 {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
-                {summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
+                {summary && summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
                 <div className="space-y-3">
-                  {summary.projects.map((project, index) => (
-                    <Card key={index} className="text-sm ">
-                      <CardContent>
-                        <div className="flex items-start gap-1  pt-6 justify-between">
-                          <div>
-                            <div className="flex items-start gap-1 text-ex-project pr-1">
-                              <div className="w-[20px]"><Box className="h-[18px]" /></div><span>{project.name}</span>
-                            </div>
-                            {project.tags.length > 0 &&
-                              <div className="flex flex-wrap gap-2 px-4 py-6">
-                                {project.tags.map((tag, index) => (
-                                  <ExLabelBadge key={index}>{tag}</ExLabelBadge>
-                                ))}
-                              </div>
-                            }
-                          </div>
-                          <div className=" text-xl">
-                            <span className="flex items-center justify-between gap-1"><Hourglass className="h-4" /><span className="text-right">{project.in_progress}</span></span>
-                            <span className="flex items-center justify-between gap-1"><CircleCheck className="h-4" /><span className="text-right">{project.completed}</span></span>
-                          </div>
-                        </div>
-                        <div className="flex flex-col gap-1 px-4 ">
-                          <div className="flex justify-between">
-                            <span>{project.start}</span><span>〜</span><span>{project.end}</span>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
+                  {summaryLoading || summary === undefined &&
+                    <ExProjectSummary
+                      isLoading={true}
+                      projectName=""
+                      start=""
+                      end=""
+                      tags={[]}
+                      in_progress={0}
+                      completed={0}
+                    />
                   }
+                  {summary && summary.projects.map((project: ProjectProps, index: number) => (
+                    <ExProjectSummary
+                      key={index}
+                      isLoading={false}
+                      projectName={project.name}
+                      start={project.start.split("T")[0]}
+                      end={project.end.split("T")[0]}
+                      tags={project.tags}
+                      in_progress={project.in_progress}
+                      completed={project.completed}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
 
             <div className="w-full" >
               <ExH><Activity className="h-5" />アクティビティ</ExH>
-              {summary.years.length > 0 ? (
+              {summary && summary.years.length > 0 ? (
                 <>
                   <div className="flex justify-end pb-2">
                     <Select>
@@ -139,7 +143,7 @@ export default function Me() {
                         <SelectValue placeholder="2024年" />
                       </SelectTrigger>
                       <SelectContent>
-                        {summary.years.map((year) => (
+                        {summary && summary.years.map((year: string) => (
                           <SelectItem value={year} key={year}>{year}年</SelectItem>
                         ))}
                       </SelectContent>
@@ -302,3 +306,74 @@ const ExLabelBadge = ({ children, className, ...props }: { className?: string, c
 const ExH = ({ children, className, ...props }: { className?: string, children: React.ReactNode }) => {
   return <h2 className={cn("text-lg flex items-center gap-1 pt-8 pb-4", className)}>{children}</h2>
 }
+
+
+const ExProjectSummary = ({
+  projectName,
+  start,
+  end,
+  tags,
+  in_progress,
+  completed,
+  isLoading,
+}:
+  {
+    projectName: string,
+    start: string,
+    end: string,
+    tags: string[],
+    in_progress: number,
+    completed: number,
+    isLoading: boolean
+  }
+) => (
+  <Card className="text-sm ">
+    <CardHeader>
+      <CardTitle className="flex items-center gap-2  w-full">
+        <div className="w-[20px] text-ex-project"><Box /></div>
+        <span className="w-full text-ex-project">
+          {isLoading && <Skeleton className="w-full h-8" />}
+          {projectName}
+        </span>
+
+        <div className="flex gap-4 items-center">
+          <div className="flex items-center justify-between text-xl gap-1"><Hourglass className="h-4" />
+            <span className="text-right">
+              {isLoading ? (<Skeleton className="w-10 h-10" />) : (in_progress)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between text-xl gap-1 text-primary"><CircleCheck className="h-4" />
+            <span className="text-right">
+              {isLoading ? (<Skeleton className="w-10 h-10" />) : (completed)}
+            </span>
+          </div>
+        </div>
+      </CardTitle>
+      <CardDescription className="flex" >
+        <span>
+          {start.split("T")[0]}
+          {isLoading && <Skeleton className="w-20 h-7" />}
+        </span><span className="px-2">〜</span><span>
+          {end.split("T")[0]}
+          {isLoading && <Skeleton className="w-20 h-7" />}
+        </span>
+      </CardDescription>
+    </CardHeader>
+    {tags.length > 0 &&
+      <CardContent>
+        <div className="flex justify-between items-end">
+          {isLoading ? (<div />) : (
+            <>
+              {tags.length <= 0 && <div />}
+              <div className="flex flex-wrap gap-2 ">
+                {tags.map((tag) => (
+                  <ExLabelBadge key={tag}>{tag}</ExLabelBadge>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </CardContent>
+    }
+  </Card >
+);

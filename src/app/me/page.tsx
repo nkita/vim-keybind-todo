@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { activityDate, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
-import { useFetchSummary } from "@/lib/fetch";
+import { useFetchActivity, useFetchSummary, useFetchTimeline } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
 import { ProjectProps } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -37,7 +37,9 @@ export default function Me() {
 
 
   const { data: summary, isLoading: summaryLoading } = useFetchSummary(config.token)
-  const [timeline, setTimeline] = useState(timeline_page1)
+  const { data: activity, isLoading: activityLoading } = useFetchActivity(config.token, "2024")
+  const { data: timeline, isLoading: timelineLoading } = useFetchTimeline(config.token)
+  // const [timeline, setTimeline] = useState(timeline_page1)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   interface MousePosition {
@@ -51,12 +53,12 @@ export default function Me() {
   const [popup, setPopup] = useState(false);
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
   const handleClickReadmore = () => {
-    setTimeline(prev => [...prev, ...timeline_page2])
+    // setTimeline(prev => [...prev, ...timeline_page2])
   }
   return (
     <>
       <Header user={user} userLoading={userLoading} />
-      <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1024px] justify-center m-auto `} onMouseMove={handleMouseMove}>
+      <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1280px] justify-center m-auto `} onMouseMove={handleMouseMove}>
         <article className="md:flex w-full gap-6 px-4">
           <div className="flex flex-col md:w-[30%] pb-6">
             <div className="m-0 sticky top-0 pt-4">
@@ -87,16 +89,16 @@ export default function Me() {
             <div className="space-y-8">
               <div className="flex gap-2">
                 <Card className="text-sm w-full">
-                  <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
                   <CardContent className="text-5xl text-right">
                     {summaryLoading || !summary && <Skeleton className="h-10 w-full" />}
                     {summary && summary.in_progress}
                   </CardContent>
                 </Card>
                 <Card className="text-sm w-full text-primary">
-                  <CardHeader><CardTitle className="flex items-center gap-1 text-lg"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
+                  <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
                   <CardContent className="text-5xl text-right">
-                    {summaryLoading || summary === undefined && <Skeleton className="h-10 w-full" />}
+                    {summaryLoading || !summary && <Skeleton className="h-10 w-full" />}
                     {summary && summary.completed}
                   </CardContent>
                 </Card>
@@ -105,7 +107,7 @@ export default function Me() {
                 <ExH><Footprints className="h-4" />My Projects</ExH>
                 {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
                 {summary && summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
-                <div className="space-y-3">
+                <div className="flex flex-wrap gap-3">
                   {summaryLoading || summary === undefined &&
                     <ExProjectSummary
                       isLoading={true}
@@ -134,67 +136,80 @@ export default function Me() {
             </div>
 
             <div className="w-full" >
-              <ExH><Activity className="h-5" />アクティビティ</ExH>
+              <div className="flex justify-between items-end">
+                <ExH><Activity className="h-5" />アクティビティ</ExH>
+                <Select>
+                  <SelectTrigger className="w-[100px] text-xs border-none border-b m-1" >
+                    <SelectValue placeholder="2024年" />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {summary && summary.years.map((year: string) => (
+                      <SelectItem value={year} key={year}>{year}年</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               {summary && summary.years.length > 0 ? (
                 <>
-                  <div className="flex justify-end pb-2">
-                    <Select>
-                      <SelectTrigger className="w-[100px] text-xs text-" >
-                        <SelectValue placeholder="2024年" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {summary && summary.years.map((year: string) => (
-                          <SelectItem value={year} key={year}>{year}年</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                  <div className="flex justify-end">
                   </div>
-                  <div className=" bg-card border rounded-md p-4 shadow-sm">
-                    <ActivityCalendar
-                      eventHandlers={{
-                        onMouseOver: (event) => (activity) => { },
-                      }}
-                      data={activityDate}
-                      showWeekdayLabels
-                      maxLevel={9}
-                      fontSize={12}
-                      blockSize={10}
-                      theme={{
-                        "light": [
-                          "#fafafa",
-                          "#bbf7d0",
-                          "#86efac",
-                          "#4ade80",
-                          "#22c55e",
-                          "#16a34a",
-                          "#15803d",
-                          "#166534",
-                          "#14532d",
-                          "#124e28",
-                        ],
-                        "dark": [
-                          "#fff",
-                          "#bbf7d0",
-                          "#86efac",
-                          "#4ade80",
-                          "#22c55e",
-                          "#16a34a",
-                          "#15803d",
-                          "#166534",
-                          "#14532d",
-                          "#124e28",
-                        ]
-                      }}
-                      labels={{
-                        months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-                        weekdays: ["日", "月", "火", "水", "木", "金", "土"],
-                        totalCount: "✅ {{count}}件（{{year}}年）",
-                        legend: {
-                          less: "🌱",
-                          more: "🌳",
-                        }
-                      }}
-                    />
+                  <div className="bg-card border rounded-md p-4 shadow-sm">
+                    <div className="w-full flex justify-center">
+                      {activityLoading || !activity &&
+                        <div className="w-full space-y-2">
+                          <Skeleton className="w-full h-8" />
+                          <Skeleton className="w-3/4 h-8" />
+                          <Skeleton className="w-1/2 h-8" />
+                        </div>
+                      }
+                      {activity && activity.length > 0 &&
+                        <ActivityCalendar
+                          eventHandlers={{
+                            onMouseOver: (event) => (activity) => { },
+                          }}
+                          data={activity}
+                          showWeekdayLabels
+                          maxLevel={9}
+                          fontSize={12}
+                          blockSize={10}
+                          theme={{
+                            "light": [
+                              "#fafafa",
+                              "#bbf7d0",
+                              "#86efac",
+                              "#4ade80",
+                              "#22c55e",
+                              "#16a34a",
+                              "#15803d",
+                              "#166534",
+                              "#14532d",
+                              "#124e28",
+                            ],
+                            "dark": [
+                              "#fff",
+                              "#bbf7d0",
+                              "#86efac",
+                              "#4ade80",
+                              "#22c55e",
+                              "#16a34a",
+                              "#15803d",
+                              "#166534",
+                              "#14532d",
+                              "#124e28",
+                            ]
+                          }}
+                          labels={{
+                            months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                            weekdays: ["日", "月", "火", "水", "木", "金", "土"],
+                            totalCount: "✅ {{count}}件（{{year}}年）",
+                            legend: {
+                              less: "🌱",
+                              more: "🌳",
+                            }
+                          }}
+                        />
+                      }
+                    </div>
                   </div>
                 </>
               ) : (
@@ -207,12 +222,12 @@ export default function Me() {
                 <section className="relative">
                   <ExH className="pt-0 pb-4 sticky top-0 h-[60px] bg-background z-10"><History className="h-5" />タイムライン</ExH>
                   {!timeline || timeline.length <= 0 && <div className="pl-4">No timeline.</div>}
-                  {timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
+                  {timeline && timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
                   <div className="pl-2">
-                    {timeline.map((item, index) => {
-                      const prevUpdateDate = timeline[index - 1]?.updateDate.split("-")
+                    {timeline && timeline.map((item: any, index: number) => {
+                      const prevUpdateDate = timeline[index - 1]?.updated_at.split("-")
                       const prevYMD = prevUpdateDate && [prevUpdateDate[0], prevUpdateDate[1], prevUpdateDate[2].split("T")[0]].join("-")
-                      const updateDate = item.updateDate.split("-")
+                      const updateDate = item.updated_at.split("-")
                       const updateYMD = [updateDate[0], updateDate[1], updateDate[2].split("T")[0]].join("-")
                       const isLabel = prevYMD !== updateYMD
                       return (
@@ -243,7 +258,6 @@ export default function Me() {
                 </section>
               </div>
             </div>
-
             <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
           </div>
           {/* マウスオーバーで表示されるポップアップ*/}
@@ -327,7 +341,7 @@ const ExProjectSummary = ({
     isLoading: boolean
   }
 ) => (
-  <Card className="text-sm ">
+  <Card className="text-sm w-full lg:w-[49%]">
     <CardHeader>
       <CardTitle className="flex items-center gap-2  w-full">
         <div className="w-[20px] text-ex-project"><Box /></div>
@@ -335,7 +349,6 @@ const ExProjectSummary = ({
           {isLoading && <Skeleton className="w-full h-8" />}
           {projectName}
         </span>
-
         <div className="flex gap-4 items-center">
           <div className="flex items-center justify-between text-xl gap-1"><Hourglass className="h-4" />
             <span className="text-right">

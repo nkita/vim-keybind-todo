@@ -28,3 +28,19 @@ export type SaveTodosReturnProps = {
     action: 'save' | 'skip'
     error?: any
 }
+
+export type ProjectProps = {
+    name: string
+    tags: string[]
+    in_progress: number
+    completed: number
+    start: string
+    end: string
+}
+
+export interface SummaryProps {
+    in_progress: number
+    completed: number
+    projects: ProjectProps[]
+    years: string[]
+}

@@ -149,72 +149,65 @@ export default function Me() {
                   </SelectContent>
                 </Select>
               </div>
-              {summary && summary.years.length > 0 ? (
-                <>
-                  <div className="flex justify-end">
-                  </div>
-                  <div className="bg-card border rounded-md p-4 shadow-sm">
-                    <div className="w-full flex justify-center">
-                      {activityLoading || !activity &&
-                        <div className="w-full space-y-2">
-                          <Skeleton className="w-full h-8" />
-                          <Skeleton className="w-3/4 h-8" />
-                          <Skeleton className="w-1/2 h-8" />
-                        </div>
-                      }
-                      {activity && activity.length > 0 &&
-                        <ActivityCalendar
-                          eventHandlers={{
-                            onMouseOver: (event) => (activity) => { },
-                          }}
-                          data={activity}
-                          showWeekdayLabels
-                          maxLevel={9}
-                          fontSize={12}
-                          blockSize={10}
-                          theme={{
-                            "light": [
-                              "#fafafa",
-                              "#bbf7d0",
-                              "#86efac",
-                              "#4ade80",
-                              "#22c55e",
-                              "#16a34a",
-                              "#15803d",
-                              "#166534",
-                              "#14532d",
-                              "#124e28",
-                            ],
-                            "dark": [
-                              "#fff",
-                              "#bbf7d0",
-                              "#86efac",
-                              "#4ade80",
-                              "#22c55e",
-                              "#16a34a",
-                              "#15803d",
-                              "#166534",
-                              "#14532d",
-                              "#124e28",
-                            ]
-                          }}
-                          labels={{
-                            months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-                            weekdays: ["日", "月", "火", "水", "木", "金", "土"],
-                            totalCount: "✅ {{count}}件（{{year}}年）",
-                            legend: {
-                              less: "🌱",
-                              more: "🌳",
-                            }
-                          }}
-                        />
-                      }
+              <div className="bg-card border rounded-md p-4 shadow-sm">
+                <div className="w-full flex justify-center">
+                  {activityLoading || !activity &&
+                    <div className="w-full space-y-2">
+                      <Skeleton className="w-full h-8" />
+                      <Skeleton className="w-3/4 h-8" />
+                      <Skeleton className="w-1/2 h-8" />
                     </div>
-                  </div>
-                </>
-              ) : (
-                <div className="pl-4">No activity.</div>
-              )}
+                  }
+                  {activity && activity.length === 0 && <div className="pl-4">No activity.</div>}
+                  {activity && activity.length > 0 &&
+                    <ActivityCalendar
+                      eventHandlers={{
+                        onMouseOver: (event) => (activity) => { },
+                      }}
+                      data={activity}
+                      showWeekdayLabels
+                      maxLevel={9}
+                      fontSize={12}
+                      blockSize={10}
+                      theme={{
+                        "light": [
+                          "#fafafa",
+                          "#bbf7d0",
+                          "#86efac",
+                          "#4ade80",
+                          "#22c55e",
+                          "#16a34a",
+                          "#15803d",
+                          "#166534",
+                          "#14532d",
+                          "#124e28",
+                        ],
+                        "dark": [
+                          "#fff",
+                          "#bbf7d0",
+                          "#86efac",
+                          "#4ade80",
+                          "#22c55e",
+                          "#16a34a",
+                          "#15803d",
+                          "#166534",
+                          "#14532d",
+                          "#124e28",
+                        ]
+                      }}
+                      labels={{
+                        months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                        weekdays: ["日", "月", "火", "水", "木", "金", "土"],
+                        totalCount: "✅ {{count}}件（{{year}}年）",
+                        legend: {
+                          less: "🌱",
+                          more: "🌳",
+                        }
+                      }}
+                    />
+                  }
+                </div>
+              </div>
             </div>
 
             <div className="space-y-8 pt-8" >
@@ -224,6 +217,9 @@ export default function Me() {
                   {!timeline || timeline.length <= 0 && <div className="pl-4">No timeline.</div>}
                   {timeline && timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
                   <div className="pl-2">
+                    {(timelineLoading || !timeline) && <div className="w-full flex justify-center">
+                      <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                    </div>}
                     {timeline && timeline.map((item: any, index: number) => {
                       const prevUpdateDate = timeline[index - 1]?.updated_at.split("-")
                       const prevYMD = prevUpdateDate && [prevUpdateDate[0], prevUpdateDate[1], prevUpdateDate[2].split("T")[0]].join("-")
@@ -234,7 +230,7 @@ export default function Me() {
                         <Fragment key={index}>
                           {updateDate && isLabel &&
                             <div className={`sticky top-[60px] bg-transparent flex items-center `}>
-                              <h2 className="border border-b border-primary/30 rounded-md bg-background pl-2 pr-8 py-1 text-sm flex items-center gap-2"><Calendar className="h-4" />{updateYMD}</h2>
+                              <h2 className="border border-b border-primary/30 rounded-md bg-card pl-2 pr-8 py-1 text-sm flex items-center gap-2"><Calendar className="h-4" />{updateYMD}</h2>
                             </div>
                           }
                           <div className={`py-3 pl-6 my-4  ${item.is_complete ? 'ml-8 border border-primary bg-card rounded-lg' : 'ml-8 border bg-background rounded-lg'}`}>

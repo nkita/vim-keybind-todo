@@ -28,4 +28,4 @@ export const useFetchCompletedTodo = (list_id: string | null, page: number = 1, 
 export const useFetchPostList = (body: Object, token: string | null) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)
 export const useFetchSummary = (token: string | null) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/summary`, token] : null, ([url, token]) => getFetch(url, token))
 export const useFetchActivity = (token: string | null, year: string) => useSWR(token && year ? [`${process.env.NEXT_PUBLIC_API}/api/summary/${year}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchTimeline = (token: string | null) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/timeline?page=1&limit=10`, token] : null, ([url, token]) => getFetch(url, token))
+export const useFetchTimeline = (token: string | null) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/timeline?page=0&limit=10`, token] : null, ([url, token]) => getFetch(url, token))

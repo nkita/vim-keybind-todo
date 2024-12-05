@@ -221,30 +221,37 @@ export default function Me() {
                       <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
                     </div>}
                     {timeline && timeline.map((item: any, index: number) => {
-                      const prevUpdateDate = timeline[index - 1]?.updated_at.split("-")
-                      const prevYMD = prevUpdateDate && [prevUpdateDate[0], prevUpdateDate[1], prevUpdateDate[2].split("T")[0]].join("-")
-                      const updateDate = item.updated_at.split("-")
-                      const updateYMD = [updateDate[0], updateDate[1], updateDate[2].split("T")[0]].join("-")
+                      const prevTimlineDate = new Date(timeline[index - 1]?.timelineDate)
+                      const prevYMD = prevTimlineDate && [prevTimlineDate.getFullYear(), prevTimlineDate.getMonth() + 1, prevTimlineDate.getDate()].join("-")
+                      const TimelineDate = new Date(item.timelineDate)
+                      const updateYMD = [TimelineDate.getFullYear(), TimelineDate.getMonth() + 1, TimelineDate.getDate()].join("-")
                       const isLabel = prevYMD !== updateYMD
                       return (
                         <Fragment key={index}>
-                          {updateDate && isLabel &&
+                          {TimelineDate && isLabel &&
                             <div className={`sticky top-[60px] bg-transparent flex items-center `}>
-                              <h2 className="border border-b border-primary/30 rounded-md bg-card pl-2 pr-8 py-1 text-sm flex items-center gap-2"><Calendar className="h-4" />{updateYMD}</h2>
+                              <h2 className="border border-b border-primary/30 rounded-md bg-card pl-2 pr-8 py-1 text-sm flex items-center gap-2">
+                                <Calendar className="h-4" />{updateYMD}
+                              </h2>
                             </div>
                           }
-                          <div className={`py-3 pl-6 my-4  ${item.is_complete ? 'ml-8 border border-primary bg-card rounded-lg' : 'ml-8 border bg-background rounded-lg'}`}>
-                            <div className="text-xs text-secondary-foreground flex gap-4 items-center">
+                          <div className={`py-4 pl-5 my-4  ${item.is_complete ? 'ml-8 border bg-background rounded-lg' : 'ml-8 border bg-card rounded-lg shadow-md'}`}>
+                            <div className="text-xs text-secondary-foreground flex gap-4 items-center pb-3">
                               <span className="flex gap-2">
-                                <span className="flex items-center"><Clock className="h-4 text-muted-foreground" /> {updateDate[2].split("T")[1].split(".")[0]}</span>
+                                <span className="flex items-center"><Clock className="h-4 text-muted-foreground" />
+                                  {TimelineDate.getHours()}:{TimelineDate.getMinutes()}
+                                </span>
                               </span>
                               <span className={`flex items-center ${item.is_complete ? 'text-primary' : 'text-muted-foreground'} text-xs`}>
-                                {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : 'アクション'}
+                                {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : '作成'}
                               </span>
                             </div>
-                            <h3 className="flex items-center gap-2 align-middle pl-2 py-1">
-                              {item.text}
-                              <span className="text-xs font-semibold flex text-ex-project items-center"><Box className="h-4 text-ex-project" /><Tag className="h-3 text-ex-label" /></span>
+                            <h3 className="space-y-3">
+                              <span className={`pl-1 mr-1 ${item.is_complete ? 'text-muted-foreground' : ''} `}>{item.text}</span>
+                              <span className="text-xs font-semibold flex gap-1 text-ex-project items-center">
+                                {item.project && <span className="flex"><Box className="h-4 text-ex-project" />{item.project}</span>}
+                                {item.context && <span className="flex"><Tag className="h-4 text-ex-label" />{item.project}</span>}
+                              </span>
                             </h3>
                           </div>
                         </Fragment>

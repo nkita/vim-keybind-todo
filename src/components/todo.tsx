@@ -267,7 +267,7 @@ export const Todo = (
             id: filterdTodos[index].id,
             is_complete: !filterdTodos[index].is_complete,
             priority: filterdTodos[index].priority,
-            completionDate: !filterdTodos[index].is_complete ? yyyymmddhhmmss(new Date()) : null,
+            completionDate: !filterdTodos[index].is_complete ? new Date().toISOString() : null,
             creationDate: filterdTodos[index].creationDate,
             text: filterdTodos[index].text,
             project: filterdTodos[index].project,

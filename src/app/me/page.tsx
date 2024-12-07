@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Fragment, useContext } from "react"
+import { useState, useEffect, Fragment, useContext, use } from "react"
 import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,7 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { activityDate, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
-import { useFetchActivity, useFetchSummary, useFetchTimeline } from "@/lib/fetch";
+import { useFetchActivity, useFetchSummary, useFetchTimeline, useFetch, getFetch } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
 import { ProjectProps } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -28,6 +28,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 export default function Me() {
 
   const { user, isLoading: userLoading } = useAuth0();
+  const [timeline, setTimeline] = useState<any[]>([])
+  const [timelinePage, setTimelinePage] = useState(0)
+  const [timelineLoading, setTimelineLoading] = useState(true);
+
   const config = useContext(TodoContext)
   useEffect(() => {
     if (!userLoading && user === undefined) {
@@ -38,7 +42,23 @@ export default function Me() {
 
   const { data: summary, isLoading: summaryLoading } = useFetchSummary(config.token)
   const { data: activity, isLoading: activityLoading } = useFetchActivity(config.token, "2024")
-  const { data: timeline, isLoading: timelineLoading } = useFetchTimeline(config.token)
+  // const { data: fetchTimeline, isLoading: timelineLoading } = useFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${timelinePage}&limit=10`, config.token ?? "")
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const result = await getFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${timelinePage}&limit=10`, config.token ?? "");
+        setTimeline(result);
+      } finally {
+        setTimelineLoading(false);
+      }
+    };
+
+    if (timelinePage === 0 && config.token) {
+      fetchData();
+    }
+  }, [timelinePage, config.token])
+
   // const [timeline, setTimeline] = useState(timeline_page1)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -52,8 +72,16 @@ export default function Me() {
   };
   const [popup, setPopup] = useState(false);
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
-  const handleClickReadmore = () => {
-    // setTimeline(prev => [...prev, ...timeline_page2])
+  const handleClickReadmore = async () => {
+    setTimelineLoading(true);
+    try {
+      const nextPage = timelinePage + 1;
+      setTimelinePage(nextPage);
+      const result = await getFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${nextPage}&limit=10`, config.token ?? "");
+      setTimeline(prev => [...prev, ...result]);
+    } finally {
+      setTimelineLoading(false);
+    }
   }
   return (
     <>
@@ -214,12 +242,9 @@ export default function Me() {
               <div>
                 <section className="relative">
                   <ExH className="pt-0 pb-4 sticky top-0 h-[60px] bg-background z-10"><History className="h-5" />タイムライン</ExH>
-                  {!timeline || timeline.length <= 0 && <div className="pl-4">No timeline.</div>}
+                  {!timelineLoading && (!timeline || timeline.length <= 0) && <div className="pl-4">No timeline.</div>}
                   {timeline && timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
                   <div className="pl-2">
-                    {(timelineLoading || !timeline) && <div className="w-full flex justify-center">
-                      <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
-                    </div>}
                     {timeline && timeline.map((item: any, index: number) => {
                       const prevTimlineDate = new Date(timeline[index - 1]?.timelineDate)
                       const prevYMD = prevTimlineDate && [prevTimlineDate.getFullYear(), prevTimlineDate.getMonth() + 1, prevTimlineDate.getDate()].join("-")
@@ -235,19 +260,19 @@ export default function Me() {
                               </h2>
                             </div>
                           }
-                          <div className={`py-4 pl-5 my-4  ${item.is_complete ? 'ml-8 border bg-background rounded-lg' : 'ml-8 border bg-card rounded-lg shadow-md'}`}>
+                          <div className={`py-4 pl-5 my-4  ${item.timelineType === "create" ? 'ml-8 border bg-card rounded-lg shadow-md' : 'ml-8 border bg-background rounded-lg'}`}>
                             <div className="text-xs text-secondary-foreground flex gap-4 items-center pb-3">
                               <span className="flex gap-2">
                                 <span className="flex items-center"><Clock className="h-4 text-muted-foreground" />
                                   {TimelineDate.getHours()}:{TimelineDate.getMinutes()}
                                 </span>
                               </span>
-                              <span className={`flex items-center ${item.is_complete ? 'text-primary' : 'text-muted-foreground'} text-xs`}>
-                                {item.is_complete ? <Check className="h-4" /> : <Rocket className="h-4" />} {item.is_complete ? '完了' : '作成'}
+                              <span className={`flex items-center ${item.timelineType === "create" ? 'text-primary' : 'text-muted-foreground'} text-xs`}>
+                                {item.timelineType === "create" ? <Rocket className="h-4" /> : <Check className="h-4" />} {item.timelineType === "create" ? '作成' : '完了'}
                               </span>
                             </div>
                             <h3 className="space-y-3">
-                              <span className={`pl-1 mr-1 ${item.is_complete ? 'text-muted-foreground' : ''} `}>{item.text}</span>
+                              <span className={`pl-1 mr-1 ${item.timelineType === "create" ? '' : 'text-muted-foreground'} `}>{item.text}</span>
                               <span className="text-xs font-semibold flex gap-1 text-ex-project items-center">
                                 {item.project && <span className="flex"><Box className="h-4 text-ex-project" />{item.project}</span>}
                                 {item.context && <span className="flex"><Tag className="h-4 text-ex-label" />{item.project}</span>}
@@ -258,6 +283,9 @@ export default function Me() {
                       )
                     })}
                   </div>
+                  {(timelineLoading || !timeline) && <div className="w-full flex justify-center">
+                    <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                  </div>}
                 </section>
               </div>
             </div>

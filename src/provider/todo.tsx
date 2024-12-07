@@ -14,7 +14,7 @@ const defaultValue = { list: null, token: null }
 export const TodoContext = createContext<TodoConfigProps>(defaultValue)
 
 export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
-    const { getAccessTokenSilently, user } = useAuth0();
+    const { getAccessTokenSilently, user, isLoading } = useAuth0();
     const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
     const [list, setList] = useState(null)
     const [token, setToken] = useState("")
@@ -28,8 +28,8 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
             } catch (e) {
             }
         }
-        user && getToken()
-    }, [getAccessTokenSilently, user])
+        if (!isLoading && user) getToken()
+    }, [getAccessTokenSilently, user, isLoading])
 
     useEffect(() => {
         if (token) {

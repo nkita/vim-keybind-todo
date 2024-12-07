@@ -16,6 +16,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             authorizationParams={{
                 redirect_uri: process.env.NEXT_PUBLIC_DOMAIN + redirectUrlPath
             }}
+            useRefreshTokens={true}
+            cacheLocation="localstorage"
         >
             {children}
         </Auth0Provider>

@@ -6,7 +6,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
+import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, Pencil, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -20,10 +20,12 @@ import {
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { activityDate, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
-import { useFetchActivity, useFetchSummary, useFetchTimeline, useFetch, getFetch } from "@/lib/fetch";
+import { useFetchActivity, useFetchSummary, getFetch } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
 import { ProjectProps } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Modal } from "@/components/ui/modal";
+import { ProfileEditModal } from "@/components/profile-edit-modal";
 
 export default function Me() {
 
@@ -87,11 +89,21 @@ export default function Me() {
     <>
       <Header user={user} userLoading={userLoading} />
       <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1280px] justify-center m-auto `} onMouseMove={handleMouseMove}>
-        <article className="md:flex w-full gap-6 px-4">
-          <div className="flex flex-col md:w-[30%] pb-6">
-            <div className="m-0 sticky top-0 pt-4">
+        <main className="md:flex w-full gap-6 px-4">
+          <div className="flex flex-col md:w-[300px] pb-6">
+            <div className="m-0 mt-11 sticky top-11 pt-2 border p-6 rounded-md bg-card">
+              {/* <button className="underline text-muted-foreground hover:text-card-foreground">編集</button> */}
+              <div className="w-full flex justify-end">
+                <ProfileEditModal
+                  buttonLabel={"編集"}
+                  dialogTitle={"プロフィール編集"}
+                  className="w-[40px] text-sm text-muted-foreground hover:text-card-foreground transition-all underline"
+                  onClickOpen={() => { }}
+                  onClickClose={() => { }}
+                />
+              </div>
               <div className="flex items-center md:flex-col sm:gap-2 pb-6 w-full">
-                <Avatar className="h-24 md:h-40 sm:h-36 w-24 md:w-40 sm:w-36 bg-card">
+                <Avatar className="md:h-32 h-24 md:w-32 w-24 bg-card border p-1">
                   <AvatarImage src={userInfo?.image} alt={userInfo?.nickname} />
                   <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
                 </Avatar>
@@ -102,17 +114,17 @@ export default function Me() {
                   </div>
                 </div>
               </div>
-              <p className="rounded-md py-2 text-sm">
+              <p className="rounded-md py-2 text-xs">
                 {userInfo?.profile ?? "No profile"}
               </p>
-              <ul className="text-sm space-y-2">
+              <ul className="text-xs space-y-2">
                 {userInfo?.links.map((link, index) => (
                   <ExLink href={link} key={index} ><LinkIcon className="w-4 h-4" /></ExLink>
                 ))}
               </ul>
             </div>
           </div>
-          <div className="w-full md:w-[70%]">
+          <div className="w-full md:w-[calc(100%-300px)]">
             <ExH className="pt-0">My Tasks</ExH>
             <div className="space-y-8">
               <div className="flex gap-2">
@@ -241,7 +253,7 @@ export default function Me() {
             <div className="space-y-8 pt-8" >
               <div>
                 <section className="relative">
-                  <ExH className="pt-0 pb-4 sticky top-0 h-[60px] bg-background z-10"><History className="h-5" />タイムライン</ExH>
+                  <ExH className="pt-0 pb-4 sticky top-0 h-[45px] bg-background z-10 flex items-end "><History className="h-5" />タイムライン</ExH>
                   {!timelineLoading && (!timeline || timeline.length <= 0) && <div className="pl-4">No timeline.</div>}
                   {timeline && timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
                   <div className="pl-2">
@@ -254,7 +266,7 @@ export default function Me() {
                       return (
                         <Fragment key={index}>
                           {TimelineDate && isLabel &&
-                            <div className={`sticky top-[60px] bg-transparent flex items-center `}>
+                            <div className={`sticky top-[45px] bg-transparent flex items-center `}>
                               <h2 className="border border-b border-primary/30 rounded-md bg-card pl-2 pr-8 py-1 text-sm flex items-center gap-2">
                                 <Calendar className="h-4" />{updateYMD}
                               </h2>
@@ -302,9 +314,9 @@ export default function Me() {
             </div>
           </div>
         } */}
-        </article >
+        </main>
       </div>
-      <footer className="flex sm:flex-row flex-col-reverse sm:justify-between items-center sm:px-16  gap-8 py-12">
+      <footer className="flex sm:flex-row flex-col-reverse sm:justify-between items-center px-16 sm:px-8  gap-8 py-12">
         <div className="flex items-center gap-1">
           <Image
             src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`}
@@ -375,10 +387,10 @@ const ExProjectSummary = ({
   <Card className="text-sm w-full lg:w-[49%]">
     <CardHeader>
       <CardTitle className="flex items-center gap-2  w-full">
-        <div className="w-[20px] text-ex-project"><Box /></div>
+        <div className={`w-[20px] text-ex-project ${!projectName && "hidden"}`}><Box /></div>
         <span className="w-full text-ex-project">
           {isLoading && <Skeleton className="w-full h-8" />}
-          {projectName}
+          {projectName ? projectName : "その他"}
         </span>
         <div className="flex gap-4 items-center">
           <div className="flex items-center justify-between text-xl gap-1"><Hourglass className="h-4" />

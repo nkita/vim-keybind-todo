@@ -98,8 +98,6 @@ export default function Me() {
                   buttonLabel={"編集"}
                   dialogTitle={"プロフィール編集"}
                   className="w-[40px] text-sm text-muted-foreground hover:text-card-foreground transition-all underline"
-                  onClickOpen={() => { }}
-                  onClickClose={() => { }}
                 />
               </div>
               <div className="flex items-center md:flex-col sm:gap-2 pb-6 w-full">

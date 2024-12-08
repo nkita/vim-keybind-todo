@@ -8,24 +8,18 @@ export const ProfileEditModal = (
         buttonLabel,
         dialogTitle,
         className,
-        onClickClose,
-        onClickOpen
     }: {
         buttonLabel?: string
         dialogTitle?: string
         className?: string
-        onClickClose: (value: boolean) => void
-        onClickOpen: MouseEventHandler<HTMLButtonElement>
     }) => {
     const [isView, setIsView] = useState(false)
 
     function open() {
-        console.log("kokoi2")
         setIsView(true)
     }
 
     function close(_: boolean) {
-        console.log("kokoi",_)
         setIsView(false)
     }
     return (
@@ -39,10 +33,7 @@ export const ProfileEditModal = (
             <div>
                 <div className="text-gray-500">
                     <p className="pt-3 hidden sm:block ">
-                        <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
-                        <br />
-                        <br />
-                        <kbd>↑</kbd> <kbd>↓</kbd>キーで選択
+                        ここに入力
                     </p>
                 </div>
             </div>

@@ -2,14 +2,18 @@ import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useState, useEffect } from "react";
 
-export const getFetch = (url: string, token: string) => {
-    return fetch(url, {
+export const getFetch = async <T>(url: string, token: string): Promise<T> => {
+    const response = await fetch(url, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
         },
-    }).then(res => res.json());
+    });
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
 }
 
 export const postFetch = (url: string, token: string | null, body: Object) => {
@@ -23,16 +27,16 @@ export const postFetch = (url: string, token: string | null, body: Object) => {
     }).then(res => res.json());
 }
 
-export const useFetch = (url: string, token: string) => {
-    const [data, setData] = useState(null);
+export const useFetch = <T>(url: string, token: string) => {
+    const [data, setData] = useState<T | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState<Error | undefined>(undefined);
 
     useEffect(() => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const result = await getFetch(url, token);
+                const result: T = await getFetch<T>(url, token);
                 setData(result);
             } catch (error: any) {
                 setError(error);

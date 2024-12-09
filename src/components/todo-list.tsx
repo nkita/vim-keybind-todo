@@ -238,8 +238,8 @@ export const TodoList = (
                                                             </div>
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-                                                            <div className="flex">
-                                                                <div className={`hidden sm:flex items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
+                                                            <div className="flex justify-center">
+                                                                <div className={`hidden sm:flex items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
                                                                 <SelectModal
                                                                     t={t}
                                                                     index={index}
@@ -247,7 +247,7 @@ export const TodoList = (
                                                                     prefix={"context"}
                                                                     currentPrefix={prefix}
                                                                     mode={mode}
-                                                                    className={`text-left`}
+                                                                    className={`text-left ${!t.context && "w-0"}`}
                                                                     label={t.context}
                                                                     register={register}
                                                                     rhfSetValue={rhfSetValue}
@@ -257,8 +257,8 @@ export const TodoList = (
                                                             </div>
                                                         </TableCell>
                                                         <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light pr-2`}>
-                                                            <div className="flex">
-                                                                <div className={`hidden sm:flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
+                                                            <div className="flex justify-center">
+                                                                <div className={`hidden sm:flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
                                                                 <SelectModal
                                                                     t={t}
                                                                     index={index}
@@ -266,7 +266,7 @@ export const TodoList = (
                                                                     prefix={"project"}
                                                                     currentPrefix={prefix}
                                                                     mode={mode}
-                                                                    className="text-left"
+                                                                    className={`text-left ${!t.project && "w-0"}`}
                                                                     label={t.project}
                                                                     register={register}
                                                                     rhfSetValue={rhfSetValue}

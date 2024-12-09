@@ -46,8 +46,8 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
         }
 
         return (
-            <Combobox onChange={handleChange} value={val} immediate={true} onClose={onClose}>
-                <div className="relative mt-1">
+            <Combobox onChange={handleChange} value={val} immediate={true} >
+                <div className="relative mt-1 bg-blue-200">
                     <div className="relative w-full">
                         <ComboboxInput
                             tabIndex={tabIndex}

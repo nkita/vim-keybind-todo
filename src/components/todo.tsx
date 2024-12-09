@@ -830,9 +830,11 @@ export const Todo = (
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
-        e.preventDefault()
-        e.stopPropagation();
+        if (mode !== "modal") {
+            toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            e.preventDefault()
+            e.stopPropagation();
+        }
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {

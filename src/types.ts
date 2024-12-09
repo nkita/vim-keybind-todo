@@ -44,3 +44,12 @@ export interface SummaryProps {
     projects: ProjectProps[]
     years: string[]
 }
+
+export interface UserInfoProp {
+    uid: string;
+    name: string;
+    nickname: string;
+    image: string;
+    profile: string;
+    links: string[];
+}

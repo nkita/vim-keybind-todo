@@ -19,13 +19,10 @@ import {
 } from "@/components/ui/select"
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
-import { activityDate, timeline_page1, timeline_page2, userInfo } from "@/app/me/sample_data"
-import { useFetchActivity, useFetchSummary, getFetch } from "@/lib/fetch";
+import { getFetch, useFetch } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
-import { ProjectProps } from "@/types";
+import { ProjectProps, SummaryProps, UserInfoProp } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Modal } from "@/components/ui/modal";
-import { ProfileEditModal } from "@/components/profile-edit-modal";
 
 export default function Me() {
 
@@ -41,15 +38,14 @@ export default function Me() {
     }
   }, [user, userLoading])
 
-
-  const { data: summary, isLoading: summaryLoading } = useFetchSummary(config.token)
-  const { data: activity, isLoading: activityLoading } = useFetchActivity(config.token, "2024")
-  // const { data: fetchTimeline, isLoading: timelineLoading } = useFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${timelinePage}&limit=10`, config.token ?? "")
+  const { data: summary, isLoading: summaryLoading } = useFetch<SummaryProps>(`${process.env.NEXT_PUBLIC_API}/api/summary`, config.token ?? "")
+  const { data: activity, isLoading: activityLoading } = useFetch<any[]>(`${process.env.NEXT_PUBLIC_API}/api/summary/${"2024"}`, config.token ?? "")
+  const { data: userInfo, isLoading: userInfoLoading } = useFetch<UserInfoProp>(`${process.env.NEXT_PUBLIC_API}/api/user`, config.token ?? "")
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await getFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${timelinePage}&limit=10`, config.token ?? "");
+        const result: any[] = await getFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${timelinePage}&limit=10`, config.token ?? "");
         setTimeline(result);
       } finally {
         setTimelineLoading(false);
@@ -93,28 +89,23 @@ export default function Me() {
           <div className="flex flex-col md:w-[300px] pb-6">
             <div className="m-0 mt-11 sticky top-11 pt-2 border p-6 rounded-md bg-card">
               {/* <button className="underline text-muted-foreground hover:text-card-foreground">編集</button> */}
-              <div className="w-full flex justify-end">
-                <ProfileEditModal
-                  buttonLabel={"編集"}
-                  dialogTitle={"プロフィール編集"}
-                  className="w-[40px] text-sm text-muted-foreground hover:text-card-foreground transition-all underline"
-                />
-              </div>
-              <div className="flex items-center md:flex-col sm:gap-2 pb-6 w-full">
-                <Avatar className="md:h-32 h-24 md:w-32 w-24 bg-card border p-1">
-                  <AvatarImage src={userInfo?.image} alt={userInfo?.nickname} />
+              <div className="flex items-center md:flex-col sm:gap-2 py-6 w-full">
+                <Avatar className="md:h-32 h-24 md:w-32 w-24 bg-card p-1">
+                  <AvatarImage src={userInfo ? userInfo.image : user?.picture} alt={userInfo ? userInfo?.name : user?.name} />
                   <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
                 </Avatar>
                 <div className="flex items-center justify-center w-full px-4">
                   <div className="sm:px-0 px-6 w-full bottom-0 ">
-                    <h1 className="text-2xl">{userInfo?.nickname ?? "Anonymous"}</h1>
-                    <p className="text-sm text-muted-foreground">{userInfo?.id ?? "my id"}</p>
+                    <h1 className="text-2xl">{userInfo ? userInfo.nickname : user?.name ?? "Anonymous"}</h1>
+                    <p className="text-sm text-muted-foreground">{userInfo ? userInfo.uid : user?.email ?? "id"}</p>
                   </div>
                 </div>
               </div>
-              <p className="rounded-md py-2 text-xs">
-                {userInfo?.profile ?? "No profile"}
-              </p>
+              {userInfo?.profile &&
+                < p className="rounded-md py-2 text-xs">
+                  {userInfo?.profile ?? "No profile"}
+                </p>
+              }
               <ul className="text-xs space-y-2">
                 {userInfo?.links.map((link, index) => (
                   <ExLink href={link} key={index} ><LinkIcon className="w-4 h-4" /></ExLink>
@@ -129,14 +120,14 @@ export default function Me() {
                 <Card className="text-sm w-full">
                   <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
                   <CardContent className="text-5xl text-right">
-                    {summaryLoading || !summary && <Skeleton className="h-10 w-full" />}
+                    {summaryLoading && <Skeleton className="h-10 w-full" />}
                     {summary && summary.in_progress}
                   </CardContent>
                 </Card>
                 <Card className="text-sm w-full text-primary">
                   <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
                   <CardContent className="text-5xl text-right">
-                    {summaryLoading || !summary && <Skeleton className="h-10 w-full" />}
+                    {summaryLoading && <Skeleton className="h-10 w-full" />}
                     {summary && summary.completed}
                   </CardContent>
                 </Card>
@@ -146,7 +137,7 @@ export default function Me() {
                 {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
                 {summary && summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
                 <div className="flex flex-wrap gap-3">
-                  {summaryLoading || summary === undefined &&
+                  {summaryLoading &&
                     <ExProjectSummary
                       isLoading={true}
                       projectName=""
@@ -189,7 +180,7 @@ export default function Me() {
               </div>
               <div className="bg-card border rounded-md p-4 shadow-sm">
                 <div className="w-full flex justify-center">
-                  {activityLoading || !activity &&
+                  {activityLoading &&
                     <div className="w-full space-y-2">
                       <Skeleton className="w-full h-8" />
                       <Skeleton className="w-3/4 h-8" />
@@ -312,8 +303,8 @@ export default function Me() {
             </div>
           </div>
         } */}
-        </main>
-      </div>
+        </main >
+      </div >
       <footer className="flex sm:flex-row flex-col-reverse sm:justify-between items-center px-16 sm:px-8  gap-8 py-12">
         <div className="flex items-center gap-1">
           <Image

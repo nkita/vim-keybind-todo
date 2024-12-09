@@ -50,13 +50,14 @@ export const SelectModal = (
     }
 
     function close(_: boolean) {
-        onClick(currentIndex, "normal")
+        if (!_) onClick(currentIndex, "normal")
     }
 
     const handleAddItem = (val: string) => {
         rhfSetValue(`edit-${position}-${prefix}-${t.id}`, val)
         onClick(currentIndex, "normal")
     }
+
     return (
         <>
             <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: label ?? "" })} />
@@ -66,7 +67,7 @@ export const SelectModal = (
                 className={className}
                 open={isView}
                 onClickOpen={open}
-                onClickClose={close}>
+                onClickChange={close}>
                 <div>
                     <div className="text-gray-500">
                         <p className="pt-3 hidden sm:block ">

@@ -10,6 +10,8 @@ import { debounce } from "@/lib/utils";
 import { postSaveTodos } from "@/lib/todo";
 import { TodoContext } from "@/provider/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
+import AppPageTemplate from "@/components/app-page-template";
+import { CircleCheck } from "lucide-react";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -92,22 +94,19 @@ export default function Home() {
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
   const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
   return (
-    <>
-      <Header user={user} userLoading={userLoading} />
-      <article className={`${mainPCHeight}`}>
-        <div className={`w-full h-full`}>
-          <Todo
-            todos={!userLoading && user ? todos : todosLS}
-            prevTodos={prevTodos}
-            isSave={isSave}
-            isUpdate={isUpdate}
-            loading={todosLoading || userLoading || fetch_todo_loading}
-            setTodos={!userLoading && user ? setTodos : setTodosLS}
-            setIsUpdate={setIsUpdate}
-            onClickSaveButton={handleClickSaveButton}
-          />
-        </div>
+    <AppPageTemplate>
+      <article className={`${mainPCHeight} w-full `}>
+        <Todo
+          todos={!userLoading && user ? todos : todosLS}
+          prevTodos={prevTodos}
+          isSave={isSave}
+          isUpdate={isUpdate}
+          loading={todosLoading || userLoading || fetch_todo_loading}
+          setTodos={!userLoading && user ? setTodos : setTodosLS}
+          setIsUpdate={setIsUpdate}
+          onClickSaveButton={handleClickSaveButton}
+        />
       </article >
-    </>
+    </AppPageTemplate>
   );
 }

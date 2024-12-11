@@ -24,7 +24,7 @@ export default function Home() {
 
   useEffect(() => {
     if (!userLoading && user === undefined) {
-      redirect('/t')
+      redirect('/app/t')
     }
   }, [user, userLoading])
 
@@ -82,7 +82,6 @@ export default function Home() {
   const mainPCHeight = `h-[calc(100vh-90px)]` // 100vh - headerHeight
   return (
     <>
-      <Header user={user} userLoading={userLoading} />
       <article className={`${mainPCHeight} bg-muted/10`}>
         <div className={`w-full h-full`}>
           <Todo

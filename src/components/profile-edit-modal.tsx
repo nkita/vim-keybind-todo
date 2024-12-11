@@ -1,8 +1,4 @@
-import { TodoProps, Mode } from "@/types"
 import { Modal } from "./ui/modal"
-import { DynamicSearchSelect } from "./ui/combobox-dynamic"
-import { MouseEventHandler, useEffect, useState } from "react"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "./ui/card"
 import { Button } from "./ui/button"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { z } from 'zod'
@@ -10,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
-import { max } from "lodash"
 import { ImageUploader } from "./image-uploader"
 
 const formSchema = z.object({

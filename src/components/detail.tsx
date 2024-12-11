@@ -61,8 +61,8 @@ export const Detail = ({
     return (
         <>
             <div className="w-full h-full bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
-                <div className="flex flex-col h-[83%]">
-                    <div className={`flex max-h-[120px]  font-bold items-center gap-2 px-5 py-5 border-x border-t rounded-t-md bg-card ${zIndex} `} onMouseDown={e => e.stopPropagation()} >
+                <div className="w-full flex flex-col h-[83%]">
+                    <div className={`flex max-h-[120px] w-full  font-bold items-center gap-2 px-5 py-5 border-x border-t rounded-t-md bg-card ${zIndex} `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
@@ -123,31 +123,31 @@ export const Detail = ({
                             </div>
                         </div>
                     </div>
-                    <div className={`max-h-[150px] bg-card text-card-foreground py-3 px-5 border-x ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
+                    <div className={`w-full max-h-[150px] bg-card text-card-foreground py-5 px-5 border-x ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
                         {todo.context ? (
                             <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1 py-2`}>
-                                <Tag className="h-4"/> {todo.context}
+                                <Tag className="h-4" /> {todo.context}
                                 <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete("context")}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
-                            <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
-                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"><Tag className="h-4" />ラベルを追加</span>
-                            </Button>
+                            <button className="flex my-2 gap-2 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
+                                <span className="flex items-center gap-1"><Tag className="h-4" />ラベルを追加</span>
+                            </button>
                         )}
                         {todo.project ? (
                             <div className={`flex items-center text-ex-project text-sm font-light gap-1 pt-3`}>
-                                <span className="flex items-center gap-1"><Box className="h-4"/>{todo.project} </span>
+                                <span className="flex items-center gap-1"><Box className="h-4" />{todo.project} </span>
                                 <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete('project')}><X className="w-4 h-4" /></Button>
                             </div>
                         ) : (
-                            <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
-                                <Plus className="w-4 h-4" /><span className="flex items-center"><Box className="h-4"/>プロジェクトを追加 </span>
-                            </Button>
+                            <button  className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
+                                <span className="flex items-center"><Box className="h-4" />プロジェクトを追加 </span>
+                            </button>
                         )}
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={`text-sm h-[45px] pt-4 pb-12  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-md ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                        className={`w-full text-sm h-[45px] pt-4 pb-12  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-md ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
                 </div>
             </div >
         </>

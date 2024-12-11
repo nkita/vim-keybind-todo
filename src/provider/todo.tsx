@@ -4,6 +4,7 @@ import { createContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getFetch, postFetch, useFetchList } from "@/lib/fetch";
 import { mutate } from "swr";
+import { TodoProps } from "@/types";
 
 type TodoConfigProps = {
     list: string | null
@@ -16,7 +17,7 @@ export const TodoContext = createContext<TodoConfigProps>(defaultValue)
 export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
     const { getAccessTokenSilently, user, isLoading } = useAuth0();
     const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
-    const [list, setList] = useState(null)
+    const [list, setList] = useState<string | null>(null)
     const [token, setToken] = useState("")
     useEffect(() => {
         async function getToken() {
@@ -34,7 +35,7 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
     useEffect(() => {
         if (token) {
             try {
-                const getList = async (url: string, token: string) => await getFetch(url, token)
+                const getList = async (url: string, token: string) => await getFetch<any[]>(url, token)
                 const u = `${process.env.NEXT_PUBLIC_API}/api/list`
                 getList(u, token).then(l => {
                     if (l === null) {

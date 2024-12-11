@@ -1,8 +1,9 @@
 import useSWR from "swr";
 import useSWRImmutable from "swr/immutable";
 import { useState, useEffect } from "react";
+import { TodoProps } from "@/types";
 
-export const getFetch = async <T>(url: string, token: string): Promise<T> => {
+export const getFetch = async <T>(url: string, token: string | null): Promise<T> => {
     const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -54,9 +55,6 @@ export const useFetch = <T>(url: string, token: string) => {
 };
 
 export const useFetchList = (id: string | null, token: string | null) => useSWRImmutable(token && id ? [`${process.env.NEXT_PUBLIC_API}/api/list${id ? "/" + id : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchTodo = (list_id: string | null, token: string | null) => useSWR(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchCompletedTodo = (list_id: string | null, page: number = 1, token: string | null) => useSWR(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo?completionOnly=true" : ""}`, token] : null, ([url, token]) => getFetch(url, token))
+export const useFetchTodo = (list_id: string | null, token: string | null) => useSWR<TodoProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token as string | null))
+export const useFetchCompletedTodo = (list_id: string | null, page: number = 1, token: string | null) => useSWR<TodoProps[]>(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo?completionOnly=true" : ""}`, token] : null, ([url, token]) => getFetch(url, token as string | null))
 export const useFetchPostList = (body: Object, token: string | null) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)
-export const useFetchSummary = (token: string | null) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/summary`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchActivity = (token: string | null, year: string) => useSWR(token && year ? [`${process.env.NEXT_PUBLIC_API}/api/summary/${year}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchTimeline = (token: string | null) => useSWR(token ? [`${process.env.NEXT_PUBLIC_API}/api/timeline?page=0&limit=10`, token] : null, ([url, token]) => getFetch(url, token))

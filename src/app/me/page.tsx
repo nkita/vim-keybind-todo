@@ -23,6 +23,7 @@ import { getFetch, useFetch } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
 import { ProjectProps, SummaryProps, UserInfoProp } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
+import AppPageTemplate from "@/components/app-page-template";
 
 export default function Me() {
 
@@ -75,225 +76,223 @@ export default function Me() {
     try {
       const nextPage = timelinePage + 1;
       setTimelinePage(nextPage);
-      const result = await getFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${nextPage}&limit=10`, config.token ?? "");
+      const result: any[] = await getFetch(`${process.env.NEXT_PUBLIC_API}/api/timeline?page=${nextPage}&limit=10`, config.token ?? "");
       setTimeline(prev => [...prev, ...result]);
     } finally {
       setTimelineLoading(false);
     }
   }
   return (
-    <>
-      <Header user={user} userLoading={userLoading} />
-      <div className={`w-full px-4 sm:px-6 pt-12 gap-4 max-w-[1280px] justify-center m-auto `} onMouseMove={handleMouseMove}>
-        <main className="md:flex w-full gap-6 px-4">
-          <div className="flex flex-col md:w-[300px] pb-6">
-            <div className="m-0 mt-11 sticky top-11 pt-2 border p-6 rounded-md bg-card">
-              {/* <button className="underline text-muted-foreground hover:text-card-foreground">編集</button> */}
-              <div className="flex items-center md:flex-col sm:gap-2 py-6 w-full">
-                <Avatar className="md:h-32 h-24 md:w-32 w-24 bg-card p-1">
-                  <AvatarImage src={userInfo ? userInfo.image : user?.picture} alt={userInfo ? userInfo?.name : user?.name} />
-                  <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
-                </Avatar>
-                <div className="flex items-center justify-center w-full px-4">
-                  <div className="sm:px-0 px-6 w-full bottom-0 ">
-                    <h1 className="text-2xl">{userInfo ? userInfo.nickname : user?.name ?? "Anonymous"}</h1>
-                    <p className="text-sm text-muted-foreground">{userInfo ? userInfo.uid : user?.email ?? "id"}</p>
-                  </div>
+    <AppPageTemplate>
+      <main className="md:flex w-full gap-6 px-4">
+        <div className="flex flex-col md:w-[300px] pb-6">
+          <div className="m-0 mt-11 sticky top-11 pt-2 border p-6 rounded-md bg-card">
+            {/* <button className="underline text-muted-foreground hover:text-card-foreground">編集</button> */}
+            <div className="flex items-center md:flex-col sm:gap-2 py-6 w-full">
+              <Avatar className="md:h-32 h-24 md:w-32 w-24 bg-card p-1">
+                <AvatarImage src={userInfo ? userInfo.image : user?.picture} alt={userInfo ? userInfo?.name : user?.name} />
+                <AvatarFallback><div className="text-center">No image</div></AvatarFallback>
+              </Avatar>
+              <div className="flex items-center justify-center w-full px-4">
+                <div className="sm:px-0 px-6 w-full bottom-0 ">
+                  <h1 className="text-2xl">{userInfo ? userInfo.nickname : user?.name ?? "Anonymous"}</h1>
+                  <p className="text-sm text-muted-foreground">{userInfo ? userInfo.uid : user?.email ?? "id"}</p>
                 </div>
               </div>
-              {userInfo?.profile &&
-                < p className="rounded-md py-2 text-xs">
-                  {userInfo?.profile ?? "No profile"}
-                </p>
-              }
-              <ul className="text-xs space-y-2">
-                {userInfo?.links.map((link, index) => (
-                  <ExLink href={link} key={index} ><LinkIcon className="w-4 h-4" /></ExLink>
+            </div>
+            {userInfo?.profile &&
+              < p className="rounded-md py-2 text-xs">
+                {userInfo?.profile ?? "No profile"}
+              </p>
+            }
+            <ul className="text-xs space-y-2">
+              {userInfo?.links.map((link, index) => (
+                <ExLink href={link} key={index} ><LinkIcon className="w-4 h-4" /></ExLink>
+              ))}
+            </ul>
+          </div>
+        </div>
+        <div className="w-full md:w-[calc(100%-300px)]">
+          <ExH className="pt-0">My Tasks</ExH>
+          <div className="space-y-8">
+            <div className="flex gap-2">
+              <Card className="text-sm w-full">
+                <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
+                <CardContent className="text-5xl text-right">
+                  {summaryLoading && <Skeleton className="h-10 w-full" />}
+                  {summary && summary.in_progress}
+                </CardContent>
+              </Card>
+              <Card className="text-sm w-full text-primary">
+                <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
+                <CardContent className="text-5xl text-right">
+                  {summaryLoading && <Skeleton className="h-10 w-full" />}
+                  {summary && summary.completed}
+                </CardContent>
+              </Card>
+            </div>
+            <div>
+              <ExH><Footprints className="h-4" />My Projects</ExH>
+              {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
+              {summary && summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
+              <div className="flex flex-wrap gap-3">
+                {summaryLoading &&
+                  <ExProjectSummary
+                    isLoading={true}
+                    projectName=""
+                    start=""
+                    end=""
+                    tags={[]}
+                    in_progress={0}
+                    completed={0}
+                  />
+                }
+                {summary && summary.projects.map((project: ProjectProps, index: number) => (
+                  <ExProjectSummary
+                    key={index}
+                    isLoading={false}
+                    projectName={project.name}
+                    start={project.start.split("T")[0]}
+                    end={project.end.split("T")[0]}
+                    tags={project.tags}
+                    in_progress={project.in_progress}
+                    completed={project.completed}
+                  />
                 ))}
-              </ul>
+              </div>
             </div>
           </div>
-          <div className="w-full md:w-[calc(100%-300px)]">
-            <ExH className="pt-0">My Tasks</ExH>
-            <div className="space-y-8">
-              <div className="flex gap-2">
-                <Card className="text-sm w-full">
-                  <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><Hourglass className="h-4" />進行中</CardTitle></CardHeader>
-                  <CardContent className="text-5xl text-right">
-                    {summaryLoading && <Skeleton className="h-10 w-full" />}
-                    {summary && summary.in_progress}
-                  </CardContent>
-                </Card>
-                <Card className="text-sm w-full text-primary">
-                  <CardHeader><CardTitle className="flex items-center gap-1 text-2xl"><CircleCheck className="h-4" />完了</CardTitle></CardHeader>
-                  <CardContent className="text-5xl text-right">
-                    {summaryLoading && <Skeleton className="h-10 w-full" />}
-                    {summary && summary.completed}
-                  </CardContent>
-                </Card>
-              </div>
-              <div>
-                <ExH><Footprints className="h-4" />My Projects</ExH>
-                {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
-                {summary && summary.projects.length <= 0 && <div className="pl-4">No projects.</div>}
-                <div className="flex flex-wrap gap-3">
-                  {summaryLoading &&
-                    <ExProjectSummary
-                      isLoading={true}
-                      projectName=""
-                      start=""
-                      end=""
-                      tags={[]}
-                      in_progress={0}
-                      completed={0}
-                    />
-                  }
-                  {summary && summary.projects.map((project: ProjectProps, index: number) => (
-                    <ExProjectSummary
-                      key={index}
-                      isLoading={false}
-                      projectName={project.name}
-                      start={project.start.split("T")[0]}
-                      end={project.end.split("T")[0]}
-                      tags={project.tags}
-                      in_progress={project.in_progress}
-                      completed={project.completed}
-                    />
+
+          <div className="w-full" >
+            <div className="flex justify-between items-end">
+              <ExH><Activity className="h-5" />アクティビティ</ExH>
+              <Select>
+                <SelectTrigger className="w-[100px] text-xs border-none border-b m-1" >
+                  <SelectValue placeholder="2024年" />
+                </SelectTrigger>
+                <SelectContent align="end">
+                  {summary && summary.years.map((year: string) => (
+                    <SelectItem value={year} key={year}>{year}年</SelectItem>
                   ))}
-                </div>
-              </div>
+                </SelectContent>
+              </Select>
             </div>
-
-            <div className="w-full" >
-              <div className="flex justify-between items-end">
-                <ExH><Activity className="h-5" />アクティビティ</ExH>
-                <Select>
-                  <SelectTrigger className="w-[100px] text-xs border-none border-b m-1" >
-                    <SelectValue placeholder="2024年" />
-                  </SelectTrigger>
-                  <SelectContent align="end">
-                    {summary && summary.years.map((year: string) => (
-                      <SelectItem value={year} key={year}>{year}年</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="bg-card border rounded-md p-4 shadow-sm">
-                <div className="w-full flex justify-center">
-                  {activityLoading &&
-                    <div className="w-full space-y-2">
-                      <Skeleton className="w-full h-8" />
-                      <Skeleton className="w-3/4 h-8" />
-                      <Skeleton className="w-1/2 h-8" />
-                    </div>
-                  }
-                  {activity && activity.length === 0 && <div className="pl-4">No activity.</div>}
-                  {activity && activity.length > 0 &&
-                    <ActivityCalendar
-                      eventHandlers={{
-                        onMouseOver: (event) => (activity) => { },
-                      }}
-                      data={activity}
-                      showWeekdayLabels
-                      maxLevel={9}
-                      fontSize={12}
-                      blockSize={10}
-                      theme={{
-                        "light": [
-                          "#fafafa",
-                          "#bbf7d0",
-                          "#86efac",
-                          "#4ade80",
-                          "#22c55e",
-                          "#16a34a",
-                          "#15803d",
-                          "#166534",
-                          "#14532d",
-                          "#124e28",
-                        ],
-                        "dark": [
-                          "#fff",
-                          "#bbf7d0",
-                          "#86efac",
-                          "#4ade80",
-                          "#22c55e",
-                          "#16a34a",
-                          "#15803d",
-                          "#166534",
-                          "#14532d",
-                          "#124e28",
-                        ]
-                      }}
-                      labels={{
-                        months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-                        weekdays: ["日", "月", "火", "水", "木", "金", "土"],
-                        totalCount: "✅ {{count}}件（{{year}}年）",
-                        legend: {
-                          less: "🌱",
-                          more: "🌳",
-                        }
-                      }}
-                    />
-                  }
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-8 pt-8" >
-              <div>
-                <section className="relative">
-                  <ExH className="pt-0 pb-4 sticky top-0 h-[45px] bg-background z-10 flex items-end "><History className="h-5" />タイムライン</ExH>
-                  {!timelineLoading && (!timeline || timeline.length <= 0) && <div className="pl-4">No timeline.</div>}
-                  {timeline && timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
-                  <div className="pl-2">
-                    {timeline && timeline.map((item: any, index: number) => {
-                      const prevTimlineDate = new Date(timeline[index - 1]?.timelineDate)
-                      const prevYMD = prevTimlineDate && [prevTimlineDate.getFullYear(), prevTimlineDate.getMonth() + 1, prevTimlineDate.getDate()].join("-")
-                      const TimelineDate = new Date(item.timelineDate)
-                      const updateYMD = [TimelineDate.getFullYear(), TimelineDate.getMonth() + 1, TimelineDate.getDate()].join("-")
-                      const isLabel = prevYMD !== updateYMD
-                      return (
-                        <Fragment key={index}>
-                          {TimelineDate && isLabel &&
-                            <div className={`sticky top-[45px] bg-transparent flex items-center `}>
-                              <h2 className="border border-b border-primary/30 rounded-md bg-card pl-2 pr-8 py-1 text-sm flex items-center gap-2">
-                                <Calendar className="h-4" />{updateYMD}
-                              </h2>
-                            </div>
-                          }
-                          <div className={`py-4 pl-5 my-4  ${item.timelineType === "create" ? 'ml-8 border bg-card rounded-lg shadow-md' : 'ml-8 border bg-background rounded-lg'}`}>
-                            <div className="text-xs text-secondary-foreground flex gap-4 items-center pb-3">
-                              <span className="flex gap-2">
-                                <span className="flex items-center"><Clock className="h-4 text-muted-foreground" />
-                                  {TimelineDate.getHours()}:{TimelineDate.getMinutes()}
-                                </span>
-                              </span>
-                              <span className={`flex items-center ${item.timelineType === "create" ? 'text-primary' : 'text-muted-foreground'} text-xs`}>
-                                {item.timelineType === "create" ? <Rocket className="h-4" /> : <Check className="h-4" />} {item.timelineType === "create" ? '作成' : '完了'}
-                              </span>
-                            </div>
-                            <h3 className="space-y-3">
-                              <span className={`pl-1 mr-1 ${item.timelineType === "create" ? '' : 'text-muted-foreground'} `}>{item.text}</span>
-                              <span className="text-xs font-semibold flex gap-1 text-ex-project items-center">
-                                {item.project && <span className="flex"><Box className="h-4 text-ex-project" />{item.project}</span>}
-                                {item.context && <span className="flex"><Tag className="h-4 text-ex-label" />{item.project}</span>}
-                              </span>
-                            </h3>
-                          </div>
-                        </Fragment>
-                      )
-                    })}
+            <div className="bg-card border rounded-md p-4 shadow-sm">
+              <div className="w-full flex justify-center">
+                {activityLoading &&
+                  <div className="w-full space-y-2">
+                    <Skeleton className="w-full h-8" />
+                    <Skeleton className="w-3/4 h-8" />
+                    <Skeleton className="w-1/2 h-8" />
                   </div>
-                  {(timelineLoading || !timeline) && <div className="w-full flex justify-center">
-                    <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
-                  </div>}
-                </section>
+                }
+                {activity && activity.length === 0 && <div className="pl-4">No activity.</div>}
+                {activity && activity.length > 0 &&
+                  <ActivityCalendar
+                    eventHandlers={{
+                      onMouseOver: (event) => (activity) => { },
+                    }}
+                    data={activity}
+                    showWeekdayLabels
+                    maxLevel={9}
+                    fontSize={12}
+                    blockSize={10}
+                    theme={{
+                      "light": [
+                        "#fafafa",
+                        "#bbf7d0",
+                        "#86efac",
+                        "#4ade80",
+                        "#22c55e",
+                        "#16a34a",
+                        "#15803d",
+                        "#166534",
+                        "#14532d",
+                        "#124e28",
+                      ],
+                      "dark": [
+                        "#fff",
+                        "#bbf7d0",
+                        "#86efac",
+                        "#4ade80",
+                        "#22c55e",
+                        "#16a34a",
+                        "#15803d",
+                        "#166534",
+                        "#14532d",
+                        "#124e28",
+                      ]
+                    }}
+                    labels={{
+                      months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                      weekdays: ["日", "月", "火", "水", "木", "金", "土"],
+                      totalCount: "✅ {{count}}件（{{year}}年）",
+                      legend: {
+                        less: "🌱",
+                        more: "🌳",
+                      }
+                    }}
+                  />
+                }
               </div>
             </div>
-            <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
           </div>
-          {/* マウスオーバーで表示されるポップアップ*/}
-          {/* {popup &&
+
+          <div className="space-y-8 pt-8" >
+            <div>
+              <section className="relative">
+                <ExH className="pt-0 pb-4 sticky top-0 h-[45px] bg-background z-10 flex items-end "><History className="h-5" />タイムライン</ExH>
+                {!timelineLoading && (!timeline || timeline.length <= 0) && <div className="pl-4">No timeline.</div>}
+                {timeline && timeline.length > 0 && <div className="absolute h-full w-[1px] bg-primary/30 left-4  top-0 overflow-hidden z-0"> </div>}
+                <div className="pl-2">
+                  {timeline && timeline.map((item: any, index: number) => {
+                    const prevTimlineDate = new Date(timeline[index - 1]?.timelineDate)
+                    const prevYMD = prevTimlineDate && [prevTimlineDate.getFullYear(), prevTimlineDate.getMonth() + 1, prevTimlineDate.getDate()].join("-")
+                    const TimelineDate = new Date(item.timelineDate)
+                    const updateYMD = [TimelineDate.getFullYear(), TimelineDate.getMonth() + 1, TimelineDate.getDate()].join("-")
+                    const isLabel = prevYMD !== updateYMD
+                    return (
+                      <Fragment key={index}>
+                        {TimelineDate && isLabel &&
+                          <div className={`sticky top-[45px] bg-transparent flex items-center `}>
+                            <h2 className="border border-b border-primary/30 rounded-md bg-card pl-2 pr-8 py-1 text-sm flex items-center gap-2">
+                              <Calendar className="h-4" />{updateYMD}
+                            </h2>
+                          </div>
+                        }
+                        <div className={`py-4 pl-5 my-4  ${item.timelineType === "create" ? 'ml-8 border bg-card rounded-lg shadow-md' : 'ml-8 border bg-background rounded-lg'}`}>
+                          <div className="text-xs text-secondary-foreground flex gap-4 items-center pb-3">
+                            <span className="flex gap-2">
+                              <span className="flex items-center"><Clock className="h-4 text-muted-foreground" />
+                                {TimelineDate.getHours()}:{TimelineDate.getMinutes()}
+                              </span>
+                            </span>
+                            <span className={`flex items-center ${item.timelineType === "create" ? 'text-primary' : 'text-muted-foreground'} text-xs`}>
+                              {item.timelineType === "create" ? <Rocket className="h-4" /> : <Check className="h-4" />} {item.timelineType === "create" ? '作成' : '完了'}
+                            </span>
+                          </div>
+                          <h3 className="space-y-3">
+                            <span className={`pl-1 mr-1 ${item.timelineType === "create" ? '' : 'text-muted-foreground'} `}>{item.text}</span>
+                            <span className="text-xs font-semibold flex gap-1 text-ex-project items-center">
+                              {item.project && <span className="flex"><Box className="h-4 text-ex-project" />{item.project}</span>}
+                              {item.context && <span className="flex"><Tag className="h-4 text-ex-label" />{item.project}</span>}
+                            </span>
+                          </h3>
+                        </div>
+                      </Fragment>
+                    )
+                  })}
+                </div>
+                {(timelineLoading || !timeline) && <div className="w-full flex justify-center">
+                  <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                </div>}
+              </section>
+            </div>
+          </div>
+          <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
+        </div>
+        {/* マウスオーバーで表示されるポップアップ*/}
+        {/* {popup &&
           <div
             className="absolute z-50 w-48 h-24 bg-white shadow-lg rounded-md"
             style={{ top: mousePosition.y, left: mousePosition.x }}>
@@ -303,26 +302,8 @@ export default function Me() {
             </div>
           </div>
         } */}
-        </main >
-      </div >
-      <footer className="flex sm:flex-row flex-col-reverse sm:justify-between items-center px-16 sm:px-8  gap-8 py-12">
-        <div className="flex items-center gap-1">
-          <Image
-            src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`}
-            alt="Shiba Todo Logo"
-            className="w-[20px]"
-            width={500}
-            height={500}
-          />
-          <span className="text-sm">Copyright©2024 Shiba Tools</span>
-        </div>
-        <div className="flex flex-wrap justify-start sm:justify-end gap-3">
-          <ExLink href="/terms" label="利用規約"></ExLink>
-          <ExLink href="/privacy" label="プライバシーポリシー" />
-          <ExLink target="_blank" rel="noopener noreferrer" href={process.env.NEXT_PUBLIC_CONTACT_URL || ""} label="お問い合わせ" />
-        </div>
-      </footer>
-    </>
+      </main >
+    </AppPageTemplate>
   );
 }
 

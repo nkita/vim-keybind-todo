@@ -19,7 +19,7 @@ export default function Home() {
     }
     const redirectTodo = () => {
         setIsFirstVisit(false)
-        router.push("/t")
+        router.push("/app/t")
     }
     return (
         <NormalPageTemplate>

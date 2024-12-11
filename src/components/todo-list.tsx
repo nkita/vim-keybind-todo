@@ -50,7 +50,7 @@ export const TodoList = (
 
     const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
     const [table_project_width, set_table_project_width] = useState("w-0 sm:w-[15%] max-w-[20%]")
-    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-80px)]"
+    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-40px)]"
     const tableHeadHeight = "h-[40px]"
     const taskBarHeight = "h-[40px]"
 
@@ -80,7 +80,7 @@ export const TodoList = (
     return (
         <>
             <div className="h-full">
-                <div className={`flex text-xs font-semibold bg-primary/85 text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-xs font-semibold bg-primary/85 text-primary-foreground border-none rounded-t-none sm:rounded-md items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -113,8 +113,8 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full border ${loading && "hidden"} ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
-                    <TableBody className="border-b bg-card text-card-foreground leading-5">
+                <Table className={`w-full border ${loading && "hidden"} ${hcssMainHeight} bg-background border-x-0 border-y-0 table-scrollbar`} index={currentIndex}>
+                    <TableBody className="bg-background text-card-foreground leading-5">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -157,7 +157,7 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${currentIndex === index ? "bg-card" : searchResultIndex[index] ? "bg-yellow-50" : ""}
                                                             ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
@@ -285,19 +285,6 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground h-full px-2 truncate">
-                        <span > {!completionOnly && <> 最近完了したタスク：<span className="font-bold">{viewCompletion ? "表示" : "非表示"}</span></>}</span>
-                        <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
-                        <div className="flex items-center">
-                            {command ? (
-                                <span>{command}</span>
-                            ) : (
-                                <span>モード：<span className="font-bold">{mode}</span></span>
-                            )}
-                        </div>
-                    </div>
-                </div>
             </div >
         </>
     )

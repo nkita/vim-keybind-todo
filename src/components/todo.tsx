@@ -20,11 +20,13 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box } from "lucide-react"
+import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box, CircleHelp, CircleCheck, Eye, EyeIcon, Monitor, MonitorCheck, ListChecks, LayoutList, ListTodo } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { EyeClosedIcon, QuestionMarkIcon } from "@radix-ui/react-icons"
+import { Badge } from "./ui/badge"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -912,18 +914,22 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled: boolean, label?: string, onClick: () => void }) => {
+    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled?: boolean, label?: string, onClick?: () => void }) => {
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
-                    <TooltipTrigger asChild>
-                        <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                    <TooltipTrigger>
+                        {onClick ? (
+                            <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                        ) : (
+                            <> {children}</>
+                        )}
                     </TooltipTrigger>
                     <TooltipContent className="text-xs">
                         {label}
                     </TooltipContent>
                 </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider >
         )
     }
 
@@ -950,143 +956,138 @@ export const Todo = (
         setTouchEndX(0);
     };
     return (
-        <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">
-            {/* オーバーレイ */}
-            <div className={`
+        <>
+            <header className="flex justify-between h-12 px-3 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                <span className="flex gap-1 items-center text-xs"><CircleCheck className="h-4 w-4" />{"タスク管理"}</span>
+                <div className="flex gap-2 items-center">
+                    {viewCompletionTask ? (
+                        <MenuButton label="完了したタスクも表示"><ListTodo className="h-5 w-5" /></MenuButton>
+                    ) : (
+                        <MenuButton label="進行中タスクのみ表示"><LayoutList className="h-5 w-5" /></MenuButton>
+                    )}
+                    <Badge>{mode}</Badge>
+                </div>
+            </header >
+            <div className="flex flex-col items-center w-full h-full px-0 sm:px-2">
+                {/* オーバーレイ */}
+                <div className={`
                 fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10
                 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}
             `} onMouseDown={handleMainMouseDown} />
-            {/* オーバーレイ */}
-            <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
-                <div className="flex items-center gap-2">
-                    <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
-                    <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
-                    {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                        <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
-                            {(isSave && isUpdate) ? (
-                                <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
-                            ) : (
-                                <Save size={16} />
-                            )}
-                        </MenuButton>
-                    }
-                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
-                    <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                {/* オーバーレイ */}
+                <div className="w-full h-[50px] pb-1 px-2 sm:px-0">
+                    <div className="flex items-center gap-2">
+                        <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                        <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                        {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                            <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                                {(isSave && isUpdate) ? (
+                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                                ) : (
+                                    <Save size={16} />
+                                )}
+                            </MenuButton>
+                        }
+                        <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
+                        <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                        <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><QuestionMarkIcon className="h-3 w-3" /></MenuButton>
+                    </div>
+                    <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
+                        <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
+                        {projects.map((p, i) => {
+                            return (
+                                <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
+                            )
+                        })}
+                    </div>
                 </div>
-                <div className="border-r mx-2 h-5 hidden sm:block"></div>
-                <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
-                    <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
-                    {projects.map((p, i) => {
-                        return (
-                            <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
-                        )
-                    })}
-                </div>
-            </div>
-            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`} onMouseDown={handleMainMouseDown}>
-                <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
-                        <div
-                            onTouchStart={handleTouchStart}
-                            onTouchMove={handleTouchMove}
-                            onTouchEnd={handleTouchEnd}
-                            className="h-full w-full">
-                            <TodoList
-                                filterdTodos={filterdTodos}
-                                currentIndex={currentIndex}
-                                prefix={prefix}
-                                mode={mode}
-                                viewCompletion={viewCompletionTask}
-                                projects={projects}
-                                labels={labels}
-                                currentProject={currentProject}
-                                sort={sort}
-                                searchResultIndex={searchResultIndex}
-                                command={command}
-                                loading={loading}
-                                onClick={handleClickElement}
-                                setCurrentIndex={setCurrentIndex}
-                                register={register}
-                                rhfSetValue={setValue}
-                                completionOnly={completionOnly}
-                            />
-                        </div>
-                    </ResizablePanel>
-                    <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                    <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} >
-                        {loading ? (
-                            <></>
-                        ) : (
-                            <>
-                                <div className={`absolute right-0 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30 h-full transition-all animate-fade-in`}>
-                                    <Usage
-                                        sort={sort}
-                                        mode={mode}
-                                        isHelp={isHelp}
-                                        setHelp={setHelp}
-                                        isTodos={filterdTodos.length > 0}
-                                    />
-                                </div>
-                                <div className={`w-full h-[calc(100%-30px)] border-none z-20`}>
-                                    <Detail
-                                        todo={filterdTodos[currentIndex]}
-                                        prefix={prefix}
-                                        mode={mode}
-                                        isHelp={isHelp}
-                                        onMouseDownEvent={handleDetailMouseDown}
-                                        onClick={handleClickDetailElement}
-                                        setValue={setValue}
-                                        watch={watch}
-                                        register={register}
-                                    />
-                                </div>
-                            </>
-                        )}
-                        <div className="absolute bottom-0 w-full hidden sm:block ">
-                            <div className={`flex items-center justify-end ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
-                                <ExLink
-                                    type="link"
-                                    href={"https://shiba-tools.dev"}
-                                    target="_blank">
-                                    Shiba Tools<ExternalLink size={13} />
-                                </ExLink>
-                                /
-                                <ExLink
-                                    type="button"
-                                    onClick={() => setHelp(true)}
-                                    className={`flex gap-1 text-xs `}>
-                                    <kbd className="h-5 w-5 flex items-center justify-center">?</kbd>
-                                    <span className="text-nowrap">ヘルプ表示</span>
-                                </ExLink>
+                <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`} onMouseDown={handleMainMouseDown}>
+                    <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
+                        <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
+                            <div
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                                className="h-full w-full">
+                                <TodoList
+                                    filterdTodos={filterdTodos}
+                                    currentIndex={currentIndex}
+                                    prefix={prefix}
+                                    mode={mode}
+                                    viewCompletion={viewCompletionTask}
+                                    projects={projects}
+                                    labels={labels}
+                                    currentProject={currentProject}
+                                    sort={sort}
+                                    searchResultIndex={searchResultIndex}
+                                    command={command}
+                                    loading={loading}
+                                    onClick={handleClickElement}
+                                    setCurrentIndex={setCurrentIndex}
+                                    register={register}
+                                    rhfSetValue={setValue}
+                                    completionOnly={completionOnly}
+                                />
                             </div>
-                        </div>
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-                <DeleteModal
-                    currentIndex={currentIndex}
-                    filterdTodos={filterdTodos}
-                    prevTodos={prevTodos}
-                    currentPrefix={prefix}
-                    mode={mode}
-                    onClick={handleClickDetailElement}
-                    onDelete={deleteTask}
-                />
-                <BottomMenu
-                    todos={todos}
-                    prevTodos={prevTodos}
-                    loading={loading}
-                    completionOnly={completionOnly}
-                    viewCompletionTask={viewCompletionTask}
-                    projects={projects}
-                    currentProject={currentProject}
-                    setViewCompletionTask={setViewCompletionTask}
-                    setCurrentProject={setCurrentProject}
-                    setMode={setMode}
-                    handleSetTodos={handleSetTodos}
-                    todoEnables={todoEnables}
-                />
+                        </ResizablePanel>
+                        <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
+                        <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                            {loading ? (
+                                <></>
+                            ) : (
+                                <>
+                                    <div className={`absolute right-0 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30 h-full transition-all animate-fade-in`}>
+                                        <Usage
+                                            sort={sort}
+                                            mode={mode}
+                                            isHelp={isHelp}
+                                            setHelp={setHelp}
+                                            isTodos={filterdTodos.length > 0}
+                                        />
+                                    </div>
+                                    <div className={`w-full h-[calc(100%-30px)] border-none z-20`}>
+                                        <Detail
+                                            todo={filterdTodos[currentIndex]}
+                                            prefix={prefix}
+                                            mode={mode}
+                                            isHelp={isHelp}
+                                            onMouseDownEvent={handleDetailMouseDown}
+                                            onClick={handleClickDetailElement}
+                                            setValue={setValue}
+                                            watch={watch}
+                                            register={register}
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                    <DeleteModal
+                        currentIndex={currentIndex}
+                        filterdTodos={filterdTodos}
+                        prevTodos={prevTodos}
+                        currentPrefix={prefix}
+                        mode={mode}
+                        onClick={handleClickDetailElement}
+                        onDelete={deleteTask}
+                    />
+                    <BottomMenu
+                        todos={todos}
+                        prevTodos={prevTodos}
+                        loading={loading}
+                        completionOnly={completionOnly}
+                        viewCompletionTask={viewCompletionTask}
+                        projects={projects}
+                        currentProject={currentProject}
+                        setViewCompletionTask={setViewCompletionTask}
+                        setCurrentProject={setCurrentProject}
+                        setMode={setMode}
+                        handleSetTodos={handleSetTodos}
+                        todoEnables={todoEnables}
+                    />
+                </div >
             </div >
-        </div >
+        </>
     )
 }
 const ExLink = ({

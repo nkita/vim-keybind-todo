@@ -45,7 +45,7 @@ export function NavUser() {
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild>
                         <a className="w-full h-14 flex items-center justify-center border" href="#">
-                            <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                            <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

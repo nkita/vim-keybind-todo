@@ -80,7 +80,7 @@ export const TodoList = (
     return (
         <>
             <div className="h-full">
-                <div className={`flex text-xs font-semibold bg-primary/85 text-primary-foreground border-none rounded-t-none sm:rounded-md items-center ${tableHeadHeight}`}>
+                <div className={`flex text-xs font-semibold text-primary bg-primary/10 border-y items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -105,7 +105,7 @@ export const TodoList = (
                     </div>
                 </div>
                 {loading &&
-                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 border-x`}>
+                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">
                             <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                                 <span className="animate-bounce">Loading...</span>
@@ -113,8 +113,8 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full border ${loading && "hidden"} ${hcssMainHeight} bg-background border-x-0 border-y-0 table-scrollbar`} index={currentIndex}>
-                    <TableBody className="bg-background text-card-foreground leading-5">
+                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-card  table-scrollbar`} index={currentIndex}>
+                    <TableBody className="border-b bg-card text-card-foreground leading-5">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -157,7 +157,7 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-card" : searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${currentIndex === index ? " bg-accent " : searchResultIndex[index] ? "bg-yellow-50" : ""}
                                                             ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
                                                             ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
@@ -283,8 +283,12 @@ export const TodoList = (
                                 )}
                             </>
                         }
+                        <TableRow >
+                            <TableCell className="h-16"></TableCell>
+                        </TableRow>
                     </TableBody>
                 </Table>
+                <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm`} />
             </div >
         </>
     )

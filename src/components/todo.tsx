@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box, CircleHelp, CircleCheck, Eye, EyeIcon, Monitor, MonitorCheck, ListChecks, LayoutList, ListTodo } from "lucide-react"
+import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box, CircleHelp, CircleCheck, Eye, EyeIcon, Monitor, MonitorCheck, ListChecks, LayoutList, ListTodo, TentTree } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
@@ -30,6 +30,12 @@ import { Badge } from "./ui/badge"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
+const headerH = 60
+const projectsH = 30
+const headerHClass = `h-[${headerH}px]`
+const projectsHClass = `h-[${projectsH}px]`
+const mainHClass = `h-[calc(100%-${headerH}px)]`
+const tableHeightClass = `h-[calc(100%-${projectsH}px)]`
 
 export const Todo = (
     {
@@ -918,14 +924,10 @@ export const Todo = (
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
-                    <TooltipTrigger>
-                        {onClick ? (
-                            <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
-                        ) : (
-                            <> {children}</>
-                        )}
+                    <TooltipTrigger asChild>
+                        <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
                     </TooltipTrigger>
-                    <TooltipContent className="text-xs">
+                    <TooltipContent className="text-xs" align="start">
                         {label}
                     </TooltipContent>
                 </Tooltip>
@@ -955,44 +957,42 @@ export const Todo = (
         setTouchStartX(0);
         setTouchEndX(0);
     };
+
     return (
         <>
-            <header className="flex justify-between h-12 px-3 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-                <span className="flex gap-1 items-center text-xs"><CircleCheck className="h-4 w-4" />{"タスク管理"}</span>
+            <header className={`flex justify-between shrink-0 ${headerHClass} items-center gap-2 transition-[width,height] ease-linear`}>
+                <div className="flex items-center gap-2 px-4">
+                    <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                    <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                    {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                        <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                            {(isSave && isUpdate) ? (
+                                <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                            ) : (
+                                <Save size={16} />
+                            )}
+                        </MenuButton>
+                    }
+                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
+                    <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                    <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><QuestionMarkIcon className="h-3 w-3" /></MenuButton>
+                </div>
                 <div className="flex gap-2 items-center">
+                    {command && <span className="text-xs">Line：{command}</span>}
                     {viewCompletionTask ? (
-                        <MenuButton label="完了したタスクも表示"><ListTodo className="h-5 w-5" /></MenuButton>
+                        <MenuButton label="完了したタスクも表示"><ListTodo className="h-4 w-4" /></MenuButton>
                     ) : (
-                        <MenuButton label="進行中タスクのみ表示"><LayoutList className="h-5 w-5" /></MenuButton>
+                        <MenuButton label="進行中タスクのみ表示"><LayoutList className="h-4 w-4" /></MenuButton>
                     )}
-                    <Badge>{mode}</Badge>
+                    <div className="flex items-center w-[80px] justify-start"><Badge>{mode}</Badge></div>
                 </div>
             </header >
-            <div className="flex flex-col items-center w-full h-full px-0 sm:px-2">
+            <div className={`flex flex-col items-center w-full ${mainHClass}`}>
                 {/* オーバーレイ */}
-                <div className={`
-                fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10
-                ${mode === "editDetail" ? "block sm:hidden" : "hidden"}
-            `} onMouseDown={handleMainMouseDown} />
+                {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
-                <div className="w-full h-[50px] pb-1 px-2 sm:px-0">
-                    <div className="flex items-center gap-2">
-                        <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
-                        <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
-                        {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                            <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
-                                {(isSave && isUpdate) ? (
-                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
-                                ) : (
-                                    <Save size={16} />
-                                )}
-                            </MenuButton>
-                        }
-                        <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
-                        <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                        <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><QuestionMarkIcon className="h-3 w-3" /></MenuButton>
-                    </div>
-                    <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
+                <div className={`w-full sm:px-0 ${projectsHClass} `}>
+                    <div className={`w-[300px] flex px-4 justify-start items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar text-foreground `}  >
                         <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
                             return (
@@ -1001,9 +1001,9 @@ export const Todo = (
                         })}
                     </div>
                 </div>
-                <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`} onMouseDown={handleMainMouseDown}>
+                <div className={`relative w-full pt-1 ${tableHeightClass}`} onMouseDown={handleMainMouseDown}>
                     <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                        <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
+                        <ResizablePanel defaultSize={60} minSize={20} className={`${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                             <div
                                 onTouchStart={handleTouchStart}
                                 onTouchMove={handleTouchMove}
@@ -1030,8 +1030,8 @@ export const Todo = (
                                 />
                             </div>
                         </ResizablePanel>
-                        <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                        <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                        <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
+                        <ResizablePanel defaultSize={40} minSize={20} className={`relative bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                             {loading ? (
                                 <></>
                             ) : (
@@ -1045,7 +1045,13 @@ export const Todo = (
                                             isTodos={filterdTodos.length > 0}
                                         />
                                     </div>
-                                    <div className={`w-full h-[calc(100%-30px)] border-none z-20`}>
+                                    <div className={`w-full h-full border border-l-0 z-20`}>
+                                        {!filterdTodos[currentIndex] &&
+                                            <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
+                                                <TentTree className="w-7 h-7" />
+                                                Please select a task.
+                                            </div>
+                                        }
                                         <Detail
                                             todo={filterdTodos[currentIndex]}
                                             prefix={prefix}

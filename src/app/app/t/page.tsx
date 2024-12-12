@@ -92,10 +92,9 @@ export default function Home() {
   }, [user, userLoading, todosLS, isUpdate])
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
-  const mainPCHeight = `h-[calc(100vh-70px)]` // 100vh - headerHeight
   return (
     <AppPageTemplate>
-      <article className={`${mainPCHeight} w-full `}>
+      <article className={`h-screen w-full `}>
         <Todo
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}

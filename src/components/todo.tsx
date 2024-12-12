@@ -991,8 +991,8 @@ export const Todo = (
                 {/* オーバーレイ */}
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
-                <div className={`w-full sm:px-0 ${projectsHClass} `}>
-                    <div className={`w-[300px] flex px-4 justify-start items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar text-foreground `}  >
+                <div className={`relative w-full sm:px-0 ${projectsHClass} `}>
+                    <div className={`w-[80%] flex px-4 justify-start items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar text-foreground `}  >
                         <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
                             return (
@@ -1031,7 +1031,7 @@ export const Todo = (
                             </div>
                         </ResizablePanel>
                         <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
-                        <ResizablePanel defaultSize={40} minSize={20} className={`relative bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                        <ResizablePanel defaultSize={40} minSize={20} className={`relative border-y bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                             {loading ? (
                                 <></>
                             ) : (

@@ -79,8 +79,8 @@ export const TodoList = (
     }, [currentProject])
     return (
         <>
-            <div className="h-full">
-                <div className={`flex text-xs font-semibold text-primary bg-primary/10 border-y items-center ${tableHeadHeight}`}>
+            <div className="h-full border-r">
+                <div className={`flex text-xs font-semibold text-primary bg-card border-y-2 items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -114,7 +114,7 @@ export const TodoList = (
                     </div>
                 }
                 <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-card  table-scrollbar`} index={currentIndex}>
-                    <TableBody className="border-b bg-card text-card-foreground leading-5">
+                    <TableBody className="bg-card text-card-foreground leading-5">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -283,7 +283,7 @@ export const TodoList = (
                                 )}
                             </>
                         }
-                        <TableRow >
+                        <TableRow>
                             <TableCell className="h-16"></TableCell>
                         </TableRow>
                     </TableBody>

@@ -60,9 +60,9 @@ export const Detail = ({
 
     return (
         <>
-            <div className="w-full h-full text-card-foreground " onMouseDown={onMouseDownEvent}>
+            <div className="w-full h-full text-card-foreground bg-secondary/20" onMouseDown={onMouseDownEvent}>
                 <div className="w-full h-full overflow-auto scroll-bar">
-                    <div className={`flex sticky top-0  w-full  font-bold items-center gap-2 bg-card px-5 py-5 z-30 `} onMouseDown={e => e.stopPropagation()} >
+                    <div className={`flex sticky top-0  w-full border-b border-secondary font-bold items-center gap-2 bg-card px-5 py-5 z-30 `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
@@ -96,8 +96,8 @@ export const Detail = ({
 
                         </div>
                     </div>
-                    <div className={`w-full  px-5 `} onMouseDown={e => e.stopPropagation()} >
-                        <div className="relative h-full w-full border p-1 rounded-md focus-within:border-primary">
+                    <div className={`w-full p-5 `} onMouseDown={e => e.stopPropagation()} >
+                        <div className="relative h-full w-full border py-1 bg-card rounded-md focus-within:border-primary">
                             <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
                                 {mode === "editDetail" ? (
                                     <span><kbd className="opacity-80">Esc</kbd>でもどる</span>
@@ -120,8 +120,6 @@ export const Detail = ({
                                 />
                             </div>
                         </div>
-                    </div>
-                    <div className={`w-full py-5 px-5 ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
                         {todo.context ? (
                             <BottomLabel type={"context"} handleClick={handleClickDelete}>
                                 <span className="flex items-center text-ex-label gap-1"><Tag className="h-4" />{todo.context} </span>
@@ -140,10 +138,11 @@ export const Detail = ({
                                 <span className="flex items-center"><Box className="h-4" />プロジェクトを追加 </span>
                             </BottomButton>
                         )}
+                        <div className="h-[3rem]"/>
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={` w-full text-sm py-4 px-5 flex justify-between text-primary/80 bg-card ${zIndex}`} >
+                        className={`absolute h-[3rem] bottom-0 border-t border-secondary border-x-0 w-full text-sm py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
                         <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                     </div>
                     <div className="h-16 sm:h-0"></div>
@@ -160,7 +159,7 @@ interface BottomProps {
 }
 const BottomButton = ({ children, handleClick }: BottomProps) => {
     return (
-        <button className="flex my-2 gap-2 items-center text-xs text-muted-foreground border p-3 rounded-md" onClick={_ => handleClick("context")}>
+        <button className="flex my-2 gap-2 items-center text-xs bg-card text-card-foreground border p-3 rounded-md" onClick={_ => handleClick("context")}>
             <span className="flex items-center gap-1">{children}</span>
         </button>
     )

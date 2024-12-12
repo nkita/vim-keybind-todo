@@ -892,7 +892,7 @@ export const Todo = (
         }, [currentProject, project])
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} bg-transparent hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
+                className={`text-xs px-2 ${currentProject === project ? " bg-secondary text-secondary-foreground border-t border-primary " : " text-secondary-foreground/50 border-t border-transparent"} h-full hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
                 <span className="flex gap-1 items-center">
                     {project ? (
                         project === completionTaskProjectName ? (
@@ -961,7 +961,7 @@ export const Todo = (
     return (
         <>
             <header className={`flex justify-between shrink-0 ${headerHClass} items-center gap-2 transition-[width,height] ease-linear`}>
-                <div className="flex items-center gap-2 px-4">
+                <div className="flex items-center gap-2 border m-1 p-1 rounded-md bg-card text-card-foreground">
                     <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                     {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
@@ -992,8 +992,8 @@ export const Todo = (
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
 
-                <div className={`relative w-full sm:px-4 ${projectsHClass} `}>
-                    <div className={`w-full flex px-4 justify-start items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar text-foreground `}  >
+                <div className={`relative w-full h-[2.5rem] border-y bg-card`}>
+                    <div className={`w-full h-full flex justify-start items-end overflow-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground `}  >
                         <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
                             return (
@@ -1002,7 +1002,7 @@ export const Todo = (
                         })}
                     </div>
                 </div>
-                <div className={`relative w-full pt-1 ${tableHeightClass}`} onMouseDown={handleMainMouseDown}>
+                <div className={`relative w-full h-[calc(100%-2.5rem)]`} onMouseDown={handleMainMouseDown}>
                     <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                         <ResizablePanel defaultSize={60} minSize={20} className={`${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
                             <div
@@ -1032,21 +1032,12 @@ export const Todo = (
                             </div>
                         </ResizablePanel>
                         <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
-                        <ResizablePanel defaultSize={40} minSize={20} className={`relative border-y-2 bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                        <ResizablePanel defaultSize={40} minSize={20} className={`relative bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                             {loading ? (
                                 <></>
                             ) : (
                                 <>
-                                    <div className={`absolute right-0 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30 h-full transition-all animate-fade-in`}>
-                                        <Usage
-                                            sort={sort}
-                                            mode={mode}
-                                            isHelp={isHelp}
-                                            setHelp={setHelp}
-                                            isTodos={filterdTodos.length > 0}
-                                        />
-                                    </div>
-                                    <div className={`w-full h-full border border-l-0 z-20`}>
+                                    <div className={`w-full h-full z-20`}>
                                         {!filterdTodos[currentIndex] &&
                                             <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
                                                 <TentTree className="w-7 h-7" />
@@ -1092,6 +1083,15 @@ export const Todo = (
                         handleSetTodos={handleSetTodos}
                         todoEnables={todoEnables}
                     />
+                    <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
+                        <Usage
+                            sort={sort}
+                            mode={mode}
+                            isHelp={isHelp}
+                            setHelp={setHelp}
+                            isTodos={filterdTodos.length > 0}
+                        />
+                    </div>
                 </div >
             </div >
         </>

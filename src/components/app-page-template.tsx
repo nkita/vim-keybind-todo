@@ -12,7 +12,7 @@ export default function AppPageTemplate({ title, children }: { title?: React.Rea
                 {title}
             </header>
             }
-            <main className={`w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
+            <main className={`h-full w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
                 {children}
             </main>
         </>

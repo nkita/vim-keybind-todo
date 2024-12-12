@@ -79,8 +79,8 @@ export const TodoList = (
     }, [currentProject])
     return (
         <>
-            <div className="h-full border-r">
-                <div className={`flex text-xs font-semibold text-primary bg-card border-y-2 items-center ${tableHeadHeight}`}>
+            <div className="h-full ">
+                <div className={`flex text-xs font-semibold text-primary bg-card border-b items-center ${tableHeadHeight}`}>
                     <div className={table_idx_width}></div>
                     <div className={table_completion_width}></div>
                     <div className={`${table_priority_width} text-center`}>
@@ -113,8 +113,8 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-card  table-scrollbar`} index={currentIndex}>
-                    <TableBody className="bg-card text-card-foreground leading-5">
+                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-transparent  table-scrollbar`} index={currentIndex}>
+                    <TableBody className="bg-transparent text-card-foreground leading-5 text-sm">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -157,9 +157,9 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? " bg-accent " : searchResultIndex[index] ? "bg-yellow-50" : ""}
+                                                            ${(mode !== "select" && currentIndex === index) ? " bg-secondary text-secondary-foreground " : "bg-card"}
                                                             ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
-                                                            ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
+                                                            ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
                                                             ${currentIndex === index ? "border-l-2 border-primary" : ""}
@@ -176,26 +176,6 @@ export const TodoList = (
                                                                 )}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className={`${table_priority_width} text-center h-[30px]`}>
-                                                            {t.priority === "3" &&
-                                                                <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
-                                                                    <Star className="absolute bottom-1 left-1/2" size={9} />
-                                                                    <Star className="absolute bottom-1 right-1/2" size={9} />
-                                                                </div>
-                                                            }
-                                                            {t.priority === "2" &&
-                                                                <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9} />
-                                                                    <Star className="absolute top-0 bottom-0 right-1/2 m-auto" size={9} />
-                                                                </div>
-                                                            }
-                                                            {t.priority === "1" &&
-                                                                <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9} />
-                                                                </div>
-                                                            }
-                                                        </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
                                                             <div className="flex w-full h-full justify-between  items-center">
                                                                 <span className="text-primary/90 flex text-md">
@@ -210,6 +190,24 @@ export const TodoList = (
                                                                         </>
                                                                     }
                                                                 </span>
+                                                                {t.priority === "3" &&
+                                                                    <div className="relative h-full w-[20px]">
+                                                                        <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
+                                                                        <Star className="absolute bottom-1 left-1/2" size={9} />
+                                                                        <Star className="absolute bottom-1 right-1/2" size={9} />
+                                                                    </div>
+                                                                }
+                                                                {t.priority === "2" &&
+                                                                    <div className="relative h-full w-[20px]">
+                                                                        <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9} />
+                                                                        <Star className="absolute top-0 bottom-0 right-1/2 m-auto" size={9} />
+                                                                    </div>
+                                                                }
+                                                                {t.priority === "1" &&
+                                                                    <div className="relative h-full w-[20px]">
+                                                                        <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9} />
+                                                                    </div>
+                                                                }
                                                                 <div className="truncate w-full pr-2 sm:pr-0"
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>

@@ -14,7 +14,7 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, Link, MoreHorizontal, PanelLeft, Settings, X } from "lucide-react"
+import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, Link, MoreHorizontal, PanelLeft, PanelLeftClose, Settings, X } from "lucide-react"
 import Image from "next/image"
 import { DropdownMenuItem, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { NavUser } from "./app-sidebar-user"
@@ -125,7 +125,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem >
                         <SidebarMenuButton>
-                            <Bell className="w-4 h-4 " />
+                            <Bell className={`w-4 h-4`} />
                             {(!open && isBadge) && <span className="absolute right-1 top-1 bg-destructive rounded-full text-xs w-2 h-2"></span>}
                             <div className="flex justify-between text-nowrap w-full items-center"><span>お知らせ</span>{isBadge && <span className="text-start bg-destructive rounded-full text-xs w-2 h-2" />}</div>
                         </SidebarMenuButton>
@@ -133,8 +133,9 @@ export function AppSidebar() {
                     </SidebarMenuItem>
                     <SidebarMenuItem >
                         <SidebarMenuButton onClick={_ => toggleSidebar()}>
-                            <PanelLeft className="w-4 h-4 " />
-                            <div className="flex justify-between text-nowrap w-full items-center"><span>閉じる</span><kbd className="h-6">Alt + b</kbd></div>
+                            <PanelLeftClose className={`w-4 h-4 ${open ? "rotate-0" : "rotate-180"} transition-transform`} />
+                            <div className="flex justify-between text-nowrap w-full items-center">
+                                <span>閉じる</span><kbd className="h-6">Alt + b</kbd></div>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

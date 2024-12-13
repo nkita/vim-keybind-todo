@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
+import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRef } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap, completionTaskProjectName } from '@/components/config'
@@ -8,7 +8,7 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual, findIndex, get } from "lodash";
+import { isEqual, findIndex, get, set } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -20,22 +20,17 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box, CircleHelp, CircleCheck, Eye, EyeIcon, Monitor, MonitorCheck, ListChecks, LayoutList, ListTodo, TentTree } from "lucide-react"
+import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease, Box, CircleHelp, CircleCheck, Eye, EyeIcon, Monitor, MonitorCheck, ListChecks, LayoutList, ListTodo, TentTree, PanelRightClose } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { EyeClosedIcon, QuestionMarkIcon } from "@radix-ui/react-icons"
 import { Badge } from "./ui/badge"
+import { ImperativePanelHandle } from "react-resizable-panels"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
-const headerH = 60
-const projectsH = 30
-const headerHClass = `h-[${headerH}px]`
-const projectsHClass = `h-[${projectsH}px]`
-const mainHClass = `h-[calc(100%-${headerH}px)]`
-const tableHeightClass = `h-[calc(100%-${projectsH}px)]`
 
 export const Todo = (
     {
@@ -88,6 +83,16 @@ export const Todo = (
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
+
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
+    const resizeRef = useRef<ImperativePanelHandle>(null);
+    useEffect(() => {
+        const panel = resizeRef.current;
+        if (panel) {
+            isOpenRightPanel ? panel.expand() : panel.collapse()
+        }
+    }, [isOpenRightPanel])
+
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
         let enabledSort = true
@@ -185,6 +190,10 @@ export const Todo = (
             }
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
+
+    useEffect(() => {
+        if (mode === "editDetail" && !isOpenRightPanel) setIsOpenRightPanel(true)
+    }, [mode, isOpenRightPanel, setIsOpenRightPanel])
 
     useEffect(() => {
         if (isLastPosition) {
@@ -960,8 +969,8 @@ export const Todo = (
 
     return (
         <>
-            <header className={`flex justify-between shrink-0 ${headerHClass} items-center gap-2 transition-[width,height] ease-linear`}>
-                <div className="flex items-center gap-2 border m-1 p-1 rounded-md bg-card text-card-foreground">
+            <header className={`flex justify-between shrink-0 h-[2.5rem] items-center gap-2 transition-[width,height] ease-linear bg-card`}>
+                <div className="flex items-center gap-2 h-full px-2 mx-2 bg-card text-card-foreground ">
                     <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                     {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
@@ -984,10 +993,10 @@ export const Todo = (
                     ) : (
                         <MenuButton label="進行中タスクのみ表示"><LayoutList className="h-4 w-4" /></MenuButton>
                     )}
-                    <div className="flex items-center w-[80px] justify-start"><Badge>{mode}</Badge></div>
+                    <div className="flex items-center w-[80px] justify-start"><Badge variant={"secondary"}>{mode}</Badge></div>
                 </div>
             </header >
-            <div className={`w-full ${mainHClass}`}>
+            <div className={`w-full h-[calc(100%-2.5rem)]`}>
                 {/* オーバーレイ */}
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
@@ -1004,7 +1013,12 @@ export const Todo = (
                 </div>
                 <div className={`relative w-full h-[calc(100%-2.5rem)]`} onMouseDown={handleMainMouseDown}>
                     <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                        <ResizablePanel defaultSize={60} minSize={20} className={`${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
+                        <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
+                            <div className="absolute right-0  h-[2.4rem] flex items-center px-2 bg-emerald-300">
+                                <MenuButton label="詳細表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                                    <PanelRightClose strokeWidth={1} className={`h-4 w-4 ${isOpenRightPanel ? "rotate-0" : "rotate-180"} transition-transform`} />
+                                </MenuButton>
+                            </div>
                             <div
                                 onTouchStart={handleTouchStart}
                                 onTouchMove={handleTouchMove}
@@ -1032,7 +1046,7 @@ export const Todo = (
                             </div>
                         </ResizablePanel>
                         <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
-                        <ResizablePanel defaultSize={40} minSize={20} className={`relative bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                        <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                             {loading ? (
                                 <></>
                             ) : (
@@ -1083,15 +1097,17 @@ export const Todo = (
                         handleSetTodos={handleSetTodos}
                         todoEnables={todoEnables}
                     />
-                    <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
-                        <Usage
-                            sort={sort}
-                            mode={mode}
-                            isHelp={isHelp}
-                            setHelp={setHelp}
-                            isTodos={filterdTodos.length > 0}
-                        />
-                    </div>
+                    {!loading &&
+                        <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
+                            <Usage
+                                sort={sort}
+                                mode={mode}
+                                isHelp={isHelp}
+                                setHelp={setHelp}
+                                isTodos={filterdTodos.length > 0}
+                            />
+                        </div>
+                    }
                 </div >
             </div >
         </>

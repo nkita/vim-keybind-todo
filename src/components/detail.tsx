@@ -60,7 +60,7 @@ export const Detail = ({
 
     return (
         <>
-            <div className="w-full h-full text-card-foreground bg-secondary/20" onMouseDown={onMouseDownEvent}>
+            <div className="w-full h-full text-card-foreground bg-secondary/60" onMouseDown={onMouseDownEvent}>
                 <div className="w-full h-full overflow-auto scroll-bar">
                     <div className={`flex sticky top-0  w-full border-b border-secondary font-bold items-center gap-2 bg-card px-5 py-5 z-30 `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
@@ -97,7 +97,7 @@ export const Detail = ({
                         </div>
                     </div>
                     <div className={`w-full p-5 `} onMouseDown={e => e.stopPropagation()} >
-                        <div className="relative h-full w-full border py-1 bg-card rounded-md focus-within:border-primary">
+                        <div className="relative h-full w-full border py-2 my-4 bg-card rounded-md focus-within:border-primary">
                             <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
                                 {mode === "editDetail" ? (
                                     <span><kbd className="opacity-80">Esc</kbd>でもどる</span>
@@ -126,23 +126,23 @@ export const Detail = ({
                             </BottomLabel>
                         ) : (
                             <BottomButton handleClick={onClick} type={"context"}>
-                                <span className="flex items-center gap-1"><Tag className="h-4" />ラベルを追加</span>
+                                <Tag className="h-4" />ラベルを追加
                             </BottomButton>
                         )}
                         {todo.project ? (
                             <BottomLabel type={"project"} handleClick={handleClickDelete}>
-                                <span className="flex items-center text-ex-project gap-1"><Box className="h-4" />{todo.project} </span>
+                                <Box className="h-4" />{todo.project}
                             </BottomLabel>
                         ) : (
                             <BottomButton handleClick={onClick} type={"project"}>
                                 <span className="flex items-center"><Box className="h-4" />プロジェクトを追加 </span>
                             </BottomButton>
                         )}
-                        <div className="h-[3rem]"/>
+                        <div className="h-[3rem]" />
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={`absolute h-[3rem] bottom-0 border-t border-secondary border-x-0 w-full text-sm py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
+                        className={`absolute h-[3rem] bottom-0 border-t border-secondary border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
                         <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                     </div>
                     <div className="h-16 sm:h-0"></div>
@@ -159,15 +159,18 @@ interface BottomProps {
 }
 const BottomButton = ({ children, handleClick }: BottomProps) => {
     return (
-        <button className="flex my-2 gap-2 items-center text-xs bg-card text-card-foreground border p-3 rounded-md" onClick={_ => handleClick("context")}>
-            <span className="flex items-center gap-1">{children}</span>
+        <button className="bg-card text-card-foreground border rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground"
+            onClick={_ => handleClick("context")}>
+            <span className="flex items-center text-xs">{children}</span>
         </button>
     )
 }
 const BottomLabel = ({ children, type, handleClick }: BottomProps) => {
     return (
-        <div className={`flex items-center text-sm font-light gap-1 py-2 `}>
-            {children}
+        <div className={`flex items-center py-3 gap-2`}>
+            <span className={`flex gap-1 font-light px-2 py-1  items-center border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"}  rounded-full text-xs`}>
+                {children}
+            </span>
             <button className="text-destructive" onClick={_ => handleClick(type)}><X className="w-4 h-4" /></button>
         </div>
     )

@@ -35,7 +35,7 @@ export const Item = (
 
     return (
         <>
-            <div className={`${isView && "hidden"} ${className} border border-transparent`}>
+            <div className={`${isView && "hidden"} ${className} border border-transparent `}>
                 <button
                     tabIndex={-1}
                     autoFocus={currentIndex === index}
@@ -43,11 +43,10 @@ export const Item = (
                     {...register(`${position}-${prefix}-${t.id}`)}>
                     <span className="flex items-center gap-1">
                         <span className="truncate">{label ? label : "入力してください..."}</span>
-                        {t.detail && <span className="text-xs text-primary hidden sm:inline"><StickyNote className="inline w-3 h-3 scale-x-90" /></span>}
                     </span>
                 </button>
             </div >
-            <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full`} onMouseDown={e => e.stopPropagation()}>
+            <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full w-full`} onMouseDown={e => e.stopPropagation()}>
                 <input
                     tabIndex={-1}
                     className={_classNameCont}

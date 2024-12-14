@@ -116,7 +116,7 @@
 
   .table-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #ccc #fff;
+    scrollbar-color: #ccc transparent;
   }
 
 

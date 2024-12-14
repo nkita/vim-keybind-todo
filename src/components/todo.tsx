@@ -191,9 +191,6 @@ export const Todo = (
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
-    // useEffect(() => {
-    //     if (mode === "editDetail" && !isOpenRightPanel) setIsOpenRightPanel(true)
-    // }, [mode, isOpenRightPanel, setIsOpenRightPanel])
 
     useEffect(() => {
         if (isLastPosition) {
@@ -386,7 +383,7 @@ export const Todo = (
             if (currentIndex <= 0 || !selectTaskId) return
             handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex - 1].id), prevTodos)
         }
-    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos])
+    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos,filterdTodos])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {

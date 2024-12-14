@@ -80,7 +80,7 @@ export const TodoList = (
     return (
         <>
             <div className="h-full ">
-                <div className={`flex text-xs truncate font-semibold gap-2 px-2 text-emerald-700 bg-emerald-300 border-b items-center ${tableHeadHeight}`}>
+                <div className={`flex text-xs truncate bg-todo-background text-todo-foreground border-b border-b-todo-border gap-2 px-2  items-center ${tableHeadHeight}`}>
                     <span>No.</span>
                     <span>/</span>
                     <span><CircleCheck className="h-4 w-4" /></span>
@@ -100,7 +100,7 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-transparent  table-scrollbar`} index={currentIndex}>
+                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-card table-scrollbar`} index={currentIndex}>
                     <TableBody className="bg-transparent text-card-foreground text-sm">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -115,7 +115,7 @@ export const TodoList = (
                                 <TableCell className={table_task_width}>
                                     <input
                                         tabIndex={-1}
-                                        className={`p-1 w-full text-left truncate outline-none bg-transparent font-semibold`}
+                                        className={`p-1 w-full text-left  outline-none bg-transparent font-semibold`}
                                         type="text"
                                         maxLength={prefix === 'priority' ? 1 : -1}
                                         {...register(`newtask`)}
@@ -123,7 +123,7 @@ export const TodoList = (
                                     />
                                 </TableCell >
                                 <TableCell className={table_project_width} ></TableCell>
-                                <TableCell className={`${table_label_width} truncate font-light text-lab text-ex-project`}>{currentProject}</TableCell>
+                                <TableCell className={`${table_label_width} font-light text-lab text-ex-project`}>{currentProject}</TableCell>
                             </TableRow>
                         }
                         {!loading &&
@@ -144,8 +144,8 @@ export const TodoList = (
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            h-[3rem]
-                                                            ${(mode !== "select" && currentIndex === index) ? " bg-secondary text-secondary-foreground " : "bg-card"}
+                                                            h-[2.5rem]
+                                                            ${(mode !== "select" && currentIndex === index) ? " bg-todo-accent text-todo-accent-foreground " : "bg-card"}
                                                             ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
                                                             ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                     `} onClick={_ => setCurrentIndex(index)}>
@@ -196,7 +196,7 @@ export const TodoList = (
                                                                         <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9} />
                                                                     </div>
                                                                 }
-                                                                <div className="truncate w-full pr-2 sm:pr-0 flex items-center gap-1"
+                                                                <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1"
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>
                                                                     <Item
@@ -205,52 +205,59 @@ export const TodoList = (
                                                                         currentIndex={currentIndex}
                                                                         prefix={"text"}
                                                                         currentPrefix={prefix}
+                                                                        className={`
+                                                                            ${t.priority === "1" && "text-primary"}
+                                                                            ${t.priority === "2" && "text-destructive"}
+                                                                            ${t.priority === "3" && "text-destructive font-semibold"}
+                                                                            `}
                                                                         mode={mode}
                                                                         label={t.text}
                                                                         register={register} />
                                                                     {t.detail && !(mode === "edit" && currentIndex === index) &&
-                                                                        <span className={`hidden sm:flex font-light  items-center text-5sm  text-primary p-1 ${!t.context ? "opacity-0 w-0" : "opacity-1"}`}>
+                                                                        <span className={`hidden sm:flex font-light  items-center text-5sm  text-primary p-1`}>
                                                                             <StickyNote className="h-3 w-3" />
                                                                         </span>
                                                                     }
                                                                     {t.context && !(mode === "edit" && currentIndex === index) &&
-                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-label rounded-full text-5sm px-1 text-ex-label ${!t.context ? "opacity-0 w-0" : "opacity-1"}`}>
-                                                                            <Tag className="h-3" />
-                                                                            <SelectModal
-                                                                                t={t}
-                                                                                index={index}
-                                                                                currentIndex={currentIndex}
-                                                                                prefix={"context"}
-                                                                                currentPrefix={prefix}
-                                                                                mode={mode}
-                                                                                className={`text-left ${!t.context && "w-0"}`}
-                                                                                label={t.context}
-                                                                                register={register}
-                                                                                rhfSetValue={rhfSetValue}
-                                                                                items={labels}
-                                                                                title={"ラベル"}
-                                                                                onClick={onClick} />
+                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-label rounded-full text-5sm px-2 text-ex-label`}>
+                                                                            <Tag className="h-3 w-3" />
+                                                                            {t.context}
                                                                         </span>
                                                                     }
-                                                                    {!currentProject && !(mode === "edit" && currentIndex === index) &&
-                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-1 text-ex-project ${!t.project ? "opacity-0 w-0" : "opacity-1"}`}>
-                                                                            <Box className="h-3" />
-                                                                            <SelectModal
-                                                                                t={t}
-                                                                                index={index}
-                                                                                currentIndex={currentIndex}
-                                                                                prefix={"project"}
-                                                                                currentPrefix={prefix}
-                                                                                mode={mode}
-                                                                                className={`text-left ${!t.project && "w-0"}`}
-                                                                                label={t.project}
-                                                                                register={register}
-                                                                                rhfSetValue={rhfSetValue}
-                                                                                items={projects}
-                                                                                title={"プロジェクト"}
-                                                                                onClick={onClick} />
+                                                                    <SelectModal
+                                                                        t={t}
+                                                                        index={index}
+                                                                        currentIndex={currentIndex}
+                                                                        prefix={"context"}
+                                                                        currentPrefix={prefix}
+                                                                        mode={mode}
+                                                                        className={`w-0`}
+                                                                        label=""
+                                                                        register={register}
+                                                                        rhfSetValue={rhfSetValue}
+                                                                        items={labels}
+                                                                        title={"ラベル"}
+                                                                        onClick={onClick} />
+                                                                    {!currentProject && t.project && !(mode === "edit" && currentIndex === index) &&
+                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
+                                                                            <Box className="h-3 w-3" />
+                                                                            {t.project}
                                                                         </span>
                                                                     }
+                                                                    <SelectModal
+                                                                        t={t}
+                                                                        index={index}
+                                                                        currentIndex={currentIndex}
+                                                                        prefix={"project"}
+                                                                        currentPrefix={prefix}
+                                                                        mode={mode}
+                                                                        className={`w-0`}
+                                                                        label={""}
+                                                                        register={register}
+                                                                        rhfSetValue={rhfSetValue}
+                                                                        items={projects}
+                                                                        title={"プロジェクト"}
+                                                                        onClick={onClick} />
                                                                 </div>
                                                                 <div className="flex sm:hidden items-center gap-1 ">
                                                                     {t.context && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}

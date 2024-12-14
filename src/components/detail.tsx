@@ -120,24 +120,26 @@ export const Detail = ({
                                 />
                             </div>
                         </div>
-                        {todo.context ? (
-                            <BottomLabel type={"context"} handleClick={handleClickDelete}>
-                                <span className="flex items-center text-ex-label gap-1"><Tag className="h-4" />{todo.context} </span>
-                            </BottomLabel>
-                        ) : (
-                            <BottomButton handleClick={onClick} type={"context"}>
-                                <Tag className="h-4" />ラベルを追加
-                            </BottomButton>
-                        )}
-                        {todo.project ? (
-                            <BottomLabel type={"project"} handleClick={handleClickDelete}>
-                                <Box className="h-4" />{todo.project}
-                            </BottomLabel>
-                        ) : (
-                            <BottomButton handleClick={onClick} type={"project"}>
-                                <span className="flex items-center"><Box className="h-4" />プロジェクトを追加 </span>
-                            </BottomButton>
-                        )}
+                        <div className="flex gap-2">
+                            {todo.context ? (
+                                <BottomLabel type={"context"} handleClick={handleClickDelete}>
+                                    <Tag className="h-4 w-4" />{todo.context}
+                                </BottomLabel>
+                            ) : (
+                                <BottomButton handleClick={onClick} type={"context"}>
+                                    <Tag className="h-4 w-4" />ラベルを追加
+                                </BottomButton>
+                            )}
+                            {todo.project ? (
+                                <BottomLabel type={"project"} handleClick={handleClickDelete}>
+                                    <Box className="h-4 w-4" />{todo.project}
+                                </BottomLabel>
+                            ) : (
+                                <BottomButton handleClick={onClick} type={"project"}>
+                                    <Box className="h-4" />プロジェクトを追加
+                                </BottomButton>
+                            )}
+                        </div>
                         <div className="h-[3rem]" />
                     </div>
                     <div
@@ -167,11 +169,11 @@ const BottomButton = ({ children, handleClick }: BottomProps) => {
 }
 const BottomLabel = ({ children, type, handleClick }: BottomProps) => {
     return (
-        <div className={`flex items-center py-3 gap-2`}>
-            <span className={`flex gap-1 font-light px-2 py-1  items-center border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"}  rounded-full text-xs`}>
+        <div className={`flex items-center gap-2`}>
+            <span className={`flex gap-1 font-light px-2 py-1 bg-card items-center border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"}  rounded-full text-xs`}>
                 {children}
+                <button className="ml-3 text-destructive hover:bg-accent hover:text-accent-foreground" onClick={_ => handleClick(type)}><X className="w-4 h-4" /></button>
             </span>
-            <button className="text-destructive" onClick={_ => handleClick(type)}><X className="w-4 h-4" /></button>
         </div>
     )
 } 

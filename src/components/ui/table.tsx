@@ -23,7 +23,7 @@ const Table = React.forwardRef<
 
   return (
     <>
-      <div className={cn("flex flex-col justify-between overflow-auto scroll-bar", className)} ref={_ref}>
+      <div className={cn("flex flex-col justify-between overflow-auto w-full flex-nowrap text-nowrap", className)} ref={_ref}>
         <table
           ref={ref}
           className={"w-full caption-bottom text-sm table-fixed"}

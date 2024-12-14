@@ -14,8 +14,9 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, Link, MoreHorizontal, PanelLeft, PanelLeftClose, Settings, X } from "lucide-react"
+import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, MoreHorizontal, PanelLeft, PanelLeftClose, Settings, X } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { DropdownMenuItem, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { NavUser } from "./app-sidebar-user"
 import { useEffect, useState } from "react"
@@ -54,7 +55,7 @@ export function AppSidebar() {
         }
     }
     return (
-        <Sidebar collapsible="icon">
+        <Sidebar collapsible="icon" className="border-sidebar-border">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -72,21 +73,27 @@ export function AppSidebar() {
                     <SidebarMenu>
                         <SidebarGroupLabel>Menu</SidebarGroupLabel>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="flex items-center">
-                                <CircleCheck />
-                                <span>タスク管理</span>
+                            <SidebarMenuButton className="flex items-center" asChild>
+                                <Link href="/app/t">
+                                    <CircleCheck />
+                                    <span>タスク管理</span>
+                                </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="flex items-center">
-                                <History className="w-4 h-4" />
-                                <span>履歴</span>
+                            <SidebarMenuButton className="flex items-center" asChild>
+                                <Link href="/app/me">
+                                    <History className="w-4 h-4" />
+                                    <span>履歴</span>
+                                </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="flex items-center">
-                                <Settings className="w-4 h-4" />
-                                <span>設定</span>
+                            <SidebarMenuButton className="flex items-center" asChild>
+                                <Link href="/app/setting">
+                                    <Settings className="w-4 h-4" />
+                                    <span>設定</span>
+                                </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
@@ -135,7 +142,7 @@ export function AppSidebar() {
                         <SidebarMenuButton onClick={_ => toggleSidebar()}>
                             <PanelLeftClose className={`w-4 h-4 ${open ? "rotate-0" : "rotate-180"} transition-transform`} />
                             <div className="flex justify-between text-nowrap w-full items-center">
-                                <span>閉じる</span><kbd className="h-6">Alt + b</kbd></div>
+                                <span>閉じる</span><kbd className="flex items-center h-6  border-sidebar-border">Alt + b</kbd></div>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>

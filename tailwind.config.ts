@@ -4,7 +4,13 @@ const ex = {
 	label: "#10b981",
 	project: "#3b82f6"
 }
-
+const todo = {
+	background: 'hsl(var(--todo-background))',
+	foreground: 'hsl(var(--todo-foreground))',
+	border: 'hsl(var(--todo-border))',
+	accent: 'hsl(var(--todo-accent))',
+	'accent-foreground': 'hsl(var(--todo-accent-foreground))',
+}
 const config = {
 	darkMode: ["class"],
 	content: [
@@ -25,6 +31,7 @@ const config = {
 		extend: {
 			colors: {
 				ex,
+				todo,
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',

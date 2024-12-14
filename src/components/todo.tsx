@@ -191,9 +191,9 @@ export const Todo = (
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
-    useEffect(() => {
-        if (mode === "editDetail" && !isOpenRightPanel) setIsOpenRightPanel(true)
-    }, [mode, isOpenRightPanel, setIsOpenRightPanel])
+    // useEffect(() => {
+    //     if (mode === "editDetail" && !isOpenRightPanel) setIsOpenRightPanel(true)
+    // }, [mode, isOpenRightPanel, setIsOpenRightPanel])
 
     useEffect(() => {
         if (isLastPosition) {
@@ -901,7 +901,7 @@ export const Todo = (
         }, [currentProject, project])
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-xs px-2 ${currentProject === project ? " bg-secondary text-secondary-foreground border-t border-primary " : " text-secondary-foreground/50 border-t border-transparent"} h-full hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
+                className={`text-xs px-2 ${currentProject === project ? " bg-todo-accent text-todo-accent-foreground border-t border-primary " : " text-accent-foreground/50 border-t border-transparent"} h-full hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
                 <span className="flex gap-1 items-center">
                     {project ? (
                         project === completionTaskProjectName ? (
@@ -929,12 +929,14 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled?: boolean, label?: string, onClick?: () => void }) => {
+    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled?: boolean, label?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
-                        <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                        <button onClick={onClick}
+                            onMouseDown={e => e.stopPropagation()}
+                            className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
                     </TooltipTrigger>
                     <TooltipContent className="text-xs" align="start">
                         {label}
@@ -969,8 +971,8 @@ export const Todo = (
 
     return (
         <>
-            <header className={`flex justify-between shrink-0 h-[2.5rem] items-center gap-2 transition-[width,height] ease-linear bg-card`}>
-                <div className="flex items-center gap-2 h-full px-2 mx-2 bg-card text-card-foreground ">
+            <header className={`flex justify-between shrink-0 h-[2.5rem] items-center gap-2 transition-[width,height] ease-linear bg-todo-background text-todo-foreground`}>
+                <div className="flex items-center gap-2 h-full px-2 mx-2 ">
                     <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                     <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                     {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
@@ -1001,7 +1003,7 @@ export const Todo = (
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
 
-                <div className={`relative w-full h-[2.5rem] border-y bg-card`}>
+                <div className={`relative w-full h-[2.5rem] border-y border-todo-border bg-todo-background text-todo-foreground`}>
                     <div className={`w-full h-full flex justify-start items-end overflow-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground `}  >
                         <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
@@ -1011,11 +1013,15 @@ export const Todo = (
                         })}
                     </div>
                 </div>
-                <div className={`relative w-full h-[calc(100%-2.5rem)]`} onMouseDown={handleMainMouseDown}>
+                <div className={` relative w-full h-[calc(100%-2.5rem)]`} onMouseDown={handleMainMouseDown}>
                     <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                         <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
-                            <div className="absolute right-0  h-[2.4rem] flex items-center px-2 bg-emerald-300">
-                                <MenuButton label="詳細表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                            <div className="absolute right-0  h-[2.4rem] flex items-center px-2 bg-todo-background z-40">
+                                <MenuButton label="詳細表示/非表示" onClick={(e) => {
+                                    e.stopPropagation()
+                                    e.preventDefault()
+                                    setIsOpenRightPanel(prev => !prev)
+                                }} >
                                     <PanelRightClose strokeWidth={1} className={`h-4 w-4 ${isOpenRightPanel ? "rotate-0" : "rotate-180"} transition-transform`} />
                                 </MenuButton>
                             </div>

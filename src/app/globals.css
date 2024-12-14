@@ -6,8 +6,8 @@
 @layer base {
   :root {
     --gradient: linear-gradient(to top left, #0F2027, #203A43, #2C5364);
-    --background: 210 97.2% 98.22%;
-    --foreground: 210 4.4% 0.44%;
+    --background: 27 27% 94%;
+    --foreground: 95 42% 26%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
@@ -18,8 +18,8 @@
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
  */
-    --primary: 105 100% 19%;
-    --primary-foreground: 105 2% 91.9%;
+    --primary: 32 12% 42%;
+    --primary-foreground: 95 42% 96%;
 
     --secondary: 105 5% 95.95%;
     --secondary-foreground: 105 7% 11.9%;
@@ -39,14 +39,20 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-background: 38 35% 88%;
+    --sidebar-foreground: 200 100% 20%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 28 35% 93%;
+    --sidebar-accent-foreground: 200 100% 10%;
+    --sidebar-border: 28 35% 82%;
+    --sidebar-ring: 103 40% 90%;
+
+    --todo-background: 240 4.8% 95.9%;
+    --todo-foreground: 240 3.8% 46.1%;
+    --todo-border: 240 5.9% 90%;
+    --todo-accent: 240 4.8% 96.9%;
+    --todo-accent-foreground: 240 5.9% 10%;
   }
 
   .dark {
@@ -113,10 +119,6 @@
     scrollbar-color: #ccc #fff;
   }
 
-  .table-scrollbar:hover {
-    scrollbar-width: thin;
-    scrollbar-color: #ccc #fff;
-  }
 
   .hidden-scrollbar {
     scrollbar-width: none;

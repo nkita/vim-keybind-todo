@@ -141,22 +141,33 @@ export const TodoList = (
                                                 if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
                                                     nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                 }
+                                                const common_color_css = `
+                                                    ${(mode !== "select" && currentIndex === index) ? " bg-todo-accent text-todo-accent-foreground " : "bg-card"}
+                                                    ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
+                                                    ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
+                                                `
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
                                                             h-[2.5rem]
-                                                            ${(mode !== "select" && currentIndex === index) ? " bg-todo-accent text-todo-accent-foreground " : "bg-card"}
-                                                            ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
-                                                            ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
+                                                            ${common_color_css}
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
-                                                            ${currentIndex === index ? "border-l-2 border-primary" : ""}
-                                                            ${table_idx_width} px-2 text-sm text-right
-                                                            `}>{index + 1}</TableCell>
+                                                             sticky left-0 
+                                                             text-sm text-right 
+                                                             p-0 m-0 ${table_idx_width}
+                                                            `}>
+                                                            <div className={` 
+                                                                 pl-2 pr-1  h-[2.5rem] flex items-center
+                                                                ${currentIndex === index ? "border-l-2 border-primary" : ""}
+                                                                ${common_color_css}
+                                                                `}>
+                                                                {index + 1}
+                                                            </div></TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                                                             <div className="flex w-ful justify-center">
                                                                 {mode === "select" && currentIndex === index ? (
-                                                                    <ChevronsUpDown className="text-primary h-4 group-hover:text-gray-300" />
+                                                                    <ChevronsUpDown className="text-primary h-3 w-3 group-hover:text-gray-300" />
                                                                 ) : (
                                                                     <>
                                                                         {t.is_complete ? <FaCircleCheck className="text-primary group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 group-hover:text-green-500" />}
@@ -179,23 +190,13 @@ export const TodoList = (
                                                                     }
                                                                 </span>
                                                                 {t.priority === "3" &&
-                                                                    <div className="relative h-full w-[20px]">
-                                                                        <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
-                                                                        <Star className="absolute bottom-1 left-1/2" size={9} />
-                                                                        <Star className="absolute bottom-1 right-1/2" size={9} />
-                                                                    </div>
+                                                                    <>
+                                                                        <Star className="w-3 h-3 text-destructive" strokeWidth={3} />
+                                                                        <Star className="w-3 h-3 text-destructive" strokeWidth={3} />
+                                                                    </>
                                                                 }
-                                                                {t.priority === "2" &&
-                                                                    <div className="relative h-full w-[20px]">
-                                                                        <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9} />
-                                                                        <Star className="absolute top-0 bottom-0 right-1/2 m-auto" size={9} />
-                                                                    </div>
-                                                                }
-                                                                {t.priority === "1" &&
-                                                                    <div className="relative h-full w-[20px]">
-                                                                        <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9} />
-                                                                    </div>
-                                                                }
+                                                                {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
+                                                                {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
                                                                 <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1"
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>

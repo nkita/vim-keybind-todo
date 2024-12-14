@@ -26,7 +26,7 @@ const Table = React.forwardRef<
       <div className={cn("flex flex-col justify-between overflow-auto w-full flex-nowrap text-nowrap", className)} ref={_ref}>
         <table
           ref={ref}
-          className={"w-full caption-bottom text-sm table-fixed"}
+          className={"w-full caption-bottom text-sm"}
           {...props}
         />
         <section className="w-full h-[150px] hidden sm:flex gap-8 md:gap-4 text-4sm text-muted-foreground truncate justify-center items-center">

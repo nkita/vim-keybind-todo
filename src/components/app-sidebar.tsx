@@ -23,6 +23,7 @@ import { useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
+import { FaXTwitter } from "react-icons/fa6"
 
 export function AppSidebar() {
     const {
@@ -112,7 +113,7 @@ export function AppSidebar() {
                         <SidebarMenuItem >
                             <SidebarMenuButton asChild>
                                 <a href="https://x.com/nkitao7" target="_blank">
-                                    <X className="w-4 h-4 " />
+                                    <FaXTwitter  className="w-4 h-4 " />
                                     <span>nkita X</span>
                                 </a>
                             </SidebarMenuButton>

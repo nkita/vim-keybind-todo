@@ -163,7 +163,7 @@ const BottomButton = ({ children, handleClick }: BottomProps) => {
     return (
         <button className="bg-card text-card-foreground border rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground"
             onClick={_ => handleClick("context")}>
-            <span className="flex items-center text-xs">{children}</span>
+            <span className="flex items-center text-xs text-nowrap">{children}</span>
         </button>
     )
 }

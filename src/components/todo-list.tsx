@@ -50,7 +50,7 @@ export const TodoList = (
 
     const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
     const [table_project_width, set_table_project_width] = useState("w-0 sm:w-[15%] max-w-[20%]")
-    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-40px)]"
+    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
     const tableHeadHeight = "h-[40px]"
     const taskBarHeight = "h-[40px]"
 
@@ -80,17 +80,6 @@ export const TodoList = (
     return (
         <>
             <div className="h-full ">
-                <div className={`flex text-xs truncate bg-todo-background text-todo-foreground border-b border-b-todo-border gap-2 px-2  items-center ${tableHeadHeight}`}>
-                    <span>No.</span>
-                    <span>/</span>
-                    <span><CircleCheck className="h-4 w-4" /></span>
-                    <span>/</span>
-                    <span>タスク</span>
-                    <span>/</span>
-                    <span className="flex items-center"><Tag className="h-3" />ラベル</span>
-                    <span>/</span>
-                    <span className="flex items-center"><Box className="h-3" />プロジェクト</span>
-                </div>
                 {loading &&
                     <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">

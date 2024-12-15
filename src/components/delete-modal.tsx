@@ -37,7 +37,7 @@ export const DeleteModal = (
                 className={"hidden"}
                 open={isView}
                 onClickOpen={open}
-                onClickClose={close}>
+                onClickChange={e => close()}>
                 <div className="pb-4 text-sm text-muted-foreground">
                     本当に削除しますか？<br />
                     削除したタスクは二度と復旧できません。

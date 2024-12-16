@@ -897,19 +897,25 @@ export const Todo = (
         }, [currentProject, project])
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-xs px-2 ${currentProject === project ? " bg-todo-accent text-todo-accent-foreground border-t border-primary " : " text-accent-foreground/50 border-t border-transparent"} h-full hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
-                <span className="flex gap-1 items-center">
-                    {project ? (
-                        project === completionTaskProjectName ? (
-                            <> <Check className="w-3" />{"完了済み"}</>
+                className={`text-xs px-2
+                        ${currentProject === project ?
+                        " bg-todo-accent text-todo-accent-foreground  "
+                        : " bg-transparent border-r"}
+                        h-full hover:text-secondary-foreground hover:bg-secondary transition-all fade-in-5
+                         `}>
+                <span className="flex gap-1 items-center" >
+                    {
+                        project ? (
+                            project === completionTaskProjectName ? (
+                                <> <Check className="w-3" />{"完了済み"}</>
+                            ) : (
+                                <> <Box className="w-3" />{project}</>
+                            )
                         ) : (
-                            <> <Box className="w-3" />{project}</>
-                        )
-                    ) : (
-                        <> <List className="w-3" />{"ALL"}</>
-                    )}
-                </span>
-            </button>
+                            <> <List className="w-3" />{"ALL"}</>
+                        )}
+                </span >
+            </button >
         )
     }
 
@@ -967,8 +973,8 @@ export const Todo = (
 
     return (
         <>
-            <header className={`shrink-0 h-[5rem] gap-2 transition-[width,height] ease-linear bg-todo-background text-todo-foreground`}>
-                <div className={`relative w-full h-[2.5rem]  bg-todo-background text-todo-foreground`}>
+            <header className={`shrink-0 h-[4.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-todo-background`}>
+                <div className={`relative w-full h-[2.3rem] `}>
                     <div className={`w-full h-full flex justify-start items-end overflow-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground `}  >
                         <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
@@ -978,7 +984,7 @@ export const Todo = (
                         })}
                     </div>
                 </div>
-                <div className="flex justify-between items-center h-[2.5rem] border-y border-todo-border">
+                <div className="flex justify-between items-center h-[2.5rem]  border-todo-border border-b bg-todo-accent text-todo-accent-foreground">
                     <div className="flex items-center gap-2 h-full px-2 mx-2">
                         <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                         <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
@@ -1005,7 +1011,7 @@ export const Todo = (
                     </div>
                 </div>
             </header >
-            <div className={`w-full h-[calc(100%-5rem)]`}>
+            <div className={`w-full h-[calc(100%-4.8rem)]`}>
                 {/* オーバーレイ */}
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}

@@ -19,11 +19,12 @@ import Image from "next/image"
 import Link from "next/link"
 import { DropdownMenuItem, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { NavUser } from "./app-sidebar-user"
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
+import { usePathname } from "next/navigation"
 
 export function AppSidebar() {
     const {
@@ -60,9 +61,9 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton className="flex items-center" asChild>
+                        <SidebarMenuButton className="flex items-center hover:bg-transparent" asChild>
                             <a href="/lp">
-                                <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
+                                <Image width={25} height={25} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} />
                                 <span>Shiba Todo</span>
                             </a>
                         </SidebarMenuButton>
@@ -74,28 +75,22 @@ export function AppSidebar() {
                     <SidebarMenu>
                         <SidebarGroupLabel>Menu</SidebarGroupLabel>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="flex items-center" asChild>
-                                <Link href="/app/t">
-                                    <CircleCheck />
-                                    <span>タスク管理</span>
-                                </Link>
-                            </SidebarMenuButton>
+                            <ExSidebarMenuButton href="/app/t">
+                                <CircleCheck />
+                                <span>タスク管理</span>
+                            </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="flex items-center" asChild>
-                                <Link href="/app/me">
-                                    <History className="w-4 h-4" />
-                                    <span>履歴</span>
-                                </Link>
-                            </SidebarMenuButton>
+                            <ExSidebarMenuButton href="/app/me">
+                                <History className="w-4 h-4" />
+                                <span>履歴</span>
+                            </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <SidebarMenuButton className="flex items-center" asChild>
-                                <Link href="/app/setting">
-                                    <Settings className="w-4 h-4" />
-                                    <span>設定</span>
-                                </Link>
-                            </SidebarMenuButton>
+                            <ExSidebarMenuButton href="/app/setting">
+                                <Settings className="w-4 h-4" />
+                                <span>設定</span>
+                            </ExSidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
                 </SidebarGroup>
@@ -113,7 +108,7 @@ export function AppSidebar() {
                         <SidebarMenuItem >
                             <SidebarMenuButton asChild>
                                 <a href="https://x.com/nkitao7" target="_blank">
-                                    <FaXTwitter  className="w-4 h-4 " />
+                                    <FaXTwitter className="w-4 h-4 " />
                                     <span>nkita X</span>
                                 </a>
                             </SidebarMenuButton>
@@ -150,5 +145,16 @@ export function AppSidebar() {
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
+    )
+}
+
+const ExSidebarMenuButton = ({ href, children }: { href: string, children: React.ReactNode }) => {
+    const pathname = usePathname()
+    return (
+        <SidebarMenuButton className={`flex items-center ${pathname === href && "bg-sidebar-accent text-sidebar-accent-foreground"}`} asChild>
+            <Link href={href}>
+                {children}
+            </Link>
+        </SidebarMenuButton>
     )
 }

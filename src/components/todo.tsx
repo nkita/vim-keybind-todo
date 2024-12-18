@@ -18,9 +18,9 @@ import { Usage } from "./usage"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
-import { debugLog } from "@/lib/utils"
+import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
@@ -902,7 +902,7 @@ export const Todo = (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
                 className={`relative text-xs px-4 rounded-t-sm 
                         ${curerent ?
-                        " bg-card text-card-foreground border-t-primary border-t"
+                        " bg-card text-card-foreground border-t-primary border-t border-x"
                         : " text-muted-foreground border-b border-t-transparent border-t"}
                         h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
                          `}>
@@ -935,14 +935,14 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled?: boolean, label?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
+    const MenuButton = ({ children, className, disabled, label, onClick }: { children: React.ReactNode, className?: string, disabled?: boolean, label?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                         <button onClick={onClick}
                             onMouseDown={e => e.stopPropagation()}
-                            className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                            className={cn(className, `p-1 hover:cursor-pointer border disabled:text-secondary-foreground/20 hover:border-primary rounded-sm border-transparent transition-all`)} disabled={disabled}>{children}</button>
                     </TooltipTrigger>
                     <TooltipContent className="text-xs" align="start" side="bottom">
                         {label}
@@ -995,10 +995,10 @@ export const Todo = (
                         <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                         <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
                         <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                        <div className={` inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
                         <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
                             {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
                         </MenuButton>
-                        <div className={` inset-y-1/4 right-0 h-1/2 border-r w-0 `}></div>
                         <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
                         <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
                             <Columns size={16} />
@@ -1006,15 +1006,15 @@ export const Todo = (
                     </div>
                     <div className="relative flex gap-2 items-center px-2">
                         {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                            <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                            <Button variant={"default"} size="sm" className="bg-primary2 text-primary2-foreground hover:bg-primary2/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                                 {(isSave && isUpdate) ? (
-                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary2-foreground rounded-full border-t-transparent" />
                                 ) : (
-                                    <Save size={16} />
+                                    <><Save size={16} />保存</>
                                 )}
-                            </MenuButton>
+                            </Button>
                         }
-                        <button className="text-xs bg-primary hover:bg-primary/85">タスクを追加</button>
+                        <Button variant={"default"} size="sm" className="bg-primary2 text-primary2-foreground hover:bg-primary2/90"><Plus />タスクを追加</Button>
                     </div>
                 </div>
             </header >
@@ -1128,46 +1128,4 @@ export const Todo = (
             </div >
         </>
     )
-}
-const ExLink = ({
-    href,
-    className = "",
-    target,
-    lock,
-    children,
-    type,
-    onClick,
-    ...props
-}: {
-    href?: string,
-    className?: string | undefined,
-    type?: "button" | "link",
-    target?: string,
-    lock?: boolean,
-    onClick?: () => void,
-    children: React.ReactNode
-}) => {
-    if (type === "link" && href) {
-        return (
-            <Link
-                href={href}
-                target={target}
-                className={`flex text-accent-foreground/60 hover:underline hover:text-accent-foreground text-sm items-center gap-1 px-3 transition-all fade-in-5`}
-                {...props}
-            >
-                {children}
-            </Link>
-        )
-    } else {
-        return (
-            <button
-                tabIndex={-1}
-                onClick={onClick}
-                className={`flex text-sm text-accent-foreground/60 hover:text-accent-foreground items-center gap-1 px-3 transition-all fade-in-5`}
-                {...props}
-            >
-                {children}
-            </button>
-        )
-    }
 }

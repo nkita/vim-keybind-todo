@@ -56,7 +56,7 @@ export function AppSidebar() {
         }
     }
     return (
-        <Sidebar collapsible="icon" className="border-sidebar-border">
+        <Sidebar collapsible="icon" className="border-sidebar-border ">
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

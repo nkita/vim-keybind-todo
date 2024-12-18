@@ -6,9 +6,10 @@
 @layer base {
   :root {
     --gradient: linear-gradient(to top left, #0F2027, #203A43, #2C5364);
-    --background: 27 27% 94%;
-    --foreground: 95 42% 26%;
-    --card: 0 0% 100%;
+    --gradient-2: linear-gradient(to top bottom, #58c488,  #459468);
+    --background: 214, 8%, 98%;
+    --foreground: 214, 8%, 3.9%;
+    --card: 0 0% 99%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
@@ -18,20 +19,20 @@
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
  */
-    --primary: 32 12% 42%;
-    --primary-foreground: 95 42% 96%;
+    --primary: 147, 56%, 48%;
+    --primary-foreground: 95 42% 6%;
 
-    --secondary: 105 5% 95.95%;
+    --secondary:0,0%,96%;
     --secondary-foreground: 105 7% 11.9%;
 
     --muted: 240 4.8% 95.9%;
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
+    --accent: 214, 8%, 93%;
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
+    --input: 240 5.9% 0%;
     --ring: 142.1 76.2% 36.3%;
     --radius: 0.5rem;
     --chart-1: 12 76% 61%;
@@ -41,19 +42,19 @@
     --chart-5: 27 87% 67%;
     /* --sidebar-background: 38 35% 88%;
     --sidebar-foreground: 200 100% 20%; */
-    --sidebar-background: 150, 50%, 60%;
-    --sidebar-foreground: 150, 50%, 5%;
+    --sidebar-background: 147, 36%, 80%;
+    --sidebar-foreground: 150, 50%, 10%;
     --sidebar-accent:  150, 50%, 64%;
     --sidebar-accent-foreground: 150 50% 5%;
     --sidebar-border: 150, 50%, 50%;
     --sidebar-ring: 103 40% 90%;
 
-    --todo-background: 30, 25%, 91%; 
-    --todo-foreground: 240 3.8% 46.1%;
+    --todo-background: 214, 8%, 83%; 
+    --todo-foreground: var(--foreground);
     --todo-border: 240 5.9% 90%;
 
-    --todo-accent: 150, 50%, 98%; 
-    --todo-accent-foreground: 150, 50%, 5%;
+    --todo-accent: 147, 56%, 88%;
+    --todo-accent-foreground: var(--foreground);
   }
 
   .dark {
@@ -102,7 +103,7 @@
   }
 
   kbd {
-    @apply px-2 py-1 text-5sm shadow-sm font-thin text-primary bg-transparent border rounded-md
+    @apply px-2 py-1 text-5sm shadow-sm font-thin text-primary-foreground bg-secondary border rounded-md
   }
 
   .primary-gradient {

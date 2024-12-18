@@ -20,13 +20,14 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Badge } from "./ui/badge"
 import { ImperativePanelHandle } from "react-resizable-panels"
+import { Button } from "./ui/button"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -883,10 +884,10 @@ export const Todo = (
 
     const Project = (
         {
-            currentProject, index, project, onClick
+            currentProject, index, curentProjectIndex, project, onClick
 
         }: {
-            currentProject: string, index: number, project: string, onClick: (index: number, prefix: string) => void
+            currentProject: string, index: number, curentProjectIndex: number, project: string, onClick: (index: number, prefix: string) => void
         }
     ) => {
         const ref = React.useRef<HTMLButtonElement>(null)
@@ -895,13 +896,15 @@ export const Todo = (
                 ref.current?.scrollIntoView({ behavior: "smooth" })
             }
         }, [currentProject, project])
+        const curerent = index === curentProjectIndex
+        const prevCurrent = index === curentProjectIndex - 1
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-xs px-2
-                        ${currentProject === project ?
-                        " bg-todo-accent text-todo-accent-foreground  "
-                        : " bg-transparent border-r"}
-                        h-full hover:text-secondary-foreground hover:bg-secondary transition-all fade-in-5
+                className={`relative text-xs px-4 rounded-t-sm 
+                        ${curerent ?
+                        " bg-card text-card-foreground border-t-primary border-t"
+                        : " text-muted-foreground border-b border-t-transparent border-t"}
+                        h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
                          `}>
                 <span className="flex gap-1 items-center" >
                     {
@@ -912,9 +915,10 @@ export const Todo = (
                                 <> <Box className="w-3" />{project}</>
                             )
                         ) : (
-                            <> <List className="w-3" />{"ALL"}</>
+                            <> <List className="w-3" />{"すべてのタスク"}</>
                         )}
                 </span >
+                <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${curerent || prevCurrent ? "border-transparent" : "border"} `}></div>
             </button >
         )
     }
@@ -973,21 +977,34 @@ export const Todo = (
 
     return (
         <>
-            <header className={`shrink-0 h-[4.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-todo-background`}>
-                <div className={`relative w-full h-[2.3rem] `}>
+            <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
+                <div className={`relative w-full h-[2.8rem] `}>
                     <div className={`w-full h-full flex justify-start items-end overflow-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground `}  >
-                        <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
+                        <Project currentProject={currentProject} index={-1} curentProjectIndex={projects.indexOf(currentProject)} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
                             return (
-                                <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
+                                <Project key={p} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p} onClick={handleClickElement} />
                             )
                         })}
+                        <div className="w-full h-full border-b"></div>
                     </div>
                 </div>
-                <div className="flex justify-between items-center h-[2.5rem]  border-todo-border border-b bg-todo-accent text-todo-accent-foreground">
-                    <div className="flex items-center gap-2 h-full px-2 mx-2">
+                <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">
+                    <div className="flex items-center gap-2 h-full px-2 mx-2 ">
                         <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                         <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                        <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
+                        <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                        <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
+                            {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
+                        </MenuButton>
+                        <div className={` inset-y-1/4 right-0 h-1/2 border-r w-0 `}></div>
+                        <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
+                        <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                            <Columns size={16} />
+                        </MenuButton>
+                    </div>
+                    <div className="relative flex gap-2 items-center px-2">
                         {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                             <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                                 {(isSave && isUpdate) ? (
@@ -997,21 +1014,11 @@ export const Todo = (
                                 )}
                             </MenuButton>
                         }
-                        <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
-                        <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                        <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
-                            {viewCompletionTask ? <ListTodo size={16} /> : <LayoutList size={16} />}
-                        </MenuButton>
-                    </div>
-                    <div className="flex gap-2 items-center px-2">
-                        <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
-                        <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
-                            <PanelRightClose size={16} className={`${isOpenRightPanel ? "rotate-0" : "rotate-180"} transition-transform`} />
-                        </MenuButton>
+                        <button className="text-xs bg-primary hover:bg-primary/85">タスクを追加</button>
                     </div>
                 </div>
             </header >
-            <div className={`w-full h-[calc(100%-4.8rem)]`}>
+            <div className={`w-full h-[calc(100%-5.8rem)]`}>
                 {/* オーバーレイ */}
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
@@ -1053,29 +1060,31 @@ export const Todo = (
                             </div>
                         </ResizablePanel>
                         <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
-                        <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                        <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                             {loading ? (
                                 <></>
                             ) : (
                                 <>
                                     <div className={`w-full h-full z-20`}>
-                                        {!filterdTodos[currentIndex] &&
+                                        {(!filterdTodos[currentIndex] || !filterdTodos[currentIndex].text) &&
                                             <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
                                                 <TentTree className="w-7 h-7" />
-                                                Please select a task.
+                                                タスクを追加、または選択してください。
                                             </div>
                                         }
-                                        <Detail
-                                            todo={filterdTodos[currentIndex]}
-                                            prefix={prefix}
-                                            mode={mode}
-                                            isHelp={isHelp}
-                                            onMouseDownEvent={handleDetailMouseDown}
-                                            onClick={handleClickDetailElement}
-                                            setValue={setValue}
-                                            watch={watch}
-                                            register={register}
-                                        />
+                                        {filterdTodos[currentIndex] && filterdTodos[currentIndex].text &&
+                                            <Detail
+                                                todo={filterdTodos[currentIndex]}
+                                                prefix={prefix}
+                                                mode={mode}
+                                                isHelp={isHelp}
+                                                onMouseDownEvent={handleDetailMouseDown}
+                                                onClick={handleClickDetailElement}
+                                                setValue={setValue}
+                                                watch={watch}
+                                                register={register}
+                                            />
+                                        }
                                     </div>
                                 </>
                             )}

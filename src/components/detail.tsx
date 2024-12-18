@@ -62,7 +62,7 @@ export const Detail = ({
         <>
             <div className="w-full h-full text-card-foreground bg-secondary/60" onMouseDown={onMouseDownEvent}>
                 <div className="w-full h-full overflow-auto scroll-bar">
-                    <div className={`flex sticky top-0  w-full border-b border-secondary font-bold items-center gap-2 bg-card px-5 py-5 z-30 rounded-b-lg `} onMouseDown={e => e.stopPropagation()} >
+                    <div className={`flex sticky top-0 w-full border-b-2 border-muted font-bold items-center gap-2 bg-card px-5 py-5 z-30 `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
@@ -144,7 +144,7 @@ export const Detail = ({
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={`absolute h-[3rem] bottom-0 border-t border-secondary border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
+                        className={`absolute h-[3rem] bottom-0 border-t-2 border-muted border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
                         <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                     </div>
                     <div className="h-16 sm:h-0"></div>

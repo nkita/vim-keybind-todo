@@ -6,7 +6,6 @@
 @layer base {
   :root {
     --gradient: linear-gradient(to top left, #0F2027, #203A43, #2C5364);
-    --gradient-2: linear-gradient(to top bottom, #58c488,  #459468);
     --background: 214, 8%, 98%;
     --foreground: 214, 8%, 3.9%;
     --card: 0 0% 99%;
@@ -19,8 +18,13 @@
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
  */
-    --primary: 147, 56%, 48%;
-    --primary-foreground: 95 42% 6%;
+    /* --primary: 108, 47%, 27%;
+    --primary-foreground: 108, 47%, 97%; */
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --primary2: 221.2 83.2% 53.3%;
+    --primary2-foreground: 210 40% 98%;
 
     --secondary:0,0%,96%;
     --secondary-foreground: 105 7% 11.9%;
@@ -42,11 +46,15 @@
     --chart-5: 27 87% 67%;
     /* --sidebar-background: 38 35% 88%;
     --sidebar-foreground: 200 100% 20%; */
-    --sidebar-background: 147, 36%, 80%;
-    --sidebar-foreground: 150, 50%, 10%;
-    --sidebar-accent:  150, 50%, 64%;
-    --sidebar-accent-foreground: 150 50% 5%;
-    --sidebar-border: 150, 50%, 50%;
+
+    /* --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%; */
+
+    --sidebar-background: 142.1, 76.2%, 36.3%;
+    --sidebar-foreground: 355.7 100% 97.3%;
+    --sidebar-accent: 142.1, 76.2%, 39.3%;
+    --sidebar-accent-foreground: 108, 47%, 97%;
+    --sidebar-border:142.1, 76.2%, 26.3%;
     --sidebar-ring: 103 40% 90%;
 
     --todo-background: 214, 8%, 83%; 
@@ -103,7 +111,7 @@
   }
 
   kbd {
-    @apply px-2 py-1 text-5sm shadow-sm font-thin text-primary-foreground bg-secondary border rounded-md
+    @apply px-2 py-1 text-5sm shadow-sm font-thin text-secondary-foreground bg-secondary border rounded-md
   }
 
   .primary-gradient {

@@ -44,7 +44,7 @@ export function NavUser() {
             {(!user && userLoading) &&
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                        <a className="w-full h-14 flex items-center justify-center border" href="#">
+                        <a className="w-full h-14 flex items-center justify-center sidebar-border" href="#">
                             <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
                         </a>
                     </SidebarMenuButton>
@@ -53,7 +53,7 @@ export function NavUser() {
             {(!user && !userLoading) &&
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                        <Button className="w-full h-12" variant={"outline"} onClick={_ => loginWithRedirect()}>
+                        <Button className="w-full h-12 bg-primary border-sidebar-border" variant={"outline"} onClick={_ => loginWithRedirect()}>
                             <LogIn className="h-4 w-4" />
                             <span>Log in</span>
                         </Button>

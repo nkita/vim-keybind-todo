@@ -24,7 +24,7 @@ export default function Home() {
     return (
         <NormalPageTemplate>
             <main className="flex flex-col items-center justify-center gap-6 ">
-                <section className="pt-16  sm:pt-20 md:w-[680px] sm:w-[580px] w-[450px]">
+                <section className="pt-16 sm:pt-20 md:w-[680px] sm:w-[580px] w-[450px]">
                     <div className="text-center animate-fade ease-in animate-delay-75 ">
                         <h1 className="md:text-6xl sm:text-5xl text-3xl py-6">
                             ホームポジションで完結<br />
@@ -51,7 +51,7 @@ export default function Home() {
                     <p className={`flex gap-4 ${isLoading ? "hidden" : "hidden sm:block"} animate-fade-up `}>
                         {user ? (
                             <>
-                                <Button disabled={isLoading} className="w-[280px]" onClick={_ => redirectTodo()}>はじめる</Button>
+                                <Button disabled={isLoading} variant={"default"} className="w-[280px]" onClick={_ => redirectTodo()}>はじめる</Button>
                             </>
                         ) : (
                             <>

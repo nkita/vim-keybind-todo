@@ -89,8 +89,8 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-card table-scrollbar`} index={currentIndex}>
-                    <TableBody className="bg-transparent text-card-foreground text-sm">
+                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-muted  table-scrollbar`} index={currentIndex}>
+                    <TableBody className=" text-sm">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -131,8 +131,8 @@ export const TodoList = (
                                                     nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                 }
                                                 const common_color_css = `
-                                                    ${(mode !== "select" && currentIndex === index) ? " bg-accent text-todo-accent-foreground " : "bg-card"}
-                                                    ${mode === "select" && currentIndex === index ? " font-semibold bg-primary/10 " : ""}
+                                                    ${(mode !== "select" && currentIndex === index) ? " bg-sky-50 text-todo-accent-foreground " : "bg-[#fff]"}
+                                                    ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
                                                     ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                 `
                                                 return (
@@ -148,7 +148,6 @@ export const TodoList = (
                                                             `}>
                                                             <div className={` 
                                                                  pl-2 pr-1  h-[2.5rem] flex items-center
-                                                                ${currentIndex === index ? "border-l-2 border-primary" : ""}
                                                                 ${common_color_css}
                                                                 `}>
                                                                 {index + 1}

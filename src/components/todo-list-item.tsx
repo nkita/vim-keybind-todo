@@ -46,7 +46,7 @@ export const Item = (
                     </span>
                 </button>
             </div >
-            <div className={`${!isView && "hidden"} ${className} border border-primary rounded-md h-full w-[80%]`} onMouseDown={e => e.stopPropagation()}>
+            <div className={`${!isView && "hidden"} ${className} border-2 border-primary rounded-md h-full w-[80%]`} onMouseDown={e => e.stopPropagation()}>
                 <input
                     tabIndex={-1}
                     className={_classNameCont}

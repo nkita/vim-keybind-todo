@@ -14,7 +14,7 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, MoreHorizontal, PanelLeft, PanelLeftClose, Settings, X } from "lucide-react"
+import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, Lock, MoreHorizontal, PanelLeft, PanelLeftClose, PawPrint, Settings, X } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { DropdownMenuItem, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu"
@@ -81,14 +81,16 @@ export function AppSidebar() {
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <ExSidebarMenuButton href="/app/me">
-                                <History className="w-4 h-4" />
+                            <ExSidebarMenuButton href="#" disabled>
+                                {/* <History className="w-4 h-4" /> */}
+                                <Lock className="w-4 h-4" />
                                 <span>履歴</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <ExSidebarMenuButton href="/app/setting">
-                                <Settings className="w-4 h-4" />
+                            <ExSidebarMenuButton href="#" disabled>
+                                {/* <Settings className="w-4 h-4" /> */}
+                                <Lock className="w-4 h-4" />
                                 <span>設定</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
@@ -116,8 +118,8 @@ export function AppSidebar() {
                         <SidebarMenuItem >
                             <SidebarMenuButton asChild>
                                 <a href="https://shiba-tools.dev/" target="_blank">
-                                    <ExternalLink className="w-4 h-4 " />
-                                    <span>Shiba Tools</span>
+                                    <PawPrint className="w-4 h-4 " />
+                                    <span className="flex gap-1 items-center">Shiba Tools <ExternalLink className="w-3 h-3"/></span>
                                 </a>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -148,10 +150,10 @@ export function AppSidebar() {
     )
 }
 
-const ExSidebarMenuButton = ({ href, children }: { href: string, children: React.ReactNode }) => {
+const ExSidebarMenuButton = ({ href, disabled, children }: { href: string, disabled?: boolean, children: React.ReactNode }) => {
     const pathname = usePathname()
     return (
-        <SidebarMenuButton className={`flex items-center ${pathname === href && "bg-sidebar-accent text-sidebar-accent-foreground"}`} asChild>
+        <SidebarMenuButton disabled className={`flex items-center ${pathname === href && "bg-sidebar-accent text-sidebar-accent-foreground"} ${disabled && "text-primary-foreground/70 hover:text-primary-foreground/70 hover:bg-primary "}`} asChild>
             <Link href={href}>
                 {children}
             </Link>

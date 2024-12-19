@@ -122,20 +122,20 @@ export const Detail = ({
                         </div>
                         <div className="flex flex-wrap gap-2">
                             {todo.context ? (
-                                <BottomLabel type={"context"} handleClick={handleClickDelete}>
+                                <BottomLabel type={"context"} onClick={_=>onClick("context")} handleClick={handleClickDelete}>
                                     <Tag className="h-4 w-4" />{todo.context}
                                 </BottomLabel>
                             ) : (
-                                <BottomButton handleClick={onClick} type={"context"}>
+                                <BottomButton handleClick={_ => onClick("context")} type={"context"}>
                                     <Tag className="h-4 w-4" />ラベルを追加
                                 </BottomButton>
                             )}
                             {todo.project ? (
-                                <BottomLabel type={"project"} handleClick={handleClickDelete}>
+                                <BottomLabel type={"project"} onClick={_=>onClick("project")} handleClick={handleClickDelete}>
                                     <Box className="h-4 w-4" />{todo.project}
                                 </BottomLabel>
                             ) : (
-                                <BottomButton handleClick={onClick} type={"project"}>
+                                <BottomButton handleClick={_ => onClick("project")} type={"project"}>
                                     <Box className="h-4" />プロジェクトを追加
                                 </BottomButton>
                             )}
@@ -158,22 +158,23 @@ interface BottomProps {
     type: "context" | "project";
     children: React.ReactNode;
     handleClick: (type: "context" | "project") => void;
+    onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
-const BottomButton = ({ children, handleClick }: BottomProps) => {
+const BottomButton = ({ type, children, handleClick }: BottomProps) => {
     return (
         <button className="bg-card text-card-foreground border rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground"
-            onClick={_ => handleClick("context")}>
+            onClick={_ => handleClick(type)}>
             <span className="flex items-center text-xs text-nowrap">{children}</span>
         </button>
     )
 }
-const BottomLabel = ({ children, type, handleClick }: BottomProps) => {
+const BottomLabel = ({ children, type, onClick, handleClick }: BottomProps) => {
     return (
         <div className={`flex items-center gap-2`}>
-            <span className={`flex gap-1 font-light px-2 py-1 bg-card items-center border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"}  rounded-full text-xs`}>
+            <button onClick={onClick} className={`flex gap-1 font-light px-2 py-1 bg-card items-center border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"}  rounded-full text-xs`}>
                 {children}
                 <button className="ml-3 text-destructive hover:bg-accent hover:text-accent-foreground" onClick={_ => handleClick(type)}><X className="w-4 h-4" /></button>
-            </span>
+            </button>
         </div>
     )
 } 

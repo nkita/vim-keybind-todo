@@ -900,7 +900,7 @@ export const Todo = (
         const prevCurrent = index === curentProjectIndex - 1
         return (
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`relative text-xs px-4 rounded-t-sm 
+                className={`relative text-xs px-4 
                         ${curerent ?
                         " bg-card text-card-foreground border-t-primary border-t border-x"
                         : " text-muted-foreground border-b border-t-transparent border-t"}
@@ -950,6 +950,13 @@ export const Todo = (
                 </Tooltip>
             </TooltipProvider >
         )
+    }
+    const handleClickAddButton = () => {
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
+        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
+        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        setCurrentIndex(0)
+        setMode('edit')
     }
 
     const [touchStartX, setTouchStartX] = useState(0);
@@ -1014,7 +1021,7 @@ export const Todo = (
                                 )}
                             </Button>
                         }
-                        <Button variant={"default"} size="sm" className="bg-primary2 text-primary2-foreground hover:bg-primary2/90"><Plus />タスクを追加</Button>
+                        <Button variant={"default"} onClick={handleClickAddButton} size="sm" className="bg-primary2 text-primary2-foreground hover:bg-primary2/90"><Plus />タスクを追加</Button>
                     </div>
                 </div>
             </header >

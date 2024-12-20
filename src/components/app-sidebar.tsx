@@ -119,7 +119,7 @@ export function AppSidebar() {
                             <SidebarMenuButton asChild>
                                 <a href="https://shiba-tools.dev/" target="_blank">
                                     <PawPrint className="w-4 h-4 " />
-                                    <span className="flex gap-1 items-center">Shiba Tools <ExternalLink className="w-3 h-3"/></span>
+                                    <span className="flex gap-1 items-center">Shiba Tools <ExternalLink className="w-3 h-3" /></span>
                                 </a>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
@@ -129,10 +129,12 @@ export function AppSidebar() {
             <SidebarFooter >
                 <SidebarMenu>
                     <SidebarMenuItem >
-                        <SidebarMenuButton>
-                            <Bell className={`w-4 h-4`} />
-                            {(!open && isBadge) && <span className="absolute right-1 top-1 bg-destructive rounded-full text-xs w-2 h-2"></span>}
-                            <div className="flex justify-between text-nowrap w-full items-center"><span>お知らせ</span>{isBadge && <span className="text-start bg-destructive rounded-full text-xs w-2 h-2" />}</div>
+                        <SidebarMenuButton asChild>
+                            <Link href="/lp#update">
+                                <Bell className={`w-4 h-4`} />
+                                {(!open && isBadge) && <span className="absolute right-1 top-1 bg-primary2 rounded-full text-xs w-2 h-2"></span>}
+                                <div className="flex justify-between text-nowrap w-full items-center"><span>お知らせ</span>{isBadge && <span className="text-start bg-primary2 rounded-full text-xs w-2 h-2" />}</div>
+                            </Link>
                         </SidebarMenuButton>
                         <SidebarMenuBadge></SidebarMenuBadge>
                     </SidebarMenuItem>

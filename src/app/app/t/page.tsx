@@ -12,6 +12,7 @@ import { TodoContext } from "@/provider/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import AppPageTemplate from "@/components/app-page-template";
 import { CircleCheck } from "lucide-react";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -25,6 +26,7 @@ export default function Home() {
 
   const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(config.list, config.token)
   const { user, isLoading: userLoading } = useAuth0();
+    const { open } = useSidebar()
 
   useEffect(() => {
     if (!userLoading && user === undefined) {
@@ -94,7 +96,7 @@ export default function Home() {
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
   return (
     <AppPageTemplate>
-      <article className={`h-screen w-full`}>
+      <article className={`h-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
         <Todo
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}

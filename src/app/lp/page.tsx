@@ -110,7 +110,7 @@ export default function Home() {
 
 
                     <section className="content-center px-2 sm:px-8">
-                        <h2 className="text-xl sm:text-2xl font-bold text-left pb-8 pt-16">アップデート🎉</h2>
+                        <h2 className="text-xl sm:text-2xl font-bold text-left pb-8 pt-16" id="update">アップデート🎉</h2>
                         <div className="text-left text-sm border w-[100%] rounded-md border-primary p-1 hidden-scrollbar">
                             <div className="overflow-auto max-h-96 w-ful p-4">
                                 {(!pullRequests && updateLoading) &&

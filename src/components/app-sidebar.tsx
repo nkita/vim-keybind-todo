@@ -14,10 +14,9 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, CircleCheck, CircleHelp, ExternalLink, Folder, History, Home, Lock, MoreHorizontal, PanelLeft, PanelLeftClose, PawPrint, Settings, X } from "lucide-react"
+import { Bell, Bike, ExternalLink, LineChart, PanelLeftClose, PawPrint } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { DropdownMenuItem, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "./ui/dropdown-menu"
 import { NavUser } from "./app-sidebar-user"
 import React, { useEffect, useState } from "react"
 import useSWRImmutable from "swr/immutable"
@@ -71,13 +70,13 @@ export function AppSidebar() {
                         <SidebarGroupLabel>Menu</SidebarGroupLabel>
                         <SidebarMenuItem>
                             <ExSidebarMenuButton href="/app/t">
-                                <CircleCheck />
+                                <Bike />
                                 <span>タスク管理</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
                             <ExSidebarMenuButton href="/app/history">
-                                <History className="w-4 h-4" />
+                                <LineChart className="w-4 h-4" />
                                 <span>履歴</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>

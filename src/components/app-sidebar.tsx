@@ -57,7 +57,7 @@ export function AppSidebar() {
         }
     }
     return (
-        <Sidebar collapsible="icon" className="border-sidebar-border ">
+        <Sidebar collapsible="icon" >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
@@ -81,9 +81,8 @@ export function AppSidebar() {
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>
-                            <ExSidebarMenuButton href="#" disabled>
-                                {/* <History className="w-4 h-4" /> */}
-                                <Lock className="w-4 h-4" />
+                            <ExSidebarMenuButton href="/app/history">
+                                <History className="w-4 h-4" />
                                 <span>履歴</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>

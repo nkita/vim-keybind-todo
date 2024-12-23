@@ -16,11 +16,3 @@ export default function AppPageTemplate({ title, children }: { title?: React.Rea
         </>
     )
 }
-
-const ExLink = ({ href, rel, target, children, ...props }: { href: string, rel?: string, target?: string, children: React.ReactNode }) => {
-    return (
-        <Link href={href} rel={rel} target={target} className={`text-sm text-primary hover:underline hover:cursor-pointer transition-all`} {...props} >
-            {children}
-        </Link >
-    )
-}

@@ -1,11 +1,9 @@
 'use client'
 
 import { useState, useEffect, Fragment, useContext, use } from "react"
-import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, Pencil, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { getFetch, useFetch } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
@@ -43,7 +40,6 @@ export default function MyHisotry() {
 
   const { data: summary, isLoading: summaryLoading } = useFetch<SummaryProps>(`${process.env.NEXT_PUBLIC_API}/api/summary`, config.token ?? "")
   const { data: activity, isLoading: activityLoading } = useFetch<any[]>(`${process.env.NEXT_PUBLIC_API}/api/summary/${"2024"}`, config.token ?? "")
-  const { data: userInfo, isLoading: userInfoLoading } = useFetch<UserInfoProp>(`${process.env.NEXT_PUBLIC_API}/api/user`, config.token ?? "")
 
   useEffect(() => {
     const fetchData = async () => {
@@ -87,8 +83,8 @@ export default function MyHisotry() {
   return (
     <AppPageTemplate>
       <main className={`${open ? "md:w-[calc(100vw-17rem)]" : "md:w-[calc(100vw-4rem)]"} p-8`}>
-        <div className="w-full">
-          <ExH className="pt-0">My Tasks</ExH>
+        <div className="m-auto max-w-[800px]">
+          <ExH className="pt-0">Summary</ExH>
           <div className="space-y-8">
             <div className="flex gap-2">
               <Card className="text-sm w-full">
@@ -106,6 +102,84 @@ export default function MyHisotry() {
                 </CardContent>
               </Card>
             </div>
+
+            <div className="w-full" >
+              <div className="flex justify-between items-end">
+                <ExH><Activity className="h-5" />アクティビティ</ExH>
+                <Select>
+                  <SelectTrigger className="w-[100px] text-xs border-none border-b m-1" >
+                    <SelectValue placeholder="2024年" />
+                  </SelectTrigger>
+                  <SelectContent align="end">
+                    {summary && summary.years.map((year: string) => (
+                      <SelectItem value={year} key={year}>{year}年</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className=" flex justify-center">
+                <div className="p-4 rounded-md bg-card border w-full ">
+                  {activityLoading &&
+                    <div className="w-full space-y-2">
+                      <Skeleton className="w-full h-8" />
+                      <Skeleton className="w-3/4 h-8" />
+                      <Skeleton className="w-1/2 h-8" />
+                    </div>
+                  }
+                  {activity && activity.length === 0 && <div className="pl-4">No activity.</div>}
+                  {activity && activity.length > 0 &&
+                    <div className="flex justify-center md:w-full sm:w-[530px] w-[380px] ">
+                      <ActivityCalendar
+                        eventHandlers={{
+                          onMouseOver: (event) => (activity) => { },
+                        }}
+                        data={activity}
+                        showWeekdayLabels
+                        maxLevel={9}
+                        fontSize={12}
+                        blockSize={10}
+                        theme={{
+                          "light": [
+                            "#fafafa",
+                            "#bbf7d0",
+                            "#86efac",
+                            "#4ade80",
+                            "#22c55e",
+                            "#16a34a",
+                            "#15803d",
+                            "#166534",
+                            "#14532d",
+                            "#124e28",
+                          ],
+                          "dark": [
+                            "#fff",
+                            "#bbf7d0",
+                            "#86efac",
+                            "#4ade80",
+                            "#22c55e",
+                            "#16a34a",
+                            "#15803d",
+                            "#166534",
+                            "#14532d",
+                            "#124e28",
+                          ]
+                        }}
+                        labels={{
+                          months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+                          weekdays: ["日", "月", "火", "水", "木", "金", "土"],
+                          totalCount: "✅ {{count}}件（{{year}}年）",
+                          legend: {
+                            less: "🌱",
+                            more: "🌳",
+                          }
+                        }}
+                      />
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
             <div>
               <ExH><Footprints className="h-4" />My Projects</ExH>
               {/* <div className="flex flex-col flex-nowrap sm:flex-row sm:flex-wrap gap-3"> */}
@@ -138,80 +212,6 @@ export default function MyHisotry() {
             </div>
           </div>
 
-          <div className="w-full" >
-            <div className="flex justify-between items-end">
-              <ExH><Activity className="h-5" />アクティビティ</ExH>
-              <Select>
-                <SelectTrigger className="w-[100px] text-xs border-none border-b m-1" >
-                  <SelectValue placeholder="2024年" />
-                </SelectTrigger>
-                <SelectContent align="end">
-                  {summary && summary.years.map((year: string) => (
-                    <SelectItem value={year} key={year}>{year}年</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="bg-card border rounded-md p-4 shadow-sm">
-              <div className="w-full flex justify-center">
-                {activityLoading &&
-                  <div className="w-full space-y-2">
-                    <Skeleton className="w-full h-8" />
-                    <Skeleton className="w-3/4 h-8" />
-                    <Skeleton className="w-1/2 h-8" />
-                  </div>
-                }
-                {activity && activity.length === 0 && <div className="pl-4">No activity.</div>}
-                {activity && activity.length > 0 &&
-                  <ActivityCalendar
-                    eventHandlers={{
-                      onMouseOver: (event) => (activity) => { },
-                    }}
-                    data={activity}
-                    showWeekdayLabels
-                    maxLevel={9}
-                    fontSize={12}
-                    blockSize={10}
-                    theme={{
-                      "light": [
-                        "#fafafa",
-                        "#bbf7d0",
-                        "#86efac",
-                        "#4ade80",
-                        "#22c55e",
-                        "#16a34a",
-                        "#15803d",
-                        "#166534",
-                        "#14532d",
-                        "#124e28",
-                      ],
-                      "dark": [
-                        "#fff",
-                        "#bbf7d0",
-                        "#86efac",
-                        "#4ade80",
-                        "#22c55e",
-                        "#16a34a",
-                        "#15803d",
-                        "#166534",
-                        "#14532d",
-                        "#124e28",
-                      ]
-                    }}
-                    labels={{
-                      months: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
-                      weekdays: ["日", "月", "火", "水", "木", "金", "土"],
-                      totalCount: "✅ {{count}}件（{{year}}年）",
-                      legend: {
-                        less: "🌱",
-                        more: "🌳",
-                      }
-                    }}
-                  />
-                }
-              </div>
-            </div>
-          </div>
 
           <div className="space-y-8 pt-8" >
             <div>

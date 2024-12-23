@@ -1,13 +1,9 @@
 "use client"
 
 import {
-    BadgeCheck,
-    Bell,
     ChevronsUpDown,
-    CreditCard,
     LogIn,
     LogOut,
-    Sparkles,
     UserRound,
 } from "lucide-react"
 
@@ -31,9 +27,8 @@ import {
     SidebarMenuItem,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { useAuth0, User } from "@auth0/auth0-react";
+import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@/components/ui/button"
-import { Progress } from "./ui/progress"
 
 export function NavUser() {
     const { isMobile } = useSidebar()
@@ -89,7 +84,7 @@ export function NavUser() {
                                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                                     <Avatar className="h-8 w-8 rounded-lg">
                                         <AvatarImage src={user?.picture} alt={user?.name} />
-                                        <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                                        <AvatarFallback className="rounded-lg">A</AvatarFallback>
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
                                         <span className="truncate font-semibold">{user?.name}</span>

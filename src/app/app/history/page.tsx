@@ -4,7 +4,7 @@ import { useState, useEffect, Fragment, useContext, use } from "react"
 import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
-import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, Mail, Pencil, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
+import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, LogIn, Mail, MessageCircleCode, MessageCircleWarning, Pencil, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -79,6 +79,18 @@ export default function MyHisotry() {
     } finally {
       setTimelineLoading(false);
     }
+  }
+  if (user === undefined && !userLoading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p className="text-secondary-foreground">
+          <p className="flex items-center gap-1">
+            <MessageCircleWarning className="h-8 text-primary" />
+            過去の履歴機能は、会員限定です
+          </p>
+        </p>
+      </div>
+    )
   }
   return (
     <AppPageTemplate>

@@ -28,12 +28,7 @@ import { usePathname } from "next/navigation"
 
 export function AppSidebar() {
     const {
-        state,
         open,
-        setOpen,
-        openMobile,
-        setOpenMobile,
-        isMobile,
         toggleSidebar,
     } = useSidebar()
 
@@ -86,13 +81,12 @@ export function AppSidebar() {
                                 <span>履歴</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarMenuItem>
+                        {/* <SidebarMenuItem>
                             <ExSidebarMenuButton href="#" disabled>
-                                {/* <Settings className="w-4 h-4" /> */}
-                                <Lock className="w-4 h-4" />
+                                <Settings className="w-4 h-4" />
                                 <span>設定</span>
                             </ExSidebarMenuButton>
-                        </SidebarMenuItem>
+                        </SidebarMenuItem> */}
                     </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup >

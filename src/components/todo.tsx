@@ -1004,8 +1004,8 @@ export const Todo = (
                         <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                         <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
                         <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                        <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
                         <div className="hidden sm:block">
-                            <div className={` inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
                             <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
                                 {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
                             </MenuButton>

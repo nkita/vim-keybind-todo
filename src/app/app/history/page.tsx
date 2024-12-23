@@ -4,7 +4,7 @@ import { useState, useEffect, Fragment, useContext, use } from "react"
 import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
-import { Activity, Box, Calendar, Check, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, LogIn, Mail, MessageCircleCode, MessageCircleWarning, Pencil, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
+import { Activity, Box, Calendar, Check, ChevronDown, ChevronsDown, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, LogIn, Mail, MessageCircleCode, MessageCircleWarning, Pencil, PiggyBank, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -21,7 +21,7 @@ import { TodoContext } from "@/provider/todo";
 import { ProjectProps, SummaryProps, UserInfoProp } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppPageTemplate from "@/components/app-page-template";
-import { useSidebar } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 
 export default function MyHisotry() {
 
@@ -95,13 +95,14 @@ export default function MyHisotry() {
   return (
     <AppPageTemplate>
       <main className={`${open ? "md:w-[calc(100vw-17rem)]" : "md:w-[calc(100vw-4rem)]"} p-8`}>
+        <div className="block sm:hidden"><SidebarTrigger /></div>
         <div className="flex gap-2 flex-col lg:flex-row">
           <div className="lg:w-[49%]">
-            <ExH className="pt-0">Summary</ExH>
+            <ExH className="pt-0">サマリー</ExH>
             <ExSummary summary={summary} summaryLoading={summaryLoading} />
             <ExH><Activity className="h-4" />アクティビティ</ExH>
             <ExActivity summary={summary} activity={activity} activityLoading={activityLoading} />
-            <ExH><Footprints className="h-4" />My Projects</ExH>
+            <ExH><Footprints className="h-4" />プロジェクト</ExH>
             <div className="flex flex-wrap gap-3">
               {summaryLoading &&
                 <ExProjectSummary
@@ -297,7 +298,7 @@ const ExTimeline = (
           <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
         </div>}
       </section>
-      <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}>Read more</Button></div>
+      <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}><ChevronsDown />もっとみる</Button></div>
     </div>
   )
 }

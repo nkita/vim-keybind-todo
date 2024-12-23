@@ -1,10 +1,6 @@
 'use client'
 
-import Link from "next/link";
-import { useSidebar } from "./ui/sidebar";
-
 export default function AppPageTemplate({ title, children }: { title?: React.ReactNode, children: React.ReactNode }) {
-    const { open } = useSidebar()
 
     return (
         <>

@@ -28,6 +28,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "./ui/badge"
 import { ImperativePanelHandle } from "react-resizable-panels"
 import { Button } from "./ui/button"
+import { SidebarTrigger } from "./ui/sidebar"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -998,30 +999,39 @@ export const Todo = (
                 </div>
                 <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">
                     <div className="flex items-center gap-2 h-full px-2 mx-2 ">
+                        <div className="block sm:hidden"><SidebarTrigger /></div>
                         <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                         <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                         <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
                         <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                        <div className={` inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
-                        <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
-                            {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
-                        </MenuButton>
-                        <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
-                        <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
-                            <Columns size={16} />
-                        </MenuButton>
+                        <div className="hidden sm:block">
+                            <div className={` inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
+                            <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
+                                {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
+                            </MenuButton>
+                        </div>
+                        <div className="hidden sm:block">
+                            <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
+                        </div>
+                        <div className="hidden sm:block">
+                            <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                                <Columns size={16} />
+                            </MenuButton>
+                        </div>
                     </div>
                     <div className="relative flex gap-2 items-center px-2">
                         {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                            <Button variant={"default"} size="sm" className="bg-primary2 text-primary2-foreground hover:bg-primary2/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                            <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                                 {(isSave && isUpdate) ? (
-                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary2-foreground rounded-full border-t-transparent" />
+                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary-foreground rounded-full border-t-transparent" />
                                 ) : (
                                     <><Save size={16} />保存</>
                                 )}
                             </Button>
                         }
-                        <Button variant={"default"} onClick={handleClickAddButton} size="sm" className="bg-primary2 text-primary2-foreground hover:bg-primary2/90"><Plus />タスクを追加</Button>
+                        <div className="hidden sm:inline-block">
+                            <Button variant={"default"} onClick={handleClickAddButton} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90"><Plus />タスクを追加</Button>
+                        </div>
                     </div>
                 </div>
             </header >
@@ -1029,7 +1039,7 @@ export const Todo = (
                 {/* オーバーレイ */}
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
-                <div className={` relative w-full h-full`} onMouseDown={handleMainMouseDown}>
+                <div className={`relative w-full h-full`} onMouseDown={handleMainMouseDown}>
                     <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                         <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
                             <div

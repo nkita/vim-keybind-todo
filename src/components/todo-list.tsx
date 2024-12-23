@@ -89,7 +89,7 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full  ${loading && "hidden"} ${hcssMainHeight} bg-muted  table-scrollbar`} index={currentIndex}>
+                <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${hcssMainHeight} bg-muted table-scrollbar`} index={currentIndex}>
                     <TableBody className=" text-sm">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -163,7 +163,7 @@ export const TodoList = (
                                                                 )}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={`${table_task_width} relative` }>
                                                             <div className="flex w-full h-full justify-between  items-center">
                                                                 <span className="text-primary/90 flex text-md">
                                                                     {t.indent !== undefined &&
@@ -248,7 +248,7 @@ export const TodoList = (
                                                                         title={"プロジェクト"}
                                                                         onClick={onClick} />
                                                                 </div>
-                                                                <div className="flex sm:hidden items-center gap-1 ">
+                                                                <div className={`absolute right-0 flex sm:hidden items-center w-[49px] justify-end gap-1 h-full ${common_color_css}`}>
                                                                     {t.context && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
                                                                     {t.project && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
                                                                     <button onClick={e => {
@@ -269,9 +269,6 @@ export const TodoList = (
                                 )}
                             </>
                         }
-                        <TableRow>
-                            <TableCell className="h-16"></TableCell>
-                        </TableRow>
                     </TableBody>
                 </Table>
                 <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm`} />

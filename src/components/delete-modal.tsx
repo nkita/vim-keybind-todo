@@ -44,7 +44,7 @@ export const DeleteModal = (
                 </div>
                 <DialogFooter>
                     <Button variant='outline' onClick={close}><span className="flex items-center gap-2">キャンセル <kbd className="py-0">Esc</kbd></span></Button>
-                    <Button onClick={_ => onDelete(currentIndex, filterdTodos, prevTodos)}><span className="flex items-center gap-2">削除する<kbd className="text-primary-foreground py-0">Enter</kbd></span></Button>
+                    <Button onClick={_ => onDelete(currentIndex, filterdTodos, prevTodos)}><span className="flex items-center gap-2">削除する<kbd className="py-0">Enter</kbd></span></Button>
                 </DialogFooter>
             </Modal>
         </>

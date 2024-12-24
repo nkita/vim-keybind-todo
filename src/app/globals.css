@@ -36,7 +36,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
-    --input: 240 5.9% 0%;
+    --input: 240 5.9% 70%;
     --ring: 142.1 76.2% 36.3%;
     --radius: 0.7rem;
     --chart-1: 12 76% 61%;
@@ -138,7 +138,7 @@
   
    .hidden-scrollbar:hover {
      scrollbar-width: thin;
-     scrollbar-color: #ccc #fff;
+     scrollbar-color: #ccc transparent;
     }
   
 

@@ -12,7 +12,7 @@ export const Modal = (
         onClickChange,
         onClickOpen
     }: {
-        buttonLabel?: string
+        buttonLabel?: any
         dialogTitle?: string
         children: ReactNode
         className?: string

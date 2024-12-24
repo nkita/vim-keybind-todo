@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
@@ -29,6 +29,8 @@ import { Badge } from "./ui/badge"
 import { ImperativePanelHandle } from "react-resizable-panels"
 import { Button } from "./ui/button"
 import { SidebarTrigger } from "./ui/sidebar"
+import { Input } from "./ui/input"
+import { ProjectEditModal } from "./project-edit-modal"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -259,7 +261,6 @@ export const Todo = (
             indent: targetTodo.indent,
             limitDate: targetTodo.limitDate
         }
-        console.log(replace)
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
             _todos = todoFunc.delete(todos, targetTodoId)
@@ -987,19 +988,27 @@ export const Todo = (
         <>
             <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
                 <div className={`relative w-full h-[2.8rem] `}>
-                    <div className={`w-full h-full flex justify-start items-end overflow-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground `}  >
+                    <div className={`w-full h-full flex justify-start items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                         <Project currentProject={currentProject} index={-1} curentProjectIndex={projects.indexOf(currentProject)} project={""} onClick={handleClickElement} />
                         {projects.map((p, i) => {
                             return (
                                 <Project key={p} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p} onClick={handleClickElement} />
                             )
                         })}
+                        <div className="text-transparent border-b min-w-[80px] h-[10px]" />
                         <div className="w-full h-full border-b"></div>
+                        <div className="absolute right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">
+                            <ProjectEditModal
+                                buttonLabel={<Plus size={16} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                setMode={setMode}
+                            />
+                        </div>
                     </div>
                 </div>
                 <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">
                     <div className="flex items-center gap-2 h-full px-2 mx-2 ">
-                        <div className="block sm:hidden"><SidebarTrigger /></div>
+                        <div className="block md:hidden"><SidebarTrigger className="border" /></div>
                         <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                         <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                         <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>

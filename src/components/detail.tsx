@@ -175,11 +175,13 @@ const BottomLabel = ({ children, type, onClick, handleClick }: BottomProps) => {
         e.preventDefault()
     }
     return (
-        <div className={`flex items-center gap-2`}>
-            <button onClick={onClick} className={`flex gap-1 font-light px-2 py-1 bg-card items-center border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"}  rounded-full text-xs`}>
-                {children}
+        <div className="h-full my-auto">
+            <div className={`flex items-center px-2 bg-card py-1 border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"} rounded-full`}>
+                <button onClick={onClick} className={`flex gap-1 font-light  items-center text-xs`}>
+                    {children}
+                </button>
                 <button className="ml-3 text-destructive hover:bg-accent hover:text-accent-foreground" onClick={handleDelete}><X className="w-4 h-4" /></button>
-            </button>
+            </div>
         </div>
     )
 } 

@@ -1,4 +1,4 @@
-import { TodoProps, Sort, SaveTodosReturnProps } from "@/types"
+import { TodoProps, Sort, SaveTodosReturnProps, ProjectProps } from "@/types"
 import { yyyymmddhhmmss } from "./time"
 import { isEqual, replace } from "lodash"
 import { postFetch } from "./fetch"
@@ -169,6 +169,25 @@ export const postSaveTodos = async (
         return r
     } catch (e) {
         r['action'] = 'save'
+        r['error'] = e
+        return r
+    }
+}
+
+export const postSaveProjects = async (
+    projects: ProjectProps[],
+    listID: string | null,
+    token: string | null,
+): Promise<SaveTodosReturnProps> => {
+
+    let r: SaveTodosReturnProps = { action: 'skip' }
+
+    try {
+        const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/project`
+        r['action'] = 'save'
+        await postFetch(api, token, projects).catch(e => console.error(e))
+        return r
+    } catch (e) {
         r['error'] = e
         return r
     }

@@ -3,7 +3,7 @@ import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRe
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap, completionTaskProjectName } from '@/components/config'
-import { TodoEnablesProps, TodoProps, Sort, Mode } from "@/types"
+import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
@@ -22,15 +22,13 @@ import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
 import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
-import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Badge } from "./ui/badge"
 import { ImperativePanelHandle } from "react-resizable-panels"
 import { Button } from "./ui/button"
 import { SidebarTrigger } from "./ui/sidebar"
-import { Input } from "./ui/input"
 import { ProjectEditModal } from "./project-edit-modal"
+import { useFetchProjects } from "@/lib/fetch"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -39,21 +37,25 @@ export const Todo = (
     {
         todos,
         prevTodos,
+        exProjects,
         loading,
         completionOnly,
         isSave,
         isUpdate,
         setTodos,
+        setExProjects,
         setIsUpdate,
-        onClickSaveButton
+        onClickSaveButton,
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
+        exProjects: ProjectProps[]
         loading: Boolean
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
+        setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
         onClickSaveButton: () => void;
     }
@@ -68,6 +70,7 @@ export const Todo = (
     const [currentProject, setCurrentProject] = useState("")
 
     const [projects, setProjects] = useState<string[]>([])
+
     const [labels, setLabels] = useState<string[]>([])
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
@@ -812,8 +815,6 @@ export const Todo = (
         setMode('select')
     }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
 
-
-
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)
@@ -983,7 +984,7 @@ export const Todo = (
         setTouchStartX(0);
         setTouchEndX(0);
     };
-
+    
     return (
         <>
             <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
@@ -995,13 +996,22 @@ export const Todo = (
                                 <Project key={p} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p} onClick={handleClickElement} />
                             )
                         })}
+                        {/** デバッグ用に一旦記載 */}
+                        {exProjects && exProjects.map((p, i) => {
+                            return (
+                                <Project key={p.id} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p.name} onClick={handleClickElement} />
+                            )
+                        })}
                         <div className="text-transparent border-b min-w-[80px] h-[10px]" />
                         <div className="w-full h-full border-b"></div>
                         <div className="absolute right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">
                             <ProjectEditModal
                                 buttonLabel={<Plus size={16} />}
                                 className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
                                 setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
                             />
                         </div>
                     </div>

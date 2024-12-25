@@ -7,28 +7,14 @@ import { useForm } from 'react-hook-form'
 import { Input } from "./ui/input"
 import { Textarea } from "./ui/textarea"
 import { ImageUploader } from "./image-uploader"
-import { Mode } from "@/types"
+import { Mode, ProjectProps } from "@/types"
+import { useEffect, useState, useContext } from "react"
+import { TodoContext } from "@/provider/todo";
+import { postSaveProjects } from "@/lib/todo"
+import { randomUUID } from "crypto"
 
 const formSchema = z.object({
-    username: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    userid: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    profile: z.string()
-        .min(2, {
-            message: "Username must be at least 2 characters.",
-        })
-        .max(100, {
-            message: "100文字以上は入力できません。",
-        }),
-    link: z.string().min(2, {
-        message: "Username must be at least 2 characters.",
-    }),
-    link2: z.string().min(2, {
-        message: "",
-    }),
+    project: z.string().min(1, { message: "空白では登録できません。" }),
 })
 
 export const ProjectEditModal = (
@@ -36,50 +22,82 @@ export const ProjectEditModal = (
         buttonLabel,
         dialogTitle,
         className,
+        mode,
+        exProjects,
         setMode,
+        setExProjects
     }: {
         buttonLabel?: any
         dialogTitle?: string
         className?: string
+        mode: Mode
+        exProjects: ProjectProps[]
         setMode: React.Dispatch<React.SetStateAction<Mode>>
+        setExProjects: React.Dispatch<React.SetStateAction<ProjectProps[]>>
     }) => {
 
+    const config = useContext(TodoContext)
+    const [open, setOpen] = useState(false)
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            username: "",
-        },
+            project: ""
+        }
     })
-    function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+    useEffect(() => {
+        if (mode === "editProject" && !open) {
+            form.reset()
+            setOpen(true)
+        }
+    }, [mode, form, open])
+
+
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        if (!config.list || !config.token) return
+        const _project = { id: self.crypto.randomUUID(), name: values.project, isPublic: false, isTabDisplay: true, sort: exProjects.length }
+        const result = await postSaveProjects(
+            [...exProjects, _project],
+            config.list,
+            config.token,
+        )
+        console.log(result)
+        //エラー処理記載
+        if (result.action === "save") {
+            setExProjects([...exProjects, _project])
+        }
+        setMode("normal")
+        setOpen(false)
     }
     const handleOpenProject = () => {
-        setMode("modal")
+        form.reset()
+        setMode("editProject")
+        setOpen(true)
     }
     const handleCloseProject = (flg: boolean) => {
-        if (!flg) setMode("normal")
+        if (!flg) {
+            setMode("normal")
+            setOpen(false)
+        }
     }
     return (
         <Modal
             buttonLabel={buttonLabel}
-            dialogTitle={dialogTitle}
+            dialogTitle={"新規プロジェクトの追加"}
             className={className}
+            open={open}
             onClickOpen={handleOpenProject}
             onClickChange={handleCloseProject}>
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                     <FormField
                         control={form.control}
-                        name="profile"
+                        name="project"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>新規プロジェクトの追加</FormLabel>
+                                <FormLabel>プロジェクト名</FormLabel>
                                 <FormControl>
-                                    <Input id="project" placeholder="プロジェクト名を追加" {...field} />
+                                    <Input id="name" placeholder="プロジェクト名を入力" {...field} />
                                 </FormControl>
-                                <FormDescription>
-                                    プロフィールを入力します。最大100文字まで入力できます。
-                                </FormDescription>
                                 <FormMessage />
                             </FormItem>
                         )}

@@ -17,7 +17,7 @@ export interface TodoProps {
 
 
 export type Sort = "text" | "priority" | "context" | "creationDate" | "is_complete" | "sort" | undefined
-export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select"
+export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select" | "editProject"
 
 export interface TodoEnablesProps {
     enableAddTodo: boolean
@@ -30,6 +30,14 @@ export type SaveTodosReturnProps = {
 }
 
 export type ProjectProps = {
+    id: string
+    name: string
+    isPublic: boolean
+    isTabDisplay: boolean
+    sort: number
+}
+
+export type HistoryProjectProps = {
     name: string
     tags: string[]
     in_progress: number
@@ -41,7 +49,7 @@ export type ProjectProps = {
 export interface SummaryProps {
     in_progress: number
     completed: number
-    projects: ProjectProps[]
+    projects: HistoryProjectProps[]
     years: string[]
 }
 

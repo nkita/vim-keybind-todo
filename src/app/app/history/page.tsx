@@ -18,7 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { getFetch, useFetch } from "@/lib/fetch";
 import { TodoContext } from "@/provider/todo";
-import { ProjectProps, SummaryProps, UserInfoProp } from "@/types";
+import { HistoryProjectProps, SummaryProps, UserInfoProp } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppPageTemplate from "@/components/app-page-template";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
@@ -115,7 +115,7 @@ export default function MyHisotry() {
                   completed={0}
                 />
               }
-              {summary && summary.projects.map((project: ProjectProps, index: number) => (
+              {summary && summary.projects.map((project: HistoryProjectProps, index: number) => (
                 <ExProjectSummary
                   key={index}
                   isLoading={false}

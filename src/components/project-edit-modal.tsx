@@ -1,17 +1,14 @@
 import { Modal } from "./ui/modal"
 import { Button } from "./ui/button"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Input } from "./ui/input"
-import { Textarea } from "./ui/textarea"
-import { ImageUploader } from "./image-uploader"
 import { Mode, ProjectProps } from "@/types"
 import { useEffect, useState, useContext } from "react"
 import { TodoContext } from "@/provider/todo";
 import { postSaveProjects } from "@/lib/todo"
-import { randomUUID } from "crypto"
 
 const formSchema = z.object({
     project: z.string().min(1, { message: "空白では登録できません。" }),
@@ -52,19 +49,16 @@ export const ProjectEditModal = (
     }, [mode, form, open])
 
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    function onSubmit(values: z.infer<typeof formSchema>) {
         if (!config.list || !config.token) return
         const _project = { id: self.crypto.randomUUID(), name: values.project, isPublic: false, isTabDisplay: true, sort: exProjects.length }
-        const result = await postSaveProjects(
+        postSaveProjects(
             [...exProjects, _project],
             config.list,
-            config.token,
+            config.token
         )
-        console.log(result)
-        //エラー処理記載
-        if (result.action === "save") {
-            setExProjects([...exProjects, _project])
-        }
+
+        setExProjects([...exProjects, _project])
         setMode("normal")
         setOpen(false)
     }

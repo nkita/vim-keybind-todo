@@ -6,7 +6,8 @@ export interface TodoProps {
     creationDate?: string    // format yyyy-mm-dd
     text: string
     detail?: string
-    project?: string    // +projctname
+    project?: string    // +projctname *Deprecation
+    projectId?: string    // +projctId
     context?: string    // @context    
     isArchived?: boolean
     sort?: number

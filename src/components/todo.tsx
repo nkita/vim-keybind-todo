@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -29,6 +29,7 @@ import { Button } from "./ui/button"
 import { SidebarTrigger } from "./ui/sidebar"
 import { ProjectEditModal } from "./project-edit-modal"
 import { useFetchProjects } from "@/lib/fetch"
+import { ProjectTab } from "./todo-project-tab"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -68,6 +69,7 @@ export const Todo = (
     const [prefix, setPrefix] = useState('text')
     const [log, setLog] = useState("")
     const [currentProject, setCurrentProject] = useState("")
+    const [currentProjectId, setCurrentProjectId] = useState("")
 
     const [projects, setProjects] = useState<string[]>([])
 
@@ -351,7 +353,7 @@ export const Todo = (
         handleSetTodos(_todos, prevTodos)
     }
     const changeProject = (index: number) => {
-        setCurrentProject(index === -1 ? "" : projects[index])
+        setCurrentProjectId(index === -1 ? "" : exProjects[index].id)
         setCurrentIndex(0)
         setCommand('')
     }
@@ -420,18 +422,17 @@ export const Todo = (
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        handleMoveProject("right", projects, currentProject)
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [projects, currentProject])
+        handleMoveProject("right", exProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [projects, currentProjectId])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        handleMoveProject("left", projects, currentProject)
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [projects, currentProject])
+        handleMoveProject("left", exProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [projects, currentProjectId])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const _indent = filterdTodos[currentIndex].indent ?? 0
         handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
@@ -440,7 +441,6 @@ export const Todo = (
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
@@ -449,14 +449,12 @@ export const Todo = (
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setMode('editOnSort')
     }, setKeyEnableDefine(keymap['insertTopOnSort'].enable), [todoEnables])
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const _indent = currentIndex + 1 < filterdTodos.length ? filterdTodos[currentIndex + 1].indent ?? 0 : 0
         handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setCurrentIndex(currentIndex + 1)
@@ -465,7 +463,6 @@ export const Todo = (
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         if (!todoEnables.enableAddTodo) {
             toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         } else {
@@ -477,7 +474,6 @@ export const Todo = (
 
     // delete task
     const deleteTask = (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id), prevTodos)
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)
@@ -485,20 +481,17 @@ export const Todo = (
         setPrefix('text')
     }
     useHotkeys(keymap['deleteModal'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setMode('modal')
         setPrefix('delete')
     }, setKeyEnableDefine(keymap['deleteModal'].enable), [todos, filterdTodos, currentIndex])
 
     useHotkeys(keymap['delete'].keys, (e) => {
         if (prefix !== 'delete') return
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         deleteTask(currentIndex, filterdTodos, prevTodos)
     }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prevTodos, prefix])
 
     // change to edit mode
     useHotkeys(keymap['editText'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setMode('edit')
     }, setKeyEnableDefine(keymap['editText'].enable))
 
@@ -508,25 +501,21 @@ export const Todo = (
     //     setMode('edit')
     // }, setKeyEnableDefine(keymap['editPriority'].enable))
     useHotkeys(keymap['increasePriority'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
     }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
     }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setPrefix('project')
         setMode('modal')
     }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
 
     // change to context edit mode
     useHotkeys(keymap['editContext'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setPrefix('context')
         setMode('modal')
     }, setKeyEnableDefine(keymap['editContext'].enable))
@@ -574,34 +563,29 @@ export const Todo = (
      * 
      *******************/
     useHotkeys(keymap['sortPriority'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort("priority")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortPriority'].enable), [currentIndex, filterdTodos])
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort(undefined)
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortClear'].enable), [filterdTodos, currentIndex])
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setSort("creationDate")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
 
     useHotkeys(keymap['sortContext'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort("context")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortContext'].enable), [filterdTodos, currentIndex])
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort("is_complete")
         setMode("normal")
@@ -696,7 +680,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['moveToLine'].enable), [command])
 
     useHotkeys(keymap['appendToLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
             handleSetTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
@@ -709,7 +692,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
             handleSetTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
@@ -723,7 +705,6 @@ export const Todo = (
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('project')
@@ -735,7 +716,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['editProjectLine'].enable), [command])
 
     useHotkeys(keymap['editContextLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('context')
@@ -747,7 +727,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['editContextLine'].enable), [command])
 
     useHotkeys(keymap['editTextLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
             setMode('edit')
@@ -758,7 +737,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['editTextLine'].enable), [command])
 
     useHotkeys(keymap['editDetail'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setPrefix("detail")
         setMode('editDetail')
     }, setKeyEnableDefine(keymap['editDetail'].enable))
@@ -859,18 +837,18 @@ export const Todo = (
         e.stopPropagation();
     }
 
-    const getNextProjectIndex = (direction: "right" | "left", projects: string[], currentProject: string) => {
+    const getNextProjectIndex = (direction: "right" | "left", projects: ProjectProps[], currentProjectId: string) => {
         if (projects.length <= 0) return
         if (direction === "right") {
-            if (!currentProject) {
+            if (!currentProjectId) {
                 return 0
             } else {
-                const _index = projects.indexOf(currentProject)
+                const _index = projects.map(p => p.id).indexOf(currentProjectId)
                 if (_index < projects.length - 1) return _index + 1
             }
         } else {
-            if (!currentProject) return
-            const _index = projects.indexOf(currentProject)
+            if (!currentProjectId) return
+            const _index = projects.map(p => p.id).indexOf(currentProjectId)
             if (_index === 0) {
                 return -1
             } else {
@@ -879,51 +857,10 @@ export const Todo = (
         }
     }
 
-    const handleMoveProject = (direction: "right" | "left", projects: string[], currentProject: string) => {
-        const index = getNextProjectIndex(direction, projects, currentProject)
+    const handleMoveProject = (direction: "right" | "left", projects: ProjectProps[], currentProjectId: string) => {
+        const index = getNextProjectIndex(direction, projects, currentProjectId)
         if (index === undefined) return
         changeProject(index)
-    }
-
-    const Project = (
-        {
-            currentProject, index, curentProjectIndex, project, onClick
-
-        }: {
-            currentProject: string, index: number, curentProjectIndex: number, project: string, onClick: (index: number, prefix: string) => void
-        }
-    ) => {
-        const ref = React.useRef<HTMLButtonElement>(null)
-        useEffect(() => {
-            if (currentProject === project) {
-                ref.current?.scrollIntoView({ behavior: "smooth" })
-            }
-        }, [currentProject, project])
-        const curerent = index === curentProjectIndex
-        const prevCurrent = index === curentProjectIndex - 1
-        return (
-            <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`relative text-xs px-4 
-                        ${curerent ?
-                        " bg-card text-card-foreground border-t-primary border-t border-x"
-                        : " text-muted-foreground border-b border-t-transparent border-t"}
-                        h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
-                         `}>
-                <span className="flex gap-1 items-center" >
-                    {
-                        project ? (
-                            project === completionTaskProjectName ? (
-                                <> <Check className="w-3" />{"完了済み"}</>
-                            ) : (
-                                <> <Box className="w-3" />{project}</>
-                            )
-                        ) : (
-                            <> <List className="w-3" />{"すべてのタスク"}</>
-                        )}
-                </span >
-                <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${curerent || prevCurrent ? "border-transparent" : "border"} `}></div>
-            </button >
-        )
     }
 
     const undo = (undoCount: number, historyTodos: TodoProps[][]) => {
@@ -956,7 +893,6 @@ export const Todo = (
     }
     const handleClickAddButton = () => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
@@ -978,30 +914,26 @@ export const Todo = (
         if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
-        if (swipeDistance > swipeThreshold) handleMoveProject("left", projects, currentProject);
+        if (swipeDistance > swipeThreshold) handleMoveProject("left", exProjects, currentProjectId);
         // 左にスワイプ
-        if (swipeDistance < -swipeThreshold) handleMoveProject("right", projects, currentProject);
+        if (swipeDistance < -swipeThreshold) handleMoveProject("right", exProjects, currentProjectId);
         setTouchStartX(0);
         setTouchEndX(0);
     };
-    
+
     return (
         <>
             <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
                 <div className={`relative w-full h-[2.8rem] `}>
                     <div className={`w-full h-full flex justify-start items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
-                        <Project currentProject={currentProject} index={-1} curentProjectIndex={projects.indexOf(currentProject)} project={""} onClick={handleClickElement} />
-                        {projects.map((p, i) => {
-                            return (
-                                <Project key={p} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p} onClick={handleClickElement} />
-                            )
-                        })}
+                        <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={exProjects} setProjects={setExProjects} />
+                        {exProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                         {/** デバッグ用に一旦記載 */}
-                        {exProjects && exProjects.map((p, i) => {
+                        {/* {exProjects && exProjects.map((p, i) => {
                             return (
                                 <Project key={p.id} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p.name} onClick={handleClickElement} />
                             )
-                        })}
+                        })} */}
                         <div className="text-transparent border-b min-w-[80px] h-[10px]" />
                         <div className="w-full h-full border-b"></div>
                         <div className="absolute right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">

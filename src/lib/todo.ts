@@ -7,6 +7,7 @@ export interface Options {
     text?: string;
     priority?: string;
     project?: string;
+    projectId?: string;
     viewCompletionTask?: boolean;
     indent?: number;
 }
@@ -15,7 +16,7 @@ export const todoFunc = {
     add: (index: number, todos: TodoProps[], options: Options) => {
         const newId = self.crypto.randomUUID()
         const _indent = options.indent ?? 0
-        let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
+        let _todos = !options.projectId ? todos : todos.filter(t => t.projectId === options.projectId)
         if (!options.viewCompletionTask) _todos = _todos.filter(t => t.is_complete !== true)
         if (index === 0 || index >= _todos.length) {
             return [
@@ -28,6 +29,7 @@ export const todoFunc = {
                     priority: options.priority ?? "",
                     detail: "",
                     project: options.project ?? "",
+                    projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
                 },
@@ -46,6 +48,7 @@ export const todoFunc = {
                     priority: options.priority ?? "",
                     detail: "",
                     project: options.project ?? "",
+                    projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
                 },
@@ -63,6 +66,7 @@ export const todoFunc = {
             text: t.id === replace.id ? replace.text : t.text,
             detail: t.id === replace.id ? replace.detail : t.detail,
             project: t.id === replace.id ? replace.project : t.project,
+            projectId: t.id === replace.id ? replace.projectId : t.projectId,
             context: t.id === replace.id ? replace.context : t.context,
             sort: t.id === replace.id ? replace.sort : t.sort,
             indent: t.id === replace.id ? replace.indent : t.indent,

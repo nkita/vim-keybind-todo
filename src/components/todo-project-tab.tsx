@@ -27,18 +27,19 @@ export const ProjectTab = (
     }, [project, currentProjectId])
 
     const handleHidden = () => {
-        if (!config.list || !config.token || !project) return
+        if (!project) return
         let _projects = projects.map((v: ProjectProps, i: number) => {
             if (v.id === project.id) v.isTabDisplay = false
             v.sort = i
             return v
         })
-
-        postSaveProjects(
-            _projects,
-            config.list,
-            config.token
-        )
+        if (config.list && config.token) {
+            postSaveProjects(
+                _projects,
+                config.list,
+                config.token
+            )
+        }
         setProjects(_projects)
     }
     const currentProjectIdx = projects.map(p => p.id).indexOf(currentProjectId)

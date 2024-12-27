@@ -50,13 +50,14 @@ export const ProjectEditModal = (
 
 
     function onSubmit(values: z.infer<typeof formSchema>) {
-        if (!config.list || !config.token) return
         const _project = { id: self.crypto.randomUUID(), name: values.project, isPublic: false, isTabDisplay: true, sort: exProjects.length }
-        postSaveProjects(
-            [...exProjects, _project],
-            config.list,
-            config.token
-        )
+        if (config.list && config.token) {
+            postSaveProjects(
+                [...exProjects, _project],
+                config.list,
+                config.token
+            )
+        }
 
         setExProjects([...exProjects, _project])
         setMode("normal")

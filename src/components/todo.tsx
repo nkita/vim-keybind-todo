@@ -144,12 +144,11 @@ export const Todo = (
     }, [todos])
 
     useEffect(() => {
-        debugLog(`currentProject:${currentProject} `)
         if (completionOnly) {
             if (todos.length > 0) setFilterdTodos(todos)
             return
         }
-        let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
+        let _todos = !currentProjectId ? [...todos] : todos.filter(t => t.projectId === currentProjectId)
 
         if (!viewCompletionTask) {
             _todos = _todos.filter(t => t.is_complete !== true)
@@ -177,7 +176,7 @@ export const Todo = (
             }
         }
         setFilterdTodos(_todos)
-    }, [todos, currentProject, sort, completionOnly, viewCompletionTask, setFilterdTodos])
+    }, [todos, currentProjectId, sort, completionOnly, viewCompletionTask, setFilterdTodos])
 
     useEffect(() => {
         debugLog(`currentIndex:${currentIndex} mode:${mode} keepPositionId:${keepPositionId} prefix:${prefix} mode:${mode} `)
@@ -231,7 +230,6 @@ export const Todo = (
     }
 
     const toNormalMode = (todos: TodoProps[], prevTodos: TodoProps[], mode: Mode, filterdTodos: TodoProps[], currentIndex: number) => {
-
         if (filterdTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
@@ -260,6 +258,7 @@ export const Todo = (
             creationDate: targetTodo.creationDate,
             text: replaceText,
             project: getValues(`edit-list-project-${targetTodoId}`),
+            projectId: getValues(`edit-list-projectId-${targetTodoId}`),
             context: getValues(`edit-list-context-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
             sort: targetTodo.sort,
@@ -267,6 +266,7 @@ export const Todo = (
             limitDate: targetTodo.limitDate
         }
         let _todos: TodoProps[] = []
+
         if (todoFunc.isEmpty(replace)) {
             _todos = todoFunc.delete(todos, targetTodoId)
             handleSetTodos(_todos, prevTodos)
@@ -292,6 +292,7 @@ export const Todo = (
             creationDate: filterdTodos[index].creationDate,
             text: filterdTodos[index].text,
             project: filterdTodos[index].project,
+            projectId: filterdTodos[index].projectId,
             context: filterdTodos[index].context,
             detail: filterdTodos[index].detail,
             sort: filterdTodos[index].sort,
@@ -321,6 +322,7 @@ export const Todo = (
             creationDate: targetTodo.creationDate,
             text: targetTodo.text,
             project: targetTodo.project,
+            projectId: targetTodo.projectId,
             context: targetTodo.context,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
@@ -344,6 +346,7 @@ export const Todo = (
             creationDate: targetTodo.creationDate,
             text: targetTodo.text,
             project: targetTodo.project,
+            projectId: targetTodo.projectId,
             context: targetTodo.context,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
@@ -434,17 +437,17 @@ export const Todo = (
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         const _indent = filterdTodos[currentIndex].indent ?? 0
-        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
+        handleSetTodos(todoFunc.add(currentIndex, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProjectId, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos, prevTodos, todoEnables])
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProjectId, currentProject, viewCompletionTask, todos, prevTodos, todoEnables])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
@@ -456,21 +459,21 @@ export const Todo = (
     useHotkeys(keymap['append'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         const _indent = currentIndex + 1 < filterdTodos.length ? filterdTodos[currentIndex + 1].indent ?? 0 : 0
-        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
+        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProjectId, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
         if (!todoEnables.enableAddTodo) {
             toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         } else {
-            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(filterdTodos.length)
             setMode('edit')
         }
-    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProjectId, currentProject, viewCompletionTask, todoEnables, prevTodos])
 
     // delete task
     const deleteTask = (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => {
@@ -510,7 +513,7 @@ export const Todo = (
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
-        setPrefix('project')
+        setPrefix('projectId')
         setMode('modal')
     }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
 
@@ -621,7 +624,8 @@ export const Todo = (
                 id: newId,
                 creationDate: yyyymmddhhmmss(new Date()),
                 text: getValues(`newtask`),
-                project: currentProject
+                project: currentProject,
+                projectId: currentProjectId
             }
             if (!todoFunc.isEmpty(newtask)) {
                 handleSetTodos([newtask, ...todos], prevTodos)
@@ -632,7 +636,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, currentProject, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
         if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
@@ -682,32 +686,32 @@ export const Todo = (
     useHotkeys(keymap['appendToLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(line, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
+    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProjectId, currentProject, viewCompletionTask, prevTodos])
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(line - 1, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line - 1)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
+    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProjectId, currentProject, viewCompletionTask, prevTodos])
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            setPrefix('project')
+            setPrefix('projectId')
             setMode('modal')
         } else {
             setMode('normal')
@@ -801,7 +805,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('edit')
         }
-        if (['context', 'project'].includes(prefix)) {
+        if (['context', 'project', 'projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
@@ -819,7 +823,7 @@ export const Todo = (
             setMode("editDetail")
         }
         if (prefix === "normal") toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
-        if (['context', 'project'].includes(prefix)) {
+        if (['context', 'project', 'projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
@@ -893,7 +897,7 @@ export const Todo = (
     }
     const handleClickAddButton = () => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
     }
@@ -927,13 +931,7 @@ export const Todo = (
                 <div className={`relative w-full h-[2.8rem] `}>
                     <div className={`w-full h-full flex justify-start items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                         <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={exProjects} setProjects={setExProjects} />
-                        {exProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                        {/** デバッグ用に一旦記載 */}
-                        {/* {exProjects && exProjects.map((p, i) => {
-                            return (
-                                <Project key={p.id} currentProject={currentProject} index={i} curentProjectIndex={projects.indexOf(currentProject)} project={p.name} onClick={handleClickElement} />
-                            )
-                        })} */}
+                        {exProjects.filter(p => p.isTabDisplay).map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                         <div className="text-transparent border-b min-w-[80px] h-[10px]" />
                         <div className="w-full h-full border-b"></div>
                         <div className="absolute right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">
@@ -1005,14 +1003,17 @@ export const Todo = (
                                     mode={mode}
                                     viewCompletion={viewCompletionTask}
                                     projects={projects}
+                                    exProjects={exProjects}
                                     labels={labels}
                                     currentProject={currentProject}
+                                    currentProjectId={currentProjectId}
                                     sort={sort}
                                     searchResultIndex={searchResultIndex}
                                     command={command}
                                     loading={loading}
                                     onClick={handleClickElement}
                                     setCurrentIndex={setCurrentIndex}
+                                    setExProjects={setExProjects}
                                     register={register}
                                     rhfSetValue={setValue}
                                     completionOnly={completionOnly}
@@ -1043,6 +1044,7 @@ export const Todo = (
                                         {filterdTodos[currentIndex] && filterdTodos[currentIndex].text &&
                                             <Detail
                                                 todo={filterdTodos[currentIndex]}
+                                                exProjects={exProjects}
                                                 prefix={prefix}
                                                 mode={mode}
                                                 isHelp={isHelp}

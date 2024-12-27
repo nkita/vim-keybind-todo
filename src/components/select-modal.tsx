@@ -1,4 +1,4 @@
-import { TodoProps, Mode } from "@/types"
+import { TodoProps, Mode, ComboboxDynamicItemProps } from "@/types"
 import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 import { useEffect, useState } from "react"
@@ -18,15 +18,16 @@ export const SelectModal = (
         position = "list",
         items,
         title = "",
-        onClick
+        onClick,
+        saveCloud,
     }: {
         t: TodoProps
         index: number
         label: string | undefined
         currentIndex: number
-        items: string[]
+        items: ComboboxDynamicItemProps[]
         mode: Mode
-        prefix: "text" | "priority" | "project" | "context" | "detail"
+        prefix: "text" | "priority" | "project" | "context" | "detail" | "projectId"
         currentPrefix: string
         className?: string | undefined
         register: any
@@ -34,6 +35,7 @@ export const SelectModal = (
         position?: "list" | "content"
         title?: string,
         onClick: (index: number, prefx: string) => void
+        saveCloud?: (id: string, name: string) => void
     }) => {
     const [isView, setIsView] = useState(false)
     useEffect(() => {
@@ -53,8 +55,12 @@ export const SelectModal = (
         if (!_) onClick(currentIndex, "normal")
     }
 
-    const handleAddItem = (val: string) => {
-        rhfSetValue(`edit-${position}-${prefix}-${t.id}`, val)
+    const handleAddItem = (val: ComboboxDynamicItemProps) => {
+        if (val) {
+            let id = !val.id ? self.crypto.randomUUID() : val.id
+            if (val.id === "" && val.name && saveCloud) saveCloud(id, val.name)
+            rhfSetValue(`edit-${position}-${prefix}-${t.id}`, id)
+        }
         onClick(currentIndex, "normal")
     }
 

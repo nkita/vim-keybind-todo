@@ -62,3 +62,8 @@ export interface UserInfoProp {
     profile: string;
     links: string[];
 }
+
+export type ComboboxDynamicItemProps = {
+    id: string,
+    name: string
+}

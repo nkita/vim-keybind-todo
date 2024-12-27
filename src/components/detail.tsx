@@ -1,4 +1,4 @@
-import { TodoProps } from "@/types"
+import { TodoProps, ProjectProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
 import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt, FaCircleInfo } from "react-icons/fa6";
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
@@ -6,11 +6,12 @@ import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
 import { Box, CircleX, Plus, SquareXIcon, Tag, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { find as lfind } from "lodash"
 
 const zIndex = "z-20"
 export const Detail = ({
     todo,
+    exProjects,
     mode,
     prefix,
     isHelp,
@@ -20,6 +21,7 @@ export const Detail = ({
     register
 }: {
     todo: TodoProps
+    exProjects: ProjectProps[]
     mode: string
     prefix: string
     isHelp: boolean
@@ -53,7 +55,7 @@ export const Detail = ({
         onClick('detail')
     }
 
-    const handleClickDelete = (prefix: 'context' | 'project') => {
+    const handleClickDelete = (prefix: 'context' | 'projectId') => {
         setValue(`edit-list-${prefix}-${todo.id}`, '')
         onClick('normal')
     }
@@ -130,12 +132,12 @@ export const Detail = ({
                                     <Tag className="h-4 w-4" />ラベルを追加
                                 </BottomButton>
                             )}
-                            {todo.project ? (
-                                <BottomLabel type={"project"} onClick={_ => onClick("project")} handleClick={handleClickDelete}>
-                                    <Box className="h-4 w-4" />{todo.project}
+                            {todo.projectId ? (
+                                <BottomLabel type={"projectId"} onClick={_ => onClick("projectId")} handleClick={handleClickDelete}>
+                                    <Box className="h-4 w-4" /> {lfind(exProjects, { id: todo.projectId })?.name}
                                 </BottomLabel>
                             ) : (
-                                <BottomButton handleClick={_ => onClick("project")} type={"project"}>
+                                <BottomButton handleClick={_ => onClick("projectId")} type={"projectId"}>
                                     <Box className="h-4" />プロジェクトを追加
                                 </BottomButton>
                             )}
@@ -155,9 +157,9 @@ export const Detail = ({
 }
 
 interface BottomProps {
-    type: "context" | "project";
+    type: "context" | "projectId";
     children: React.ReactNode;
-    handleClick: (type: "context" | "project") => void;
+    handleClick: (type: "context" | "projectId") => void;
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 const BottomButton = ({ type, children, handleClick }: BottomProps) => {
@@ -176,7 +178,7 @@ const BottomLabel = ({ children, type, onClick, handleClick }: BottomProps) => {
     }
     return (
         <div className="h-full my-auto">
-            <div className={`flex items-center px-2 bg-card py-1 border ${type === "project" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"} rounded-full`}>
+            <div className={`flex items-center px-2 bg-card py-1 border ${type === "projectId" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"} rounded-full`}>
                 <button onClick={onClick} className={`flex gap-1 font-light  items-center text-xs`}>
                     {children}
                 </button>

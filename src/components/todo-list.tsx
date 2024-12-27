@@ -1,12 +1,15 @@
 'use client'
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { TodoProps, Sort, Mode } from "@/types"
+import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from "react"
+import { TodoProps, Sort, Mode, ProjectProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
 import { Item } from "./todo-list-item"
 import { Box, ChevronsUpDown, CircleCheck, MessageCircleMore, Move, MoveVertical, Star, StickyNote, Tag } from "lucide-react"
+import { find as lfind } from "lodash"
+import { TodoContext } from "@/provider/todo";
+import { postSaveProjects } from "@/lib/todo"
 
 export const TodoList = (
     {
@@ -16,8 +19,10 @@ export const TodoList = (
         mode,
         viewCompletion,
         projects,
+        exProjects,
         labels,
         currentProject,
+        currentProjectId,
         sort,
         searchResultIndex,
         command,
@@ -25,6 +30,7 @@ export const TodoList = (
         completionOnly,
         onClick,
         setCurrentIndex,
+        setExProjects,
         register,
         rhfSetValue,
     }: {
@@ -34,8 +40,10 @@ export const TodoList = (
         mode: Mode
         viewCompletion: boolean
         projects: string[]
+        exProjects: ProjectProps[]
         labels: string[]
         currentProject: string
+        currentProjectId: string
         sort: Sort
         searchResultIndex: boolean[]
         command: string
@@ -43,11 +51,13 @@ export const TodoList = (
         completionOnly?: boolean
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
+        setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         register: UseFormRegister<FieldValues>
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
 
+    const config = useContext(TodoContext)
     const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
     const [table_project_width, set_table_project_width] = useState("w-0 sm:w-[15%] max-w-[20%]")
     const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
@@ -67,6 +77,18 @@ export const TodoList = (
         if (touchMoveX === 0) onClick(index, prefix)
         setTouchMoveX(0);
     };
+
+    const saveNewProject = (id: string, name: string) => {
+        const _project = { id: id, name: name, isPublic: false, isTabDisplay: true, sort: exProjects.length }
+        if (config.list && config.token) {
+            postSaveProjects(
+                [...exProjects, _project],
+                config.list,
+                config.token
+            )
+        }
+        setExProjects([...exProjects, _project])
+    }
 
     useEffect(() => {
         const hidden = "hidden"
@@ -112,7 +134,7 @@ export const TodoList = (
                                     />
                                 </TableCell >
                                 <TableCell className={table_project_width} ></TableCell>
-                                <TableCell className={`${table_label_width} font-light text-lab text-ex-project`}>{currentProject}</TableCell>
+                                <TableCell className={`${table_label_width} font-light text-lab text-ex-project`}>{currentProjectId}</TableCell>
                             </TableRow>
                         }
                         {!loading &&
@@ -163,7 +185,7 @@ export const TodoList = (
                                                                 )}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={`${table_task_width} relative` }>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={`${table_task_width} relative`}>
                                                             <div className="flex w-full h-full justify-between  items-center">
                                                                 <span className="text-primary/90 flex text-md">
                                                                     {t.indent !== undefined &&
@@ -224,27 +246,28 @@ export const TodoList = (
                                                                         label={t.context}
                                                                         register={register}
                                                                         rhfSetValue={rhfSetValue}
-                                                                        items={labels}
+                                                                        items={labels.map(l => { return { id: l, name: l } })}
                                                                         title={"ラベル"}
                                                                         onClick={onClick} />
-                                                                    {!currentProject && t.project && !(mode === "edit" && currentIndex === index) &&
+                                                                    {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
                                                                         <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
                                                                             <Box className="h-3 w-3" />
-                                                                            {t.project}
+                                                                            {lfind(exProjects, { id: t.projectId })?.name}
                                                                         </span>
                                                                     }
                                                                     <SelectModal
                                                                         t={t}
                                                                         index={index}
                                                                         currentIndex={currentIndex}
-                                                                        prefix={"project"}
+                                                                        prefix={"projectId"}
                                                                         currentPrefix={prefix}
                                                                         mode={mode}
                                                                         className={`w-0`}
-                                                                        label={t.project}
+                                                                        label={lfind(exProjects, { id: t.projectId })?.name}
                                                                         register={register}
                                                                         rhfSetValue={rhfSetValue}
-                                                                        items={projects}
+                                                                        saveCloud={saveNewProject}
+                                                                        items={exProjects.map(p => { return { id: p.id, name: p.name } })}
                                                                         title={"プロジェクト"}
                                                                         onClick={onClick} />
                                                                 </div>

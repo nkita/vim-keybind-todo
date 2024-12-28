@@ -1,6 +1,6 @@
 'use client'
 import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from "react"
-import { TodoProps, Sort, Mode, ProjectProps } from "@/types"
+import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
 import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag } from "react-icons/fa6";
@@ -9,7 +9,8 @@ import { Item } from "./todo-list-item"
 import { Box, ChevronsUpDown, CircleCheck, MessageCircleMore, Move, MoveVertical, Star, StickyNote, Tag } from "lucide-react"
 import { find as lfind } from "lodash"
 import { TodoContext } from "@/provider/todo";
-import { postSaveProjects } from "@/lib/todo"
+import { postSaveLabels, postSaveProjects } from "@/lib/todo"
+import { list } from "postcss"
 
 export const TodoList = (
     {
@@ -18,6 +19,7 @@ export const TodoList = (
         prefix,
         mode,
         exProjects,
+        exLabels,
         labels,
         currentProjectId,
         sort,
@@ -25,6 +27,7 @@ export const TodoList = (
         onClick,
         setCurrentIndex,
         setExProjects,
+        setExLabels,
         register,
         rhfSetValue,
     }: {
@@ -33,6 +36,7 @@ export const TodoList = (
         prefix: string
         mode: Mode
         exProjects: ProjectProps[]
+        exLabels: LabelProps[]
         labels: string[]
         currentProjectId: string
         sort: Sort
@@ -40,6 +44,7 @@ export const TodoList = (
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
+        setExLabels: Dispatch<SetStateAction<LabelProps[]>>
         register: UseFormRegister<FieldValues>
         rhfSetValue: UseFormSetValue<FieldValues>
     }
@@ -76,6 +81,18 @@ export const TodoList = (
             )
         }
         setExProjects([...exProjects, _project])
+    }
+
+    const saveNewLabels = (id: string, name: string) => {
+        const _labels = { id: id, name: name, isPublic: false, sort: exLabels.length }
+        if (config.list && config.token) {
+            postSaveLabels(
+                [...exLabels, _labels],
+                config.list,
+                config.token
+            )
+        }
+        setExLabels([...exLabels, _labels])
     }
 
     useEffect(() => {
@@ -217,24 +234,26 @@ export const TodoList = (
                                                                             <StickyNote className="h-3 w-3" />
                                                                         </span>
                                                                     }
-                                                                    {t.context && !(mode === "edit" && currentIndex === index) &&
+                                                                    {t.labelId && !(mode === "edit" && currentIndex === index) &&
                                                                         <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-label rounded-full text-5sm px-2 text-ex-label`}>
                                                                             <Tag className="h-3 w-3" />
-                                                                            {t.context}
+                                                                            {lfind(exLabels, { id: t.labelId })?.name}
                                                                         </span>
                                                                     }
+                                                                    {t.labelId}
                                                                     <SelectModal
                                                                         t={t}
                                                                         index={index}
                                                                         currentIndex={currentIndex}
-                                                                        prefix={"context"}
+                                                                        prefix={"labelId"}
                                                                         currentPrefix={prefix}
                                                                         mode={mode}
                                                                         className={`w-0`}
                                                                         register={register}
                                                                         rhfSetValue={rhfSetValue}
-                                                                        item={t.context ? { id: t.context, name: t.context } : undefined}
-                                                                        items={labels.map(l => { return { id: l, name: l } })}
+                                                                        item={lfind(exLabels, { id: t.labelId })}
+                                                                        items={exLabels.map(l => { return { id: l.id, name: l.name } })}
+                                                                        saveCloud={saveNewLabels}
                                                                         title={"ラベル"}
                                                                         onClick={onClick} />
                                                                     {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
@@ -260,8 +279,8 @@ export const TodoList = (
                                                                         onClick={onClick} />
                                                                 </div>
                                                                 <div className={`absolute right-0 flex sm:hidden items-center w-[49px] justify-end gap-1 h-full ${common_color_css}`}>
-                                                                    {t.context && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
-                                                                    {t.project && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
+                                                                    {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
+                                                                    {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
                                                                     <button onClick={e => {
                                                                         e.stopPropagation()
                                                                         e.preventDefault()

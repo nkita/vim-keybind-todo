@@ -9,6 +9,7 @@ export interface TodoProps {
     project?: string    // +projctname *Deprecation
     projectId?: string    // +projctId
     context?: string    // @context    
+    labelId?: string    // @context    
     isArchived?: boolean
     sort?: number
     limitDate?: string
@@ -28,6 +29,12 @@ export interface TodoEnablesProps {
 export type SaveTodosReturnProps = {
     action: 'save' | 'skip'
     error?: any
+}
+
+export type LabelProps = {
+    id: string
+    name: string
+    isPublic: boolean
 }
 
 export type ProjectProps = {

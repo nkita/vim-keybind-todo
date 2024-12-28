@@ -3,7 +3,7 @@ import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRe
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap, completionTaskProjectName } from '@/components/config'
-import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps } from "@/types"
+import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
@@ -39,24 +39,28 @@ export const Todo = (
         todos,
         prevTodos,
         exProjects,
+        exLabels,
         loading,
         completionOnly,
         isSave,
         isUpdate,
         setTodos,
         setExProjects,
+        setExLabels,
         setIsUpdate,
         onClickSaveButton,
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
         exProjects: ProjectProps[]
+        exLabels: LabelProps[]
         loading: Boolean
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
+        setExLabels: Dispatch<SetStateAction<LabelProps[]>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
         onClickSaveButton: () => void;
     }
@@ -260,6 +264,7 @@ export const Todo = (
             project: getValues(`edit-list-project-${targetTodoId}`),
             projectId: getValues(`edit-list-projectId-${targetTodoId}`),
             context: getValues(`edit-list-context-${targetTodoId}`),
+            labelId: getValues(`edit-list-labelId-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
             sort: targetTodo.sort,
             indent: targetTodo.indent,
@@ -293,6 +298,7 @@ export const Todo = (
             project: filterdTodos[index].project,
             projectId: filterdTodos[index].projectId,
             context: filterdTodos[index].context,
+            labelId: filterdTodos[index].labelId,
             detail: filterdTodos[index].detail,
             sort: filterdTodos[index].sort,
             indent: filterdTodos[index].indent,
@@ -323,6 +329,7 @@ export const Todo = (
             project: targetTodo.project,
             projectId: targetTodo.projectId,
             context: targetTodo.context,
+            labelId: targetTodo.labelId,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
@@ -347,6 +354,7 @@ export const Todo = (
             project: targetTodo.project,
             projectId: targetTodo.projectId,
             context: targetTodo.context,
+            labelId: targetTodo.labelId,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: indent,
@@ -519,7 +527,7 @@ export const Todo = (
 
     // change to context edit mode
     useHotkeys(keymap['editContext'].keys, (e) => {
-        setPrefix('context')
+        setPrefix('labelId')
         setMode('modal')
     }, setKeyEnableDefine(keymap['editContext'].enable))
 
@@ -721,7 +729,7 @@ export const Todo = (
     useHotkeys(keymap['editContextLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            setPrefix('context')
+            setPrefix('labelId')
             setMode('modal')
         } else {
             setMode('normal')
@@ -930,10 +938,10 @@ export const Todo = (
                 <div className={`relative w-full h-[2.8rem] `}>
                     <div className={`w-full h-full flex justify-start items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                         <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={exProjects} setProjects={setExProjects} />
-                        {exProjects.filter(p => p.isTabDisplay).map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                        <div className="text-transparent border-b min-w-[80px] h-[10px]" />
-                        <div className="w-full h-full border-b"></div>
-                        <div className="absolute right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">
+                        {exProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                        {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
+                        {/* <div className="w-full h-full border-b"></div> */}
+                        <div className="sticky right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">
                             <ProjectEditModal
                                 buttonLabel={<Plus size={16} />}
                                 className="outline-none  p-2 rounded-md hover:bg-primary/10"
@@ -1002,12 +1010,14 @@ export const Todo = (
                                     mode={mode}
                                     exProjects={exProjects}
                                     labels={labels}
+                                    exLabels={exLabels}
                                     currentProjectId={currentProjectId}
                                     sort={sort}
                                     loading={loading}
                                     onClick={handleClickElement}
                                     setCurrentIndex={setCurrentIndex}
                                     setExProjects={setExProjects}
+                                    setExLabels={setExLabels}
                                     register={register}
                                     rhfSetValue={setValue}
                                 />
@@ -1038,6 +1048,7 @@ export const Todo = (
                                             <Detail
                                                 todo={filterdTodos[currentIndex]}
                                                 exProjects={exProjects}
+                                                exLabels={exLabels}
                                                 prefix={prefix}
                                                 mode={mode}
                                                 isHelp={isHelp}

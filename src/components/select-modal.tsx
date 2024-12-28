@@ -27,7 +27,7 @@ export const SelectModal = (
         item: ComboboxDynamicItemProps | undefined
         items: ComboboxDynamicItemProps[]
         mode: Mode
-        prefix: "text" | "priority" | "project" | "context" | "detail" | "projectId"
+        prefix: "text" | "priority" | "project" | "context" | "detail" | "projectId" | "labelId"
         currentPrefix: string
         className?: string | undefined
         register: any
@@ -56,10 +56,11 @@ export const SelectModal = (
     }
 
     const handleAddItem = (val: ComboboxDynamicItemProps) => {
+        console.log("select modal", val)
         if (val) {
             let id = !val.id ? self.crypto.randomUUID() : val.id
             if (val.id === "" && val.name && saveCloud) saveCloud(id, val.name)
-            rhfSetValue(`edit-${position}-${prefix}-${t.id}`, id)
+            rhfSetValue(`edit-${position}-${prefix}-${t.id}`, id === "delete" ? "" : id)
         }
         onClick(currentIndex, "normal")
     }

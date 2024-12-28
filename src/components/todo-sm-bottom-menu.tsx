@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, Dispatch, SetStateAction } from "react"
-import { TodoEnablesProps, TodoProps, Mode } from "@/types"
+import { TodoEnablesProps, TodoProps, Mode, ProjectProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner"
@@ -20,24 +20,26 @@ export const BottomMenu = (
         completionOnly,
         projects,
         currentProject,
+        currentProjectId,
         viewCompletionTask,
         todoEnables,
         setMode,
         setViewCompletionTask,
-        setCurrentProject,
+        setCurrentProjectId,
         handleSetTodos,
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
         loading: Boolean
         completionOnly?: boolean
-        projects: string[]
+        projects: ProjectProps[]
         currentProject: string
+        currentProjectId: string
         viewCompletionTask: boolean
         todoEnables: TodoEnablesProps
         setMode: Dispatch<SetStateAction<Mode>>
         setViewCompletionTask: Dispatch<SetStateAction<boolean>>
-        setCurrentProject: Dispatch<SetStateAction<string>>
+        setCurrentProjectId: Dispatch<SetStateAction<string>>
         handleSetTodos: (todos: TodoProps[], prevTodos: TodoProps[]) => void
     }
 ) => {
@@ -46,7 +48,7 @@ export const BottomMenu = (
     const [isDragging, setIsDragging] = useState(false);
     const [startY, setStartY] = useState(0);
     const [currentY, setCurrentY] = useState(0);
-    const [project, setProject] = useState("");
+    const [projectId, setProjectId] = useState("");
     const [task, setTask] = useState("");
     const [priority, setPriority] = useState("");
 
@@ -63,15 +65,16 @@ export const BottomMenu = (
 
     const handleAddTask = (event: React.FormEvent) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
+        console.log(projectId)
         // if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        handleSetTodos(todoFunc.add(0, todos, { text: task, priority: priority, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        handleSetTodos(todoFunc.add(0, todos, { text: task, priority: priority, projectId: projectId, viewCompletionTask: viewCompletionTask }), prevTodos)
         setTask("")
         setPriority("")
-        setProject("")
+        setProjectId("")
         closePanel()
     }
 
-    const handleProjectSelect = (value: string) => setCurrentProject(value.replace(prefix, ""))
+    const handleProjectIdSelect = (value: string) => setCurrentProjectId(value.replace(prefix, ""))
 
     const handleTouchStart = (e: React.TouchEvent) => {
         setIsDragging(true);
@@ -123,7 +126,7 @@ export const BottomMenu = (
                     </div>
                     {activePanel === 'addTask' && (
                         <form onSubmit={handleAddTask} className="space-y-4">
-                            <Select name="project" value={project} onValueChange={(value) => setProject(value)}>
+                            <Select name="project" value={projectId} onValueChange={(value) => setProjectId(value)}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="プロジェクト" />
                                 </SelectTrigger>
@@ -134,7 +137,7 @@ export const BottomMenu = (
                                         </div>
                                     }
                                     {projects.map((project, index) => (
-                                        <SelectItem key={index} value={project}>{project}</SelectItem>
+                                        <SelectItem key={index} value={project.id}>{project.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -153,7 +156,7 @@ export const BottomMenu = (
                                 <Button type="button" variant="outline" className="w-full" onClick={() => {
                                     setTask("")
                                     setPriority("")
-                                    setProject("")
+                                    setProjectId("")
                                 }}>クリア</Button>
                                 <Button type="submit" className="w-full">追加</Button>
                             </div>
@@ -161,14 +164,14 @@ export const BottomMenu = (
                     )}
                     {activePanel === 'selectProject' && (
                         <div className="space-y-4">
-                            <Select onValueChange={handleProjectSelect} defaultValue={prefix + currentProject} value={prefix + currentProject}>
+                            <Select onValueChange={handleProjectIdSelect} defaultValue={prefix + currentProjectId} value={prefix + currentProjectId}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="ALL" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value={prefix}>{"ALL"}</SelectItem>
-                                    {projects.map((project, index) => (
-                                        <SelectItem key={index} value={prefix + project}>{project}</SelectItem>
+                                    {projects.filter(p => p.isTabDisplay).map((project, index) => (
+                                        <SelectItem key={index} value={prefix + project.id}>{project.name}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>

@@ -266,7 +266,6 @@ export const Todo = (
             limitDate: targetTodo.limitDate
         }
         let _todos: TodoProps[] = []
-
         if (todoFunc.isEmpty(replace)) {
             _todos = todoFunc.delete(todos, targetTodoId)
             handleSetTodos(_todos, prevTodos)
@@ -437,17 +436,18 @@ export const Todo = (
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         const _indent = filterdTodos[currentIndex].indent ?? 0
-        handleSetTodos(todoFunc.add(currentIndex, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
+        console.log("insert", currentProjectId)
+        handleSetTodos(todoFunc.add(currentIndex, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProjectId, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProjectId, currentProject, viewCompletionTask, todos, prevTodos, todoEnables])
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProjectId, viewCompletionTask, todos, prevTodos, todoEnables])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
@@ -459,21 +459,21 @@ export const Todo = (
     useHotkeys(keymap['append'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         const _indent = currentIndex + 1 < filterdTodos.length ? filterdTodos[currentIndex + 1].indent ?? 0 : 0
-        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
+        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProjectId, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
         if (!todoEnables.enableAddTodo) {
             toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         } else {
-            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(filterdTodos.length)
             setMode('edit')
         }
-    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProjectId, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // delete task
     const deleteTask = (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => {
@@ -624,7 +624,6 @@ export const Todo = (
                 id: newId,
                 creationDate: yyyymmddhhmmss(new Date()),
                 text: getValues(`newtask`),
-                project: currentProject,
                 projectId: currentProjectId
             }
             if (!todoFunc.isEmpty(newtask)) {
@@ -636,7 +635,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, currentProject, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
         if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
@@ -686,26 +685,26 @@ export const Todo = (
     useHotkeys(keymap['appendToLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(line, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProjectId, currentProject, viewCompletionTask, prevTodos])
+    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProjectId, viewCompletionTask, prevTodos])
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line - 1, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(line - 1, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line - 1)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProjectId, currentProject, viewCompletionTask, prevTodos])
+    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProjectId, viewCompletionTask, prevTodos])
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
@@ -897,7 +896,7 @@ export const Todo = (
     }
     const handleClickAddButton = () => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
     }
@@ -1001,22 +1000,16 @@ export const Todo = (
                                     currentIndex={currentIndex}
                                     prefix={prefix}
                                     mode={mode}
-                                    viewCompletion={viewCompletionTask}
-                                    projects={projects}
                                     exProjects={exProjects}
                                     labels={labels}
-                                    currentProject={currentProject}
                                     currentProjectId={currentProjectId}
                                     sort={sort}
-                                    searchResultIndex={searchResultIndex}
-                                    command={command}
                                     loading={loading}
                                     onClick={handleClickElement}
                                     setCurrentIndex={setCurrentIndex}
                                     setExProjects={setExProjects}
                                     register={register}
                                     rhfSetValue={setValue}
-                                    completionOnly={completionOnly}
                                 />
                             </div>
                             <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
@@ -1075,10 +1068,11 @@ export const Todo = (
                         loading={loading}
                         completionOnly={completionOnly}
                         viewCompletionTask={viewCompletionTask}
-                        projects={projects}
+                        projects={exProjects}
                         currentProject={currentProject}
+                        currentProjectId={currentProjectId}
                         setViewCompletionTask={setViewCompletionTask}
-                        setCurrentProject={setCurrentProject}
+                        setCurrentProjectId={setCurrentProjectId}
                         setMode={setMode}
                         handleSetTodos={handleSetTodos}
                         todoEnables={todoEnables}

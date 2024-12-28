@@ -49,8 +49,8 @@ export const ProjectTab = (
     return (
         <div className={`relative flex items-center pl-4  pr-2
                     ${current ?
-                "bg-card border-t-primary border-t border-x"
-                : "text-muted-foreground border-b border-t-transparent border-t"}
+                " bg-card border-t-primary border-t border-x"
+                : " text-muted-foreground border-b border-t "}
                     h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
             `}>
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}

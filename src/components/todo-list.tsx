@@ -17,17 +17,11 @@ export const TodoList = (
         currentIndex,
         prefix,
         mode,
-        viewCompletion,
-        projects,
         exProjects,
         labels,
-        currentProject,
         currentProjectId,
         sort,
-        searchResultIndex,
-        command,
         loading,
-        completionOnly,
         onClick,
         setCurrentIndex,
         setExProjects,
@@ -38,17 +32,11 @@ export const TodoList = (
         currentIndex: number
         prefix: string
         mode: Mode
-        viewCompletion: boolean
-        projects: string[]
         exProjects: ProjectProps[]
         labels: string[]
-        currentProject: string
         currentProjectId: string
         sort: Sort
-        searchResultIndex: boolean[]
-        command: string
         loading: Boolean
-        completionOnly?: boolean
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
@@ -96,9 +84,9 @@ export const TodoList = (
         const wTaskProject = "w-[calc(100%-90px)] sm:w-[calc(85%-90px)]"
         const wProject = "w-0 sm:w-[15%] max-w-[20%]"
 
-        set_table_project_width(currentProject === "" ? wProject : hidden)
-        set_table_task_width(currentProject === "" ? wTaskALL : wTaskProject)
-    }, [currentProject])
+        set_table_project_width(currentProjectId === "" ? wProject : hidden)
+        set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
+    }, [currentProjectId])
     return (
         <>
             <div className="h-full ">
@@ -243,9 +231,9 @@ export const TodoList = (
                                                                         currentPrefix={prefix}
                                                                         mode={mode}
                                                                         className={`w-0`}
-                                                                        label={t.context}
                                                                         register={register}
                                                                         rhfSetValue={rhfSetValue}
+                                                                        item={t.context ? { id: t.context, name: t.context } : undefined}
                                                                         items={labels.map(l => { return { id: l, name: l } })}
                                                                         title={"ラベル"}
                                                                         onClick={onClick} />
@@ -263,10 +251,10 @@ export const TodoList = (
                                                                         currentPrefix={prefix}
                                                                         mode={mode}
                                                                         className={`w-0`}
-                                                                        label={lfind(exProjects, { id: t.projectId })?.name}
                                                                         register={register}
                                                                         rhfSetValue={rhfSetValue}
                                                                         saveCloud={saveNewProject}
+                                                                        item={lfind(exProjects, { id: t.projectId })}
                                                                         items={exProjects.map(p => { return { id: p.id, name: p.name } })}
                                                                         title={"プロジェクト"}
                                                                         onClick={onClick} />

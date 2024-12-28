@@ -12,10 +12,10 @@ export const SelectModal = (
         currentPrefix,
         mode,
         className,
-        label,
         register,
         rhfSetValue,
         position = "list",
+        item,
         items,
         title = "",
         onClick,
@@ -23,8 +23,8 @@ export const SelectModal = (
     }: {
         t: TodoProps
         index: number
-        label: string | undefined
         currentIndex: number
+        item: ComboboxDynamicItemProps | undefined
         items: ComboboxDynamicItemProps[]
         mode: Mode
         prefix: "text" | "priority" | "project" | "context" | "detail" | "projectId"
@@ -64,11 +64,13 @@ export const SelectModal = (
         onClick(currentIndex, "normal")
     }
 
+    const itemLabel = item?.name ?? ""
+    const itemId = item?.id ?? ""
     return (
         <>
-            <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: label ?? "" })} />
+            <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: itemId })} />
             <Modal
-                buttonLabel={label}
+                buttonLabel={itemLabel}
                 dialogTitle={`${title}の選択`}
                 className={className}
                 open={isView}
@@ -83,7 +85,7 @@ export const SelectModal = (
                             <kbd>↑</kbd> <kbd>↓</kbd>キーで選択
                         </p>
                         <p className="text-sm/10 pt-0 sm:pt-8">
-                            <span>現在の{title}：<span className="text-primary font-medium underline">{label}</span>{!label && "-"}</span>
+                            <span>現在の{title}：<span className="text-primary font-medium underline">{itemLabel}</span>{!itemLabel && "-"}</span>
                         </p>
                     </div>
                     <DynamicSearchSelect

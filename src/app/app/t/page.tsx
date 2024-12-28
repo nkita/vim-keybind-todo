@@ -2,10 +2,10 @@
 
 import { Todo } from "@/components/todo";
 import { useState, useEffect, useContext } from "react"
-import { TodoProps, SaveTodosReturnProps, ProjectProps } from "@/types"
+import { TodoProps, SaveTodosReturnProps, ProjectProps, LabelProps } from "@/types"
 import Header from "@/components/header";
 import { useAuth0 } from "@auth0/auth0-react";
-import { useFetchTodo, postFetch, useFetchProjects } from "@/lib/fetch";
+import { useFetchTodo, postFetch, useFetchProjects, useFetchLabels } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { postSaveTodos } from "@/lib/todo";
 import { TodoContext } from "@/provider/todo";
@@ -22,15 +22,22 @@ export default function Home() {
   const [projects, setProjects] = useState<ProjectProps[]>([])
   const [projectsLS, setProjectsLS] = useLocalStorage<ProjectProps[]>("todo_projects", [])
 
+  const [labels, setLabels] = useState<LabelProps[]>([])
+  const [labelsLS, setLabelsLS] = useLocalStorage<LabelProps[]>("todo_labels", [])
+
   const [isSave, setIsSave] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)
 
   const [todosLoading, setTodosLoading] = useState(true)
   const [projectsLoading, setProjectsLoading] = useState(true)
+  const [labelsLoading, setLabelsLoading] = useState(true)
+
   const config = useContext(TodoContext)
 
   const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(config.list, config.token)
   const { data: fetch_projects, isLoading: fetch_projects_loading } = useFetchProjects(config.list, config.token)
+  const { data: fetch_labels, isLoading: fetch_labels_loading } = useFetchLabels(config.list, config.token)
+
   const { user, isLoading: userLoading } = useAuth0();
   const { open } = useSidebar()
 
@@ -66,6 +73,18 @@ export default function Home() {
     }
   }, [fetch_projects, config, projectsLoading])
 
+
+  useEffect(() => {
+    try {
+      if (fetch_labels !== undefined && config.token && config.list) {
+        setLabels(fetch_labels)
+        setLabelsLoading(false)
+      }
+    } catch (e) {
+      console.error(e)
+      setLabelsLoading(false)
+    }
+  }, [fetch_labels, config, labelsLoading])
 
   const handleSaveTodos = async (
     todos: TodoProps[],
@@ -120,12 +139,14 @@ export default function Home() {
           todos={!userLoading && user ? todos : todosLS}
           prevTodos={prevTodos}
           exProjects={!userLoading && user ? projects : projectsLS}
+          exLabels={!userLoading && user ? labels : labelsLS}
           isSave={isSave}
           isUpdate={isUpdate}
           loading={todosLoading || userLoading || fetch_todo_loading || fetch_projects_loading}
           setTodos={!userLoading && user ? setTodos : setTodosLS}
           setIsUpdate={setIsUpdate}
           setExProjects={!userLoading && user ? setProjects : setProjectsLS}
+          setExLabels={!userLoading && user ? setLabels : setLabelsLS}
           onClickSaveButton={handleClickSaveButton}
         />
       </article >

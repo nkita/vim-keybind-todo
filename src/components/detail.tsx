@@ -1,4 +1,4 @@
-import { TodoProps, ProjectProps } from "@/types"
+import { TodoProps, ProjectProps, LabelProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
 import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt, FaCircleInfo } from "react-icons/fa6";
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
@@ -12,6 +12,7 @@ const zIndex = "z-20"
 export const Detail = ({
     todo,
     exProjects,
+    exLabels,
     mode,
     prefix,
     isHelp,
@@ -22,6 +23,7 @@ export const Detail = ({
 }: {
     todo: TodoProps
     exProjects: ProjectProps[]
+    exLabels: LabelProps[]
     mode: string
     prefix: string
     isHelp: boolean
@@ -55,7 +57,7 @@ export const Detail = ({
         onClick('detail')
     }
 
-    const handleClickDelete = (prefix: 'context' | 'projectId') => {
+    const handleClickDelete = (prefix: 'labelId' | 'projectId') => {
         setValue(`edit-list-${prefix}-${todo.id}`, '')
         onClick('normal')
     }
@@ -123,12 +125,12 @@ export const Detail = ({
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2">
-                            {todo.context ? (
-                                <BottomLabel type={"context"} onClick={_ => onClick("context")} handleClick={handleClickDelete}>
-                                    <Tag className="h-4 w-4" />{todo.context}
+                            {todo.labelId ? (
+                                <BottomLabel type={"labelId"} onClick={_ => onClick("labelId")} handleClick={handleClickDelete}>
+                                    <Tag className="h-4 w-4" />{lfind(exLabels, { id: todo.labelId })?.name}
                                 </BottomLabel>
                             ) : (
-                                <BottomButton handleClick={_ => onClick("context")} type={"context"}>
+                                <BottomButton handleClick={_ => onClick("labelId")} type={"labelId"}>
                                     <Tag className="h-4 w-4" />ラベルを追加
                                 </BottomButton>
                             )}
@@ -157,9 +159,9 @@ export const Detail = ({
 }
 
 interface BottomProps {
-    type: "context" | "projectId";
+    type: "labelId" | "projectId";
     children: React.ReactNode;
-    handleClick: (type: "context" | "projectId") => void;
+    handleClick: (type: "labelId" | "projectId") => void;
     onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
 const BottomButton = ({ type, children, handleClick }: BottomProps) => {

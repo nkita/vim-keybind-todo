@@ -33,7 +33,7 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
         const [query, setQuery] = useState('')
         const filteredItems =
             query === ''
-                ? [...items, { id: "", name: "" }]
+                ? [...items, { id: "delete", name: "" }]
                 : [...items.filter((item) => {
                     return (
                         item.name.toLowerCase()

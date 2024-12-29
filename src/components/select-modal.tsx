@@ -56,7 +56,6 @@ export const SelectModal = (
     }
 
     const handleAddItem = (val: ComboboxDynamicItemProps) => {
-        console.log("select modal", val)
         if (val) {
             let id = !val.id ? self.crypto.randomUUID() : val.id
             if (val.id === "" && val.name && saveCloud) saveCloud(id, val.name)

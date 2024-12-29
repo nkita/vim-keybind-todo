@@ -49,12 +49,12 @@ export const ProjectTab = (
     return (
         <div className={`relative flex items-center pl-4  pr-2
                     ${current ?
-                " bg-card border-t-primary border-t border-x"
-                : " text-muted-foreground border-b border-t "}
+                " bg-card border-t-primary border-y border-b-transparent border-x"
+                : " text-muted-foreground border-y border-x border-x-transparent"}
                     h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
             `}>
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={` text-xs `}>
+                className={` text-xs focus-within:outline-none`}>
                 <span className="flex gap-1 items-center" >
                     {project ? (
                         <> <Box className="w-3" />{project.name}</>

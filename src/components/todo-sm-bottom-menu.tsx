@@ -65,7 +65,6 @@ export const BottomMenu = (
 
     const handleAddTask = (event: React.FormEvent) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        console.log(projectId)
         // if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         handleSetTodos(todoFunc.add(0, todos, { text: task, priority: priority, projectId: projectId, viewCompletionTask: viewCompletionTask }), prevTodos)
         setTask("")

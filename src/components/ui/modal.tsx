@@ -1,6 +1,6 @@
 import { MouseEvent, MouseEventHandler, ReactNode } from "react"
 import { cn } from "@/lib/utils"
-import { DialogContent, Dialog, DialogTitle, DialogTrigger, DialogHeader } from "./dialog"
+import { DialogContent, Dialog, DialogTitle, DialogTrigger, DialogHeader, DialogDescription } from "./dialog"
 
 export const Modal = (
     {
@@ -33,6 +33,7 @@ export const Modal = (
                 </button>
             </DialogTrigger>
             <DialogContent>
+                <DialogDescription></DialogDescription>
                 <DialogHeader>
                     <DialogTitle>{dialogTitle}</DialogTitle>
                 </DialogHeader>

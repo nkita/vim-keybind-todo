@@ -8,7 +8,7 @@ import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual, findIndex, get, set } from "lodash";
+import { isEqual, findIndex, get, set, sortBy, filter } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -81,6 +81,7 @@ export const Todo = (
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
+    const [filterdProjects, setFilterdProjects] = useState<ProjectProps[]>(exProjects)
 
     const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
@@ -181,6 +182,12 @@ export const Todo = (
         }
         setFilterdTodos(_todos)
     }, [todos, currentProjectId, sort, completionOnly, viewCompletionTask, setFilterdTodos])
+
+    useEffect(() => {
+        if (exProjects.length > 0) {
+            setFilterdProjects(sortBy(exProjects.filter(p => p.isTabDisplay), "sort"))
+        }
+    }, [exProjects])
 
     useEffect(() => {
         debugLog(`currentIndex:${currentIndex} mode:${mode} keepPositionId:${keepPositionId} prefix:${prefix} mode:${mode} `)
@@ -363,7 +370,7 @@ export const Todo = (
         handleSetTodos(_todos, prevTodos)
     }
     const changeProject = (index: number) => {
-        setCurrentProjectId(index === -1 ? "" : exProjects[index].id)
+        setCurrentProjectId(index === -1 ? "" : filterdProjects[index].id)
         setCurrentIndex(0)
         setCommand('')
     }
@@ -432,19 +439,18 @@ export const Todo = (
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        handleMoveProject("right", exProjects, currentProjectId)
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [projects, currentProjectId])
+        handleMoveProject("right", filterdProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [filterdProjects, currentProjectId])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        handleMoveProject("left", exProjects, currentProjectId)
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [projects, currentProjectId])
+        handleMoveProject("left", filterdProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [filterdProjects, currentProjectId])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         const _indent = filterdTodos[currentIndex].indent ?? 0
-        console.log("insert", currentProjectId)
         handleSetTodos(todoFunc.add(currentIndex, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
     }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
@@ -925,9 +931,9 @@ export const Todo = (
         if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
-        if (swipeDistance > swipeThreshold) handleMoveProject("left", exProjects, currentProjectId);
+        if (swipeDistance > swipeThreshold) handleMoveProject("left", filterdProjects, currentProjectId);
         // 左にスワイプ
-        if (swipeDistance < -swipeThreshold) handleMoveProject("right", exProjects, currentProjectId);
+        if (swipeDistance < -swipeThreshold) handleMoveProject("right", filterdProjects, currentProjectId);
         setTouchStartX(0);
         setTouchEndX(0);
     };
@@ -937,8 +943,8 @@ export const Todo = (
             <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
                 <div className={`relative w-full h-[2.8rem] `}>
                     <div className={`w-full h-full flex justify-start items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
-                        <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={exProjects} setProjects={setExProjects} />
-                        {exProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                        <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={filterdProjects} setProjects={setExProjects} />
+                        {filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={filterdProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                         {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
                         {/* <div className="w-full h-full border-b"></div> */}
                         <div className="sticky right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">

@@ -47,14 +47,17 @@ const DynamicSearchSelect = forwardRef<HTMLInputElement, SearchSelectProps>(
             setVal(value)
         }
 
+        const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+            setQuery(e.target.value)
+        }
         return (
             <Combobox onChange={handleChange} value={val} immediate={true} >
                 <div className="relative mt-1">
                     <div className="relative w-full">
                         <ComboboxInput
                             tabIndex={tabIndex}
-                            displayValue={(item: ComboboxDynamicItemProps) => !item ? "" : item.name}
-                            onChange={(event) => setQuery(event.target.value)} autoFocus={autoFocus} placeholder={placeholder}
+                            displayValue={(item: ComboboxDynamicItemProps) => item?.name}
+                            onChange={handleInput} autoFocus={autoFocus} placeholder={placeholder}
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50" />
                         {/* className="placeholder:text-sm/tight" /> */}
                         <ComboboxButton className="absolute inset-y-0 right-0 flex items-center pr-2">

@@ -240,7 +240,7 @@ export const TodoList = (
                                                                             {lfind(exLabels, { id: t.labelId })?.name}
                                                                         </span>
                                                                     }
-                                                                    {t.labelId}
+                                                                    <span className="text-ex-project">{t.project}</span>
                                                                     <SelectModal
                                                                         t={t}
                                                                         index={index}

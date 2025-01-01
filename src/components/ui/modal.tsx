@@ -6,6 +6,7 @@ export const Modal = (
     {
         buttonLabel,
         dialogTitle,
+        dialogDescription,
         children,
         className,
         open,
@@ -14,6 +15,7 @@ export const Modal = (
     }: {
         buttonLabel?: any
         dialogTitle?: string
+        dialogDescription?: string
         children: ReactNode
         className?: string
         open?: boolean
@@ -27,15 +29,14 @@ export const Modal = (
                 <button
                     tabIndex={-1}
                     onClick={onClickOpen}
-                    className={cn(" w-full truncate", className)}
-                >
+                    className={cn(" w-full truncate", className)}>
                     {buttonLabel}
                 </button>
             </DialogTrigger>
-            <DialogContent>
-                <DialogDescription></DialogDescription>
+            <DialogContent >
                 <DialogHeader>
                     <DialogTitle>{dialogTitle}</DialogTitle>
+                    <DialogDescription>{dialogDescription}</DialogDescription>
                 </DialogHeader>
                 {children}
             </DialogContent>

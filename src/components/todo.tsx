@@ -939,7 +939,7 @@ export const Todo = (
         setTouchEndX(0);
     };
 
-    const projectTop = useRef<HTMLAnchorElement>(null);
+    const projectTop = useRef<HTMLDivElement>(null);
     const projectLast = useRef<HTMLDivElement>(null);
     useEffect(() => {
         if (!currentProjectId && projectTop.current) {
@@ -953,13 +953,14 @@ export const Todo = (
     return (
         <>
             <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
-                <div className={`relative w-full h-[2.8rem] `}>
+                <div className={`relative w-full h-[2.8rem] border-b`}>
                     <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
-                        <a href="#" ref={projectTop} />
+                        <div ref={projectTop} />
                         <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={filterdProjects} setProjects={setExProjects} />
                         {filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={filterdProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                        <div ref={projectLast} className="text-transparent border-b min-w-[80px] h-[10px]" />
-                        <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2 border-b ">
+                        {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
+                        {/* <div className="w-full h-full border-b"></div> */}
+                        < div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
                             <ProjectEditModal
                                 buttonLabel={<Plus size={14} />}
                                 className="outline-none  p-2 rounded-md hover:bg-primary/10"
@@ -977,6 +978,7 @@ export const Todo = (
                                 setExProjects={setExProjects}
                             />
                         </div>
+                        <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
                     </div>
                 </div>
                 <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">

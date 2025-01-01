@@ -19,7 +19,7 @@ export interface TodoProps {
 
 
 export type Sort = "text" | "priority" | "context" | "creationDate" | "is_complete" | "sort" | undefined
-export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select" | "editProject"
+export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select" | "editProject" | "editProjectTab"
 
 export interface TodoEnablesProps {
     enableAddTodo: boolean

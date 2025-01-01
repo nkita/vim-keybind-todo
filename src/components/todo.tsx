@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2 } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -30,6 +30,7 @@ import { SidebarTrigger } from "./ui/sidebar"
 import { ProjectEditModal } from "./project-edit-modal"
 import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
+import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -938,18 +939,37 @@ export const Todo = (
         setTouchEndX(0);
     };
 
+    const projectTop = useRef<HTMLAnchorElement>(null);
+    const projectLast = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (!currentProjectId && projectTop.current) {
+            projectTop.current.scrollIntoView({ behavior: "smooth" })
+        }
+        if (filterdProjects.length - 1 === findIndex(filterdProjects, p => p.id === currentProjectId) && projectLast.current) {
+            projectLast.current.scrollIntoView({ behavior: "smooth" })
+        }
+    }, [currentProjectId, filterdProjects])
+
     return (
         <>
             <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
                 <div className={`relative w-full h-[2.8rem] `}>
-                    <div className={`w-full h-full flex justify-start items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
+                    <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
+                        <a href="#" ref={projectTop} />
                         <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} projects={filterdProjects} setProjects={setExProjects} />
                         {filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} projects={filterdProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                        {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
-                        {/* <div className="w-full h-full border-b"></div> */}
-                        <div className="sticky right-0 top-0 h-full bg-muted flex items-center px-2 border-b ">
+                        <div ref={projectLast} className="text-transparent border-b min-w-[80px] h-[10px]" />
+                        <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2 border-b ">
                             <ProjectEditModal
-                                buttonLabel={<Plus size={16} />}
+                                buttonLabel={<Plus size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
+                            />
+                            <ProjectTabSettingModal
+                                buttonLabel={<Settings2 size={14} />}
                                 className="outline-none  p-2 rounded-md hover:bg-primary/10"
                                 mode={mode}
                                 setMode={setMode}

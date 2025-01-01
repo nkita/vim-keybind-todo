@@ -38,6 +38,8 @@ export const SelectModal = (
         saveCloud?: (id: string, name: string) => void
     }) => {
     const [isView, setIsView] = useState(false)
+    const [isNewItem, setIsNewItem] = useState(false)
+
     useEffect(() => {
         setIsView(
             currentIndex === index
@@ -76,7 +78,7 @@ export const SelectModal = (
                 open={isView}
                 onClickOpen={open}
                 onClickChange={close}>
-                <div>
+                <div className="h-full">
                     <div className="text-gray-500">
                         <p className="pt-3 hidden sm:block ">
                             <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル

@@ -84,7 +84,7 @@ export const ProjectTabSettingModal = (
             onClickChange={handleCloseProject}>
             <div className="h-[calc(100vh-200px)] overflow-auto p-3">
 
-                <Form {...form}>
+                {/* <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                         {exProjects && exProjects.map(p => {
                             return (
@@ -107,7 +107,7 @@ export const ProjectTabSettingModal = (
                             <Button type="submit">追加</Button>
                         </div>
                     </form>
-                </Form>
+                </Form> */}
             </div>
         </Modal>
     )

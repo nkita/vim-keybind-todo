@@ -7,19 +7,19 @@ import { ProjectProps } from "@/types"
 
 export const ProjectTab = (
     {
-        currentProjectId, index, project, projects, setProjects, onClick
+        currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick
     }: {
         currentProjectId: string,
         index: number,
         project?: ProjectProps,
-        projects: ProjectProps[],
+        exProjects: ProjectProps[],
+        filterdProjects: ProjectProps[],
         setProjects: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
         onClick: (index: number, prefix: string) => void
     }
 ) => {
     const config = useContext(TodoContext)
     const ref = React.useRef<HTMLButtonElement>(null)
-
     useEffect(() => {
         if (project && currentProjectId === project.id) {
             ref.current?.scrollIntoView({ behavior: "smooth" })
@@ -28,7 +28,7 @@ export const ProjectTab = (
 
     const handleHidden = () => {
         if (!project) return
-        let _projects = projects.map((v: ProjectProps, i: number) => {
+        let _projects = exProjects.map((v: ProjectProps, i: number) => {
             if (v.id === project.id) v.isTabDisplay = false
             v.sort = i
             return v
@@ -42,7 +42,7 @@ export const ProjectTab = (
         }
         setProjects(_projects)
     }
-    const currentProjectIdx = projects.map(p => p.id).indexOf(currentProjectId)
+    const currentProjectIdx = filterdProjects.map(p => p.id).indexOf(currentProjectId)
     const current = index === currentProjectIdx
     const prevCurrent = index === currentProjectIdx - 1
 

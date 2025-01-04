@@ -57,7 +57,8 @@ export const ProjectTabSettingModal = (
                 isTabDisplay: form.getValues(`projects-${project.id}-isTabDisplay`) === "on"
             };
         }));
-        //Todo 閉じる処理とか
+        setMode("normal")
+        setOpen(false)
     }
 
     const handleOpenProject = () => {

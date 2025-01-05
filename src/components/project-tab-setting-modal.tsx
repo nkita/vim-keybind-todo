@@ -1,8 +1,5 @@
 import { Modal } from "./ui/modal"
 import { Button } from "./ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { Input } from "./ui/input"
 import { Mode, ProjectProps } from "@/types"
@@ -10,7 +7,6 @@ import { useEffect, useState, useContext } from "react"
 import { TodoContext } from "@/provider/todo";
 import { postSaveProjects } from "@/lib/todo"
 import { Switch } from "./ui/switch"
-import { get } from "lodash"
 
 
 export const ProjectTabSettingModal = (
@@ -32,6 +28,7 @@ export const ProjectTabSettingModal = (
         setExProjects: React.Dispatch<React.SetStateAction<ProjectProps[]>>
     }) => {
 
+    const config = useContext(TodoContext)
     const [open, setOpen] = useState(false)
 
     const form = useForm();
@@ -47,13 +44,22 @@ export const ProjectTabSettingModal = (
 
 
     const handleSubmitButton = () => {
-        setExProjects(prevProjects => prevProjects.map(project => {
-            return {
-                ...project,
-                name: form.getValues(`projects-${project.id}-name`),
-                isTabDisplay: form.getValues(`projects-${project.id}-isTabDisplay`)
-            };
-        }));
+        if (!exProjects) return
+        let _projects = exProjects.map((p: ProjectProps, i: number) => {
+            p.name = form.getValues(`projects - ${p.id} - name`)
+            p.isTabDisplay = form.getValues(`projects - ${p.id} - isTabDisplay`)
+            p.sort = i
+            return p
+        })
+
+        if (config.list && config.token) {
+            postSaveProjects(
+                _projects,
+                config.list,
+                config.token
+            )
+        }
+        setExProjects(_projects)
         setMode("normal")
         setOpen(false)
     }
@@ -89,12 +95,12 @@ export const ProjectTabSettingModal = (
                                 </div>
                                 <Input
                                     className="w-full border-none hover:bg-muted"
-                                    {...form.register(`projects-${p.id}-name`, { value: p.name })}
+                                    {...form.register(`projects - ${p.id} - name`, { value: p.name })}
                                 />
                                 <Switch
                                     defaultChecked={p.isTabDisplay}
-                                    onCheckedChange={(checked) => form.setValue(`projects-${p.id}-isTabDisplay`, checked)}
-                                    {...form.register(`projects-${p.id}-isTabDisplay`, { value: p.isTabDisplay })}
+                                    onCheckedChange={(checked) => form.setValue(`projects - ${p.id} - isTabDisplay`, checked)}
+                                    {...form.register(`projects - ${p.id} - isTabDisplay`, { value: p.isTabDisplay })}
                                 />
                             </div>
                         )

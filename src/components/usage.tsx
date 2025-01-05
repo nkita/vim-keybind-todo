@@ -22,8 +22,8 @@ export const Usage = ({
 
     return (
         <>
-            <div className={`h-full w-full p-4 border-t text-card-foreground bg-card  group`}>
-                <div className="flex justify-between h-[40px] shadow-l">
+            <div className={`h-full w-full p-4 border-t-4 rounded-3xl text-card-foreground bg-card  group `}>
+                <div className="flex justify-between h-[40px]">
                     <h1 className="flex gap-1 p-2 text-md  text-center items-end text-nowrap"><Keyboard />使い方 </h1>
                     <Button tabIndex={-1} variant={"link"} className="text-xs text-current text-nowrap" onClick={_ => setHelp(p => !p)}> 閉じる&nbsp;<kbd>?</kbd></Button>
                 </div>

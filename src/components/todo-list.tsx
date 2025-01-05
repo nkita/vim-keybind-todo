@@ -117,7 +117,7 @@ export const TodoList = (
                     </div>
                 }
                 <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${hcssMainHeight} bg-muted table-scrollbar`} index={currentIndex}>
-                    <TableBody className=" text-sm">
+                    <TableBody className=" text-sm border-b">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -158,7 +158,7 @@ export const TodoList = (
                                                     nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                 }
                                                 const common_color_css = `
-                                                    ${(mode !== "select" && currentIndex === index) ? "bg-sky-100 text-todo-accent-foreground " : "bg-card"}
+                                                    ${(mode !== "select" && currentIndex === index) ? " bg-border text-todo-accent-foreground " : "bg-card"}
                                                     ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
                                                     ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                 `
@@ -300,7 +300,7 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm`} />
+                <div className={`hidden sm:block  bg-card text-accent-foreground rounded-b-sm`} />
             </div >
         </>
     )

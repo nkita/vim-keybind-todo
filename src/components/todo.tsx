@@ -673,6 +673,10 @@ export const Todo = (
         setMode('number')
     }, setKeyEnableDefine(keymap['numberInput'].enable), [command])
 
+    useHotkeys(keymap['addProject'].keys, (e) => {
+        setMode('editProject')
+    }, setKeyEnableDefine(keymap['addProject'].enable), [command])
+
     /******************
      *
      * Number mode

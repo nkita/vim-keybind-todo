@@ -60,6 +60,7 @@ export type Keymap = {
     indent: KeymapItem;
     unIndnet: KeymapItem;
     select: KeymapItem;
+    addProject: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -386,5 +387,11 @@ export const keymap: Keymap = {
         enable: { mode: ["normal"], withoutTask: false },
         type: ["focus"],
         description: "タスク選択(select)モード"
+    },
+    addProject: {
+        keys: ['Ctrl+t'],
+        enable: { mode: ["normal"], useKey: true },
+        type: ["add"],
+        description: "プロジェクトの追加"
     }
 }

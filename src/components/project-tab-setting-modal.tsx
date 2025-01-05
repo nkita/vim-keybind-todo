@@ -37,14 +37,11 @@ export const ProjectTabSettingModal = (
     const form = useForm();
 
     useEffect(() => {
-        if (mode === "editProjectTab" && !open) {
-            form.reset({
-                projects: exProjects.reduce((acc: Record<string, { name: string; isTabDisplay: boolean }>, project) => {
-                    acc[project.id] = { name: project.name, isTabDisplay: project.isTabDisplay };
-                    return acc;
-                }, {}),
-            });
-            setOpen(true);
+        if (mode === "editProjectTab" && open) {
+            exProjects.forEach(project => {
+                form.setValue(`projects-${project.id}-name`, project.name);
+                form.setValue(`projects-${project.id}-isTabDisplay`, project.isTabDisplay);
+            })
         }
     }, [mode, exProjects, form, open]);
 
@@ -54,7 +51,7 @@ export const ProjectTabSettingModal = (
             return {
                 ...project,
                 name: form.getValues(`projects-${project.id}-name`),
-                isTabDisplay: form.getValues(`projects-${project.id}-isTabDisplay`) === "on"
+                isTabDisplay: form.getValues(`projects-${project.id}-isTabDisplay`)
             };
         }));
         setMode("normal")
@@ -62,7 +59,6 @@ export const ProjectTabSettingModal = (
     }
 
     const handleOpenProject = () => {
-        form.reset()
         setMode("editProjectTab")
         setOpen(true)
     }
@@ -97,8 +93,8 @@ export const ProjectTabSettingModal = (
                                 />
                                 <Switch
                                     defaultChecked={p.isTabDisplay}
-                                    onCheckedChange={(checked) => form.setValue(`projects-${p.id}-isTabDisplay`, checked ? "on" : "off")}
-                                    {...form.register(`projects-${p.id}-isTabDisplay`)}
+                                    onCheckedChange={(checked) => form.setValue(`projects-${p.id}-isTabDisplay`, checked)}
+                                    {...form.register(`projects-${p.id}-isTabDisplay`, { value: p.isTabDisplay })}
                                 />
                             </div>
                         )

@@ -6,10 +6,8 @@ export interface TodoProps {
     creationDate?: string    // format yyyy-mm-dd
     text: string
     detail?: string
-    project?: string    // +projctname *Deprecation
     projectId?: string    // +projctId
-    context?: string    // @context    
-    labelId?: string    // @context    
+    labelId?: string    // @labelId
     isArchived?: boolean
     sort?: number
     limitDate?: string
@@ -18,7 +16,7 @@ export interface TodoProps {
 }
 
 
-export type Sort = "text" | "priority" | "context" | "creationDate" | "is_complete" | "sort" | undefined
+export type Sort = "text" | "priority" | "creationDate" | "is_complete" | "sort" | undefined
 export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select" | "editProject" | "editProjectTab"
 
 export interface TodoEnablesProps {

@@ -3,14 +3,13 @@ import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
-import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag } from "react-icons/fa6";
+import { FaRegCircle, FaCircleCheck } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
-import { Item } from "./todo-list-item"
-import { Box, ChevronsUpDown, CircleCheck, MessageCircleMore, Move, MoveVertical, Star, StickyNote, Tag } from "lucide-react"
+import { Text } from "./todo-list-text"
+import { Box, ChevronsUpDown, MessageCircleMore, Star, StickyNote, Tag } from "lucide-react"
 import { find as lfind } from "lodash"
 import { TodoContext } from "@/provider/todo";
 import { postSaveLabels, postSaveProjects } from "@/lib/todo"
-import { list } from "postcss"
 
 export const TodoList = (
     {
@@ -20,7 +19,6 @@ export const TodoList = (
         mode,
         exProjects,
         exLabels,
-        labels,
         currentProjectId,
         sort,
         loading,
@@ -37,7 +35,6 @@ export const TodoList = (
         mode: Mode
         exProjects: ProjectProps[]
         exLabels: LabelProps[]
-        labels: string[]
         currentProjectId: string
         sort: Sort
         loading: Boolean
@@ -215,11 +212,10 @@ export const TodoList = (
                                                                 <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1"
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>
-                                                                    <Item
+                                                                    <Text
                                                                         t={t}
                                                                         index={index}
                                                                         currentIndex={currentIndex}
-                                                                        prefix={"text"}
                                                                         currentPrefix={prefix}
                                                                         className={`
                                                                             ${t.priority === "1" && "text-primary"}

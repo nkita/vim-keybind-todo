@@ -70,36 +70,33 @@ export const Todo = (
     const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("todo_is_view_completion", true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
-    const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
-    const [log, setLog] = useState("")
-    const [currentProject, setCurrentProject] = useState("")
     const [currentProjectId, setCurrentProjectId] = useState("")
 
-    const [projects, setProjects] = useState<string[]>([])
-
-    const [labels, setLabels] = useState<string[]>([])
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [filterdProjects, setFilterdProjects] = useState<ProjectProps[]>(exProjects)
 
-    const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
         todosLimit: 100,
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
+    const resizeRef = useRef<ImperativePanelHandle>(null);
+
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
 
-    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
-    const resizeRef = useRef<ImperativePanelHandle>(null);
+    const [currentKeys, setCurrentKeys] = useState<String[]>([])
+    const [log, setLog] = useState("")
+    const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
+
     useEffect(() => {
         const panel = resizeRef.current;
         if (panel) {
@@ -505,11 +502,11 @@ export const Todo = (
         setMode('modal')
     }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
 
-    // change to context edit mode
-    useHotkeys(keymap['editContext'].keys, (e) => {
+    // change to label edit mode
+    useHotkeys(keymap['editLabel'].keys, (e) => {
         setPrefix('labelId')
         setMode('modal')
-    }, setKeyEnableDefine(keymap['editContext'].enable))
+    }, setKeyEnableDefine(keymap['editLabel'].enable))
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
@@ -569,12 +566,6 @@ export const Todo = (
         setSort("creationDate")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
-
-    useHotkeys(keymap['sortContext'].keys, (e) => {
-        keepPosition(filterdTodos, currentIndex)
-        setSort("context")
-        setMode("normal")
-    }, setKeyEnableDefine(keymap['sortContext'].enable), [filterdTodos, currentIndex])
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
         keepPosition(filterdTodos, currentIndex)
@@ -710,7 +701,7 @@ export const Todo = (
         setCommand('')
     }, setKeyEnableDefine(keymap['editProjectLine'].enable), [command])
 
-    useHotkeys(keymap['editContextLine'].keys, (e) => {
+    useHotkeys(keymap['editLabelLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
             setPrefix('labelId')
@@ -719,7 +710,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['editContextLine'].enable), [command])
+    }, setKeyEnableDefine(keymap['editLabelLine'].enable), [command])
 
     useHotkeys(keymap['editTextLine'].keys, (e) => {
         const line = parseInt(command)
@@ -789,7 +780,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
 
     const handleClickElement = (index: number, prefix: string) => {
-        console.log("koko?? Element")
         if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)
         if (['priority', 'text'].includes(prefix)) {
@@ -797,7 +787,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('edit')
         }
-        if (['context', 'project', 'projectId', 'labelId'].includes(prefix)) {
+        if (['projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
@@ -809,22 +799,19 @@ export const Todo = (
         }
     }
     const handleClickDetailElement = (prefix: string) => {
-        console.log("koko?? detail Element")
         if (prefix === 'completion') completeTask(currentIndex, prevTodos)
         if (prefix === 'detail' || prefix === "text") {
             setPrefix(prefix)
             setMode("editDetail")
         }
         if (prefix === "normal") toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
-        if (['context', 'project', 'projectId', 'labelId'].includes(prefix)) {
+        if (['projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        console.log("koko?? ")
         if (mode !== "modal" && mode !== "normal") {
-            console.log("koko?? to  normal")
             toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         }
         e.preventDefault()
@@ -832,9 +819,7 @@ export const Todo = (
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        console.log("koko?? detail ")
         if (mode !== "modal" && mode !== "normal") {
-            console.log("koko?? detail to normal")
             toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         }
         e.stopPropagation();
@@ -1022,7 +1007,6 @@ export const Todo = (
                                     prefix={prefix}
                                     mode={mode}
                                     exProjects={exProjects}
-                                    labels={labels}
                                     exLabels={exLabels}
                                     currentProjectId={currentProjectId}
                                     sort={sort}
@@ -1064,7 +1048,6 @@ export const Todo = (
                                                 exLabels={exLabels}
                                                 prefix={prefix}
                                                 mode={mode}
-                                                isHelp={isHelp}
                                                 onMouseDownEvent={handleDetailMouseDown}
                                                 onClick={handleClickDetailElement}
                                                 setValue={setValue}
@@ -1089,11 +1072,9 @@ export const Todo = (
                     <BottomMenu
                         todos={todos}
                         prevTodos={prevTodos}
-                        loading={loading}
                         completionOnly={completionOnly}
                         viewCompletionTask={viewCompletionTask}
                         projects={exProjects}
-                        currentProject={currentProject}
                         currentProjectId={currentProjectId}
                         setViewCompletionTask={setViewCompletionTask}
                         setCurrentProjectId={setCurrentProjectId}
@@ -1106,7 +1087,6 @@ export const Todo = (
                             <Usage
                                 sort={sort}
                                 mode={mode}
-                                isHelp={isHelp}
                                 setHelp={setHelp}
                                 isTodos={filterdTodos.length > 0}
                             />

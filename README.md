@@ -20,7 +20,7 @@
 ### Todoフォーマット
 
 ```text:format
-[Completion mark] [Priolity mark] [Completion date] [Creation Date] [Todo text] [Project tag] [Context tag] [Due date] [Todo detail text]
+[Completion mark] [Priolity mark] [Completion date] [Creation Date] [Todo text] [Project tag] [Label tag] [Due date] [Todo detail text]
 ```
 
 ### Todo例
@@ -54,7 +54,7 @@ x (A) 2024-02-01 2024-01-01 go to home +Private @shopping due:2024-02-01 detail:
 | 編集する（編集モード切り替え）| e | todo |
 | 優先度を編集する| | mark priority (A-Z)|
 | コンテキストを編集|  | Project Tag |
-| プロジェクトを編集|  | Context Tag |
+| ラベルを編集|  | Label Tag |
 | コピー| `y` or `c` | - |
 | フォーカス中のタスクの下部にペースト| `p` | - |
 | フォーカス中のタスクの上部にペースト| `P` | - |
@@ -91,6 +91,6 @@ interface Todo {
     creationDate?   : string    // format yyyy-mm-dd
     text            : string
     project?        : string    // +projctname
-    context?        : string    // @context
+    label?        : string    // @label
 }
 ```

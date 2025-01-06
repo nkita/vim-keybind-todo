@@ -16,10 +16,8 @@ export const BottomMenu = (
     {
         todos,
         prevTodos,
-        loading,
         completionOnly,
         projects,
-        currentProject,
         currentProjectId,
         viewCompletionTask,
         todoEnables,
@@ -30,10 +28,8 @@ export const BottomMenu = (
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
-        loading: Boolean
         completionOnly?: boolean
         projects: ProjectProps[]
-        currentProject: string
         currentProjectId: string
         viewCompletionTask: boolean
         todoEnables: TodoEnablesProps

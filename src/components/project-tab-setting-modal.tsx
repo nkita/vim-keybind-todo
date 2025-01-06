@@ -46,12 +46,12 @@ export const ProjectTabSettingModal = (
     const handleSubmitButton = () => {
         if (!exProjects) return
         let _projects = exProjects.map((p: ProjectProps, i: number) => {
-            p.name = form.getValues(`projects - ${p.id} - name`)
-            p.isTabDisplay = form.getValues(`projects - ${p.id} - isTabDisplay`)
+            p.name = form.getValues(`projects-${p.id}-name`)
+            p.isTabDisplay = form.getValues(`projects-${p.id}-isTabDisplay`)
             p.sort = i
             return p
         })
-
+        console.log(_projects)
         if (config.list && config.token) {
             postSaveProjects(
                 _projects,
@@ -95,12 +95,12 @@ export const ProjectTabSettingModal = (
                                 </div>
                                 <Input
                                     className="w-full border-none hover:bg-muted"
-                                    {...form.register(`projects - ${p.id} - name`, { value: p.name })}
+                                    {...form.register(`projects-${p.id}-name`, { value: p.name })}
                                 />
                                 <Switch
                                     defaultChecked={p.isTabDisplay}
-                                    onCheckedChange={(checked) => form.setValue(`projects - ${p.id} - isTabDisplay`, checked)}
-                                    {...form.register(`projects - ${p.id} - isTabDisplay`, { value: p.isTabDisplay })}
+                                    onCheckedChange={(checked) => form.setValue(`projects-${p.id}-isTabDisplay`, checked)}
+                                    {...form.register(`projects-${p.id}-isTabDisplay`, { value: p.isTabDisplay })}
                                 />
                             </div>
                         )

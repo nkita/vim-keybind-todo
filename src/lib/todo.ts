@@ -47,7 +47,6 @@ export const todoFunc = {
                     text: options.text ?? "",
                     priority: options.priority ?? "",
                     detail: "",
-                    project: options.project ?? "",
                     projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
@@ -65,13 +64,10 @@ export const todoFunc = {
             creationDate: t.id === replace.id ? replace.creationDate : t.creationDate,
             text: t.id === replace.id ? replace.text : t.text,
             detail: t.id === replace.id ? replace.detail : t.detail,
-            project: t.id === replace.id ? replace.project : t.project,
             projectId: t.id === replace.id ? replace.projectId : t.projectId,
-            context: t.id === replace.id ? replace.context : t.context,
             labelId: t.id === replace.id ? replace.labelId : t.labelId,
             sort: t.id === replace.id ? replace.sort : t.sort,
             indent: t.id === replace.id ? replace.indent : t.indent,
-            limitDate: t.id === replace.id ? replace.limitDate : t.limitDate,
         }
     }),
     /**
@@ -89,6 +85,7 @@ export const todoFunc = {
         const updates = todos.filter(t => {
             const _t = prevTodos.filter(pt => pt.id === t.id)
             const flg = (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
+            console.log("diff", t, _t[0], isEqual(_t[0], t))
             // if (flg) console.log("diff", t, _t[0])
             return flg
             // return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
@@ -115,7 +112,6 @@ export const todoFunc = {
                 case "text":
                 case "priority":
                 case "detail":
-                case "labelId":
                     if (value) isEmpty = false
                     break;
             }

@@ -6,7 +6,6 @@ import { postFetch } from "./fetch"
 export interface Options {
     text?: string;
     priority?: string;
-    project?: string;
     projectId?: string;
     viewCompletionTask?: boolean;
     indent?: number;
@@ -28,7 +27,6 @@ export const todoFunc = {
                     text: options.text ?? "",
                     priority: options.priority ?? "",
                     detail: "",
-                    project: options.project ?? "",
                     projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
@@ -85,7 +83,7 @@ export const todoFunc = {
         const updates = todos.filter(t => {
             const _t = prevTodos.filter(pt => pt.id === t.id)
             const flg = (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
-            console.log("diff", t, _t[0], isEqual(_t[0], t))
+            // console.log("diff", t, _t[0], isEqual(_t[0], t))
             // if (flg) console.log("diff", t, _t[0])
             return flg
             // return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0

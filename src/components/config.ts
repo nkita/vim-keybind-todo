@@ -24,17 +24,17 @@ export type Keymap = {
     increasePriority: KeymapItem;
     decreasePriority: KeymapItem;
     editProject: KeymapItem;
-    editContext: KeymapItem;
+    editLabel: KeymapItem;
     editTextLine: KeymapItem;
     editDetail: KeymapItem;
     editProjectLine: KeymapItem;
-    editContextLine: KeymapItem;
+    editLabelLine: KeymapItem;
     moveProjectRight: KeymapItem;
     moveProjectLeft: KeymapItem;
     // sortMode: KeymapItem;
     sortPriority: KeymapItem;
     sortCreationDate: KeymapItem;
-    sortContext: KeymapItem;
+    sortLabel: KeymapItem;
     sortCompletion: KeymapItem;
     sortClear: KeymapItem
     normalMode: KeymapItem;
@@ -114,7 +114,7 @@ export const keymap: Keymap = {
     insertTopOnSort: {
         keys: ['shift+i',],
         keysDisp: ['I'],
-        enable: { mode: ["normal"], sort: ['priority', 'context', 'text', 'creationDate', 'is_complete'] },
+        enable: { mode: ["normal"], sort: ['priority', 'text', 'creationDate', 'is_complete'] },
         type: ["add"],
         description: "タスク追加"
     },
@@ -171,7 +171,7 @@ export const keymap: Keymap = {
         type: ["edit"],
         description: "プロジェクトを編集"
     },
-    editContext: {
+    editLabel: {
         keys: ['Shift+l',],
         keysDisp: ['L',],
         enable: { mode: ["normal"], withoutTask: false },
@@ -196,7 +196,7 @@ export const keymap: Keymap = {
         type: ["sort"],
         description: "作成日"
     },
-    sortContext: {
+    sortLabel: {
         keys: ['shift+l'],
         keysDisp: ['L'],
         enable: { mode: ["sort"] },
@@ -299,7 +299,7 @@ export const keymap: Keymap = {
         type: ["edit"],
         description: "指定した行のプロジェクトを編集"
     },
-    editContextLine: {
+    editLabelLine: {
         keys: ['shift+l'],
         keysDisp: ["L"],
         enable: { mode: ["number"], withoutTask: false },

@@ -27,7 +27,7 @@ export const SelectModal = (
         item: ComboboxDynamicItemProps | undefined
         items: ComboboxDynamicItemProps[]
         mode: Mode
-        prefix: "text" | "priority" | "project" | "context" | "detail" | "projectId" | "labelId"
+        prefix: "text" | "priority" | "detail" | "projectId" | "labelId"
         currentPrefix: string
         className?: string | undefined
         register: any

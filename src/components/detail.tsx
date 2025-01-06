@@ -15,7 +15,6 @@ export const Detail = ({
     exLabels,
     mode,
     prefix,
-    isHelp,
     onClick,
     onMouseDownEvent,
     setValue,
@@ -26,7 +25,6 @@ export const Detail = ({
     exLabels: LabelProps[]
     mode: string
     prefix: string
-    isHelp: boolean
     onClick: (prefix: string) => void
     onMouseDownEvent: (e: MouseEvent<HTMLDivElement>) => void
     setValue: UseFormSetValue<FieldValues>

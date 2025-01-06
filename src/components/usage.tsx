@@ -9,13 +9,11 @@ import { Dispatch, SetStateAction } from 'react'
 export const Usage = ({
     sort,
     mode,
-    isHelp,
     setHelp,
     isTodos,
 }: {
     sort: Sort
     mode: Mode
-    isHelp: boolean
     setHelp: Dispatch<SetStateAction<boolean>>
     isTodos: boolean
 }) => {

@@ -82,12 +82,10 @@ export default function MyHisotry() {
   }
   if (user === undefined && !userLoading) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-secondary-foreground">
-          <p className="flex items-center gap-1">
-            <MessageCircleWarning className="h-8 text-primary" />
-            過去の履歴機能は、会員限定です
-          </p>
+      <div className="flex items-center justify-center h-screen text-secondary-foreground">
+        <p className="flex items-center gap-1">
+          <MessageCircleWarning className="h-8 text-primary" />
+          過去の履歴機能は、会員限定です
         </p>
       </div>
     )
@@ -110,7 +108,7 @@ export default function MyHisotry() {
                   projectName=""
                   start=""
                   end=""
-                  tags={[]}
+                  labels={[]}
                   in_progress={0}
                   completed={0}
                 />
@@ -122,7 +120,7 @@ export default function MyHisotry() {
                   projectName={project.name}
                   start={project.start.split("T")[0]}
                   end={project.end.split("T")[0]}
-                  tags={project.tags}
+                  labels={project.labels}
                   in_progress={project.in_progress}
                   completed={project.completed}
                 />
@@ -171,7 +169,7 @@ const ExProjectSummary = ({
   projectName,
   start,
   end,
-  tags,
+  labels,
   in_progress,
   completed,
   isLoading,
@@ -180,7 +178,7 @@ const ExProjectSummary = ({
     projectName: string,
     start: string,
     end: string,
-    tags: string[],
+    labels: string[],
     in_progress: number,
     completed: number,
     isLoading: boolean
@@ -220,15 +218,15 @@ const ExProjectSummary = ({
           </div>
         </CardDescription>
       </CardHeader>
-      {tags.length > 0 &&
+      {labels.length > 0 &&
         <CardContent>
           <div className="flex justify-between items-end">
             {isLoading ? (<div />) : (
               <>
-                {tags.length <= 0 && <div />}
+                {labels.length <= 0 && <div />}
                 <div className="flex flex-wrap gap-2 ">
-                  {tags.map((tag) => (
-                    <ExLabelBadge key={tag}>{tag}</ExLabelBadge>
+                  {labels.map((label) => (
+                    <ExLabelBadge key={label}>{label}</ExLabelBadge>
                   ))}
                 </div>
               </>
@@ -278,9 +276,9 @@ const ExTimeline = (
                   </div>
                   <h3 className="space-y-3">
                     <span className={`pl-1 mr-1 ${item.timelineType === "create" ? '' : 'text-muted-foreground'} `}>{item.text}</span>
-                    <span className="text-xs font-semibold flex gap-1 text-ex-project items-center">
-                      {item.project && <span className="flex"><Box className="h-4 text-ex-project" />{item.project}</span>}
-                      {item.context && <span className="flex"><Tag className="h-4 text-ex-label" />{item.project}</span>}
+                    <span className="text-xs font-semibold flex gap-1  items-center">
+                      {item.project && <span className="flex text-ex-project"><Box className="h-4" />{item.project}</span>}
+                      {item.label && <span className="flex text-ex-label"><Tag className="h-4" />{item.label}</span>}
                     </span>
                   </h3>
                   {/* {item.timelineType !== "create" &&

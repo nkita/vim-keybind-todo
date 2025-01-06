@@ -51,7 +51,6 @@ export const ProjectTabSettingModal = (
             p.sort = i
             return p
         })
-        console.log(_projects)
         if (config.list && config.token) {
             postSaveProjects(
                 _projects,

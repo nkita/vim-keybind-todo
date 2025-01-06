@@ -129,20 +129,6 @@ export const Todo = (
     }
 
     useEffect(() => {
-        let projects: (string | undefined)[] = []
-        let labels: (string | undefined)[] = []
-        todos.forEach(t => {
-            projects.push(t.project)
-            labels.push(t.context)
-        })
-        const _p = projects.filter(p => p !== undefined && p !== "") as string[];
-        const _l = labels.filter(l => l !== undefined && l !== "") as string[];
-        setProjects(Array.from(new Set([..._p])).sort());
-        setLabels(Array.from(new Set([..._l])).sort())
-    }, [todos])
-
-
-    useEffect(() => {
         setTodoEnables(prev => {
             prev.enableAddTodo = todos.filter(t => !t.is_complete).length < prev.todosLimit
             return prev
@@ -229,7 +215,6 @@ export const Todo = (
             setValue(`edit-list-text-${t.id}`, t.text)
         })
         const d = todoFunc.diff(_t, prevTodos).filter(t => !todoFunc.isEmpty(t))
-        debugLog(`diff:`, d)
         debugLog(`isUpdate:${d.length > 0}`)
         if (d.length > 0) {
             setIsUpdate(true)
@@ -269,14 +254,11 @@ export const Todo = (
             completionDate: targetTodo.completionDate,
             creationDate: targetTodo.creationDate,
             text: replaceText,
-            project: getValues(`edit-list-project-${targetTodoId}`),
             projectId: getValues(`edit-list-projectId-${targetTodoId}`),
-            context: getValues(`edit-list-context-${targetTodoId}`),
             labelId: getValues(`edit-list-labelId-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
             sort: targetTodo.sort,
             indent: targetTodo.indent,
-            limitDate: targetTodo.limitDate
         }
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
@@ -303,14 +285,11 @@ export const Todo = (
             completionDate: !filterdTodos[index].is_complete ? new Date().toISOString() : null,
             creationDate: filterdTodos[index].creationDate,
             text: filterdTodos[index].text,
-            project: filterdTodos[index].project,
             projectId: filterdTodos[index].projectId,
-            context: filterdTodos[index].context,
             labelId: filterdTodos[index].labelId,
             detail: filterdTodos[index].detail,
             sort: filterdTodos[index].sort,
             indent: filterdTodos[index].indent,
-            limitDate: filterdTodos[index].limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -334,14 +313,11 @@ export const Todo = (
             completionDate: targetTodo.completionDate,
             creationDate: targetTodo.creationDate,
             text: targetTodo.text,
-            project: targetTodo.project,
             projectId: targetTodo.projectId,
-            context: targetTodo.context,
             labelId: targetTodo.labelId,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
-            limitDate: targetTodo.limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -359,14 +335,11 @@ export const Todo = (
             completionDate: targetTodo.completionDate,
             creationDate: targetTodo.creationDate,
             text: targetTodo.text,
-            project: targetTodo.project,
             projectId: targetTodo.projectId,
-            context: targetTodo.context,
             labelId: targetTodo.labelId,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: indent,
-            limitDate: targetTodo.limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -816,6 +789,7 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
 
     const handleClickElement = (index: number, prefix: string) => {
+        console.log("koko?? Element")
         if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)
         if (['priority', 'text'].includes(prefix)) {
@@ -835,6 +809,7 @@ export const Todo = (
         }
     }
     const handleClickDetailElement = (prefix: string) => {
+        console.log("koko?? detail Element")
         if (prefix === 'completion') completeTask(currentIndex, prevTodos)
         if (prefix === 'detail' || prefix === "text") {
             setPrefix(prefix)
@@ -847,15 +822,21 @@ export const Todo = (
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        if (mode !== "modal") {
+        console.log("koko?? ")
+        if (mode !== "modal" && mode !== "normal") {
+            console.log("koko?? to  normal")
             toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
-            e.preventDefault()
-            e.stopPropagation();
         }
+        e.preventDefault()
+        e.stopPropagation();
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        console.log("koko?? detail ")
+        if (mode !== "modal" && mode !== "normal") {
+            console.log("koko?? detail to normal")
+            toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        }
         e.stopPropagation();
     }
 

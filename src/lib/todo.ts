@@ -1,20 +1,21 @@
-import { TodoProps, Sort, SaveTodosReturnProps } from "@/types"
+import { TodoProps, Sort, SaveTodosReturnProps, ProjectProps, LabelProps } from "@/types"
 import { yyyymmddhhmmss } from "./time"
 import { isEqual, replace } from "lodash"
 import { postFetch } from "./fetch"
 
-export interface options {
-    text?: string
-    priority?: string
-    project?: string
-    viewCompletionTask?: boolean
-    indent?: number
+export interface Options {
+    text?: string;
+    priority?: string;
+    projectId?: string;
+    viewCompletionTask?: boolean;
+    indent?: number;
 }
+
 export const todoFunc = {
-    add: (index: number, todos: TodoProps[], options: options) => {
+    add: (index: number, todos: TodoProps[], options: Options) => {
         const newId = self.crypto.randomUUID()
         const _indent = options.indent ?? 0
-        let _todos = !options.project ? todos : todos.filter(t => t.project === options.project)
+        let _todos = !options.projectId ? todos : todos.filter(t => t.projectId === options.projectId)
         if (!options.viewCompletionTask) _todos = _todos.filter(t => t.is_complete !== true)
         if (index === 0 || index >= _todos.length) {
             return [
@@ -26,7 +27,7 @@ export const todoFunc = {
                     text: options.text ?? "",
                     priority: options.priority ?? "",
                     detail: "",
-                    project: options.project ?? "",
+                    projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
                 },
@@ -44,7 +45,7 @@ export const todoFunc = {
                     text: options.text ?? "",
                     priority: options.priority ?? "",
                     detail: "",
-                    project: options.project ?? "",
+                    projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
                 },
@@ -61,11 +62,10 @@ export const todoFunc = {
             creationDate: t.id === replace.id ? replace.creationDate : t.creationDate,
             text: t.id === replace.id ? replace.text : t.text,
             detail: t.id === replace.id ? replace.detail : t.detail,
-            project: t.id === replace.id ? replace.project : t.project,
-            context: t.id === replace.id ? replace.context : t.context,
+            projectId: t.id === replace.id ? replace.projectId : t.projectId,
+            labelId: t.id === replace.id ? replace.labelId : t.labelId,
             sort: t.id === replace.id ? replace.sort : t.sort,
             indent: t.id === replace.id ? replace.indent : t.indent,
-            limitDate: t.id === replace.id ? replace.limitDate : t.limitDate,
         }
     }),
     /**
@@ -83,6 +83,7 @@ export const todoFunc = {
         const updates = todos.filter(t => {
             const _t = prevTodos.filter(pt => pt.id === t.id)
             const flg = (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
+            // console.log("diff", t, _t[0], isEqual(_t[0], t))
             // if (flg) console.log("diff", t, _t[0])
             return flg
             // return (_t.length > 0 && !isEqual(_t[0], t)) || _t.length === 0
@@ -109,7 +110,6 @@ export const todoFunc = {
                 case "text":
                 case "priority":
                 case "detail":
-                case "context":
                     if (value) isEmpty = false
                     break;
             }
@@ -168,6 +168,44 @@ export const postSaveTodos = async (
         return r
     } catch (e) {
         r['action'] = 'save'
+        r['error'] = e
+        return r
+    }
+}
+
+export const postSaveProjects = async (
+    projects: ProjectProps[],
+    listID: string | null,
+    token: string | null,
+): Promise<SaveTodosReturnProps> => {
+
+    let r: SaveTodosReturnProps = { action: 'skip' }
+
+    try {
+        const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/project`
+        r['action'] = 'save'
+        await postFetch(api, token, projects).catch(e => console.error(e))
+        return r
+    } catch (e) {
+        r['error'] = e
+        return r
+    }
+}
+
+export const postSaveLabels = async (
+    labels: LabelProps[],
+    listID: string | null,
+    token: string | null,
+): Promise<SaveTodosReturnProps> => {
+
+    let r: SaveTodosReturnProps = { action: 'skip' }
+
+    try {
+        const api = `${process.env.NEXT_PUBLIC_API}/api/list/${listID}/label`
+        r['action'] = 'save'
+        await postFetch(api, token, labels).catch(e => console.error(e))
+        return r
+    } catch (e) {
         r['error'] = e
         return r
     }

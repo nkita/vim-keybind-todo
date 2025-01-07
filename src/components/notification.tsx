@@ -25,21 +25,13 @@ import useSWRImmutable from "swr/immutable";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { GearIcon } from "@radix-ui/react-icons";
 
-export default function Header() {
-    const { user, isLoading: userLoading } = useAuth0();
+export default function Notification() {
     const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_info_date", undefined)
-    const [isBadge, setIsBadge] = React.useState(false)
     const { data: pullRequests, error } = useSWRImmutable(
         'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
         url => fetch(url).then(res => res.json())
     );
 
-    React.useEffect(() => {
-        if (pullRequests && pullRequests.length > 0) {
-            const latestDate = new Date(pullRequests[0].closed_at).getTime()
-            setIsBadge(checkInfoDate === undefined || latestDate > checkInfoDate)
-        }
-    }, [checkInfoDate, pullRequests])
 
     const handleClickBell = () => {
         if (pullRequests && pullRequests.length > 0) {
@@ -49,67 +41,46 @@ export default function Header() {
 
 
     return (
-        <div className={`sticky bg-background/10  backdrop-blur-xl top-0 w-full text-right h-[60px] flex items-center justify-between pr-3 `}>
-            {/* <div className="flex items-center gap-1 h-9 w-[260px]">
-                <Image width={20} height={20} src={`https://${process.env.NEXT_PUBLIC_S3_DOMAIN}/logo.png`} alt={"todo logo"} className="" />
-                <Link href="/lp"><h1 className={`pr-1 border-primary text-secondary-foreground font-semibold text-sm hover:text-primary transition-all delay-200`}>Shiba ToDo</h1></Link>
-            </div> */}
-            {/* <div className="hidden sm:flex gap-2 items-center border p-1 rounded-full text-xs m-3 truncate bg-card">
-                <ExLink path={"/me"} lock={true} label="これまでのタスクの履歴を表示します">{!user ? <Lock size={13} /> : <Sparkle size={13} />} 軌跡</ExLink>
-                <ExLink path={"/app/t"} label="進行中のタスクの一覧を表示します"><List size={13} /> 進行中</ExLink>
-                <ExLink path={"/c"} label="完了したタスクの一覧を表示します。過去完了したタスクの復元もこちらから" lock={!user}>{!user ? <Lock size={13} /> : <Check size={13} />} 完了</ExLink>
-            </div> */}
-            <div></div>
-            <div className="flex gap-4 items-center ">
-                <div className="relative">
-                    {isBadge && <span className="absolute right-1 top-1 bg-destructive rounded-full text-xs w-2 h-2"></span>}
-                    <Popover onOpenChange={handleClickBell}>
-                        <PopoverTrigger className="rounded-full p-1 text-secondary-foreground"><Bell className="h-5 w-5" /></PopoverTrigger>
-                        <PopoverContent align="end" className="shadow-xl h-[300px] w-[400px] overflow-auto">
-                            {
-                                error ? (
-                                    <div className="text-red-500">Failed</div>
-                                ) : (
-                                    <div>
-                                        {pullRequests ? (
-                                            <ul className="space-y-2">
-                                                {pullRequests.map((pr: any) => (
-                                                    <li key={pr.id} className="p-2 bg-secondary/50 text-secondary-foreground rounded-md shadow-sm">
-                                                        <div className="text-xs py-1 text-secondary-foreground/70">
-                                                            {new Date(pr.created_at).toLocaleDateString()}
-                                                        </div>
-                                                        <span className="text-sm pl-2">
-                                                            {pr.title}
-                                                        </span>
-                                                        <div className="flex justify-end pt-2">
-                                                            <Link href={pr.html_url} target="_blank" rel="noopener noreferrer" className="flex gap-1 items-center hover:border-primary transition-all animate-fade-in text-xs border rounded-full px-3 py-1">
-                                                                GitHubで確認  <ExternalLink className="h-3 w-3" />
-                                                            </Link>
-                                                        </div>
-                                                    </li>
-                                                ))}
-                                                <li className="p-2 bg-secondary/50 text-secondary-foreground rounded-md shadow-sm">
-                                                    <div className="text-xs py-1 text-secondary-foreground/70">
-                                                        2024/11/01
-                                                    </div>
-                                                    <span className="text-sm pl-2">
-                                                        🎉リリースしました！
-                                                    </span>
-                                                    <div className="flex justify-end pt-2" />
-                                                </li>
-                                            </ul>
-                                        ) : (
-                                            <Spinner className="m-2 w-8 h-8" />
-                                        )}
+        <>
+            {
+                error ? (
+                    <div className="text-red-500">Failed</div>
+                ) : (
+                    <div>
+                        {pullRequests ? (
+                            <ul className="space-y-2">
+                                {pullRequests.map((pr: any) => (
+                                    <li key={pr.id} className="p-2 bg-secondary/50 text-secondary-foreground rounded-md shadow-sm">
+                                        <div className="text-xs py-1 text-secondary-foreground/70">
+                                            {new Date(pr.created_at).toLocaleDateString()}
+                                        </div>
+                                        <span className="text-sm pl-2">
+                                            {pr.title}
+                                        </span>
+                                        <div className="flex justify-end pt-2">
+                                            <Link href={pr.html_url} target="_blank" rel="noopener noreferrer" className="flex gap-1 items-center hover:border-primary transition-all animate-fade-in text-xs border rounded-full px-3 py-1">
+                                                GitHubで確認  <ExternalLink className="h-3 w-3" />
+                                            </Link>
+                                        </div>
+                                    </li>
+                                ))}
+                                <li className="p-2 bg-secondary/50 text-secondary-foreground rounded-md shadow-sm">
+                                    <div className="text-xs py-1 text-secondary-foreground/70">
+                                        2024/11/01
                                     </div>
-                                )
-                            }
-                        </PopoverContent>
-                    </Popover>
-                </div>
-                <UserMenu user={user} userLoading={userLoading} />
-            </div>
-        </div >
+                                    <span className="text-sm pl-2">
+                                        🎉リリースしました！
+                                    </span>
+                                    <div className="flex justify-end pt-2" />
+                                </li>
+                            </ul>
+                        ) : (
+                            <Spinner className="m-2 w-8 h-8" />
+                        )}
+                    </div>
+                )
+            }
+        </>
     )
 }
 

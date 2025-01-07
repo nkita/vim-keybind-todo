@@ -1,4 +1,4 @@
-import { TodoProps, Mode } from "@/types"
+import { TodoProps, Mode, ComboboxDynamicItemProps } from "@/types"
 import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 import { useEffect, useState } from "react"
@@ -12,21 +12,22 @@ export const SelectModal = (
         currentPrefix,
         mode,
         className,
-        label,
         register,
         rhfSetValue,
         position = "list",
+        item,
         items,
         title = "",
-        onClick
+        onClick,
+        saveCloud,
     }: {
         t: TodoProps
         index: number
-        label: string | undefined
         currentIndex: number
-        items: string[]
+        item: ComboboxDynamicItemProps | undefined
+        items: ComboboxDynamicItemProps[]
         mode: Mode
-        prefix: "text" | "priority" | "project" | "context" | "detail"
+        prefix: "text" | "priority" | "detail" | "projectId" | "labelId"
         currentPrefix: string
         className?: string | undefined
         register: any
@@ -34,8 +35,11 @@ export const SelectModal = (
         position?: "list" | "content"
         title?: string,
         onClick: (index: number, prefx: string) => void
+        saveCloud?: (id: string, name: string) => void
     }) => {
     const [isView, setIsView] = useState(false)
+    const [isNewItem, setIsNewItem] = useState(false)
+
     useEffect(() => {
         setIsView(
             currentIndex === index
@@ -50,24 +54,31 @@ export const SelectModal = (
     }
 
     function close(_: boolean) {
+        if (!_) onClick(currentIndex, "normal")
+    }
+
+    const handleAddItem = (val: ComboboxDynamicItemProps) => {
+        if (val) {
+            let id = !val.id ? self.crypto.randomUUID() : val.id
+            if (val.id === "" && val.name && saveCloud) saveCloud(id, val.name)
+            rhfSetValue(`edit-${position}-${prefix}-${t.id}`, id === "delete" ? "" : id)
+        }
         onClick(currentIndex, "normal")
     }
 
-    const handleAddItem = (val: string) => {
-        rhfSetValue(`edit-${position}-${prefix}-${t.id}`, val)
-        onClick(currentIndex, "normal")
-    }
+    const itemLabel = item?.name ?? ""
+    const itemId = item?.id ?? ""
     return (
         <>
-            <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: label ?? "" })} />
+            <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: itemId })} />
             <Modal
-                buttonLabel={label}
+                buttonLabel={itemLabel}
                 dialogTitle={`${title}の選択`}
                 className={className}
                 open={isView}
                 onClickOpen={open}
-                onClickClose={close}>
-                <div>
+                onClickChange={close}>
+                <div className="h-full">
                     <div className="text-gray-500">
                         <p className="pt-3 hidden sm:block ">
                             <kbd>Enter</kbd>で確定　<kbd>Esc</kbd>でキャンセル
@@ -76,7 +87,7 @@ export const SelectModal = (
                             <kbd>↑</kbd> <kbd>↓</kbd>キーで選択
                         </p>
                         <p className="text-sm/10 pt-0 sm:pt-8">
-                            <span>現在の{title}：<span className="text-primary font-medium underline">{label}</span>{!label && "-"}</span>
+                            <span>現在の{title}：<span className="text-primary font-medium underline">{itemLabel}</span>{!itemLabel && "-"}</span>
                         </p>
                     </div>
                     <DynamicSearchSelect

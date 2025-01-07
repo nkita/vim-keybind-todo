@@ -23,13 +23,13 @@ const Table = React.forwardRef<
 
   return (
     <>
-      <div className={cn("flex flex-col justify-between overflow-auto scroll-bar", className)} ref={_ref}>
+      <div className={cn("flex flex-col justify-between overflow-auto w-full flex-nowrap text-nowrap", className)} ref={_ref}>
         <table
           ref={ref}
-          className={"w-full caption-bottom text-sm table-fixed"}
+          className={"w-full caption-bottom text-sm table table-fixed sm:table-auto"}
           {...props}
         />
-        <section className="w-full h-[150px] hidden sm:flex gap-8 md:gap-4 text-xs text-muted-foreground truncate justify-center items-center">
+        <section className="w-full h-[150px] hidden sm:flex gap-8 md:gap-4 text-4sm text-muted-foreground truncate justify-center items-center">
           <div className="flex flex-col h-full justify-center items-center gap-2">
             <kbd>k</kbd>
             <span className="flex flex-col items-center"><ArrowUpDown className="h-4" /><span className="hidden md:inline">タスクの移動</span></span>

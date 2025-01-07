@@ -1,27 +1,30 @@
-import { TodoProps } from "@/types"
+import { TodoProps, ProjectProps, LabelProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
 import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt, FaCircleInfo } from "react-icons/fa6";
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
-import { CircleX, Plus, SquareXIcon, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Box, CircleX, Plus, SquareXIcon, Tag, X } from "lucide-react";
+import { find as lfind } from "lodash"
 
+const zIndex = "z-20"
 export const Detail = ({
     todo,
+    exProjects,
+    exLabels,
     mode,
     prefix,
-    isHelp,
     onClick,
     onMouseDownEvent,
     setValue,
     register
 }: {
     todo: TodoProps
+    exProjects: ProjectProps[]
+    exLabels: LabelProps[]
     mode: string
     prefix: string
-    isHelp: boolean
     onClick: (prefix: string) => void
     onMouseDownEvent: (e: MouseEvent<HTMLDivElement>) => void
     setValue: UseFormSetValue<FieldValues>
@@ -46,23 +49,22 @@ export const Detail = ({
 
     const _classNameText = `w-full text-left outline-none bg-transparent focus:outline-primary rounded hover:cursor-text resize-none p-1`
 
-    const zIndex = "z-20"
 
     const handleClickDetail = () => {
         if (mode !== "normal") onClick('normal')
         onClick('detail')
     }
 
-    const handleClickDelete = (prefix: 'context' | 'project') => {
+    const handleClickDelete = (prefix: 'labelId' | 'projectId') => {
         setValue(`edit-list-${prefix}-${todo.id}`, '')
         onClick('normal')
     }
 
     return (
         <>
-            <div className="w-full h-full bg-transparent text-card-foreground " onMouseDown={onMouseDownEvent}>
-                <div className="flex flex-col h-[83%]">
-                    <div className={`flex max-h-[120px]  font-bold items-center gap-2 px-5 py-5 border-x border-t rounded-t-md bg-card ${zIndex} `} onMouseDown={e => e.stopPropagation()} >
+            <div className="w-full h-full text-card-foreground bg-secondary/60" onMouseDown={onMouseDownEvent}>
+                <div className="w-full h-full overflow-auto scroll-bar">
+                    <div className={`flex sticky top-0 w-full border-b-2 border-muted font-bold items-center gap-2 bg-card px-5 py-5 z-30 `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
@@ -96,60 +98,92 @@ export const Detail = ({
 
                         </div>
                     </div>
-                    <div className={`bg-card max-h-[calc(100%-150px)] w-full border-x px-5 ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
-                        <div className="relative h-full w-full border p-1 rounded-md focus-within:border-primary">
-                            <div className="h-full overflow-auto rounded-md scrollbar">
-                                <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
-                                    {mode === "editDetail" ? (
-                                        <span><kbd className="opacity-80">Esc</kbd>でもどる</span>
-                                    ) : (
-                                        <span><kbd className="opacity-80">D</kbd>で編集</span>
-                                    )}
-                                </div>
-                                <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onMouseDown={e => {
-                                    handleClickDetail()
-                                    e.stopPropagation()
-                                }}>
-                                    <TextareaAutosize
-                                        key={key}
-                                        tabIndex={-1}
-                                        minRows={5}
-                                        maxLength={10000}
-                                        className={`font-normal h-full w-full outline-none py-1 text-secondary-foreground px-2 resize-none overflow-hidden`}
-                                        placeholder={jaJson.詳細のメモのplaceholder}
-                                        {...register(`edit-content-detail-${todo.id}`)}
-                                    />
-                                </div>
+                    <div className={`w-full p-5 `} onMouseDown={e => e.stopPropagation()} >
+                        <div className="relative h-full w-full border py-2 my-4 bg-card rounded-md focus-within:border-primary">
+                            <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
+                                {mode === "editDetail" ? (
+                                    <span><kbd className="opacity-80">Esc</kbd>でもどる</span>
+                                ) : (
+                                    <span><kbd className="opacity-80">D</kbd>で編集</span>
+                                )}
+                            </div>
+                            <div className={`flex w-full h-full text-sm font-light gap-1 hover:cursor-pointer`} onMouseDown={e => {
+                                handleClickDetail()
+                                e.stopPropagation()
+                            }}>
+                                <TextareaAutosize
+                                    key={key}
+                                    tabIndex={-1}
+                                    minRows={5}
+                                    maxLength={10000}
+                                    className={`font-normal h-full w-full outline-none py-1 text-secondary-foreground px-2 resize-none overflow-hidden`}
+                                    placeholder={jaJson.詳細のメモのplaceholder}
+                                    {...register(`edit-content-detail-${todo.id}`)}
+                                />
                             </div>
                         </div>
-                    </div>
-                    <div className={`max-h-[150px] bg-card text-card-foreground py-3 px-5 border-x ${zIndex}`} onMouseDown={e => e.stopPropagation()} >
-                        {todo.context ? (
-                            <div className={`flex items-center text-ex-label text-sm font-light gap-1 pb-1 py-2`}>
-                                <FaTag /> {todo.context}
-                                <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete("context")}><X className="w-4 h-4" /></Button>
-                            </div>
-                        ) : (
-                            <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("context")}>
-                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"><FaTag />ラベルを追加</span>
-                            </Button>
-                        )}
-                        {todo.project ? (
-                            <div className={`flex items-center text-ex-project text-sm font-light gap-1 pt-3`}>
-                                <span className="flex items-center gap-1"><FaSitemap />{todo.project} </span>
-                                <Button variant="ghost" size="icon" className="w-4 h-4 text-destructive rounded-full" onClick={_ => handleClickDelete('project')}><X className="w-4 h-4" /></Button>
-                            </div>
-                        ) : (
-                            <Button variant="outline" size="sm" className="flex my-2 gap-3 items-center text-xs text-muted-foreground rounded-md" onClick={_ => onClick("project")}>
-                                <Plus className="w-4 h-4" /><span className="flex items-center gap-1"> <FaSitemap />プロジェクトを追加 </span>
-                            </Button>
-                        )}
+                        <div className="flex flex-wrap gap-2">
+                            {todo.labelId ? (
+                                <BottomLabel type={"labelId"} onClick={_ => onClick("labelId")} handleClick={handleClickDelete}>
+                                    <Tag className="h-4 w-4" />{lfind(exLabels, { id: todo.labelId })?.name}
+                                </BottomLabel>
+                            ) : (
+                                <BottomButton handleClick={_ => onClick("labelId")} type={"labelId"}>
+                                    <Tag className="h-4 w-4" />ラベルを追加
+                                </BottomButton>
+                            )}
+                            {todo.projectId ? (
+                                <BottomLabel type={"projectId"} onClick={_ => onClick("projectId")} handleClick={handleClickDelete}>
+                                    <Box className="h-4 w-4" /> {lfind(exProjects, { id: todo.projectId })?.name}
+                                </BottomLabel>
+                            ) : (
+                                <BottomButton handleClick={_ => onClick("projectId")} type={"projectId"}>
+                                    <Box className="h-4" />プロジェクトを追加
+                                </BottomButton>
+                            )}
+                        </div>
+                        <div className="h-[3rem]" />
                     </div>
                     <div
                         onMouseDown={e => e.stopPropagation()}
-                        className={`text-sm h-[45px] pt-4 pb-12  px-5 flex justify-between  text-primary/80  bg-card border-x border-b rounded-b-md  shadow-md ${zIndex}`} ><span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span></div>
+                        className={`absolute h-[3rem] bottom-0 border-t-2 border-muted border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
+                        <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
+                    </div>
+                    <div className="h-16 sm:h-0"></div>
                 </div>
             </div >
         </>
     )
 }
+
+interface BottomProps {
+    type: "labelId" | "projectId";
+    children: React.ReactNode;
+    handleClick: (type: "labelId" | "projectId") => void;
+    onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+}
+const BottomButton = ({ type, children, handleClick }: BottomProps) => {
+    return (
+        <button className="bg-card text-card-foreground border rounded-md px-3 py-2 hover:bg-accent hover:text-accent-foreground"
+            onClick={_ => handleClick(type)}>
+            <span className="flex items-center text-xs text-nowrap">{children}</span>
+        </button>
+    )
+}
+const BottomLabel = ({ children, type, onClick, handleClick }: BottomProps) => {
+    const handleDelete = (e: MouseEvent<HTMLButtonElement>) => {
+        handleClick(type)
+        e.stopPropagation()
+        e.preventDefault()
+    }
+    return (
+        <div className="h-full my-auto">
+            <div className={`flex items-center px-2 bg-card py-1 border ${type === "projectId" ? "border-ex-project text-ex-project" : "border-ex-label text-ex-label"} rounded-full`}>
+                <button onClick={onClick} className={`flex gap-1 font-light  items-center text-xs`}>
+                    {children}
+                </button>
+                <button className="ml-3 text-destructive hover:bg-accent hover:text-accent-foreground" onClick={handleDelete}><X className="w-4 h-4" /></button>
+            </div>
+        </div>
+    )
+} 

@@ -1,12 +1,15 @@
 'use client'
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
-import { TodoProps, Sort, Mode } from "@/types"
+import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from "react"
+import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
-import { FaArrowUpZA, FaRegCircle, FaCircleCheck, FaTag, FaSitemap } from "react-icons/fa6";
+import { FaRegCircle, FaCircleCheck } from "react-icons/fa6";
 import { SelectModal } from "./select-modal"
-import { Item } from "./todo-list-item"
-import { MessageCircleMore, Star } from "lucide-react"
+import { Text } from "./todo-list-text"
+import { Box, ChevronsUpDown, MessageCircleMore, Star, StickyNote, Tag } from "lucide-react"
+import { find as lfind } from "lodash"
+import { TodoContext } from "@/provider/todo";
+import { postSaveLabels, postSaveProjects } from "@/lib/todo"
 
 export const TodoList = (
     {
@@ -14,17 +17,15 @@ export const TodoList = (
         currentIndex,
         prefix,
         mode,
-        viewCompletion,
-        projects,
-        labels,
-        currentProject,
+        exProjects,
+        exLabels,
+        currentProjectId,
         sort,
-        searchResultIndex,
-        command,
         loading,
-        completionOnly,
         onClick,
         setCurrentIndex,
+        setExProjects,
+        setExLabels,
         register,
         rhfSetValue,
     }: {
@@ -32,25 +33,24 @@ export const TodoList = (
         currentIndex: number
         prefix: string
         mode: Mode
-        viewCompletion: boolean
-        projects: string[]
-        labels: string[]
-        currentProject: string
+        exProjects: ProjectProps[]
+        exLabels: LabelProps[]
+        currentProjectId: string
         sort: Sort
-        searchResultIndex: boolean[]
-        command: string
         loading: Boolean
-        completionOnly?: boolean
         onClick: (id: number, prefix: string) => void
         setCurrentIndex: Dispatch<SetStateAction<number>>
+        setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
+        setExLabels: Dispatch<SetStateAction<LabelProps[]>>
         register: UseFormRegister<FieldValues>
         rhfSetValue: UseFormSetValue<FieldValues>
     }
 ) => {
 
+    const config = useContext(TodoContext)
     const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
     const [table_project_width, set_table_project_width] = useState("w-0 sm:w-[15%] max-w-[20%]")
-    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-[calc(100%-80px)]"
+    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
     const tableHeadHeight = "h-[40px]"
     const taskBarHeight = "h-[40px]"
 
@@ -68,44 +68,44 @@ export const TodoList = (
         setTouchMoveX(0);
     };
 
+    const saveNewProject = (id: string, name: string) => {
+        const _project = { id: id, name: name, isPublic: false, isTabDisplay: true, sort: exProjects.length }
+        if (config.list && config.token) {
+            postSaveProjects(
+                [...exProjects, _project],
+                config.list,
+                config.token
+            )
+        }
+        setExProjects([...exProjects, _project])
+    }
+
+    const saveNewLabels = (id: string, name: string) => {
+        const _labels = { id: id, name: name, isPublic: false, sort: exLabels.length }
+        if (config.list && config.token) {
+            postSaveLabels(
+                [...exLabels, _labels],
+                config.list,
+                config.token
+            )
+        }
+        setExLabels([...exLabels, _labels])
+    }
+
     useEffect(() => {
         const hidden = "hidden"
         const wTaskALL = "w-[calc(100%-90px)] sm:w-[calc(70%-90px)]"
         const wTaskProject = "w-[calc(100%-90px)] sm:w-[calc(85%-90px)]"
         const wProject = "w-0 sm:w-[15%] max-w-[20%]"
 
-        set_table_project_width(currentProject === "" ? wProject : hidden)
-        set_table_task_width(currentProject === "" ? wTaskALL : wTaskProject)
-    }, [currentProject])
+        set_table_project_width(currentProjectId === "" ? wProject : hidden)
+        set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
+    }, [currentProjectId])
     return (
         <>
-            <div className="h-full">
-                <div className={`flex text-xs font-semibold bg-primary/85 text-primary-foreground border-none rounded-t-none sm:rounded-t-md items-center ${tableHeadHeight}`}>
-                    <div className={table_idx_width}></div>
-                    <div className={table_completion_width}></div>
-                    <div className={`${table_priority_width} text-center`}>
-                        <span className={`flex justify-center items-center ${sort === "priority" && "font-semibold"}`}>
-                            優
-                            {sort === "priority" && <FaArrowUpZA />}
-                        </span>
-                    </div>
-                    <div className={`${table_task_width} p-2 truncate`}>タスク</div>
-                    <div className={`flex items-center ${table_label_width}`}>
-                        <FaTag />
-                        <span className="truncate">
-                            ラベル
-                        </span >
-                        {sort === "context" && <FaArrowUpZA />}
-                    </div>
-                    <div className={`flex items-center ${table_project_width} pr-2`}>
-                        <FaSitemap />
-                        <span className="truncate">
-                            プロジェクト
-                        </span>
-                    </div>
-                </div>
+            <div className="h-full ">
                 {loading &&
-                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 border-x`}>
+                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">
                             <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                                 <span className="animate-bounce">Loading...</span>
@@ -113,8 +113,8 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full border ${loading && "hidden"} ${hcssMainHeight} bg-card border-b-0 table-scrollbar`} index={currentIndex}>
-                    <TableBody className="border-b bg-card text-card-foreground leading-5">
+                <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${hcssMainHeight} bg-muted table-scrollbar`} index={currentIndex}>
+                    <TableBody className=" text-sm border-b">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                                 <TableCell className="h-full">Loading...</TableCell>
@@ -128,7 +128,7 @@ export const TodoList = (
                                 <TableCell className={table_task_width}>
                                     <input
                                         tabIndex={-1}
-                                        className={`p-1 w-full text-left truncate outline-none bg-transparent font-semibold`}
+                                        className={`p-1 w-full text-left  outline-none bg-transparent font-semibold`}
                                         type="text"
                                         maxLength={prefix === 'priority' ? 1 : -1}
                                         {...register(`newtask`)}
@@ -136,7 +136,7 @@ export const TodoList = (
                                     />
                                 </TableCell >
                                 <TableCell className={table_project_width} ></TableCell>
-                                <TableCell className={`${table_label_width} truncate font-light text-lab text-ex-project`}>{currentProject}</TableCell>
+                                <TableCell className={`${table_label_width} font-light text-lab text-ex-project`}>{currentProjectId}</TableCell>
                             </TableRow>
                         }
                         {!loading &&
@@ -154,67 +154,128 @@ export const TodoList = (
                                                 if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
                                                     nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                 }
+                                                const common_color_css = `
+                                                    ${(mode !== "select" && currentIndex === index) ? " bg-border text-todo-accent-foreground " : "bg-card"}
+                                                    ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
+                                                    ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
+                                                `
                                                 return (
                                                     <TableRow key={t.id}
                                                         className={`
-                                                            ${currentIndex === index ? "bg-accent" : searchResultIndex[index] ? "bg-yellow-50" : ""}
-                                                            ${mode === "select" && currentIndex === index ? " font-extrabold ring-primary border-2 " : ""}
-                                                            ${t.is_complete ? "bg-muted/40  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
+                                                            h-[2.5rem]
+                                                            ${common_color_css}
                                                     `} onClick={_ => setCurrentIndex(index)}>
                                                         <TableCell className={`
-                                                            ${currentIndex === index ? "border-l-2 border-primary" : ""}
-                                                            ${table_idx_width} px-2 text-sm text-right
-                                                            `}>{index + 1}</TableCell>
+                                                             sticky left-0 
+                                                             text-sm text-right 
+                                                             p-0 m-0 ${table_idx_width}
+                                                            `}>
+                                                            <div className={` 
+                                                                 pl-2 pr-1  h-[2.5rem] flex items-center
+                                                                ${common_color_css}
+                                                                `}>
+                                                                {index + 1}
+                                                            </div></TableCell>
                                                         <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                                                             <div className="flex w-ful justify-center">
-                                                                {t.is_complete ? <FaCircleCheck className="text-primary scale-125 group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 scale-125 group-hover:text-green-500" />}
+                                                                {mode === "select" && currentIndex === index ? (
+                                                                    <ChevronsUpDown className="text-primary h-3 w-3 group-hover:text-gray-300" />
+                                                                ) : (
+                                                                    <>
+                                                                        {t.is_complete ? <FaCircleCheck className="text-primary group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 group-hover:text-green-500" />}
+                                                                    </>
+                                                                )}
                                                             </div>
                                                         </TableCell>
-                                                        <TableCell className={`${table_priority_width} text-center h-[30px]`}>
-                                                            {t.priority === "3" &&
-                                                                <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-1/4 left-0 right-0 m-auto" size={9} />
-                                                                    <Star className="absolute bottom-1 left-1/2" size={9} />
-                                                                    <Star className="absolute bottom-1 right-1/2" size={9} />
-                                                                </div>
-                                                            }
-                                                            {t.priority === "2" &&
-                                                                <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-1/2 m-auto" size={9} />
-                                                                    <Star className="absolute top-0 bottom-0 right-1/2 m-auto" size={9} />
-                                                                </div>
-                                                            }
-                                                            {t.priority === "1" &&
-                                                                <div className="relative h-full w-full">
-                                                                    <Star className="absolute top-0 bottom-0 left-0 right-0 m-auto" size={9} />
-                                                                </div>
-                                                            }
-                                                        </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={table_task_width}>
+                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={`${table_task_width} relative`}>
                                                             <div className="flex w-full h-full justify-between  items-center">
                                                                 <span className="text-primary/90 flex text-md">
-                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent === 0 && <span>└─</span>}
-                                                                    {t.indent !== undefined && t.indent >= 1 && nextTabIndent > 0 && <span>├─</span>}
-                                                                    {t.indent !== undefined && t.indent >= 2 && <span>──</span>}
-                                                                    {t.indent !== undefined && t.indent >= 3 && <span>──</span>}
+                                                                    {t.indent !== undefined &&
+                                                                        <>
+                                                                            {t.indent === 1 &&
+                                                                                <>
+                                                                                    {nextTabIndent === 0 && <span className="pl-2">└─</span>}
+                                                                                    {nextTabIndent > 0 && <span className="pl-2">├─</span>}
+                                                                                </>
+                                                                            }
+                                                                        </>
+                                                                    }
                                                                 </span>
-                                                                <div className="truncate w-full pr-2 sm:pr-0"
+                                                                {t.priority === "3" &&
+                                                                    <>
+                                                                        <Star className="w-3 h-3 text-destructive" strokeWidth={3} />
+                                                                        <Star className="w-3 h-3 text-destructive" strokeWidth={3} />
+                                                                    </>
+                                                                }
+                                                                {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
+                                                                {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
+                                                                <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1"
                                                                     onTouchMove={handleTouchMove}
                                                                     onTouchEnd={_ => handleTouchEnd(index, 'text')}>
-                                                                    <Item
+                                                                    <Text
                                                                         t={t}
                                                                         index={index}
                                                                         currentIndex={currentIndex}
-                                                                        prefix={"text"}
                                                                         currentPrefix={prefix}
+                                                                        className={`
+                                                                            ${t.priority === "1" && "text-primary"}
+                                                                            ${t.priority === "2" && "text-destructive"}
+                                                                            ${t.priority === "3" && "text-destructive font-semibold"}
+                                                                            `}
                                                                         mode={mode}
                                                                         label={t.text}
                                                                         register={register} />
-                                                                    {t.project && mode === "normal" && currentIndex !== index && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
+                                                                    {t.detail && !(mode === "edit" && currentIndex === index) &&
+                                                                        <span className={`hidden sm:flex font-light  items-center text-5sm  text-primary p-1`}>
+                                                                            <StickyNote className="h-3 w-3" />
+                                                                        </span>
+                                                                    }
+                                                                    {t.labelId && !(mode === "edit" && currentIndex === index) &&
+                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-label rounded-full text-5sm px-2 text-ex-label`}>
+                                                                            <Tag className="h-3 w-3" />
+                                                                            {lfind(exLabels, { id: t.labelId })?.name}
+                                                                        </span>
+                                                                    }
+                                                                    <SelectModal
+                                                                        t={t}
+                                                                        index={index}
+                                                                        currentIndex={currentIndex}
+                                                                        prefix={"labelId"}
+                                                                        currentPrefix={prefix}
+                                                                        mode={mode}
+                                                                        className={`w-0`}
+                                                                        register={register}
+                                                                        rhfSetValue={rhfSetValue}
+                                                                        item={lfind(exLabels, { id: t.labelId })}
+                                                                        items={exLabels.map(l => { return { id: l.id, name: l.name } })}
+                                                                        saveCloud={saveNewLabels}
+                                                                        title={"ラベル"}
+                                                                        onClick={onClick} />
+                                                                    {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
+                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
+                                                                            <Box className="h-3 w-3" />
+                                                                            {lfind(exProjects, { id: t.projectId })?.name}
+                                                                        </span>
+                                                                    }
+                                                                    <SelectModal
+                                                                        t={t}
+                                                                        index={index}
+                                                                        currentIndex={currentIndex}
+                                                                        prefix={"projectId"}
+                                                                        currentPrefix={prefix}
+                                                                        mode={mode}
+                                                                        className={`w-0`}
+                                                                        register={register}
+                                                                        rhfSetValue={rhfSetValue}
+                                                                        saveCloud={saveNewProject}
+                                                                        item={lfind(exProjects, { id: t.projectId })}
+                                                                        items={exProjects.map(p => { return { id: p.id, name: p.name } })}
+                                                                        title={"プロジェクト"}
+                                                                        onClick={onClick} />
                                                                 </div>
-                                                                <div className="flex sm:hidden items-center gap-1 ">
-                                                                    {t.context && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
-                                                                    {t.project && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
+                                                                <div className={`absolute right-0 flex sm:hidden items-center w-[49px] justify-end gap-1 h-full ${common_color_css}`}>
+                                                                    {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
+                                                                    {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
                                                                     <button onClick={e => {
                                                                         e.stopPropagation()
                                                                         e.preventDefault()
@@ -223,44 +284,6 @@ export const TodoList = (
                                                                         <MessageCircleMore className="h-5 w-5" />
                                                                     </button>
                                                                 </div>
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'context')} className={`${table_label_width} text-ex-label ${(t.is_complete && currentIndex !== index) && "text-ex-label/50"} font-light`}>
-                                                            <div className="flex">
-                                                                <div className={`hidden sm:flex items-center h-full text-xs ${!t.context && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">L</kbd></div>
-                                                                <SelectModal
-                                                                    t={t}
-                                                                    index={index}
-                                                                    currentIndex={currentIndex}
-                                                                    prefix={"context"}
-                                                                    currentPrefix={prefix}
-                                                                    mode={mode}
-                                                                    className={`text-left`}
-                                                                    label={t.context}
-                                                                    register={register}
-                                                                    rhfSetValue={rhfSetValue}
-                                                                    items={labels}
-                                                                    title={"ラベル"}
-                                                                    onClick={onClick} />
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell onClick={_ => onClick(currentIndex, "project")} className={`${table_project_width} text-ex-project ${(t.is_complete && currentIndex !== index) && "text-ex-project/50"} font-light pr-2`}>
-                                                            <div className="flex">
-                                                                <div className={`hidden sm:flex items-center h-full text-xs ${!t.project && currentIndex === index ? "opacity-1" : "opacity-0 w-0"} fade-out-5 transition-all text-muted-foreground`}><kbd className="text-6sm text-muted-foreground">P</kbd></div>
-                                                                <SelectModal
-                                                                    t={t}
-                                                                    index={index}
-                                                                    currentIndex={currentIndex}
-                                                                    prefix={"project"}
-                                                                    currentPrefix={prefix}
-                                                                    mode={mode}
-                                                                    className="text-left"
-                                                                    label={t.project}
-                                                                    register={register}
-                                                                    rhfSetValue={rhfSetValue}
-                                                                    items={projects}
-                                                                    title={"プロジェクト"}
-                                                                    onClick={onClick} />
                                                             </div>
                                                         </TableCell>
                                                     </TableRow>
@@ -273,19 +296,7 @@ export const TodoList = (
                         }
                     </TableBody>
                 </Table>
-                <div className={`hidden sm:block border bg-card text-accent-foreground rounded-b-sm ${taskBarHeight}`}>
-                    <div className="flex justify-between items-center text-xs text-muted-foreground h-full px-2 truncate">
-                        <span > {!completionOnly && <> 最近完了したタスク：<span className="font-bold">{viewCompletion ? "表示" : "非表示"}</span></>}</span>
-                        <input tabIndex={-1} {...register("search")} placeholder="キーワードを入力" className={`truncate outline-none bg-transparent focus:bg-accent focus:text-accent-foreground focus:text-black ${mode !== "search" && "placeholder:text-transparent"}`} type="text" />
-                        <div className="flex items-center">
-                            {command ? (
-                                <span>{command}</span>
-                            ) : (
-                                <span>モード：<span className="font-bold">{mode}</span></span>
-                            )}
-                        </div>
-                    </div>
-                </div>
+                <div className={`hidden sm:block  bg-card text-accent-foreground rounded-b-sm`} />
             </div >
         </>
     )

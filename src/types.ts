@@ -6,17 +6,18 @@ export interface TodoProps {
     creationDate?: string    // format yyyy-mm-dd
     text: string
     detail?: string
-    project?: string    // +projctname
-    context?: string    // @context    
+    projectId?: string    // +projctId
+    labelId?: string    // @labelId
     isArchived?: boolean
     sort?: number
     limitDate?: string
     indent?: number
+    updateDate?: string
 }
 
 
-export type Sort = "text" | "priority" | "context" | "creationDate" | "is_complete" | "sort" | undefined
-export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select"
+export type Sort = "text" | "priority" | "creationDate" | "is_complete" | "sort" | undefined
+export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select" | "editProject" | "editProjectTab"
 
 export interface TodoEnablesProps {
     enableAddTodo: boolean
@@ -26,4 +27,48 @@ export interface TodoEnablesProps {
 export type SaveTodosReturnProps = {
     action: 'save' | 'skip'
     error?: any
+}
+
+export type LabelProps = {
+    id: string
+    name: string
+    isPublic: boolean
+}
+
+export type ProjectProps = {
+    id: string
+    name: string
+    isPublic: boolean
+    isTabDisplay: boolean
+    sort: number
+}
+
+export type HistoryProjectProps = {
+    name: string
+    tags: string[]
+    in_progress: number
+    completed: number
+    start: string
+    end: string
+}
+
+export interface SummaryProps {
+    in_progress: number
+    completed: number
+    projects: HistoryProjectProps[]
+    years: string[]
+}
+
+export interface UserInfoProp {
+    uid: string;
+    name: string;
+    nickname: string;
+    image: string;
+    profile: string;
+    links: string[];
+}
+
+export type ComboboxDynamicItemProps = {
+    id: string,
+    name: string
 }

@@ -1,14 +1,14 @@
 'use client'
-import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
+import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRef } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap, completionTaskProjectName } from '@/components/config'
-import { TodoEnablesProps, TodoProps, Sort, Mode } from "@/types"
+import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual, findIndex, get } from "lodash";
+import { isEqual, findIndex, get, set, sortBy, filter } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -18,14 +18,19 @@ import { Usage } from "./usage"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
-import { debugLog } from "@/lib/utils"
+import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, ExternalLink, Save, IndentIncrease, IndentDecrease } from "lucide-react"
-import { FaSitemap } from "react-icons/fa6";
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2 } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
-import Link from "next/link"
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { ImperativePanelHandle } from "react-resizable-panels"
+import { Button } from "./ui/button"
+import { SidebarTrigger } from "./ui/sidebar"
+import { ProjectEditModal } from "./project-edit-modal"
+import { useFetchProjects } from "@/lib/fetch"
+import { ProjectTab } from "./todo-project-tab"
+import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -34,21 +39,29 @@ export const Todo = (
     {
         todos,
         prevTodos,
+        exProjects,
+        exLabels,
         loading,
         completionOnly,
         isSave,
         isUpdate,
         setTodos,
+        setExProjects,
+        setExLabels,
         setIsUpdate,
-        onClickSaveButton
+        onClickSaveButton,
     }: {
         todos: TodoProps[]
         prevTodos: TodoProps[]
+        exProjects: ProjectProps[]
+        exLabels: LabelProps[]
         loading: Boolean
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
+        setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
+        setExLabels: Dispatch<SetStateAction<LabelProps[]>>
         setIsUpdate: Dispatch<SetStateAction<boolean>>
         onClickSaveButton: () => void;
     }
@@ -57,30 +70,40 @@ export const Todo = (
     const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("todo_is_view_completion", true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
-    const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
     const [prefix, setPrefix] = useState('text')
-    const [log, setLog] = useState("")
-    const [currentProject, setCurrentProject] = useState("")
+    const [currentProjectId, setCurrentProjectId] = useState("")
 
-    const [projects, setProjects] = useState<string[]>([])
-    const [labels, setLabels] = useState<string[]>([])
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
+    const [filterdProjects, setFilterdProjects] = useState<ProjectProps[]>(exProjects)
 
-    const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
         todosLimit: 100,
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-
     const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
+    const resizeRef = useRef<ImperativePanelHandle>(null);
+
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
+
+    const [currentKeys, setCurrentKeys] = useState<String[]>([])
+    const [log, setLog] = useState("")
+    const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
+
+    useEffect(() => {
+        const panel = resizeRef.current;
+        if (panel) {
+            isOpenRightPanel ? panel.expand() : panel.collapse()
+        }
+    }, [isOpenRightPanel])
+
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
         let enabledSort = true
@@ -103,20 +126,6 @@ export const Todo = (
     }
 
     useEffect(() => {
-        let projects: (string | undefined)[] = []
-        let labels: (string | undefined)[] = []
-        todos.forEach(t => {
-            projects.push(t.project)
-            labels.push(t.context)
-        })
-        const _p = projects.filter(p => p !== undefined && p !== "") as string[];
-        const _l = labels.filter(l => l !== undefined && l !== "") as string[];
-        setProjects(Array.from(new Set([..._p])).sort());
-        setLabels(Array.from(new Set([..._l])).sort())
-    }, [todos])
-
-
-    useEffect(() => {
         setTodoEnables(prev => {
             prev.enableAddTodo = todos.filter(t => !t.is_complete).length < prev.todosLimit
             return prev
@@ -124,12 +133,11 @@ export const Todo = (
     }, [todos])
 
     useEffect(() => {
-        debugLog(`currentProject:${currentProject} `)
         if (completionOnly) {
             if (todos.length > 0) setFilterdTodos(todos)
             return
         }
-        let _todos = !currentProject ? [...todos] : todos.filter(t => t.project === currentProject)
+        let _todos = !currentProjectId ? [...todos] : todos.filter(t => t.projectId === currentProjectId)
 
         if (!viewCompletionTask) {
             _todos = _todos.filter(t => t.is_complete !== true)
@@ -157,7 +165,13 @@ export const Todo = (
             }
         }
         setFilterdTodos(_todos)
-    }, [todos, currentProject, sort, completionOnly, viewCompletionTask, setFilterdTodos])
+    }, [todos, currentProjectId, sort, completionOnly, viewCompletionTask, setFilterdTodos])
+
+    useEffect(() => {
+        if (exProjects.length > 0) {
+            setFilterdProjects(sortBy(exProjects.filter(p => p.isTabDisplay), "sort"))
+        }
+    }, [exProjects])
 
     useEffect(() => {
         debugLog(`currentIndex:${currentIndex} mode:${mode} keepPositionId:${keepPositionId} prefix:${prefix} mode:${mode} `)
@@ -179,6 +193,7 @@ export const Todo = (
         }
     }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
+
     useEffect(() => {
         if (isLastPosition) {
             if (currentIndex >= filterdTodos.length) setCurrentIndex(filterdTodos.length - 1)
@@ -197,7 +212,6 @@ export const Todo = (
             setValue(`edit-list-text-${t.id}`, t.text)
         })
         const d = todoFunc.diff(_t, prevTodos).filter(t => !todoFunc.isEmpty(t))
-        debugLog(`diff:`, d)
         debugLog(`isUpdate:${d.length > 0}`)
         if (d.length > 0) {
             setIsUpdate(true)
@@ -210,7 +224,6 @@ export const Todo = (
     }
 
     const toNormalMode = (todos: TodoProps[], prevTodos: TodoProps[], mode: Mode, filterdTodos: TodoProps[], currentIndex: number) => {
-
         if (filterdTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
@@ -238,14 +251,12 @@ export const Todo = (
             completionDate: targetTodo.completionDate,
             creationDate: targetTodo.creationDate,
             text: replaceText,
-            project: getValues(`edit-list-project-${targetTodoId}`),
-            context: getValues(`edit-list-context-${targetTodoId}`),
+            projectId: getValues(`edit-list-projectId-${targetTodoId}`),
+            labelId: getValues(`edit-list-labelId-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
             sort: targetTodo.sort,
             indent: targetTodo.indent,
-            limitDate: targetTodo.limitDate
         }
-
         let _todos: TodoProps[] = []
         if (todoFunc.isEmpty(replace)) {
             _todos = todoFunc.delete(todos, targetTodoId)
@@ -268,15 +279,14 @@ export const Todo = (
             id: filterdTodos[index].id,
             is_complete: !filterdTodos[index].is_complete,
             priority: filterdTodos[index].priority,
-            completionDate: !filterdTodos[index].is_complete ? yyyymmddhhmmss(new Date()) : null,
+            completionDate: !filterdTodos[index].is_complete ? new Date().toISOString() : null,
             creationDate: filterdTodos[index].creationDate,
             text: filterdTodos[index].text,
-            project: filterdTodos[index].project,
-            context: filterdTodos[index].context,
+            projectId: filterdTodos[index].projectId,
+            labelId: filterdTodos[index].labelId,
             detail: filterdTodos[index].detail,
             sort: filterdTodos[index].sort,
             indent: filterdTodos[index].indent,
-            limitDate: filterdTodos[index].limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -300,27 +310,21 @@ export const Todo = (
             completionDate: targetTodo.completionDate,
             creationDate: targetTodo.creationDate,
             text: targetTodo.text,
-            project: targetTodo.project,
-            context: targetTodo.context,
+            projectId: targetTodo.projectId,
+            labelId: targetTodo.labelId,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
-            limitDate: targetTodo.limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
 
     const indentTask = (todos: TodoProps[], prevTodos: TodoProps[], targetId: string, action: 'plus' | 'minus') => {
         const targetTodo = todos.filter(t => t.id === targetId)[0]
-        const _target = targetTodo.indent
-        let indent = 0
-        if (_target !== undefined && [1, 2, 3].includes(_target)) {
-            indent = action === 'plus' ? _target + 1 : _target - 1
-            if (3 < indent) indent = 3
-            if (indent < 0) indent = 0
-        } else {
-            indent = action === "plus" ? 1 : 0
-        }
+        let indent = targetTodo.indent ?? 0
+        if (action === 'plus') indent = 1
+        if (action === 'minus') indent = 0
+
         const _todos = todoFunc.modify(todos, {
             id: targetTodo.id,
             is_complete: targetTodo.is_complete,
@@ -328,17 +332,16 @@ export const Todo = (
             completionDate: targetTodo.completionDate,
             creationDate: targetTodo.creationDate,
             text: targetTodo.text,
-            project: targetTodo.project,
-            context: targetTodo.context,
+            projectId: targetTodo.projectId,
+            labelId: targetTodo.labelId,
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: indent,
-            limitDate: targetTodo.limitDate
         })
         handleSetTodos(_todos, prevTodos)
     }
     const changeProject = (index: number) => {
-        setCurrentProject(index === -1 ? "" : projects[index])
+        setCurrentProjectId(index === -1 ? "" : filterdProjects[index].id)
         setCurrentIndex(0)
         setCommand('')
     }
@@ -375,7 +378,7 @@ export const Todo = (
             if (currentIndex <= 0 || !selectTaskId) return
             handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex - 1].id), prevTodos)
         }
-    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos])
+    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos, filterdTodos])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
@@ -407,82 +410,58 @@ export const Todo = (
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        const nextProjectIndex = getNextProjectIndex("right", projects, currentProject)
-        if (nextProjectIndex !== undefined) {
-            const nextProject = projects[nextProjectIndex]
-            if (mode === "select" && selectTaskId !== undefined) {
-                let updateTodos = todoFunc.update(todos, selectTaskId, { project: nextProject })
-                updateTodos = todoFunc.move(updateTodos, findIndex(updateTodos, ["id", selectTaskId]), findIndex(updateTodos, ["project", nextProject]))
-                handleSetTodos(updateTodos, prevTodos)
-            }
-            handleMoveProject("right", projects, currentProject)
-        }
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [currentProject, projects, todos, prevTodos, mode, selectTaskId])
+        handleMoveProject("right", filterdProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [filterdProjects, currentProjectId])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        const nextProjectIndex = getNextProjectIndex("left", projects, currentProject)
-        if (nextProjectIndex !== undefined) {
-            const nextProject = nextProjectIndex >= 0 ? projects[nextProjectIndex] : ""
-            if (mode === "select" && selectTaskId !== undefined) {
-                let updateTodos = todoFunc.update(todos, selectTaskId, { project: nextProject })
-                updateTodos = todoFunc.move(updateTodos, findIndex(updateTodos, ["id", selectTaskId]), findIndex(updateTodos, ["project", nextProject]))
-                handleSetTodos(updateTodos, prevTodos)
-            }
-            handleMoveProject("left", projects, currentProject)
-        }
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [currentProject, projects, todos, prevTodos, mode, selectTaskId])
+        handleMoveProject("left", filterdProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [filterdProjects, currentProjectId])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const _indent = filterdTodos[currentIndex].indent ?? 0
-        handleSetTodos(todoFunc.add(currentIndex, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
+        handleSetTodos(todoFunc.add(currentIndex, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // add task to Top
     useHotkeys(keymap['insertTop'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        handleSetTodos(todoFunc.add(0, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
         setCurrentIndex(0)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProject, viewCompletionTask, todos, prevTodos, todoEnables])
+    }, setKeyEnableDefine(keymap['insertTop'].enable), [mode, currentProjectId, viewCompletionTask, todos, prevTodos, todoEnables])
 
     // add task to Top
     useHotkeys(keymap['insertTopOnSort'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setMode('editOnSort')
     }, setKeyEnableDefine(keymap['insertTopOnSort'].enable), [todoEnables])
 
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const _indent = currentIndex + 1 < filterdTodos.length ? filterdTodos[currentIndex + 1].indent ?? 0 : 0
-        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
+        handleSetTodos(todoFunc.add(currentIndex + 1, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
-    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['append'].enable), [todos, currentIndex, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // append task to bottom
     useHotkeys(keymap['appendBottom'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         if (!todoEnables.enableAddTodo) {
             toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         } else {
-            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(filterdTodos.length)
             setMode('edit')
         }
-    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProject, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // delete task
     const deleteTask = (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id), prevTodos)
         const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)
@@ -490,20 +469,17 @@ export const Todo = (
         setPrefix('text')
     }
     useHotkeys(keymap['deleteModal'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setMode('modal')
         setPrefix('delete')
     }, setKeyEnableDefine(keymap['deleteModal'].enable), [todos, filterdTodos, currentIndex])
 
     useHotkeys(keymap['delete'].keys, (e) => {
         if (prefix !== 'delete') return
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         deleteTask(currentIndex, filterdTodos, prevTodos)
     }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prevTodos, prefix])
 
     // change to edit mode
     useHotkeys(keymap['editText'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setMode('edit')
     }, setKeyEnableDefine(keymap['editText'].enable))
 
@@ -513,36 +489,29 @@ export const Todo = (
     //     setMode('edit')
     // }, setKeyEnableDefine(keymap['editPriority'].enable))
     useHotkeys(keymap['increasePriority'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
     }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
     }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        setPrefix('project')
+        setPrefix('projectId')
         setMode('modal')
     }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
 
-    // change to context edit mode
-    useHotkeys(keymap['editContext'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        setPrefix('context')
+    // change to label edit mode
+    useHotkeys(keymap['editLabel'].keys, (e) => {
+        setPrefix('labelId')
         setMode('modal')
-    }, setKeyEnableDefine(keymap['editContext'].enable))
+    }, setKeyEnableDefine(keymap['editLabel'].enable))
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         completeTask(currentIndex, prevTodos)
-        if (!viewCompletionTask) {
-            const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
-            setCurrentIndex(index)
-        }
+        if (!viewCompletionTask && currentIndex >= filterdTodos.length - 1) setCurrentIndex(filterdTodos.length - 1)
     }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos, prevTodos])
 
     // change sort mode
@@ -582,34 +551,23 @@ export const Todo = (
      * 
      *******************/
     useHotkeys(keymap['sortPriority'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort("priority")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortPriority'].enable), [currentIndex, filterdTodos])
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort(undefined)
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortClear'].enable), [filterdTodos, currentIndex])
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setSort("creationDate")
         setMode("normal")
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
 
-    useHotkeys(keymap['sortContext'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
-        keepPosition(filterdTodos, currentIndex)
-        setSort("context")
-        setMode("normal")
-    }, setKeyEnableDefine(keymap['sortContext'].enable), [filterdTodos, currentIndex])
-
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         keepPosition(filterdTodos, currentIndex)
         setSort("is_complete")
         setMode("normal")
@@ -645,7 +603,7 @@ export const Todo = (
                 id: newId,
                 creationDate: yyyymmddhhmmss(new Date()),
                 text: getValues(`newtask`),
-                project: currentProject
+                projectId: currentProjectId
             }
             if (!todoFunc.isEmpty(newtask)) {
                 handleSetTodos([newtask, ...todos], prevTodos)
@@ -656,7 +614,7 @@ export const Todo = (
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProject, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
         if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
@@ -678,6 +636,10 @@ export const Todo = (
         setCommand(command + e.key)
         setMode('number')
     }, setKeyEnableDefine(keymap['numberInput'].enable), [command])
+
+    useHotkeys(keymap['addProject'].keys, (e) => {
+        setMode('editProject')
+    }, setKeyEnableDefine(keymap['addProject'].enable), [command])
 
     /******************
      *
@@ -704,37 +666,34 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['moveToLine'].enable), [command])
 
     useHotkeys(keymap['appendToLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(line, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
+    }, setKeyEnableDefine(keymap['appendToLine'].enable), [command, todos, currentProjectId, viewCompletionTask, prevTodos])
 
     useHotkeys(keymap['insertToLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
-            handleSetTodos(todoFunc.add(line - 1, todos, { project: currentProject, viewCompletionTask: viewCompletionTask }), prevTodos)
+            handleSetTodos(todoFunc.add(line - 1, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
             setCurrentIndex(line - 1)
             setMode('edit')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProject, viewCompletionTask, prevTodos])
+    }, setKeyEnableDefine(keymap['insertToLine'].enable), [command, todos, currentProjectId, viewCompletionTask, prevTodos])
 
 
     useHotkeys(keymap['editProjectLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
-            setPrefix('project')
+            setPrefix('projectId')
             setMode('modal')
         } else {
             setMode('normal')
@@ -742,20 +701,18 @@ export const Todo = (
         setCommand('')
     }, setKeyEnableDefine(keymap['editProjectLine'].enable), [command])
 
-    useHotkeys(keymap['editContextLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
+    useHotkeys(keymap['editLabelLine'].keys, (e) => {
         const line = parseInt(command)
         if (moveToLine(line)) {
-            setPrefix('context')
+            setPrefix('labelId')
             setMode('modal')
         } else {
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['editContextLine'].enable), [command])
+    }, setKeyEnableDefine(keymap['editLabelLine'].enable), [command])
 
     useHotkeys(keymap['editTextLine'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         const line = parseInt(command)
         if (moveToLine(line)) {
             setMode('edit')
@@ -766,7 +723,6 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['editTextLine'].enable), [command])
 
     useHotkeys(keymap['editDetail'].keys, (e) => {
-        if (currentProject === completionTaskProjectName) return toast.error(jaJson["完了済みタスクでは完了・未完了の更新のみ可能"])
         setPrefix("detail")
         setMode('editDetail')
     }, setKeyEnableDefine(keymap['editDetail'].enable))
@@ -823,8 +779,6 @@ export const Todo = (
         setMode('select')
     }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
 
-
-
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index, prevTodos)
         if (prefix === 'projectTab') changeProject(index)
@@ -833,7 +787,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('edit')
         }
-        if (['context', 'project'].includes(prefix)) {
+        if (['projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
@@ -851,34 +805,38 @@ export const Todo = (
             setMode("editDetail")
         }
         if (prefix === "normal") toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
-        if (['context', 'project'].includes(prefix)) {
+        if (['projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
         }
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (mode !== "modal" && mode !== "normal") {
+            toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        }
         e.preventDefault()
         e.stopPropagation();
     }
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-        toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (mode !== "modal" && mode !== "normal") {
+            toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        }
         e.stopPropagation();
     }
 
-    const getNextProjectIndex = (direction: "right" | "left", projects: string[], currentProject: string) => {
+    const getNextProjectIndex = (direction: "right" | "left", projects: ProjectProps[], currentProjectId: string) => {
         if (projects.length <= 0) return
         if (direction === "right") {
-            if (!currentProject) {
+            if (!currentProjectId) {
                 return 0
             } else {
-                const _index = projects.indexOf(currentProject)
+                const _index = projects.map(p => p.id).indexOf(currentProjectId)
                 if (_index < projects.length - 1) return _index + 1
             }
         } else {
-            if (!currentProject) return
-            const _index = projects.indexOf(currentProject)
+            if (!currentProjectId) return
+            const _index = projects.map(p => p.id).indexOf(currentProjectId)
             if (_index === 0) {
                 return -1
             } else {
@@ -887,45 +845,10 @@ export const Todo = (
         }
     }
 
-    const getProject = (projects: string[], index: number) => {
-        return index === -1 ? "" : projects[index]
-    }
-    const handleMoveProject = (direction: "right" | "left", projects: string[], currentProject: string) => {
-        const index = getNextProjectIndex(direction, projects, currentProject)
+    const handleMoveProject = (direction: "right" | "left", projects: ProjectProps[], currentProjectId: string) => {
+        const index = getNextProjectIndex(direction, projects, currentProjectId)
         if (index === undefined) return
         changeProject(index)
-    }
-
-    const Project = (
-        {
-            currentProject, index, project, onClick
-
-        }: {
-            currentProject: string, index: number, project: string, onClick: (index: number, prefix: string) => void
-        }
-    ) => {
-        const ref = React.useRef<HTMLButtonElement>(null)
-        useEffect(() => {
-            if (currentProject === project) {
-                ref.current?.scrollIntoView({ behavior: "smooth" })
-            }
-        }, [currentProject, project])
-        return (
-            <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
-                className={`text-sm ${currentProject === project ? "border-b-2 font-semibold border-primary " : " text-secondary-foreground/50"} bg-transparent hover:font-semibold hover:text-secondary-foreground transition-all fade-in-5`}>
-                <span className="flex gap-1 items-center">
-                    {project ? (
-                        project === completionTaskProjectName ? (
-                            <> <Check className="w-3" />{"完了済み"}</>
-                        ) : (
-                            <> <FaSitemap className="w-3" />{project}</>
-                        )
-                    ) : (
-                        <> <List className="w-3" />{"ALL"}</>
-                    )}
-                </span>
-            </button>
-        )
     }
 
     const undo = (undoCount: number, historyTodos: TodoProps[][]) => {
@@ -940,19 +863,27 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, disabled, label, onClick }: { children: React.ReactNode, disabled: boolean, label?: string, onClick: () => void }) => {
+    const MenuButton = ({ children, className, disabled, label, onClick }: { children: React.ReactNode, className?: string, disabled?: boolean, label?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
-                        <button onClick={onClick} className="p-1 hover:cursor-pointer border border-transparent hover:border-primary rounded-sm disabled:opacity-20 disabled:border-transparent transition-all" disabled={disabled}>{children}</button>
+                        <button onClick={onClick}
+                            onMouseDown={e => e.stopPropagation()}
+                            className={cn(className, `p-1 hover:cursor-pointer border disabled:text-secondary-foreground/20 hover:border-primary rounded-sm border-transparent transition-all`)} disabled={disabled}>{children}</button>
                     </TooltipTrigger>
-                    <TooltipContent className="text-xs">
+                    <TooltipContent className="text-xs" align="start" side="bottom">
                         {label}
                     </TooltipContent>
                 </Tooltip>
-            </TooltipProvider>
+            </TooltipProvider >
         )
+    }
+    const handleClickAddButton = () => {
+        if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
+        handleSetTodos(todoFunc.add(0, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
+        setCurrentIndex(0)
+        setMode('edit')
     }
 
     const [touchStartX, setTouchStartX] = useState(0);
@@ -971,191 +902,198 @@ export const Todo = (
         if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
-        if (swipeDistance > swipeThreshold) handleMoveProject("left", projects, currentProject);
+        if (swipeDistance > swipeThreshold) handleMoveProject("left", filterdProjects, currentProjectId);
         // 左にスワイプ
-        if (swipeDistance < -swipeThreshold) handleMoveProject("right", projects, currentProject);
+        if (swipeDistance < -swipeThreshold) handleMoveProject("right", filterdProjects, currentProjectId);
         setTouchStartX(0);
         setTouchEndX(0);
     };
+
+    const projectTop = useRef<HTMLDivElement>(null);
+    const projectLast = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (!currentProjectId && projectTop.current) {
+            projectTop.current.scrollIntoView({ behavior: "smooth" })
+        }
+        if (filterdProjects.length - 1 === findIndex(filterdProjects, p => p.id === currentProjectId) && projectLast.current) {
+            projectLast.current.scrollIntoView({ behavior: "smooth" })
+        }
+    }, [currentProjectId, filterdProjects])
+
     return (
-        <div className="flex flex-col items-center w-full h-full px-0 sm:px-8">
-            {/* オーバーレイ */}
-            <div className={`
-                fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10
-                ${mode === "editDetail" ? "block sm:hidden" : "hidden"}
-            `} onMouseDown={handleMainMouseDown} />
-            {/* オーバーレイ */}
-            <div className="w-full items-end flex gap-2 h-[50px] pb-1 px-2 sm:px-0">
-                <div className="flex items-center gap-2">
-                    <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
-                    <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
-                    {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                        <MenuButton label="保存" onClick={() => onClickSaveButton} disabled={!isUpdate}>
-                            {(isSave && isUpdate) ? (
-                                <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
-                            ) : (
-                                <Save size={16} />
-                            )}
-                        </MenuButton>
-                    }
-                    <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 3} ><IndentIncrease size={16} /></MenuButton>
-                    <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                </div>
-                <div className="border-r mx-2 h-5 hidden sm:block"></div>
-                <div className={`flex items-end overflow-hidden flex-nowrap text-nowrap gap-4 hidden-scrollbar  text-foreground `}  >
-                    <Project currentProject={currentProject} index={-1} project={""} onClick={handleClickElement} />
-                    {projects.map((p, i) => {
-                        return (
-                            <Project key={p} currentProject={currentProject} index={i} project={p} onClick={handleClickElement} />
-                        )
-                    })}
-                </div>
-            </div>
-            <div className={`relative  w-full h-[calc(100%-50px)]  pt-1`} onMouseDown={handleMainMouseDown}>
-                <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                    <ResizablePanel defaultSize={60} minSize={4} className={`relative  ${mode === "editDetail" ? "hidden sm:block" : "block"}`}>
-                        <div
-                            onTouchStart={handleTouchStart}
-                            onTouchMove={handleTouchMove}
-                            onTouchEnd={handleTouchEnd}
-                            className="h-full w-full">
-                            <TodoList
-                                filterdTodos={filterdTodos}
-                                currentIndex={currentIndex}
-                                prefix={prefix}
+        <>
+            <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
+                <div className={`relative w-full h-[2.8rem] border-b`}>
+                    <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
+                        <div ref={projectTop} />
+                        <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
+                        {filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                        {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
+                        {/* <div className="w-full h-full border-b"></div> */}
+                        < div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
+                            <ProjectEditModal
+                                buttonLabel={<Plus size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
                                 mode={mode}
-                                viewCompletion={viewCompletionTask}
-                                projects={projects}
-                                labels={labels}
-                                currentProject={currentProject}
-                                sort={sort}
-                                searchResultIndex={searchResultIndex}
-                                command={command}
-                                loading={loading}
-                                onClick={handleClickElement}
-                                setCurrentIndex={setCurrentIndex}
-                                register={register}
-                                rhfSetValue={setValue}
-                                completionOnly={completionOnly}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
+                            />
+                            <ProjectTabSettingModal
+                                buttonLabel={<Settings2 size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
                             />
                         </div>
-                    </ResizablePanel>
-                    <ResizableHandle tabIndex={-1} className="hidden sm:block pl-2 bg-border-0 outline-none mt-8 mb-4 cursor-col-resize ring-0 hover:bg-secondary transition-all ease-in" />
-                    <ResizablePanel defaultSize={40} minSize={4} className={`relative ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} >
-                        {loading ? (
-                            <></>
-                        ) : (
-                            <>
-                                <div className={`absolute right-0 pl-5  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30 h-full transition-all animate-fade-in`}>
-                                    <Usage
-                                        sort={sort}
-                                        mode={mode}
-                                        isHelp={isHelp}
-                                        setHelp={setHelp}
-                                        isTodos={filterdTodos.length > 0}
-                                    />
-                                </div>
-                                <div className={`w-full h-[calc(100%-30px)] border-none z-20`}>
-                                    <Detail
-                                        todo={filterdTodos[currentIndex]}
-                                        prefix={prefix}
-                                        mode={mode}
-                                        isHelp={isHelp}
-                                        onMouseDownEvent={handleDetailMouseDown}
-                                        onClick={handleClickDetailElement}
-                                        setValue={setValue}
-                                        watch={watch}
-                                        register={register}
-                                    />
-                                </div>
-                            </>
-                        )}
-                        <div className="absolute bottom-0 w-full hidden sm:block ">
-                            <div className={`flex items-center justify-end ${!isHelp ? "opacity-1" : "opacity-0"}  z-10 fade-in-5 transition-all overflow-hidden`}>
-                                <ExLink
-                                    type="link"
-                                    href={"https://shiba-tools.dev"}
-                                    target="_blank">
-                                    Shiba Tools<ExternalLink size={13} />
-                                </ExLink>
-                                /
-                                <ExLink
-                                    type="button"
-                                    onClick={() => setHelp(true)}
-                                    className={`flex gap-1 text-xs `}>
-                                    <kbd className="h-5 w-5 flex items-center justify-center">?</kbd>
-                                    <span className="text-nowrap">ヘルプ表示</span>
-                                </ExLink>
-                            </div>
+                        <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
+                    </div>
+                </div>
+                <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">
+                    <div className="flex items-center gap-2 h-full px-2 mx-2 ">
+                        <div className="block md:hidden"><SidebarTrigger className="border" /></div>
+                        <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                        <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                        <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
+                        <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                        <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
+                        <div className="hidden sm:block">
+                            <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
+                                {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
+                            </MenuButton>
                         </div>
-                    </ResizablePanel>
-                </ResizablePanelGroup>
-                <DeleteModal
-                    currentIndex={currentIndex}
-                    filterdTodos={filterdTodos}
-                    prevTodos={prevTodos}
-                    currentPrefix={prefix}
-                    mode={mode}
-                    onClick={handleClickDetailElement}
-                    onDelete={deleteTask}
-                />
-                <BottomMenu
-                    todos={todos}
-                    prevTodos={prevTodos}
-                    loading={loading}
-                    completionOnly={completionOnly}
-                    viewCompletionTask={viewCompletionTask}
-                    projects={projects}
-                    currentProject={currentProject}
-                    setViewCompletionTask={setViewCompletionTask}
-                    setCurrentProject={setCurrentProject}
-                    setMode={setMode}
-                    handleSetTodos={handleSetTodos}
-                    todoEnables={todoEnables}
-                />
+                        <div className="hidden sm:block">
+                            <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
+                        </div>
+                        <div className="hidden sm:block">
+                            <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                                <Columns size={16} />
+                            </MenuButton>
+                        </div>
+                    </div>
+                    <div className="relative flex gap-2 items-center px-2">
+                        {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                            <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                                {(isSave && isUpdate) ? (
+                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary-foreground rounded-full border-t-transparent" />
+                                ) : (
+                                    <><Save size={16} />保存</>
+                                )}
+                            </Button>
+                        }
+                        <div className="hidden sm:inline-block">
+                            <Button variant={"default"} onClick={handleClickAddButton} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90"><Plus />タスクを追加</Button>
+                        </div>
+                    </div>
+                </div>
+            </header >
+            <div className={`w-full h-[calc(100%-5.8rem)]`}>
+                {/* オーバーレイ */}
+                {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
+                {/* オーバーレイ */}
+                <div className={`relative w-full h-full`} onMouseDown={handleMainMouseDown}>
+                    <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
+                        <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
+                            <div
+                                onTouchStart={handleTouchStart}
+                                onTouchMove={handleTouchMove}
+                                onTouchEnd={handleTouchEnd}
+                                className="h-[calc(100%-30px)] w-full">
+                                <TodoList
+                                    filterdTodos={filterdTodos}
+                                    currentIndex={currentIndex}
+                                    prefix={prefix}
+                                    mode={mode}
+                                    exProjects={exProjects}
+                                    exLabels={exLabels}
+                                    currentProjectId={currentProjectId}
+                                    sort={sort}
+                                    loading={loading}
+                                    onClick={handleClickElement}
+                                    setCurrentIndex={setCurrentIndex}
+                                    setExProjects={setExProjects}
+                                    setExLabels={setExLabels}
+                                    register={register}
+                                    rhfSetValue={setValue}
+                                />
+                            </div>
+                            <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
+                                {command ? (
+                                    <span>Line：{command}</span>
+                                ) : (
+                                    <span>No：{currentIndex + 1}</span>
+                                )}
+                                {mode}
+                            </div>
+                        </ResizablePanel>
+                        <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
+                        <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                            {loading ? (
+                                <></>
+                            ) : (
+                                <>
+                                    <div className={`w-full h-full z-20`}>
+                                        {(!filterdTodos[currentIndex] || !filterdTodos[currentIndex].text) &&
+                                            <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
+                                                <TentTree className="w-7 h-7" />
+                                                タスクを追加、または選択してください。
+                                            </div>
+                                        }
+                                        {filterdTodos[currentIndex] && filterdTodos[currentIndex].text &&
+                                            <Detail
+                                                todo={filterdTodos[currentIndex]}
+                                                exProjects={exProjects}
+                                                exLabels={exLabels}
+                                                prefix={prefix}
+                                                mode={mode}
+                                                onMouseDownEvent={handleDetailMouseDown}
+                                                onClick={handleClickDetailElement}
+                                                setValue={setValue}
+                                                watch={watch}
+                                                register={register}
+                                            />
+                                        }
+                                    </div>
+                                </>
+                            )}
+                        </ResizablePanel>
+                    </ResizablePanelGroup>
+                    <DeleteModal
+                        currentIndex={currentIndex}
+                        filterdTodos={filterdTodos}
+                        prevTodos={prevTodos}
+                        currentPrefix={prefix}
+                        mode={mode}
+                        onClick={handleClickDetailElement}
+                        onDelete={deleteTask}
+                    />
+                    <BottomMenu
+                        todos={todos}
+                        prevTodos={prevTodos}
+                        completionOnly={completionOnly}
+                        viewCompletionTask={viewCompletionTask}
+                        projects={exProjects}
+                        currentProjectId={currentProjectId}
+                        setViewCompletionTask={setViewCompletionTask}
+                        setCurrentProjectId={setCurrentProjectId}
+                        setMode={setMode}
+                        handleSetTodos={handleSetTodos}
+                        todoEnables={todoEnables}
+                    />
+                    {!loading &&
+                        <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
+                            <Usage
+                                sort={sort}
+                                mode={mode}
+                                setHelp={setHelp}
+                                isTodos={filterdTodos.length > 0}
+                            />
+                        </div>
+                    }
+                </div >
             </div >
-        </div >
+        </>
     )
-}
-const ExLink = ({
-    href,
-    className = "",
-    target,
-    lock,
-    children,
-    type,
-    onClick,
-    ...props
-}: {
-    href?: string,
-    className?: string | undefined,
-    type?: "button" | "link",
-    target?: string,
-    lock?: boolean,
-    onClick?: () => void,
-    children: React.ReactNode
-}) => {
-    if (type === "link" && href) {
-        return (
-            <Link
-                href={href}
-                target={target}
-                className={`flex text-accent-foreground/60 hover:underline hover:text-accent-foreground text-sm items-center gap-1 px-3 transition-all fade-in-5`}
-                {...props}
-            >
-                {children}
-            </Link>
-        )
-    } else {
-        return (
-            <button
-                tabIndex={-1}
-                onClick={onClick}
-                className={`flex text-sm text-accent-foreground/60 hover:text-accent-foreground items-center gap-1 px-3 transition-all fade-in-5`}
-                {...props}
-            >
-                {children}
-            </button>
-        )
-    }
 }

@@ -6,8 +6,8 @@ import { usePathname } from 'next/navigation'
 export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
     const path = usePathname()
     let redirectUrlPath = path
-    redirectUrlPath = redirectUrlPath === "/lp" ? "/t" : redirectUrlPath
-    const callbackPaths = ["/t", "/c"]
+    redirectUrlPath = redirectUrlPath === "/lp" ? "/app/t" : redirectUrlPath
+    const callbackPaths = ["/app/t", "/c"]
     redirectUrlPath = callbackPaths.includes(redirectUrlPath) ? redirectUrlPath : "/"
     return (
         <Auth0Provider
@@ -16,6 +16,8 @@ export const AuthProvider: FC<PropsWithChildren> = ({ children }) => {
             authorizationParams={{
                 redirect_uri: process.env.NEXT_PUBLIC_DOMAIN + redirectUrlPath
             }}
+            useRefreshTokens={true}
+            cacheLocation="localstorage"
         >
             {children}
         </Auth0Provider>

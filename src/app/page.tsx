@@ -10,7 +10,7 @@ export default function Home() {
         if (data || data === null) {
             redirect("/lp")
         } else {
-            redirect("/t")
+            redirect("/app/t")
         }
     }, [])
 

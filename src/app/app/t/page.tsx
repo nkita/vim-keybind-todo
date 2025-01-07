@@ -31,6 +31,15 @@ export default function Home() {
   const [labelsLoading, setLabelsLoading] = useState(true)
 
   const config = useContext(TodoContext)
+  const [isLoginLoading, setIsLoginLoading] = useState(true)
+  const [isLogin, setIsLogin] = useState(true)
+  useEffect(() => {
+    if (isLoginLoading && !config.isLoading) {
+      setIsLoginLoading(config.isLoading)
+      setIsLogin(config.isLogin)
+    }
+  }, [isLoginLoading, config])
+
 
   const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(config.list, config.token)
   const { data: fetch_projects, isLoading: fetch_projects_loading } = useFetchProjects(config.list, config.token)
@@ -134,17 +143,17 @@ export default function Home() {
     <AppPageTemplate>
       <article className={`h-screen w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
         <Todo
-          todos={!userLoading && user ? todos : todosLS}
+          todos={!isLoginLoading && isLogin ? todos : todosLS}
           prevTodos={prevTodos}
-          exProjects={!userLoading && user ? projects : projectsLS}
-          exLabels={!userLoading && user ? labels : labelsLS}
+          exProjects={!isLoginLoading && isLogin ? projects : projectsLS}
+          exLabels={!isLoginLoading && isLogin ? labels : labelsLS}
           isSave={isSave}
           isUpdate={isUpdate}
-          loading={todosLoading || userLoading || fetch_todo_loading || fetch_projects_loading}
-          setTodos={!userLoading && user ? setTodos : setTodosLS}
+          loading={todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading}
+          setTodos={!isLoginLoading && isLogin ? setTodos : setTodosLS}
           setIsUpdate={setIsUpdate}
-          setExProjects={!userLoading && user ? setProjects : setProjectsLS}
-          setExLabels={!userLoading && user ? setLabels : setLabelsLS}
+          setExProjects={!isLoginLoading && isLogin ? setProjects : setProjectsLS}
+          setExLabels={!isLoginLoading && isLogin ? setLabels : setLabelsLS}
           onClickSaveButton={handleClickSaveButton}
         />
       </article >

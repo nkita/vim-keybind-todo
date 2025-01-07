@@ -77,7 +77,7 @@ export function AppSidebar() {
                         <SidebarMenuItem>
                             <ExSidebarMenuButton href="/app/history">
                                 <LineChart className="w-4 h-4" />
-                                <span>履歴</span>
+                                <span>実績</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         {/* <SidebarMenuItem>

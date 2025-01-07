@@ -22,21 +22,27 @@ import { HistoryProjectProps, SummaryProps, UserInfoProp } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppPageTemplate from "@/components/app-page-template";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { SimpleSpinner } from "@/components/ui/spinner";
 
 export default function MyHisotry() {
 
-  const { user, isLoading: userLoading } = useAuth0();
   const [timeline, setTimeline] = useState<any[]>([])
   const [timelinePage, setTimelinePage] = useState(0)
   const [timelineLoading, setTimelineLoading] = useState(true);
+  const [isLoginLoading, setIsLoginLoading] = useState(true)
+  const [isLogin, setIsLogin] = useState(true)
+  const { loginWithRedirect } = useAuth0();
+  const config = useContext(TodoContext)
+
+  useEffect(() => {
+    if (isLoginLoading && !config.isLoading) {
+      setIsLoginLoading(config.isLoading)
+      setIsLogin(config.isLogin)
+    }
+  }, [isLoginLoading, config])
+
   const { open } = useSidebar()
 
-  const config = useContext(TodoContext)
-  useEffect(() => {
-    if (!userLoading && user === undefined) {
-      // redirect('/t')
-    }
-  }, [user, userLoading])
 
   const { data: summary, isLoading: summaryLoading } = useFetch<SummaryProps>(`${process.env.NEXT_PUBLIC_API}/api/summary`, config.token ?? "")
   const { data: activity, isLoading: activityLoading } = useFetch<any[]>(`${process.env.NEXT_PUBLIC_API}/api/summary/${"2024"}`, config.token ?? "")
@@ -80,19 +86,49 @@ export default function MyHisotry() {
       setTimelineLoading(false);
     }
   }
-  if (user === undefined && !userLoading) {
+  // if (user === undefined && !userLoading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen text-secondary-foreground">
+  //       <p className="flex items-center gap-1">
+  //         <MessageCircleWarning className="h-8 text-primary" />
+  //         過去の履歴機能は、会員限定です
+  //       </p>
+  //     </div>
+  //   )
+  // }
+  const appWidth = `${open ? "md:w-[calc(100vw-17rem)]" : "md:w-[calc(100vw-4rem)]"}`
+  const Modal = ({ children }: { children: React.ReactNode }) => {
     return (
-      <div className="flex items-center justify-center h-screen text-secondary-foreground">
-        <p className="flex items-center gap-1">
-          <MessageCircleWarning className="h-8 text-primary" />
-          過去の履歴機能は、会員限定です
-        </p>
+      <div className={`absolute flex items-center justify-center h-screen ${appWidth} text-secondary-foreground z-50 bg-black/30 backdrop-blur-sm`}>
+        <div className="space-y-8 bg-card p-8 rounded-lg">
+          {children}
+        </div>
       </div>
     )
   }
+
   return (
     <AppPageTemplate>
-      <main className={`${open ? "md:w-[calc(100vw-17rem)]" : "md:w-[calc(100vw-4rem)]"} p-8`}>
+      {isLoginLoading &&
+        <Modal>
+          <SimpleSpinner />
+        </Modal>
+      }
+      {(!isLoginLoading && !isLogin) &&
+        <Modal>
+          <>
+            <p className="flex items-center gap-1 justify-start">
+              <MessageCircleWarning className="h-8 text-primary" />
+              お知らせ
+            </p>
+            <div >
+              <span className="pb-8 inline-block">過去の実績を閲覧するにはログインが必要です。<br />アクティビティ、タイムラインなどで過去の実績を可視化します。</span>
+              <Button className=" w-full" onClick={() => loginWithRedirect()}><LogIn />ログイン</Button>
+            </div>
+          </>
+        </Modal>
+      }
+      <main className={`${appWidth} p-8`}>
         <div className="block sm:hidden"><SidebarTrigger /></div>
         <div className="flex gap-2 flex-col lg:flex-row">
           <div className="lg:w-[49%]">
@@ -129,7 +165,7 @@ export default function MyHisotry() {
           </div>
           <div className="lg:w-[49%]">
             <ExH className="pt-0 pb-4 sticky top-0 h-[45px] bg-background z-10 flex items-end "><History className="h-5" />タイムライン</ExH>
-            <ExTimeline timeline={timeline} timelineLoading={timelineLoading} handleClickReadmore={handleClickReadmore} />
+            <ExTimeline timeline={timeline} timelineLoading={(config.isLogin && !config.isLoading) && timelineLoading} handleClickReadmore={handleClickReadmore} />
           </div>
         </div>
       </main >
@@ -208,13 +244,11 @@ const ExProjectSummary = ({
                 </span>
               </div>
             </div>
-            <span>
-              {start.split("T")[0]}
-              {isLoading && <Skeleton className="w-20 h-7" />}
-            </span><span className="px-2">〜</span><span>
-              {end.split("T")[0]}
-              {isLoading && <Skeleton className="w-20 h-7" />}
-            </span>
+            <div className="flex gap-1 items-center pt-2 justify-between">
+              {isLoading ? <Skeleton className="w-20 h-7" /> : start.split("T")[0]}
+              <span className="px-2">〜</span>
+              {isLoading ? <Skeleton className="w-20 h-7" /> : end.split("T")[0]}
+            </div>
           </div>
         </CardDescription>
       </CardHeader>
@@ -293,10 +327,10 @@ const ExTimeline = (
           })}
         </div>
         {(timelineLoading || !timeline) && <div className="w-full flex justify-center">
-          <div className="animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent" />
+          <SimpleSpinner />
         </div>}
       </section>
-      <div className="flex w-full justify-center py-12"><Button size={"lg"} onClick={handleClickReadmore}><ChevronsDown />もっとみる</Button></div>
+      <div className="flex w-full justify-center py-12"><Button size={"lg"} disabled={timelineLoading || !timeline} onClick={handleClickReadmore}><ChevronsDown />もっとみる</Button></div>
     </div>
   )
 }
@@ -308,9 +342,9 @@ const ExActivity = (
 
   return (
     <>
-      <div className="flex justify-end items-end">
+      <div className="flex items-end">
         <Select>
-          <SelectTrigger className="w-[100px] text-xs border-none border-b m-1" >
+          <SelectTrigger className="w-[100px] text-xs border-none border m-2 h-[30px]" disabled={!summary} >
             <SelectValue placeholder="2024年" />
           </SelectTrigger>
           <SelectContent align="end">
@@ -320,7 +354,7 @@ const ExActivity = (
           </SelectContent>
         </Select>
       </div>
-      <div className=" flex justify-center">
+      <div className="flex justify-center">
         <div className="p-4 rounded-md bg-card border w-full ">
           {activityLoading &&
             <div className="w-full space-y-2">

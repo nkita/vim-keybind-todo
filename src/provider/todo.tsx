@@ -9,54 +9,55 @@ import { TodoProps } from "@/types";
 type TodoConfigProps = {
     list: string | null
     token: string | null
+    isLoading: boolean
+    isLogin: boolean
 }
-const defaultValue = { list: null, token: null }
+const defaultValue = { list: null, token: null, isLoading: true, isLogin: false }
 
 export const TodoContext = createContext<TodoConfigProps>(defaultValue)
 
 export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
     const { getAccessTokenSilently, user, isLoading } = useAuth0();
     const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
-    const [list, setList] = useState<string | null>(null)
-    const [token, setToken] = useState("")
+
     useEffect(() => {
         async function getToken() {
             try {
                 const token = await getAccessTokenSilently()
-                if (token) {
-                    setToken(token)
-                }
+                setConfig(prev => ({ ...prev, token: token, isLoading: !!token, isLogin: !!token }))
             } catch (e) {
+                setConfig(prev => ({ ...prev, isLoading: false }))
+                console.error(e)
             }
         }
-        if (!isLoading && user) getToken()
+        if (!isLoading) {
+            if (user) {
+                getToken()
+            } else {
+                setConfig(prev => ({ ...prev, isLoading: false }))
+            }
+        }
     }, [getAccessTokenSilently, user, isLoading])
 
     useEffect(() => {
-        if (token) {
+        if (config.token && config.isLoading) {
             try {
-                const getList = async (url: string, token: string) => await getFetch<any[]>(url, token)
+                const getList = async (url: string, token: string) => await getFetch<any[]>(url, config.token)
                 const u = `${process.env.NEXT_PUBLIC_API}/api/list`
-                getList(u, token).then(l => {
+                getList(u, config.token).then(l => {
                     if (l === null) {
-                        postFetch(u, token, { name: "first list" }).then(_ => mutate(u)).catch(e => { console.log(e) })
-                        mutate(u)
+                        postFetch(u, config.token, { name: "first list" }).then(_ => mutate(u)).catch(e => { console.log(e) })
                     } else if (l && l.length > 0) {
-                        setList(l[0].id)
+                        setConfig(prev => ({ ...prev, list: l[0].id, isLoading: false }))
                     }
                 })
             } catch (e) {
                 console.error(e)
+                setConfig(prev => ({ ...prev, isLoading: false }))
             }
         }
-    }, [token])
+    }, [config])
 
-    useEffect(() => {
-        setConfig({
-            list: list,
-            token: token
-        })
-    }, [list, token])
 
     return (
         <TodoContext.Provider value={config}>

@@ -13,4 +13,11 @@ function Spinner({
     )
 }
 
-export { Spinner }
+function SimpleSpinner({
+    className,
+}: React.HTMLAttributes<HTMLDivElement>) {
+    return (
+        <div className={cn(`animate-spin h-8 w-8 border-2 p-1 border-primary rounded-full border-t-transparent`, className)} />
+    )
+}
+export { Spinner, SimpleSpinner }

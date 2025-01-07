@@ -928,7 +928,7 @@ export const Todo = (
                     <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                         <div ref={projectTop} />
                         <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
-                        {filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                        {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                         {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
                         {/* <div className="w-full h-full border-b"></div> */}
                         < div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >

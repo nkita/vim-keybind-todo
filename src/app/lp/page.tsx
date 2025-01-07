@@ -8,7 +8,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import NormalPageTemplate from "@/components/normal-page-template";
 import { Skeleton } from "@/components/ui/skeleton";
 import useSWRImmutable from "swr/immutable";
-import { Spinner } from "@/components/ui/spinner";
+import { SimpleSpinner, Spinner } from "@/components/ui/spinner";
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
@@ -109,13 +109,13 @@ export default function Home() {
                     </section>
 
 
-                    <section className="content-center px-2 sm:px-8">
+                    <section className="content-center w-full px-2 sm:px-8">
                         <h2 className="text-xl sm:text-2xl font-bold text-left pb-8 pt-16" id="update">アップデート🎉</h2>
                         <div className="text-left text-sm border w-[100%] rounded-md border-primary p-1 hidden-scrollbar">
                             <div className="overflow-auto max-h-96 w-ful p-4">
                                 {(!pullRequests && updateLoading) &&
                                     <div className="flex justify-center">
-                                        <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                                        <SimpleSpinner />
                                     </div>
                                 }
                                 {

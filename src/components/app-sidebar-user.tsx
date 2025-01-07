@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth0 } from "@auth0/auth0-react";
 import { Button } from "@/components/ui/button"
+import { SimpleSpinner } from "./ui/spinner"
 
 export function NavUser() {
     const { isMobile } = useSidebar()
@@ -40,7 +41,7 @@ export function NavUser() {
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild>
                         <a className="w-full h-14 flex items-center justify-center sidebar-border" href="#">
-                            <div className="animate-spin h-4 w-4 border-2 p-1 border-primary rounded-full border-t-transparent" />
+                            <SimpleSpinner className="h-4 w-4 border-primary-foreground border-t-transparent" />
                         </a>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

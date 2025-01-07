@@ -31,6 +31,7 @@ import { ProjectEditModal } from "./project-edit-modal"
 import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
+import { SimpleSpinner } from "./ui/spinner"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -977,7 +978,7 @@ export const Todo = (
                         {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                             <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                                 {(isSave && isUpdate) ? (
-                                    <div className="animate-spin h-4 w-4 border-2 p-1 border-primary-foreground rounded-full border-t-transparent" />
+                                    <SimpleSpinner className="border-primary-foreground h-4 w-4 p-1 border-t-transparent" />
                                 ) : (
                                     <><Save size={16} />保存</>
                                 )}

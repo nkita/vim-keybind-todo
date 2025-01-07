@@ -45,7 +45,7 @@ export type ProjectProps = {
 
 export type HistoryProjectProps = {
     name: string
-    tags: string[]
+    labels: string[]
     in_progress: number
     completed: number
     start: string

@@ -24,6 +24,8 @@ import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
 import { usePathname } from "next/navigation"
+import { toast } from "sonner"
+import { Button } from "./ui/button"
 
 export function AppSidebar() {
     const {
@@ -41,17 +43,27 @@ export function AppSidebar() {
     useEffect(() => {
         if (pullRequests && pullRequests.length > 0) {
             const latestDate = new Date(pullRequests[0].closed_at).getTime()
-            setIsBadge(checkInfoDate === undefined || latestDate > checkInfoDate)
+            if (checkInfoDate === undefined || latestDate > checkInfoDate) {
+                toast.custom((id) => {
+                    return (
+                        <div className="p-4 border-primary border rounded-lg">
+                            <span>最新バージョンがリリースされています🎉 <br /> 画面の更新をお願いします✨</span>
+                            <div className="flex justify-between pt-2">
+                                <Button variant={"outline"} onClick={() => toast.dismiss(id)}>閉じる</Button>
+                                <Button onClick={() => {
+                                    setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
+                                    location.reload()
+                                }} className="w-full ml-4" >更新する</Button>
+                            </div>
+                        </div>
+                    )
+                }, { duration: Infinity, action: { label: "close", onClick: () => toast.dismiss() }, closeButton: true })
+            }
         }
     }, [checkInfoDate, pullRequests])
 
-    const handleClickBell = () => {
-        if (pullRequests && pullRequests.length > 0) {
-            setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
-        }
-    }
     return (
-        <Sidebar collapsible="icon" >
+        <Sidebar collapsible="icon" className="border-r-sidebar-border" >
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>

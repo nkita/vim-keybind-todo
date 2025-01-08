@@ -71,7 +71,7 @@ export default function RootLayout({
             `}
             </Script>
             {children}
-            <Toaster position="top-center" richColors />
+            <Toaster position="bottom-right" richColors closeButton />
           </body>
         </html>
       </TodoProvider>

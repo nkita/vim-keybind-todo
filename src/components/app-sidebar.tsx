@@ -19,7 +19,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"
 import React, { useEffect, useState } from "react"
-import useSWRImmutable from "swr/immutable"
+import useSWR from "swr"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
@@ -33,17 +33,25 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_info_date", undefined)
-    const [isBadge, setIsBadge] = useState(false)
-    const { data: pullRequests, error } = useSWRImmutable(
+    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_last_checked_date", undefined)
+    const { data: pullRequests, error } = useSWR(
         'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
         url => fetch(url).then(res => res.json())
     );
-
+    const [isUpdateDialog, setIsUpdateDialog] = useState(false)
     useEffect(() => {
         if (pullRequests && pullRequests.length > 0) {
             const latestDate = new Date(pullRequests[0].closed_at).getTime()
-            if (checkInfoDate === undefined || latestDate > checkInfoDate) {
+
+            if (checkInfoDate === undefined) {
+                setCheckInfoDate(latestDate)
+                return
+            }
+
+            if (isUpdateDialog) return
+
+            if (latestDate > checkInfoDate) {
+                setIsUpdateDialog(true)
                 toast.custom((id) => {
                     return (
                         <div className="p-4 border-primary border rounded-lg">
@@ -60,7 +68,7 @@ export function AppSidebar() {
                 }, { duration: Infinity, action: { label: "close", onClick: () => toast.dismiss() }, closeButton: true })
             }
         }
-    }, [checkInfoDate, pullRequests])
+    }, [checkInfoDate, pullRequests, setCheckInfoDate, isUpdateDialog])
 
     return (
         <Sidebar collapsible="icon" className="border-r-sidebar-border" >
@@ -136,8 +144,7 @@ export function AppSidebar() {
                         <SidebarMenuButton asChild>
                             <Link href="/lp#update">
                                 <Bell className={`w-4 h-4`} />
-                                {(!open && isBadge) && <span className="absolute right-1 top-1 bg-primary2 rounded-full text-xs w-2 h-2"></span>}
-                                <div className="flex justify-between text-nowrap w-full items-center"><span>お知らせ</span>{isBadge && <span className="text-start bg-primary2 rounded-full text-xs w-2 h-2" />}</div>
+                                <div className="flex justify-between text-nowrap w-full items-center"><span>お知らせ</span></div>
                             </Link>
                         </SidebarMenuButton>
                         <SidebarMenuBadge></SidebarMenuBadge>

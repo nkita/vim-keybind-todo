@@ -155,8 +155,9 @@ export const TodoList = (
                                                     nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                 }
                                                 const common_color_css = `
-                                                    ${(mode !== "select" && currentIndex === index) ? " bg-border text-todo-accent-foreground " : "bg-card"}
+                                                    ${(mode !== "select" && mode !== "edit" && currentIndex === index) ? " bg-sky-100 text-todo-accent-foreground " : "bg-card"}
                                                     ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
+                                                    ${mode === "edit" && currentIndex === index ? " bg-card " : ""}
                                                     ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                 `
                                                 return (

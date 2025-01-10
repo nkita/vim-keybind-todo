@@ -85,7 +85,7 @@ export const Todo = (
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-    const [isHelp, setHelp] = useLocalStorage("todo_is_help", true)
+    const [isHelp, setHelp] = useLocalStorage("todo_is_help", false)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
     const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
@@ -899,7 +899,7 @@ export const Todo = (
     };
 
     const handleTouchEnd = () => {
-        const swipeThreshold = 10; // スワイプ感度の閾値
+        const swipeThreshold = 30; // スワイプ感度の閾値
         if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
@@ -923,15 +923,15 @@ export const Todo = (
 
     return (
         <>
-            <header className={`shrink-0 h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
-                <div className={`relative w-full h-[2.8rem] border-b`}>
+            <header className={`shrink-0 h-[3rem] sm:h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
+                <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
                     <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                         <div ref={projectTop} />
                         <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
                         {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                         {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
                         {/* <div className="w-full h-full border-b"></div> */}
-                        < div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
+                        <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
                             <ProjectEditModal
                                 buttonLabel={<Plus size={14} />}
                                 className="outline-none  p-2 rounded-md hover:bg-primary/10"
@@ -990,7 +990,7 @@ export const Todo = (
                     </div>
                 </div>
             </header >
-            <div className={`w-full h-[calc(100%-5.8rem)]`}>
+            <div className={`w-full h-[calc(100%-3rem)] sm:h-[calc(100%-5.8rem)]`}>
                 {/* オーバーレイ */}
                 {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                 {/* オーバーレイ */}
@@ -1001,7 +1001,7 @@ export const Todo = (
                                 onTouchStart={handleTouchStart}
                                 onTouchMove={handleTouchMove}
                                 onTouchEnd={handleTouchEnd}
-                                className="h-[calc(100%-30px)] w-full">
+                                className="h-[calc(100%-70px)] sm:h-[calc(100%-30px)] w-full">
                                 <TodoList
                                     filterdTodos={filterdTodos}
                                     currentIndex={currentIndex}
@@ -1076,7 +1076,9 @@ export const Todo = (
                         completionOnly={completionOnly}
                         viewCompletionTask={viewCompletionTask}
                         projects={exProjects}
+                        filteredProjects={filterdProjects}
                         currentProjectId={currentProjectId}
+                        handleClickElement={handleClickElement}
                         setViewCompletionTask={setViewCompletionTask}
                         setCurrentProjectId={setCurrentProjectId}
                         setMode={setMode}

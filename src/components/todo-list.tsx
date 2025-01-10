@@ -10,6 +10,7 @@ import { Box, ChevronsUpDown, MessageCircleMore, Star, StickyNote, Tag } from "l
 import { find as lfind } from "lodash"
 import { TodoContext } from "@/provider/todo";
 import { postSaveLabels, postSaveProjects } from "@/lib/todo"
+import { Button } from "./ui/button"
 
 export const TodoList = (
     {
@@ -169,6 +170,7 @@ export const TodoList = (
                                                         <TableCell className={`
                                                              sticky left-0 
                                                              text-sm text-right 
+                                                             z-10
                                                              p-0 m-0 ${table_idx_width}
                                                             `}>
                                                             <div className={` 
@@ -189,7 +191,7 @@ export const TodoList = (
                                                             </div>
                                                         </TableCell>
                                                         <TableCell onDoubleClick={_ => onClick(index, 'text')} className={`${table_task_width} relative`}>
-                                                            <div className="flex w-full h-full justify-between  items-center">
+                                                            <div className="flex w-[calc(100%-20px)] sm:w-full h-full justify-between  items-center">
                                                                 <span className="text-primary/90 flex text-md">
                                                                     {t.indent !== undefined &&
                                                                         <>
@@ -274,16 +276,16 @@ export const TodoList = (
                                                                         title={"プロジェクト"}
                                                                         onClick={onClick} />
                                                                 </div>
-                                                                <div className={`absolute right-0 flex sm:hidden items-center w-[49px] justify-end gap-1 h-full ${common_color_css}`}>
+                                                                <div className={`absolute right-0 flex sm:hidden items-center w-[90px] justify-end gap-1 px-2 h-full ${common_color_css}`}>
                                                                     {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
                                                                     {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
-                                                                    <button onClick={e => {
-                                                                        e.stopPropagation()
-                                                                        e.preventDefault()
-                                                                        onClick(index, 'editDetail')
-                                                                    }} className=" text-muted-foreground ">
-                                                                        <MessageCircleMore className="h-5 w-5" />
-                                                                    </button>
+                                                                    <Button size={"sm"}
+                                                                    className="text-xs h-7"
+                                                                        onClick={e => {
+                                                                            e.stopPropagation()
+                                                                            e.preventDefault()
+                                                                            onClick(index, 'editDetail')
+                                                                        }}>編集</Button>
                                                                 </div>
                                                             </div>
                                                         </TableCell>

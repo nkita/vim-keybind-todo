@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
+import { ProjectTab } from "./todo-project-tab";
 const MAX_UNDO_COUNT = 10
 
 export const BottomMenu = (
@@ -18,9 +19,11 @@ export const BottomMenu = (
         prevTodos,
         completionOnly,
         projects,
+        filteredProjects,
         currentProjectId,
         viewCompletionTask,
         todoEnables,
+        handleClickElement,
         setMode,
         setViewCompletionTask,
         setCurrentProjectId,
@@ -30,9 +33,11 @@ export const BottomMenu = (
         prevTodos: TodoProps[]
         completionOnly?: boolean
         projects: ProjectProps[]
+        filteredProjects: ProjectProps[]
         currentProjectId: string
         viewCompletionTask: boolean
         todoEnables: TodoEnablesProps
+        handleClickElement: (index: number, prefix: string) => void
         setMode: Dispatch<SetStateAction<Mode>>
         setViewCompletionTask: Dispatch<SetStateAction<boolean>>
         setCurrentProjectId: Dispatch<SetStateAction<string>>
@@ -180,15 +185,16 @@ export const BottomMenu = (
                     )}
                 </div>
             </div>
-            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2  drop-shadow-xl block sm:hidden">
-                <div className="flex justify-around items-center h-16 text-secondary-foreground/80">
+            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2   drop-shadow-xl block sm:hidden">
+                <div className="h-[2.8rem] w-full">
+                    <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  > <ProjectTab currentProjectId={currentProjectId} index={-1} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} />
+                        {projects && filteredProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} project={p} />)}
+                    </div>
+                </div>
+                <div className="flex justify-around items-center h-24 text-secondary-foreground/80 border-t">
                     <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('setting')}>
                         <Monitor className="h-6 w-6" />
                         <span className="text-xs">表示</span>
-                    </Button>
-                    <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('selectProject')}>
-                        <ArrowRightLeft className="h-6 w-6" />
-                        <span className="text-xs">切り替え</span>
                     </Button>
                     <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('addTask')}>
                         <Plus className="h-6 w-6" />

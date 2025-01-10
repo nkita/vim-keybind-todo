@@ -4,7 +4,7 @@ import { useState, useEffect, Fragment, useContext, use } from "react"
 import { useAuth0 } from "@auth0/auth0-react";
 import { cn } from "@/lib/utils";
 import { ActivityCalendar } from 'react-activity-calendar';
-import { Activity, Box, Calendar, Check, ChevronDown, ChevronsDown, CircleCheck, Clock, Footprints, History, Hourglass, Link as LinkIcon, LogIn, Mail, MessageCircleCode, MessageCircleWarning, Pencil, PiggyBank, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
+import { Activity, Box, Calendar, Check, ChevronDown, ChevronsDown, CircleCheck, Clock, Footprints, History, Hourglass, icons, Link as LinkIcon, LogIn, Mail, Menu, MessageCircleCode, MessageCircleWarning, Pencil, PiggyBank, PlusCircle, Rocket, Tag, User, X } from "lucide-react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -117,13 +117,16 @@ export default function MyHisotry() {
       {(!isLoginLoading && !isLogin) &&
         <Modal>
           <>
-            <p className="flex items-center gap-1 justify-start">
-              <MessageCircleWarning className="h-8 text-primary" />
-              お知らせ
-            </p>
+            <div className="flex items-center gap-1 justify-between">
+              <div className="flex items-center gap-1">
+                <MessageCircleWarning className="h-8 text-primary" />
+                お知らせ
+              </div>
+              <div className="border rounded-md "><SidebarTrigger /></div>
+            </div>
             <div >
               <span className="pb-8 inline-block">過去の実績を閲覧するにはログインが必要です。<br />アクティビティ、タイムラインなどで過去の実績を可視化します。</span>
-              <Button className=" w-full" onClick={() => loginWithRedirect()}><LogIn />ログイン</Button>
+              <Button className="w-full" onClick={() => loginWithRedirect()}><LogIn />ログイン</Button>
             </div>
           </>
         </Modal>

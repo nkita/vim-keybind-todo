@@ -14,7 +14,7 @@ export const ProjectTab = (
         project?: ProjectProps,
         exProjects: ProjectProps[],
         filterdProjects: ProjectProps[],
-        setProjects: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
+        setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
         onClick: (index: number, prefix: string) => void
     }
 ) => {
@@ -27,7 +27,7 @@ export const ProjectTab = (
     }, [project, currentProjectId])
 
     const handleHidden = () => {
-        if (!project) return
+        if (!project || !setProjects) return
         let _projects = exProjects.map((v: ProjectProps, i: number) => {
             if (v.id === project.id) v.isTabDisplay = false
             v.sort = i
@@ -63,7 +63,7 @@ export const ProjectTab = (
                     )}
                 </span >
             </button >
-            {project && <button tabIndex={-1} className={`m-1 p-1 border border-transparent rounded-sm hover:border-primary `} onClick={handleHidden}><X className="h-3 w-3" /></button>}
+            {(project && setProjects) && <button tabIndex={-1} className={`m-1 p-1 border border-transparent rounded-sm hover:border-primary `} onClick={handleHidden}><X className="h-3 w-3" /></button>}
             <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${current || prevCurrent ? "border-transparent" : "border"} `}></div>
         </div>
     )

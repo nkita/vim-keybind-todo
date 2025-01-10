@@ -185,7 +185,7 @@ export const BottomMenu = (
                     )}
                 </div>
             </div>
-            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 h-[150px]  drop-shadow-xl block sm:hidden">
+            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t-2 h-[150px]  drop-shadow-xl block sm:hidden w-full">
                 <div className="h-[50px] w-full">
                     <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}>
                         <ProjectTab currentProjectId={currentProjectId} index={-1} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} />

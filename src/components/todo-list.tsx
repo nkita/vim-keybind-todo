@@ -65,7 +65,7 @@ export const TodoList = (
     const handleTouchMove = (event: React.TouchEvent) => setTouchMoveX(event.changedTouches[0].screenX);
 
     const handleTouchEnd = (index: number, prefix: string) => {
-        if (touchMoveX === 0) onClick(index, prefix)
+        // if (touchMoveX === 0) onClick(index, prefix)
         setTouchMoveX(0);
     };
 

@@ -122,7 +122,7 @@ export default function MyHisotry() {
                 <MessageCircleWarning className="h-8 text-primary" />
                 お知らせ
               </div>
-              <div className="border rounded-md "><SidebarTrigger /></div>
+              <div className="border rounded-md sm:hidden"><SidebarTrigger /></div>
             </div>
             <div >
               <span className="pb-8 inline-block">過去の実績を閲覧するにはログインが必要です。<br />アクティビティ、タイムラインなどで過去の実績を可視化します。</span>

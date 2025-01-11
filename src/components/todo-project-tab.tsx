@@ -50,7 +50,7 @@ export const ProjectTab = (
         <div className={`relative flex items-center pl-4  pr-2
                     ${current ?
                 " bg-card border-t-primary border-t border-b-transparent border-x"
-                : " text-muted-foreground border-t border-x border-x-transparent"}
+                : " bg-muted text-muted-foreground border-t border-x border-x-transparent"}
                     h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
             `}>
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}

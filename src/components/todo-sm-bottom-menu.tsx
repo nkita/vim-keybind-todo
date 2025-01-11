@@ -185,14 +185,14 @@ export const BottomMenu = (
                     )}
                 </div>
             </div>
-            <nav className="fixed bottom-0 left-0 right-0 bg-card z-20 border-t-2 h-[150px]  drop-shadow-xl block sm:hidden w-full">
-                <div className="h-[50px] w-full">
+            <nav className="fixed bottom-0 left-0 right-0 bg-card z-20 border-t-2 h-[110px]  drop-shadow-xl block sm:hidden w-full">
+                <div className="h-[35px] w-full">
                     <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}>
                         <ProjectTab currentProjectId={currentProjectId} index={-1} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} />
                         {projects && filteredProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} project={p} />)}
                     </div>
                 </div>
-                <div className="flex justify-around items-start h-[100px] text-secondary-foreground/80 border-t">
+                <div className="flex justify-around items-start h-[75px] text-secondary-foreground/80 border-t">
                     <Button variant="ghost" className="flex w-[33%] flex-col h-full items-center" onClick={() => openPanel('setting')}>
                         <Monitor className="h-6 w-6" />
                         <span className="text-xs">表示</span>

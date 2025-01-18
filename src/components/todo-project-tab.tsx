@@ -4,22 +4,31 @@ import { List, Box, X } from "lucide-react"
 import { postSaveProjects } from "@/lib/todo"
 import { TodoContext } from "@/provider/todo";
 import { ProjectProps } from "@/types"
+import { useDroppable } from "@dnd-kit/core";
 
 export const ProjectTab = (
     {
-        currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick
+        currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick, tabId
     }: {
         currentProjectId: string,
         index: number,
         project?: ProjectProps,
         exProjects: ProjectProps[],
         filterdProjects: ProjectProps[],
+        tabId: string,
         setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
         onClick: (index: number, prefix: string) => void
     }
 ) => {
     const config = useContext(TodoContext)
     const ref = React.useRef<HTMLButtonElement>(null)
+    const { isOver, setNodeRef } = useDroppable({
+        id: tabId,
+        data: {
+            type: "projectTab",
+            projectId: project?.id
+        }
+    });
     useEffect(() => {
         if (project && currentProjectId === project.id) {
             ref.current?.scrollIntoView({ behavior: "smooth" })
@@ -45,14 +54,13 @@ export const ProjectTab = (
     const currentProjectIdx = filterdProjects.map(p => p.id).indexOf(currentProjectId)
     const current = index === currentProjectIdx
     const prevCurrent = index === currentProjectIdx - 1
-
     return (
         <div className={`relative flex items-center pl-4  pr-2
-                    ${current ?
-                " bg-card border-t-primary border-t border-b-transparent border-x"
-                : " bg-muted text-muted-foreground border-t border-x border-x-transparent"}
-                    h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
-            `}>
+                ${current ?
+                `${isOver ? "bg-sky-100" : "bg-card"} border-t-primary border-t border-b-transparent border-x`
+                : ` ${isOver ? "bg-sky-100" : "bg-muted"} text-muted-foreground border-t border-x border-x-transparent`}
+                h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
+            `} ref={setNodeRef} >
             <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
                 className={` text-xs focus-within:outline-none`}>
                 <span className="flex gap-1 items-center" >

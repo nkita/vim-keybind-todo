@@ -66,10 +66,12 @@ export function TodoListRow({
         <TableRow key={t.id}
             ref={setNodeRef}
             style={style} {...attributes} {...listeners}
-            className={
-                `h-[2.5rem]
-                   ${common_color_css}
-                `} onClick={_ => setCurrentIndex(index)} >
+            className={`h-[2.5rem] ${common_color_css}`}
+            onMouseDown={e => {
+                setCurrentIndex(index)
+                e.preventDefault()
+                e.stopPropagation()
+            }}>
             <TableCell className={`
                      sticky left-0 
                      text-sm text-right 
@@ -77,7 +79,7 @@ export function TodoListRow({
                      p-0 m-0 ${table_idx_width}
                     `}>
                 <div className={` 
-                          pl-2 pr-1  h-[2.5rem] flex items-center
+                         pl-2 pr-1  h-[2.5rem] flex items-center
                          ${common_color_css}
                          `}>
                     {index + 1}
@@ -122,10 +124,10 @@ export function TodoListRow({
                             currentIndex={currentIndex}
                             currentPrefix={prefix}
                             className={`
-                                                                            ${t.priority === "1" && "text-primary"}
-                                                                            ${t.priority === "2" && "text-destructive"}
-                                                                            ${t.priority === "3" && "text-destructive font-semibold"}
-                                                                            `}
+                               ${t.priority === "1" && "text-primary"}
+                               ${t.priority === "2" && "text-destructive"}
+                               ${t.priority === "3" && "text-destructive font-semibold"}
+                            `}
                             mode={mode}
                             label={t.text}
                             register={register} />

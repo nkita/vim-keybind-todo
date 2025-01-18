@@ -11,23 +11,6 @@ import { TodoContext } from "@/provider/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import AppPageTemplate from "@/components/app-page-template";
 import { useSidebar } from "@/components/ui/sidebar";
-import { CSS } from "@dnd-kit/utilities";
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  useDraggable, useDroppable
-} from '@dnd-kit/core';
-import {
-  useSortable,
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -158,24 +141,22 @@ export default function Home() {
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
   return (
     <AppPageTemplate>
-      <DndContext onDragEnd={e => console.log(e)}>
-        <article className={`h-screen w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
-          <Todo
-            todos={!isLoginLoading && isLogin ? todos : todosLS}
-            prevTodos={prevTodos}
-            exProjects={!isLoginLoading && isLogin ? projects : projectsLS}
-            exLabels={!isLoginLoading && isLogin ? labels : labelsLS}
-            isSave={isSave}
-            isUpdate={isUpdate}
-            loading={todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading}
-            setTodos={!isLoginLoading && isLogin ? setTodos : setTodosLS}
-            setIsUpdate={setIsUpdate}
-            setExProjects={!isLoginLoading && isLogin ? setProjects : setProjectsLS}
-            setExLabels={!isLoginLoading && isLogin ? setLabels : setLabelsLS}
-            onClickSaveButton={handleClickSaveButton}
-          />
-        </article >
-      </DndContext>
+      <article className={`h-screen w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
+        <Todo
+          todos={!isLoginLoading && isLogin ? todos : todosLS}
+          prevTodos={prevTodos}
+          exProjects={!isLoginLoading && isLogin ? projects : projectsLS}
+          exLabels={!isLoginLoading && isLogin ? labels : labelsLS}
+          isSave={isSave}
+          isUpdate={isUpdate}
+          loading={todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading}
+          setTodos={!isLoginLoading && isLogin ? setTodos : setTodosLS}
+          setIsUpdate={setIsUpdate}
+          setExProjects={!isLoginLoading && isLogin ? setProjects : setProjectsLS}
+          setExLabels={!isLoginLoading && isLogin ? setLabels : setLabelsLS}
+          onClickSaveButton={handleClickSaveButton}
+        />
+      </article >
     </AppPageTemplate>
   );
 }

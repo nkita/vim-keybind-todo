@@ -32,6 +32,7 @@ import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 import { SimpleSpinner } from "./ui/spinner"
+import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -921,182 +922,217 @@ export const Todo = (
         }
     }, [currentProjectId, filterdProjects])
 
+    const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
+
+    const handleDragStart = (event: any) => {
+        // console.log("start", event)
+        setClickPosition({
+            x: event.activatorEvent.clientX,
+            y: event.activatorEvent.clientY,
+        });
+    };
+
+    const handleDragEnd = (e: DragEndEvent) => {
+        const activeTodoId = e.active.id.toString()
+        const overCurrent = e.over?.data?.current
+        if (overCurrent?.type === "projectTab") {
+            const projectId = overCurrent.projectId
+            handleSetTodos(todoFunc.update(todos, activeTodoId, { projectId: projectId }), prevTodos)
+        }
+    }
+
+
     return (
         <>
-            <header className={`shrink-0 h-[3rem] sm:h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
-                <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
-                    <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
-                        <div ref={projectTop} />
-                        <ProjectTab currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
-                        {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                        {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
-                        {/* <div className="w-full h-full border-b"></div> */}
-                        <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
-                            <ProjectEditModal
-                                buttonLabel={<Plus size={14} />}
-                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
-                                mode={mode}
-                                setMode={setMode}
-                                exProjects={exProjects}
-                                setExProjects={setExProjects}
-                            />
-                            <ProjectTabSettingModal
-                                buttonLabel={<Settings2 size={14} />}
-                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
-                                mode={mode}
-                                setMode={setMode}
-                                exProjects={exProjects}
-                                setExProjects={setExProjects}
-                            />
-                        </div>
-                        <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
-                    </div>
-                </div>
-                <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">
-                    <div className="flex items-center gap-2 h-full px-2 mx-2 ">
-                        <div className="block md:hidden"><SidebarTrigger className="border" /></div>
-                        <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
-                        <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
-                        <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
-                        <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                        <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
-                        <div className="hidden sm:block">
-                            <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
-                                {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
-                            </MenuButton>
-                        </div>
-                        <div className="hidden sm:block">
-                            <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
-                        </div>
-                        <div className="hidden sm:block">
-                            <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
-                                <Columns size={16} />
-                            </MenuButton>
-                        </div>
-                    </div>
-                    <div className="relative flex gap-2 items-center px-2">
-                        {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                            <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
-                                {(isSave && isUpdate) ? (
-                                    <SimpleSpinner className="border-primary-foreground h-4 w-4 p-1 border-t-transparent" />
-                                ) : (
-                                    <><Save size={16} />保存</>
-                                )}
-                            </Button>
-                        }
-                        <div className="hidden sm:inline-block">
-                            <Button variant={"default"} onClick={handleClickAddButton} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90"><Plus />タスクを追加</Button>
-                        </div>
-                    </div>
-                </div>
-            </header >
-            <div className={`w-full h-[calc(100%-3rem)] sm:h-[calc(100%-5.8rem)]`}>
-                {/* オーバーレイ */}
-                {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
-                {/* オーバーレイ */}
-                <div className={`relative w-full h-full`} onMouseDown={handleMainMouseDown}>
-                    <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                        <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
-                            <div
-                                onTouchStart={handleTouchStart}
-                                onTouchMove={handleTouchMove}
-                                onTouchEnd={handleTouchEnd}
-                                className="h-[calc(100%-70px)] sm:h-[calc(100%-30px)] w-full">
-                                <TodoList
-                                    filterdTodos={filterdTodos}
-                                    currentIndex={currentIndex}
-                                    prefix={prefix}
+            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <header className={`shrink-0 h-[3rem] sm:h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
+                    <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
+                        <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
+                            <div ref={projectTop} />
+                            <ExOverlay id="1" clickPosition={clickPosition}>*</ExOverlay>
+                            <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
+                            {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                            {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
+                            {/* <div className="w-full h-full border-b"></div> */}
+                            <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
+                                <ProjectEditModal
+                                    buttonLabel={<Plus size={14} />}
+                                    className="outline-none  p-2 rounded-md hover:bg-primary/10"
                                     mode={mode}
+                                    setMode={setMode}
                                     exProjects={exProjects}
-                                    exLabels={exLabels}
-                                    currentProjectId={currentProjectId}
-                                    sort={sort}
-                                    loading={loading}
-                                    onClick={handleClickElement}
-                                    setCurrentIndex={setCurrentIndex}
                                     setExProjects={setExProjects}
-                                    setExLabels={setExLabels}
-                                    register={register}
-                                    rhfSetValue={setValue}
+                                />
+                                <ProjectTabSettingModal
+                                    buttonLabel={<Settings2 size={14} />}
+                                    className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                    mode={mode}
+                                    setMode={setMode}
+                                    exProjects={exProjects}
+                                    setExProjects={setExProjects}
                                 />
                             </div>
-                            <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
-                                {command ? (
-                                    <span>Line：{command}</span>
-                                ) : (
-                                    <span>No：{currentIndex + 1}</span>
-                                )}
-                                {mode}
-                            </div>
-                        </ResizablePanel>
-                        <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
-                        <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
-                            {loading ? (
-                                <></>
-                            ) : (
-                                <>
-                                    <div className={`w-full h-full z-20`}>
-                                        {(!filterdTodos[currentIndex] || !filterdTodos[currentIndex].text) &&
-                                            <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
-                                                <TentTree className="w-7 h-7" />
-                                                タスクを追加、または選択してください。
-                                            </div>
-                                        }
-                                        {filterdTodos[currentIndex] && filterdTodos[currentIndex].text &&
-                                            <Detail
-                                                todo={filterdTodos[currentIndex]}
-                                                exProjects={exProjects}
-                                                exLabels={exLabels}
-                                                prefix={prefix}
-                                                mode={mode}
-                                                onMouseDownEvent={handleDetailMouseDown}
-                                                onClick={handleClickDetailElement}
-                                                setValue={setValue}
-                                                watch={watch}
-                                                register={register}
-                                            />
-                                        }
-                                    </div>
-                                </>
-                            )}
-                        </ResizablePanel>
-                    </ResizablePanelGroup>
-                    <DeleteModal
-                        currentIndex={currentIndex}
-                        filterdTodos={filterdTodos}
-                        prevTodos={prevTodos}
-                        currentPrefix={prefix}
-                        mode={mode}
-                        onClick={handleClickDetailElement}
-                        onDelete={deleteTask}
-                    />
-                    <BottomMenu
-                        todos={todos}
-                        prevTodos={prevTodos}
-                        completionOnly={completionOnly}
-                        viewCompletionTask={viewCompletionTask}
-                        projects={exProjects}
-                        filteredProjects={filterdProjects}
-                        currentProjectId={currentProjectId}
-                        handleClickElement={handleClickElement}
-                        setViewCompletionTask={setViewCompletionTask}
-                        setCurrentProjectId={setCurrentProjectId}
-                        setMode={setMode}
-                        handleSetTodos={handleSetTodos}
-                        todoEnables={todoEnables}
-                    />
-                    {!loading &&
-                        <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
-                            <Usage
-                                sort={sort}
-                                mode={mode}
-                                setHelp={setHelp}
-                                isTodos={filterdTodos.length > 0}
-                            />
+                            <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
                         </div>
-                    }
+                    </div>
+                    <div className="flex justify-between items-center h-[3rem] border-b-2 bg-card text-card-foreground">
+                        <div className="flex items-center gap-2 h-full px-2 mx-2 ">
+                            <div className="block md:hidden"><SidebarTrigger className="border" /></div>
+                            <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
+                            <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
+                            <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
+                            <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
+                            <div className="hidden sm:block">
+                                <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
+                                    {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
+                                </MenuButton>
+                            </div>
+                            <div className="hidden sm:block">
+                                <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
+                            </div>
+                            <div className="hidden sm:block">
+                                <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                                    <Columns size={16} />
+                                </MenuButton>
+                            </div>
+                        </div>
+                        <div className="relative flex gap-2 items-center px-2">
+                            {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                                <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                                    {(isSave && isUpdate) ? (
+                                        <SimpleSpinner className="border-primary-foreground h-4 w-4 p-1 border-t-transparent" />
+                                    ) : (
+                                        <><Save size={16} />保存</>
+                                    )}
+                                </Button>
+                            }
+                            <div className="hidden sm:inline-block">
+                                <Button variant={"default"} onClick={handleClickAddButton} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90"><Plus />タスクを追加</Button>
+                            </div>
+                        </div>
+                    </div>
+                </header >
+                <div className={`w-full h-[calc(100%-3rem)] sm:h-[calc(100%-5.8rem)]`}>
+                    {/* オーバーレイ */}
+                    {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
+                    {/* オーバーレイ */}
+                    <div className={`relative w-full h-full`} onMouseDown={handleMainMouseDown}>
+                        <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
+                            <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
+                                <div
+                                    onTouchStart={handleTouchStart}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                    className="h-[calc(100%-70px)] sm:h-[calc(100%-30px)] w-full">
+                                    <TodoList
+                                        filterdTodos={filterdTodos}
+                                        currentIndex={currentIndex}
+                                        prefix={prefix}
+                                        mode={mode}
+                                        exProjects={exProjects}
+                                        exLabels={exLabels}
+                                        currentProjectId={currentProjectId}
+                                        sort={sort}
+                                        loading={loading}
+                                        onClick={handleClickElement}
+                                        setCurrentIndex={setCurrentIndex}
+                                        setExProjects={setExProjects}
+                                        setExLabels={setExLabels}
+                                        register={register}
+                                        rhfSetValue={setValue}
+                                    />
+                                </div>
+                                <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
+                                    {command ? (
+                                        <span>Line：{command}</span>
+                                    ) : (
+                                        <span>No：{currentIndex + 1}</span>
+                                    )}
+                                    {mode}
+                                </div>
+                            </ResizablePanel>
+                            <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
+                            <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
+                                {loading ? (
+                                    <></>
+                                ) : (
+                                    <>
+                                        <div className={`w-full h-full z-20`}>
+                                            {(!filterdTodos[currentIndex] || !filterdTodos[currentIndex].text) &&
+                                                <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
+                                                    <TentTree className="w-7 h-7" />
+                                                    タスクを追加、または選択してください。
+                                                </div>
+                                            }
+                                            {filterdTodos[currentIndex] && filterdTodos[currentIndex].text &&
+                                                <Detail
+                                                    todo={filterdTodos[currentIndex]}
+                                                    exProjects={exProjects}
+                                                    exLabels={exLabels}
+                                                    prefix={prefix}
+                                                    mode={mode}
+                                                    onMouseDownEvent={handleDetailMouseDown}
+                                                    onClick={handleClickDetailElement}
+                                                    setValue={setValue}
+                                                    watch={watch}
+                                                    register={register}
+                                                />
+                                            }
+                                        </div>
+                                    </>
+                                )}
+                            </ResizablePanel>
+                        </ResizablePanelGroup>
+                        <DeleteModal
+                            currentIndex={currentIndex}
+                            filterdTodos={filterdTodos}
+                            prevTodos={prevTodos}
+                            currentPrefix={prefix}
+                            mode={mode}
+                            onClick={handleClickDetailElement}
+                            onDelete={deleteTask}
+                        />
+                        <BottomMenu
+                            todos={todos}
+                            prevTodos={prevTodos}
+                            completionOnly={completionOnly}
+                            viewCompletionTask={viewCompletionTask}
+                            projects={exProjects}
+                            filteredProjects={filterdProjects}
+                            currentProjectId={currentProjectId}
+                            handleClickElement={handleClickElement}
+                            setViewCompletionTask={setViewCompletionTask}
+                            setCurrentProjectId={setCurrentProjectId}
+                            setMode={setMode}
+                            handleSetTodos={handleSetTodos}
+                            todoEnables={todoEnables}
+                        />
+                        {!loading &&
+                            <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
+                                <Usage
+                                    sort={sort}
+                                    mode={mode}
+                                    setHelp={setHelp}
+                                    isTodos={filterdTodos.length > 0}
+                                />
+                            </div>
+                        }
+                    </div >
                 </div >
-            </div >
+            </DndContext>
         </>
+    )
+}
+
+const ExOverlay = (props: { id: string, children: React.ReactNode, clickPosition: { x: number, y: number } }) => {
+    return (
+        <DragOverlay>
+            {props.id ? (
+                <div className="bg-sky-100/50 rounded-md p-2 w-10">
+                    {props.children}
+                </div>
+            ) : null}
+        </DragOverlay>
     )
 }

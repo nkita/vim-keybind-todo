@@ -939,8 +939,11 @@ export const Todo = (
             const projectId = overCurrent.projectId
             handleSetTodos(todoFunc.update(todos, activeTodoId, { projectId: projectId }), prevTodos)
         }
+        if (overCurrent?.type === "todo") {
+            const targetTodoId = overCurrent.todoId
+            handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, activeTodoId), todoFunc.getIndexById(todos, targetTodoId)), prevTodos)
+        }
     }
-
 
     return (
         <>

@@ -55,7 +55,7 @@ export function TodoListRow({
         setNodeRef,
         transform,
         transition,
-    } = useSortable({ id: t.id });
+    } = useSortable({ id: t.id, data: { type: "todo", todoId: t.id, text: t.text } });
 
     const style = {
         transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,

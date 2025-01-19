@@ -2,7 +2,7 @@
 
 import { useSortable } from "@dnd-kit/sortable"
 import { TableRow, TableCell } from "./ui/table"
-import { ChevronsUpDown } from "lucide-react"
+import { ChevronsUpDown, GripVertical } from "lucide-react"
 import { FaCircleCheck, FaRegCircle } from "react-icons/fa6"
 import { Star } from "lucide-react"
 import { StickyNote, Tag } from "lucide-react"
@@ -55,7 +55,7 @@ export function TodoListRow({
         setNodeRef,
         transform,
         transition,
-    } = useSortable({ id: t.id, data: { type: "todo", todoId: t.id, text: t.text } });
+    } = useSortable({ id: t.id, data: { type: "todo", todoId: t.id } });
 
     const style = {
         transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
@@ -64,9 +64,10 @@ export function TodoListRow({
 
     return (
         <TableRow key={t.id}
+            className={`h-[2.5rem] ${common_color_css} group`}
+            {...attributes}
+            style={style}
             ref={setNodeRef}
-            style={style} {...attributes} {...listeners}
-            className={`h-[2.5rem] ${common_color_css}`}
             onMouseDown={e => {
                 setCurrentIndex(index)
                 e.preventDefault()
@@ -77,20 +78,30 @@ export function TodoListRow({
                      text-sm text-right 
                      z-10
                      p-0 m-0 ${table_idx_width}
-                    `}>
+                    `}
+                {...listeners}
+            >
                 <div className={` 
+                         relative
                          pl-2 pr-1  h-[2.5rem] flex items-center
                          ${common_color_css}
-                         `}>
-                    {index + 1}
+                         hover:cursor-grab 
+                         `}
+                >
+                    <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-100 opacity-0 transition-all duration-200 overflow-hidden">
+                        <GripVertical className="w-4 h-4 text-muted-foreground" />
+                    </span>
+                    <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-0 opacity-100 transition-all duration-200 overflow-hidden">
+                        {index + 1}
+                    </span>
                 </div></TableCell>
             <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
                 <div className="flex w-ful justify-center">
                     {mode === "select" && currentIndex === index ? (
-                        <ChevronsUpDown className="text-primary h-3 w-3 group-hover:text-gray-300" />
+                        <ChevronsUpDown className="text-primary h-3 w-3 " />
                     ) : (
                         <>
-                            {t.is_complete ? <FaCircleCheck className="text-primary group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 group-hover:text-green-500" />}
+                            {t.is_complete ? <FaCircleCheck className="text-primary" /> : <FaRegCircle className="text-gray-500" />}
                         </>
                     )}
                 </div>

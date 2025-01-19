@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2 } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -32,7 +32,7 @@ import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 import { SimpleSpinner } from "./ui/spinner"
-import { DndContext, DragEndEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
+import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -913,6 +913,7 @@ export const Todo = (
 
     const projectTop = useRef<HTMLDivElement>(null);
     const projectLast = useRef<HTMLDivElement>(null);
+
     useEffect(() => {
         if (!currentProjectId && projectTop.current) {
             projectTop.current.scrollIntoView({ behavior: "smooth" })
@@ -922,17 +923,49 @@ export const Todo = (
         }
     }, [currentProjectId, filterdProjects])
 
+    /** ドラッグイベント処理 */
+    const [isDragging, setIsDragging] = useState(false);
     const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
+    const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
 
-    const handleDragStart = (event: any) => {
-        // console.log("start", event)
-        setClickPosition({
-            x: event.activatorEvent.clientX,
-            y: event.activatorEvent.clientY,
-        });
+    // マウスの移動距離を計算する関数
+    const calculateDistance = (x1: number, y1: number, x2: number, y2: number) => {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    };
+
+    const handleDragStart = (event: DragStartEvent) => {
+        if (event.activatorEvent.type === "pointerdown") {
+            const { clientX, clientY } = event.activatorEvent as PointerEvent;
+            setInitialPosition({ x: clientX, y: clientY });
+            setClickPosition({ x: clientX, y: clientY });
+        }
+    };
+
+    const handleDragMove = (event: DragMoveEvent) => {
+        const { x: deltaX, y: deltaY } = event.delta;
+        const currentX = clickPosition.x + deltaX;
+        const currentY = clickPosition.y + deltaY;
+        // console.log(deltaY, initialPosition.y + deltaY)
+        const distance = calculateDistance(
+            initialPosition.x,
+            initialPosition.y,
+            currentX,
+            currentY
+        );
+
+        // 移動距離が5px以上の場合にドラッグ開始とみなす
+        if (distance > 5 && !isDragging) {
+            setIsDragging(true);
+        }
+
+        // // ドラッグ中は位置を更新
+        // if (isDragging) {
+        //     setClickPosition({ x: initialPosition.x + deltaX, y: initialPosition.y + deltaY });
+        // }
     };
 
     const handleDragEnd = (e: DragEndEvent) => {
+        setIsDragging(false)
         const activeTodoId = e.active.id.toString()
         const overCurrent = e.over?.data?.current
         if (overCurrent?.type === "projectTab") {
@@ -943,16 +976,16 @@ export const Todo = (
             const targetTodoId = overCurrent.todoId
             handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, activeTodoId), todoFunc.getIndexById(todos, targetTodoId)), prevTodos)
         }
-    }
+    };
 
     return (
         <>
-            <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
                 <header className={`shrink-0 h-[3rem] sm:h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
                     <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />
-                            <ExOverlay id="1" clickPosition={clickPosition}>*</ExOverlay>
+                            <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />
                             <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
                             {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                             {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
@@ -1128,12 +1161,21 @@ export const Todo = (
     )
 }
 
-const ExOverlay = (props: { id: string, children: React.ReactNode, clickPosition: { x: number, y: number } }) => {
+const ExOverlay = (props: {
+    id: string,
+    isDragging: boolean,
+    clickPosition: { x: number, y: number }
+}) => {
     return (
-        <DragOverlay>
-            {props.id ? (
-                <div className="bg-sky-100/50 rounded-md p-2 w-10">
-                    {props.children}
+        <DragOverlay
+            style={{
+                width: "25px",
+                height: "2.5rem",
+            }}
+        >
+            {props.isDragging ? (
+                <div className="w-full h-[calc(100%-10px)] flex justify-center items-center" >
+                    <Rocket className="w-4 h-4 text-primary" />
                 </div>
             ) : null}
         </DragOverlay>

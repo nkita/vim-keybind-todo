@@ -3,20 +3,11 @@ import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
-import { FaRegCircle, FaCircleCheck } from "react-icons/fa6";
-import { SelectModal } from "./select-modal"
-import { Text } from "./todo-list-text"
-import { Box, ChevronsUpDown, MessageCircleMore, Star, StickyNote, Tag } from "lucide-react"
-import { find as lfind } from "lodash"
 import { TodoContext } from "@/provider/todo";
 import { postSaveLabels, postSaveProjects } from "@/lib/todo"
-import { Button } from "./ui/button"
 import { TodoListRow } from "./todo-list-row"
 import {
-    useSortable,
-    arrayMove,
     SortableContext,
-    sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 

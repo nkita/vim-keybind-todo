@@ -5,6 +5,7 @@ import { postSaveProjects } from "@/lib/todo"
 import { TodoContext } from "@/provider/todo";
 import { ProjectProps } from "@/types"
 import { useDroppable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
 
 export const ProjectTab = (
     {
@@ -21,19 +22,33 @@ export const ProjectTab = (
     }
 ) => {
     const config = useContext(TodoContext)
-    const ref = React.useRef<HTMLButtonElement>(null)
-    const { isOver, setNodeRef } = useDroppable({
+    const { isOver, setNodeRef: setNodeRefDroppable } = useDroppable({
         id: tabId,
         data: {
             type: "projectTab",
-            projectId: project?.id
+            id: project?.id
         }
     });
-    useEffect(() => {
-        if (project && currentProjectId === project.id) {
-            ref.current?.scrollIntoView({ behavior: "smooth" })
-        }
-    }, [project, currentProjectId])
+
+    const {
+        attributes,
+        listeners,
+        setNodeRef: setNodeRefSortable,
+        transform,
+        transition,
+    } = useSortable({ id: tabId, data: { type: "projectTab", id: tabId } });
+
+    const style = {
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transition
+    };
+
+    // TODO: スクロール
+    // useEffect(() => {
+    //     if (project && currentProjectId === project.id) {
+    //         ref.current?.scrollIntoView({ behavior: "smooth" })
+    //     }
+    // }, [project, currentProjectId])
 
     const handleHidden = () => {
         if (!project || !setProjects) return
@@ -55,13 +70,19 @@ export const ProjectTab = (
     const current = index === currentProjectIdx
     const prevCurrent = index === currentProjectIdx - 1
     return (
-        <div className={`relative flex items-center pl-4  pr-2
+        <div
+            {...attributes}
+            {...listeners}
+            className={`relative flex items-center pl-4  pr-2
                 ${current ?
-                `${isOver ? "bg-sky-100" : "bg-card"} border-t-primary border-t border-b-transparent border-x`
-                : ` ${isOver ? "bg-sky-100" : "bg-muted"} text-muted-foreground border-t border-x border-x-transparent`}
+                    `${isOver ? "bg-sky-100" : "bg-card"} border-t-primary border-t border-b-transparent border-x`
+                    : ` ${isOver ? "bg-sky-100" : "bg-muted"} text-muted-foreground border-t border-x border-x-transparent`}
                 h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
-            `} ref={setNodeRef} >
-            <button tabIndex={-1} ref={ref} onClick={_ => onClick(index, 'projectTab')}
+            `} ref={setNodeRefDroppable} >
+            <button ref={setNodeRefSortable}
+                onClick={_ => {
+                    onClick(index, 'projectTab')
+                }}
                 className={` text-xs focus-within:outline-none`}>
                 <span className="flex gap-1 items-center" >
                     {project ? (

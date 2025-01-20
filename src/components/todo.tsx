@@ -33,6 +33,8 @@ import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 import { SimpleSpinner } from "./ui/spinner"
 import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
+import { Project } from "next/dist/build/swc"
+import { SortableContext, verticalListSortingStrategy, useSortable, horizontalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -927,7 +929,7 @@ export const Todo = (
     const [isDragging, setIsDragging] = useState(false);
     const [clickPosition, setClickPosition] = useState({ x: 0, y: 0 });
     const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 });
-
+    const [isOverlay, setIsOverlay] = useState(false)
     // マウスの移動距離を計算する関数
     const calculateDistance = (x1: number, y1: number, x2: number, y2: number) => {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
@@ -956,6 +958,7 @@ export const Todo = (
         // 移動距離が5px以上の場合にドラッグ開始とみなす
         if (distance > 5 && !isDragging) {
             setIsDragging(true);
+            setIsOverlay(event.active.data.current?.type === "todo")
         }
 
         // // ドラッグ中は位置を更新
@@ -966,15 +969,31 @@ export const Todo = (
 
     const handleDragEnd = (e: DragEndEvent) => {
         setIsDragging(false)
-        const activeTodoId = e.active.id.toString()
+        setIsOverlay(false)
+        const activeCurrent = e.active?.data?.current
         const overCurrent = e.over?.data?.current
         if (overCurrent?.type === "projectTab") {
-            const projectId = overCurrent.projectId
-            handleSetTodos(todoFunc.update(todos, activeTodoId, { projectId: projectId }), prevTodos)
+            if (activeCurrent?.type === "todo") {
+                const projectId = overCurrent?.id
+                const activeTodoId = activeCurrent?.id
+                handleSetTodos(todoFunc.update(todos, activeTodoId, { projectId: projectId }), prevTodos)
+            }
+            if (activeCurrent?.type === "projectTab") {
+                const activeProjectId = activeCurrent?.id
+                const overProjectId = overCurrent?.id
+                let _projects = todoFunc.move(exProjects, todoFunc.getIndexById(exProjects, activeProjectId), todoFunc.getIndexById(exProjects, overProjectId))
+                _projects = _projects.map((p, i) => {
+                    p.sort = i
+                    return p
+                })
+                setExProjects(_projects)
+                // setExProjects(todoFunc.move(exProjects, todoFunc.getIndexById(exProjects, activeProjectId), todoFunc.getIndexById(exProjects, overProjectId)))
+            }
         }
         if (overCurrent?.type === "todo") {
-            const targetTodoId = overCurrent.todoId
-            handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, activeTodoId), todoFunc.getIndexById(todos, targetTodoId)), prevTodos)
+            const overTodoId = overCurrent?.id
+            const activeTodoId = activeCurrent?.id
+            handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, activeTodoId), todoFunc.getIndexById(todos, overTodoId)), prevTodos)
         }
     };
 
@@ -985,9 +1004,11 @@ export const Todo = (
                     <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />
-                            <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />
+                            {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
                             <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
-                            {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                            <SortableContext items={filterdProjects.map(p => p.id)} strategy={rectSortingStrategy}>
+                                {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                            </SortableContext>
                             {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
                             {/* <div className="w-full h-full border-b"></div> */}
                             <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
@@ -1179,5 +1200,34 @@ const ExOverlay = (props: {
                 </div>
             ) : null}
         </DragOverlay>
+    )
+}
+
+const SortableProjectTab = (props: {
+    project: ProjectProps,
+    filterdProjects: ProjectProps[],
+    exProjects: ProjectProps[],
+    onClick: (index: number, prefix: string) => void,
+    currentProjectId: string,
+    index: number,
+    setProjects: Dispatch<SetStateAction<ProjectProps[]>>,
+}) => {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: props.project.id, data: { type: "projectTab", id: props.project.id } });
+
+    const style = {
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transition
+    };
+
+    return (
+        <>
+            <ProjectTab tabId={props.project.id} currentProjectId={props.currentProjectId} index={props.index} filterdProjects={props.filterdProjects} exProjects={props.exProjects} onClick={props.onClick} project={props.project} setProjects={props.setProjects} />
+        </>
     )
 }

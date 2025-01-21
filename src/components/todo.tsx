@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket, FileBox } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -1196,38 +1196,11 @@ const ExOverlay = (props: {
         >
             {props.isDragging ? (
                 <div className="w-full h-[calc(100%-10px)] flex justify-center items-center" >
-                    <Rocket className="w-4 h-4 text-primary" />
+                    <div className="w-full h-full flex justify-center items-center bg-primary/30 rounded-md ">
+                        <FileBox className="w-4 h-4 text-primary" />
+                    </div>
                 </div>
             ) : null}
         </DragOverlay>
-    )
-}
-
-const SortableProjectTab = (props: {
-    project: ProjectProps,
-    filterdProjects: ProjectProps[],
-    exProjects: ProjectProps[],
-    onClick: (index: number, prefix: string) => void,
-    currentProjectId: string,
-    index: number,
-    setProjects: Dispatch<SetStateAction<ProjectProps[]>>,
-}) => {
-    const {
-        attributes,
-        listeners,
-        setNodeRef,
-        transform,
-        transition,
-    } = useSortable({ id: props.project.id, data: { type: "projectTab", id: props.project.id } });
-
-    const style = {
-        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-        transition
-    };
-
-    return (
-        <>
-            <ProjectTab tabId={props.project.id} currentProjectId={props.currentProjectId} index={props.index} filterdProjects={props.filterdProjects} exProjects={props.exProjects} onClick={props.onClick} project={props.project} setProjects={props.setProjects} />
-        </>
     )
 }

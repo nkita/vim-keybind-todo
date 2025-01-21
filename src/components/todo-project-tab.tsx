@@ -31,6 +31,8 @@ export const ProjectTab = (
     });
 
     const {
+        isSorting,
+        isDragging,
         attributes,
         listeners,
         setNodeRef: setNodeRefSortable,
@@ -42,7 +44,6 @@ export const ProjectTab = (
         transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
         transition
     };
-
     // TODO: スクロール
     // useEffect(() => {
     //     if (project && currentProjectId === project.id) {
@@ -69,22 +70,25 @@ export const ProjectTab = (
     const currentProjectIdx = filterdProjects.map(p => p.id).indexOf(currentProjectId)
     const current = index === currentProjectIdx
     const prevCurrent = index === currentProjectIdx - 1
+
     return (
         <div
+            style={style}
             {...attributes}
             {...listeners}
-            className={`relative flex items-center pl-4  pr-2
-                ${current ?
-                    `${isOver ? "bg-sky-100" : "bg-card"} border-t-primary border-t border-b-transparent border-x`
-                    : ` ${isOver ? "bg-sky-100" : "bg-muted"} text-muted-foreground border-t border-x border-x-transparent`}
-                h-full  hover:bg-accent hover:text-accent-foreground transition-all fade-in-5
-            `} ref={setNodeRefDroppable} >
-            <button ref={setNodeRefSortable}
-                onClick={_ => {
+            className={`
+                ${current ? "bg-card border-t-primary border-t border-x" : "bg-muted"}
+                h-full relative flex items-center  pr-2 
+                `}
+            ref={setNodeRefSortable}
+        >
+            <button
+                ref={setNodeRefDroppable}
+                onMouseDown={e => {
                     onClick(index, 'projectTab')
                 }}
-                className={` text-xs focus-within:outline-none`}>
-                <span className="flex gap-1 items-center" >
+                className={`text-xs focus-within:outline-none pl-4`}>
+                <span className={`flex gap-1 items-center ${(!isDragging && isOver) ? "font-semibold underline " : ""}`} >
                     {project ? (
                         <> <Box className="w-3" />{project.name}</>
                     ) : (
@@ -92,7 +96,7 @@ export const ProjectTab = (
                     )}
                 </span >
             </button >
-            {(project && setProjects) && <button tabIndex={-1} className={`m-1 p-1 border border-transparent rounded-sm hover:border-primary `} onClick={handleHidden}><X className="h-3 w-3" /></button>}
+            {(project && setProjects) && <button tabIndex={-1} className={`m-1 p-1 border border-transparent rounded-sm hover:border-primary `} onMouseDown={handleHidden}><X className="h-3 w-3" /></button>}
             <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${current || prevCurrent ? "border-transparent" : "border"} `}></div>
         </div>
     )

@@ -1002,7 +1002,7 @@ export const Todo = (
             <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
                 <header className={`shrink-0 h-[3rem] sm:h-[5.8rem] gap-2 transition-[width,height] ease-linear shadow-xl bg-muted text-muted-foreground`}>
                     <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
-                        <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
+                        <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />
                             {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
                             <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />

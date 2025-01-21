@@ -31,7 +31,6 @@ export const ProjectTab = (
     });
 
     const {
-        isSorting,
         isDragging,
         attributes,
         listeners,
@@ -41,15 +40,9 @@ export const ProjectTab = (
     } = useSortable({ id: tabId, data: { type: "projectTab", id: tabId } });
 
     const style = {
-        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        transform: transform ? `translate3d(${transform.x}px, 0px, 0)` : undefined,
         transition
     };
-    // TODO: スクロール
-    // useEffect(() => {
-    //     if (project && currentProjectId === project.id) {
-    //         ref.current?.scrollIntoView({ behavior: "smooth" })
-    //     }
-    // }, [project, currentProjectId])
 
     const handleHidden = () => {
         if (!project || !setProjects) return

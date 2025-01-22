@@ -994,6 +994,7 @@ export const Todo = (
             const overTodoId = overCurrent?.id
             const activeTodoId = activeCurrent?.id
             handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, activeTodoId), todoFunc.getIndexById(todos, overTodoId)), prevTodos)
+            setCurrentIndex(todoFunc.getIndexById(filterdTodos, overTodoId))
         }
     };
 

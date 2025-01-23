@@ -3,14 +3,13 @@ import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { Table, TableRow, TableBody, TableCell } from "./ui/table"
-import { FaRegCircle, FaCircleCheck } from "react-icons/fa6";
-import { SelectModal } from "./select-modal"
-import { Text } from "./todo-list-text"
-import { Box, ChevronsUpDown, MessageCircleMore, Star, StickyNote, Tag } from "lucide-react"
-import { find as lfind } from "lodash"
 import { TodoContext } from "@/provider/todo";
 import { postSaveLabels, postSaveProjects } from "@/lib/todo"
-import { Button } from "./ui/button"
+import { TodoListRow } from "./todo-list-row"
+import {
+    SortableContext,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 
 export const TodoList = (
     {
@@ -148,151 +147,47 @@ export const TodoList = (
                                     </TableRow>
                                 ) : (
                                     <>
-                                        {
-                                            filterdTodos.map((t, index) => {
-                                                let nextTabIndent = 0
-                                                const nextIndex = index + 1
-                                                if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
-                                                    nextTabIndent = filterdTodos[nextIndex].indent ?? 0
-                                                }
-                                                const common_color_css = `
+                                        <SortableContext items={filterdTodos.map(t => t.id)} strategy={verticalListSortingStrategy}>
+                                            {
+                                                filterdTodos.map((t, index) => {
+                                                    let nextTabIndent = 0
+                                                    const nextIndex = index + 1
+                                                    if (filterdTodos && filterdTodos.length > nextIndex && filterdTodos[nextIndex]) {
+                                                        nextTabIndent = filterdTodos[nextIndex].indent ?? 0
+                                                    }
+                                                    const common_color_css = `
                                                     ${(mode !== "select" && mode !== "edit" && currentIndex === index) ? " bg-sky-100 text-todo-accent-foreground " : "bg-card"}
                                                     ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
                                                     ${mode === "edit" && currentIndex === index ? " bg-card " : ""}
                                                     ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
                                                 `
-                                                return (
-                                                    <TableRow key={t.id}
-                                                        className={`
-                                                            h-[2.5rem]
-                                                            ${common_color_css}
-                                                    `} onClick={_ => setCurrentIndex(index)}>
-                                                        <TableCell className={`
-                                                             sticky left-0 
-                                                             text-sm text-right 
-                                                             z-10
-                                                             p-0 m-0 ${table_idx_width}
-                                                            `}>
-                                                            <div className={` 
-                                                                 pl-2 pr-1  h-[2.5rem] flex items-center
-                                                                ${common_color_css}
-                                                                `}>
-                                                                {index + 1}
-                                                            </div></TableCell>
-                                                        <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
-                                                            <div className="flex w-ful justify-center">
-                                                                {mode === "select" && currentIndex === index ? (
-                                                                    <ChevronsUpDown className="text-primary h-3 w-3 group-hover:text-gray-300" />
-                                                                ) : (
-                                                                    <>
-                                                                        {t.is_complete ? <FaCircleCheck className="text-primary group-hover:text-gray-300" /> : <FaRegCircle className="text-gray-500 group-hover:text-green-500" />}
-                                                                    </>
-                                                                )}
-                                                            </div>
-                                                        </TableCell>
-                                                        <TableCell onDoubleClick={_ => onClick(index, 'text')} className={`${table_task_width} relative`}>
-                                                            <div className="flex w-[calc(100%-20px)] sm:w-full h-full justify-between  items-center">
-                                                                <span className="text-primary/90 flex text-md">
-                                                                    {t.indent !== undefined &&
-                                                                        <>
-                                                                            {t.indent === 1 &&
-                                                                                <>
-                                                                                    {nextTabIndent === 0 && <span className="pl-2">└─</span>}
-                                                                                    {nextTabIndent > 0 && <span className="pl-2">├─</span>}
-                                                                                </>
-                                                                            }
-                                                                        </>
-                                                                    }
-                                                                </span>
-                                                                {t.priority === "3" &&
-                                                                    <>
-                                                                        <Star className="w-3 h-3 text-destructive" strokeWidth={3} />
-                                                                        <Star className="w-3 h-3 text-destructive" strokeWidth={3} />
-                                                                    </>
-                                                                }
-                                                                {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
-                                                                {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
-                                                                <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1"
-                                                                    onTouchMove={handleTouchMove}
-                                                                    onTouchEnd={_ => handleTouchEnd(index, 'text')}>
-                                                                    <Text
-                                                                        t={t}
-                                                                        index={index}
-                                                                        currentIndex={currentIndex}
-                                                                        currentPrefix={prefix}
-                                                                        className={`
-                                                                            ${t.priority === "1" && "text-primary"}
-                                                                            ${t.priority === "2" && "text-destructive"}
-                                                                            ${t.priority === "3" && "text-destructive font-semibold"}
-                                                                            `}
-                                                                        mode={mode}
-                                                                        label={t.text}
-                                                                        register={register} />
-                                                                    {t.detail && !(mode === "edit" && currentIndex === index) &&
-                                                                        <span className={`hidden sm:flex font-light  items-center text-5sm  text-primary p-1`}>
-                                                                            <StickyNote className="h-3 w-3" />
-                                                                        </span>
-                                                                    }
-                                                                    {t.labelId && !(mode === "edit" && currentIndex === index) &&
-                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-label rounded-full text-5sm px-2 text-ex-label`}>
-                                                                            <Tag className="h-3 w-3" />
-                                                                            {lfind(exLabels, { id: t.labelId })?.name}
-                                                                        </span>
-                                                                    }
-                                                                    <SelectModal
-                                                                        t={t}
-                                                                        index={index}
-                                                                        currentIndex={currentIndex}
-                                                                        prefix={"labelId"}
-                                                                        currentPrefix={prefix}
-                                                                        mode={mode}
-                                                                        className={`w-0`}
-                                                                        register={register}
-                                                                        rhfSetValue={rhfSetValue}
-                                                                        item={lfind(exLabels, { id: t.labelId })}
-                                                                        items={exLabels.map(l => { return { id: l.id, name: l.name } })}
-                                                                        saveCloud={saveNewLabels}
-                                                                        title={"ラベル"}
-                                                                        onClick={onClick} />
-                                                                    {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
-                                                                        <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
-                                                                            <Box className="h-3 w-3" />
-                                                                            {lfind(exProjects, { id: t.projectId })?.name}
-                                                                        </span>
-                                                                    }
-                                                                    <SelectModal
-                                                                        t={t}
-                                                                        index={index}
-                                                                        currentIndex={currentIndex}
-                                                                        prefix={"projectId"}
-                                                                        currentPrefix={prefix}
-                                                                        mode={mode}
-                                                                        className={`w-0`}
-                                                                        register={register}
-                                                                        rhfSetValue={rhfSetValue}
-                                                                        saveCloud={saveNewProject}
-                                                                        item={lfind(exProjects, { id: t.projectId })}
-                                                                        items={exProjects.map(p => { return { id: p.id, name: p.name } })}
-                                                                        title={"プロジェクト"}
-                                                                        onClick={onClick} />
-                                                                </div>
-                                                                <div className={`absolute right-0 flex sm:hidden items-center w-[90px] justify-end gap-1 px-2 h-full ${common_color_css}`}>
-                                                                    {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
-                                                                    {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
-                                                                    <Button size={"sm"}
-                                                                    className="text-xs h-7"
-                                                                        onClick={e => {
-                                                                            e.stopPropagation()
-                                                                            e.preventDefault()
-                                                                            onClick(index, 'editDetail')
-                                                                        }}>編集</Button>
-                                                                </div>
-                                                            </div>
-                                                        </TableCell>
-                                                    </TableRow>
-                                                )
-                                            })
-                                        }
+                                                    return (
+                                                        <TodoListRow
+                                                            key={t.id}
+                                                            t={t}
+                                                            index={index}
+                                                            currentIndex={currentIndex}
+                                                            nextTabIndent={nextTabIndent}
+                                                            prefix={prefix}
+                                                            mode={mode}
+                                                            currentProjectId={currentProjectId}
+                                                            exLabels={exLabels}
+                                                            exProjects={exProjects}
+                                                            onClick={onClick}
+                                                            setCurrentIndex={setCurrentIndex}
+                                                            common_color_css={common_color_css}
+                                                            register={register}
+                                                            rhfSetValue={rhfSetValue}
+                                                            saveNewLabels={saveNewLabels}
+                                                            saveNewProject={saveNewProject}
+                                                            table_idx_width={table_idx_width}
+                                                            table_completion_width={table_completion_width}
+                                                            table_task_width={table_task_width}
+                                                        />
+                                                    )
+                                                })
+                                            }
+                                        </SortableContext>
                                     </>
                                 )}
                             </>

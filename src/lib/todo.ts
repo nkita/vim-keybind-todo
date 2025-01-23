@@ -116,7 +116,7 @@ export const todoFunc = {
         })
         return isEmpty
     },
-    getIndexById: (todos: TodoProps[], id: string | undefined) => {
+    getIndexById: (todos: any[], id: string | undefined) => {
         const index = todos.map(t => t.id).indexOf(id ? id : "")
         return index >= 0 ? index : todos.length - 1
     },
@@ -136,7 +136,7 @@ export const todoFunc = {
     /**
      * TodoProps配列内のTodoをfromIndexからtoIndexの位置に移動する
      */
-    move: (todos: TodoProps[], fromIndex: number, toIndex: number) => {
+    move: (todos: any[], fromIndex: number, toIndex: number) => {
         if (fromIndex < 0 || toIndex < 0) return todos
         if (fromIndex >= todos.length) fromIndex = todos.length - 1
         if (toIndex >= todos.length) toIndex = todos.length - 1

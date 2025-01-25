@@ -33,42 +33,42 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_last_checked_date", undefined)
-    const { data: pullRequests, error } = useSWR(
-        'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
-        url => fetch(url).then(res => res.json())
-    );
-    const [isUpdateDialog, setIsUpdateDialog] = useState(false)
-    useEffect(() => {
-        if (pullRequests && pullRequests.length > 0) {
-            const latestDate = new Date(pullRequests[0].closed_at).getTime()
+    // const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_last_checked_date", undefined)
+    // const { data: pullRequests, error } = useSWR(
+    //     'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
+    //     url => fetch(url).then(res => res.json())
+    // );
+    // const [isUpdateDialog, setIsUpdateDialog] = useState(false)
+    // useEffect(() => {
+    //     if (pullRequests && pullRequests.length > 0) {
+    //         const latestDate = new Date(pullRequests[0].closed_at).getTime()
 
-            if (checkInfoDate === undefined) {
-                setCheckInfoDate(latestDate)
-                return
-            }
+    //         if (checkInfoDate === undefined) {
+    //             setCheckInfoDate(latestDate)
+    //             return
+    //         }
 
-            if (isUpdateDialog) return
+    //         if (isUpdateDialog) return
 
-            if (latestDate > checkInfoDate) {
-                setIsUpdateDialog(true)
-                toast.custom((id) => {
-                    return (
-                        <div className="p-4 border-primary border rounded-lg">
-                            <span>最新バージョンがリリースされています🎉 <br /> 画面の更新をお願いします✨</span>
-                            <div className="flex justify-between pt-2">
-                                <Button variant={"outline"} onClick={() => toast.dismiss(id)}>閉じる</Button>
-                                <Button onClick={() => {
-                                    setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
-                                    location.reload()
-                                }} className="w-full ml-4" >更新する</Button>
-                            </div>
-                        </div>
-                    )
-                }, { duration: Infinity, action: { label: "close", onClick: () => toast.dismiss() }, closeButton: true })
-            }
-        }
-    }, [checkInfoDate, pullRequests, setCheckInfoDate, isUpdateDialog])
+    //         if (latestDate > checkInfoDate) {
+    //             setIsUpdateDialog(true)
+    //             toast.custom((id) => {
+    //                 return (
+    //                     <div className="p-4 border-primary border rounded-lg">
+    //                         <span>最新バージョンがリリースされています🎉 <br /> 画面の更新をお願いします✨</span>
+    //                         <div className="flex justify-between pt-2">
+    //                             <Button variant={"outline"} onClick={() => toast.dismiss(id)}>閉じる</Button>
+    //                             <Button onClick={() => {
+    //                                 setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
+    //                                 location.reload()
+    //                             }} className="w-full ml-4" >更新する</Button>
+    //                         </div>
+    //                     </div>
+    //                 )
+    //             }, { duration: Infinity, action: { label: "close", onClick: () => toast.dismiss() }, closeButton: true })
+    //         }
+    //     }
+    // }, [checkInfoDate, pullRequests, setCheckInfoDate, isUpdateDialog])
 
     return (
         <Sidebar collapsible="icon" className="border-r-sidebar-border" >

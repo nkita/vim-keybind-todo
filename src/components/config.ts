@@ -389,8 +389,8 @@ export const keymap: Keymap = {
         description: "タスク選択(select)モード"
     },
     addProject: {
-        keys: ['Ctrl+t'],
-        enable: { mode: ["normal"], useKey: true },
+        keys: ['t'],
+        enable: { mode: ["normal"] },
         type: ["add"],
         description: "プロジェクトの追加"
     }

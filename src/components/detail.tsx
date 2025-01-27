@@ -110,15 +110,17 @@ export const Detail = ({
                                 handleClickDetail()
                                 e.stopPropagation()
                             }}>
-                                <TextareaAutosize
-                                    key={key}
-                                    tabIndex={-1}
-                                    minRows={5}
-                                    maxLength={10000}
-                                    className={`font-normal h-full w-full outline-none py-1 text-secondary-foreground px-2 resize-none overflow-hidden bg-card`}
-                                    placeholder={jaJson.詳細のメモのplaceholder}
-                                    {...register(`edit-content-detail-${todo.id}`)}
-                                />
+                                <div className="w-full h-full overflow-hidden">
+                                    <TextareaAutosize
+                                        key={key}
+                                        tabIndex={-1}
+                                        minRows={5}
+                                        maxLength={10000}
+                                        className={`font-normal h-full w-full outline-none py-1 text-secondary-foreground px-2 resize-none overflow-hidden bg-card`}
+                                        placeholder={jaJson.詳細のメモのplaceholder}
+                                        {...register(`edit-content-detail-${todo.id}`)}
+                                    />
+                                </div>
                             </div>
                         </div>
                         <div className="flex flex-wrap gap-2">

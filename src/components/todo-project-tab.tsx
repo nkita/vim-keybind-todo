@@ -1,4 +1,6 @@
 'use client'
+
+import dynamic from 'next/dynamic'
 import React, { useEffect, useContext } from "react"
 import { List, Box, X } from "lucide-react"
 import { postSaveProjects } from "@/lib/todo"
@@ -7,27 +9,26 @@ import { ProjectProps } from "@/types"
 import { useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
-export const ProjectTab = (
-    {
-        currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick, tabId
-    }: {
-        currentProjectId: string,
-        index: number,
-        project?: ProjectProps,
-        exProjects: ProjectProps[],
-        filterdProjects: ProjectProps[],
-        tabId: string,
-        setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
-        onClick: (index: number, prefix: string) => void
-    }
-) => {
+// DnDの機能を持つコンポーネントを動的インポート
+const ProjectTabContent = dynamic(() => Promise.resolve(({
+    currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick, tabId
+}: {
+    currentProjectId: string,
+    index: number,
+    project?: ProjectProps,
+    exProjects: ProjectProps[],
+    filterdProjects: ProjectProps[],
+    tabId: string,
+    setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
+    onClick: (index: number, prefix: string) => void
+}) => {
     const config = useContext(TodoContext)
     const { isOver, setNodeRef: setNodeRefDroppable } = useDroppable({
         id: tabId,
         data: {
             type: "projectTab",
             id: project?.id
-        }
+        },
     });
 
     const {
@@ -93,4 +94,17 @@ export const ProjectTab = (
             <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${current || prevCurrent ? "border-transparent" : "border"} `}></div>
         </div>
     )
+}), { ssr: false })
+
+export const ProjectTab = (props: {
+    currentProjectId: string,
+    index: number,
+    project?: ProjectProps,
+    exProjects: ProjectProps[],
+    filterdProjects: ProjectProps[],
+    tabId: string,
+    setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
+    onClick: (index: number, prefix: string) => void
+}) => {
+    return <ProjectTabContent {...props} />
 }

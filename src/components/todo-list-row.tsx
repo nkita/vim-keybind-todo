@@ -12,6 +12,8 @@ import { find as lfind } from "lodash"
 import { SelectModal } from "./select-modal"
 import { LabelProps, Mode, ProjectProps, TodoProps } from "@/types"
 import { Box } from "lucide-react"
+import { SetStateAction } from "react"
+import { Dispatch } from "react"
 
 export function TodoListRow({
     t,
@@ -23,6 +25,7 @@ export function TodoListRow({
     currentProjectId,
     exLabels,
     exProjects,
+    setIsComposing,
     onClick,
     setCurrentIndex,
     common_color_css, register, rhfSetValue, saveNewLabels, saveNewProject, table_idx_width, table_completion_width, table_task_width }
@@ -34,6 +37,7 @@ export function TodoListRow({
         prefix: string
         mode: Mode
         currentProjectId: string
+        setIsComposing: Dispatch<SetStateAction<boolean>>
         exLabels: LabelProps[]
         exProjects: ProjectProps[]
         onClick: (id: number, prefix: string) => void
@@ -140,6 +144,7 @@ export function TodoListRow({
                                ${t.priority === "3" && "text-destructive font-semibold"}
                             `}
                             mode={mode}
+                            setIsComposing={setIsComposing}
                             label={t.text}
                             register={register} />
                         {t.detail && !(mode === "edit" && currentIndex === index) &&

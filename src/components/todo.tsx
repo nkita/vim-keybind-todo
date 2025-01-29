@@ -96,7 +96,7 @@ export const Todo = (
 
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
-
+    const [isComposing, setIsComposing] = useState(false)
     const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [log, setLog] = useState("")
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
@@ -595,13 +595,13 @@ export const Todo = (
             setSelectTaskId(undefined)
             setMode("normal")
         } else {
-            if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
             setCommand('')
         }
-    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex, isComposing])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
-        if (!e.isComposing) {
+        if (!isComposing && !e.isComposing) {
             const newId = self.crypto.randomUUID()
             const newtask = {
                 id: newId,
@@ -621,13 +621,13 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
-        if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         setCommand('')
     }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
         if (prefix !== "text") return
-        if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         setCommand('')
     }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [todos, prevTodos, prefix, mode, filterdTodos, currentIndex])
 
@@ -745,7 +745,7 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['searchEsc'].enable))
     // search word
     useHotkeys(keymap['searchEnter'].keys, (e) => {
-        if (!e.isComposing) {
+        if (!isComposing && !e.isComposing) {
             const keyword = getValues('search').replace(/\s+/g, '')
             keyword
                 ? setSearchResultIndex(filterdTodos.map(t => t.text.toLocaleLowerCase().replace(/\s+/g, '').includes(keyword.toLowerCase().replace(/\s+/g, ''))))
@@ -1097,6 +1097,7 @@ export const Todo = (
                                         setCurrentIndex={setCurrentIndex}
                                         setExProjects={setExProjects}
                                         setExLabels={setExLabels}
+                                        setIsComposing={setIsComposing}
                                         register={register}
                                         rhfSetValue={setValue}
                                     />

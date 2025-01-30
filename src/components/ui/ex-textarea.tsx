@@ -1,99 +1,178 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import DOMPurify from "dompurify";
+import { FieldValues, UseFormRegister } from "react-hook-form";
+import { TodoProps } from "@/types";
+import { LexicalComposer } from '@lexical/react/LexicalComposer';
+import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
+import { ContentEditable } from '@lexical/react/LexicalContentEditable';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { $getRoot, $createParagraphNode, $createTextNode, EditorState } from 'lexical';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { LinkPlugin } from '@lexical/react/LexicalLinkPlugin';
+import { AutoLinkPlugin, createLinkMatcherWithRegExp } from '@lexical/react/LexicalAutoLinkPlugin';
+import { TRANSFORMERS } from '@lexical/markdown';
+import { LinkNode, AutoLinkNode } from '@lexical/link';
 
-type ClickPosition = { x: number; y: number };
 
-const ExTextarea: React.FC = () => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [content, setContent] = useState(
-        "This is an example with a link: https://example.com.\nClick to edit."
-    );
-    const editableRef = useRef<HTMLDivElement>(null);
-    const lastClickPos = useRef<ClickPosition>({ x: 0, y: 0 });
+export const ExTextarea = ({
+    t, setValue, mode, prefix, register
+}: {
+    t: TodoProps, setValue: any, mode: string, prefix: string, register: UseFormRegister<FieldValues>
+}) => {
+    const initialConfig = {
+        namespace: `editor-${t.id}`,
+        onError: (error: Error) => console.error(error),
+        nodes: [LinkNode, AutoLinkNode],
+        editable: mode === "editDetail" && prefix === "detail",
+    };
 
-    // URLをリンクに変換する関数
-    const convertToLinks = useCallback((text: string): (string | JSX.Element)[] => {
-        const urlPattern = /(https?:\/\/[^\s]+)/g;
-        return text.split(urlPattern).map((part, index) => {
-            if (urlPattern.test(part)) {
-                return (
-                    <a
-                        key={index}
-                        href={part}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline"
-                    >
-                        {part}
-                    </a>
-                );
-            }
-            return part;
-        });
-    }, []);
+    const [content, setContent] = useState(t.detail ?? "");
 
-    // キャレット位置を設定する関数
-    const setCaretPosition = useCallback((x: number, y: number): void => {
-        const range = document.caretRangeFromPoint(x, y);
-        if (!range || !editableRef.current) return;
-
-        const selection = window.getSelection();
-        selection?.removeAllRanges();
-        selection?.addRange(range);
-    }, []);
-
-    // クリックイベントハンドラ
-    const handleClick = useCallback((e: React.MouseEvent<HTMLDivElement>): void => {
-        if (!isEditing) {
-            const target = e.target as HTMLElement;
-            if (target.closest('a')) return; // リンククリック時は編集モードにしない
-
-            lastClickPos.current = { x: e.clientX, y: e.clientY };
-            setIsEditing(true);
-        }
-    }, [isEditing]);
-
-    // 編集モード終了処理
-    const exitEditMode = useCallback((): void => {
-        if (!editableRef.current) return;
-
-        setIsEditing(false);
-        const rawText = editableRef.current.innerText;
-        const sanitizedText = DOMPurify.sanitize(rawText); // サニタイズ
-        setContent(sanitizedText);
-    }, []);
-
-    // 編集モード開始時の処理
     useEffect(() => {
-        if (isEditing && editableRef.current) {
-            editableRef.current.focus();
-            requestAnimationFrame(() => {
-                setCaretPosition(lastClickPos.current.x, lastClickPos.current.y);
-            });
-        }
-    }, [isEditing, setCaretPosition]);
+        setValue(`edit-content-detail-${t.id}`, t.detail ?? "")
+        setContent(t.detail ?? "")
+    }, [t, setValue])
 
-    // キーボードイベントハンドラ
-    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>): void => {
-        if (e.key === 'Escape') exitEditMode();
-    }, [exitEditMode]);
+    const handleChange = (editorState: EditorState) => {
+        editorState.read(() => {
+            const root = $getRoot();
+            const text = root.getTextContent();
+            setContent(text);
+            setValue(`edit-content-detail-${t.id}`, text);
+        });
+    };
+
+    // URLを検出するための正規表現パターン
+    const URL_MATCHER = /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
     return (
-        <div
-            ref={editableRef}
-            className={`w-full min-h-[150px] border rounded-lg p-4 text-gray-700 whitespace-pre-wrap break-words cursor-text ${isEditing
-                ? "border-blue-500 bg-white"
-                : "border-gray-300"
-                }`}
-            contentEditable={isEditing}
-            suppressContentEditableWarning
-            onClick={handleClick}
-            onBlur={exitEditMode}
-            onKeyDown={handleKeyDown}
-        >
-            {isEditing ? content : convertToLinks(content)}
-        </div>
+        <>
+            <input type="hidden" {...register(`edit-content-detail-${t.id}`, { value: content })} />
+            <div className="relative w-full h-full">
+                <LexicalComposer initialConfig={initialConfig}>
+                    <div
+                        className="relative w-full h-full editor-container cursor-text
+                            [&_a]:text-blue-600 
+                            [&_a]:underline 
+                            [&_a]:cursor-pointer 
+                            [&_a]:inline-flex
+                            [&_a]:items-center
+                            [&_a]:gap-0.5
+                            [&[data-editable='false']_a]:pointer-events-auto 
+                            [&[data-editable='true']_a]:pointer-events-none
+                            [&[data-editable='true']_a]:text-card-foreground
+                            [&[data-editable='true']_a]:no-underline
+                            "
+                        data-editable={mode === "editDetail" && prefix === "detail"}
+                    >
+                        {!content &&
+                            <span className="absolute top-2 left-4 text-muted-foreground pointer-events-none">
+                                詳細なメモを入力…
+                            </span>
+                        }
+                        <PlainTextPlugin
+                            contentEditable={
+                                <ContentEditable
+                                    className="w-full border-none outline-none px-4 py-2 whitespace-pre-wrap break-words min-h-[130px] overflow-y-auto"
+                                    readOnly={!(mode === "editDetail" && prefix === "detail")}
+                                />
+                            }
+                            placeholder={null}
+                            ErrorBoundary={LexicalErrorBoundary}
+                        />
+                        <OnChangePlugin onChange={handleChange} />
+                        <HistoryPlugin />
+                        <LinkPlugin
+                            validateUrl={() => true}
+                            attributes={{
+                                target: "_blank",
+                                rel: "noopener noreferrer"
+                            }}
+                        />
+                        <AutoLinkPlugin
+                            matchers={[
+                                (text: string) => {
+                                    const match = createLinkMatcherWithRegExp(URL_MATCHER)(text);
+                                    if (match === null) return null;
+                                    return {
+                                        ...match,
+                                        attributes: {
+                                            target: '_blank',
+                                            rel: 'noopener noreferrer'
+                                        }
+                                    };
+                                }
+                            ]}
+                        />
+                        <LinkClickPlugin />
+                        <AutoFocusPlugin mode={mode} prefix={prefix} />
+                        <InitialContentPlugin content={t.detail} />
+                    </div>
+                </LexicalComposer>
+            </div>
+        </>
     );
 };
 
-export default ExTextarea;
+// カスタムプラグイン: 自動フォーカス
+function AutoFocusPlugin({ mode, prefix }: { mode: string, prefix: string }) {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+        // エディタの編集可能状態を更新
+        editor.setEditable(mode === "editDetail" && prefix === "detail");
+        if (mode === "editDetail" && prefix === "detail") {
+            editor.focus();
+        }
+    }, [editor, mode, prefix]);
+
+    return null;
+}
+
+// カスタムプラグイン: 初期コンテンツの設定
+function InitialContentPlugin({ content }: { content?: string }) {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+        editor.update(() => {
+            const root = $getRoot();
+            const paragraph = $createParagraphNode();
+            if (content) {
+                paragraph.append($createTextNode(content));
+            }
+            // 既存のコンテンツをクリアして新しいコンテンツを設定
+            root.clear();
+            root.append(paragraph);
+        });
+    }, [editor, content]); // contentの変更を監視
+
+    return null;
+}
+
+// 新しいカスタムプラグインを追加
+function LinkClickPlugin() {
+    const [editor] = useLexicalComposerContext();
+
+    useEffect(() => {
+        const removeListener = editor.registerRootListener(
+            (rootElement: HTMLElement | null) => {
+                if (rootElement) {
+                    rootElement.addEventListener('mousedown', (e) => {
+                        const target = e.target as HTMLElement;
+                        // リンク要素かどうかをチェック
+                        const linkElement = target.tagName === 'A' ?
+                            target : target.closest('a');
+
+                        if (linkElement) {
+                            e.stopPropagation();
+                        }
+                    });
+                }
+            }
+        );
+        return removeListener;
+    }, [editor]);
+
+    return null;
+}

@@ -795,7 +795,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
-        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filterdTodos, index)
         if (prefix === 'editDetail') {
             setCurrentIndex(index)
             setPrefix('detail')
@@ -947,7 +947,6 @@ export const Todo = (
         const { x: deltaX, y: deltaY } = event.delta;
         const currentX = clickPosition.x + deltaX;
         const currentY = clickPosition.y + deltaY;
-        // console.log(deltaY, initialPosition.y + deltaY)
         const distance = calculateDistance(
             initialPosition.x,
             initialPosition.y,

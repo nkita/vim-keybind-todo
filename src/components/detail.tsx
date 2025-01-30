@@ -7,6 +7,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
 import { Box, CircleX, Plus, SquareXIcon, Tag, X } from "lucide-react";
 import { find as lfind } from "lodash"
+import { ExTextarea } from "./ui/ex-textarea";
 
 const zIndex = "z-20"
 export const Detail = ({
@@ -97,7 +98,7 @@ export const Detail = ({
 
                         </div>
                     </div>
-                    <div className={`w-full p-5 `} onMouseDown={e => e.stopPropagation()} >
+                    <div className={`w-full p-5 `} >
                         <div className="relative h-full w-full border py-2 my-4  rounded-md focus-within:border-primary bg-card">
                             <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
                                 {mode === "editDetail" ? (
@@ -111,7 +112,14 @@ export const Detail = ({
                                 e.stopPropagation()
                             }}>
                                 <div className="w-full h-full overflow-hidden">
-                                    <TextareaAutosize
+                                    <ExTextarea
+                                        t={todo}
+                                        mode={mode}
+                                        prefix={prefix}
+                                        register={register}
+                                        setValue={setValue}
+                                    />
+                                    {/* <TextareaAutosize
                                         key={key}
                                         tabIndex={-1}
                                         minRows={5}
@@ -119,7 +127,7 @@ export const Detail = ({
                                         className={`font-normal h-full w-full outline-none py-1 text-secondary-foreground px-2 resize-none overflow-hidden bg-card`}
                                         placeholder={jaJson.詳細のメモのplaceholder}
                                         {...register(`edit-content-detail-${todo.id}`)}
-                                    />
+                                    /> */}
                                 </div>
                             </div>
                         </div>
@@ -146,7 +154,6 @@ export const Detail = ({
                         <div className="h-[3rem]" />
                     </div>
                     <div
-                        onMouseDown={e => e.stopPropagation()}
                         className={`absolute h-[3rem] bottom-0 border-t-2 border-muted border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
                         <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                     </div>

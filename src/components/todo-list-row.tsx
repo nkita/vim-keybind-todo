@@ -74,8 +74,9 @@ export function TodoListRow({
             ref={setNodeRef}
             onMouseDown={e => {
                 setCurrentIndex(index)
-                e.preventDefault()
+                if (mode !== "normal") onClick(index, 'normal')
                 e.stopPropagation()
+                e.preventDefault()
             }}>
             <TableCell className={`
                      sticky left-0 

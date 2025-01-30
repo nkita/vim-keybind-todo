@@ -33,7 +33,7 @@ export const Modal = (
                     {buttonLabel}
                 </button>
             </DialogTrigger>
-            <DialogContent >
+            <DialogContent onMouseDown={e => e.stopPropagation()}>
                 <DialogHeader>
                     <DialogTitle>{dialogTitle}</DialogTitle>
                     <DialogDescription>{dialogDescription}</DialogDescription>

@@ -158,11 +158,17 @@ export const TodoList = (
                                                         nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                     }
                                                     const common_color_css = `
-                                                    ${(mode !== "select" && mode !== "edit" && currentIndex === index) ? " bg-sky-100 text-todo-accent-foreground " : "bg-card"}
-                                                    ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
-                                                    ${mode === "edit" && currentIndex === index ? " bg-card " : ""}
-                                                    ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
-                                                `
+                                                        ${t.is_complete 
+                                                            ? "bg-muted text-muted-foreground/40 focus-within:text-muted-foreground/60" 
+                                                            : mode === "select" && currentIndex === index
+                                                            ? "bg-todo-accent font-semibold"
+                                                            : mode === "edit" && currentIndex === index
+                                                            ? "bg-card"
+                                                            : mode !== "select" && mode !== "edit" && currentIndex === index
+                                                            ? "bg-sky-100 text-todo-accent-foreground"
+                                                            : "bg-card"
+                                                        }
+                                                    `
                                                     return (
                                                         <TodoListRow
                                                             key={t.id}

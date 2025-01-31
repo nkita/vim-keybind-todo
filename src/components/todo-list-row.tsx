@@ -68,7 +68,7 @@ export function TodoListRow({
 
     return (
         <TableRow key={t.id}
-            className={`h-[2.5rem] ${common_color_css} group`}
+            className={`h-[2.5rem] ${common_color_css} group outline-none`}
             {...attributes}
             style={style}
             ref={setNodeRef}
@@ -88,7 +88,7 @@ export function TodoListRow({
             >
                 <div className={` 
                          relative
-                         pl-2 pr-1  h-[2.5rem] flex items-center
+                         pl-2 pr-1 w-[2.0rem] h-[2.5rem] flex items-center
                          ${common_color_css}
                          hover:cursor-grab 
                          `}

@@ -14,15 +14,36 @@ import { AutoLinkPlugin, createLinkMatcherWithRegExp } from '@lexical/react/Lexi
 import { TRANSFORMERS } from '@lexical/markdown';
 import { LinkNode, AutoLinkNode } from '@lexical/link';
 
+// URLマッチャーを定数として外部化
+const URL_MATCHER = /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
+
+// EditorConfigの型定義
+interface EditorConfig {
+    namespace: string;
+    onError: (error: Error) => void;
+    nodes: Array<any>;
+    editable: boolean;
+}
 
 export const ExTextarea = ({
-    t, setValue, mode, prefix, register
+    t,
+    setValue,
+    mode,
+    prefix,
+    register
 }: {
-    t: TodoProps, setValue: any, mode: string, prefix: string, register: UseFormRegister<FieldValues>
+    t: TodoProps;
+    setValue: (name: string, value: string) => void;
+    mode: string;
+    prefix: string;
+    register: UseFormRegister<FieldValues>;
 }) => {
-    const initialConfig = {
+    const initialConfig: EditorConfig = {
         namespace: `editor-${t.id}`,
-        onError: (error: Error) => console.error(error),
+        onError: (error: Error) => {
+            console.error('Editor Error:', error);
+            // エラー処理を追加
+        },
         nodes: [LinkNode, AutoLinkNode],
         editable: mode === "editDetail" && prefix === "detail",
     };
@@ -42,9 +63,6 @@ export const ExTextarea = ({
             setValue(`edit-content-detail-${t.id}`, text);
         });
     };
-
-    // URLを検出するための正規表現パターン
-    const URL_MATCHER = /((https?:\/\/(www\.)?)|(www\.))[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/;
 
     return (
         <>
@@ -83,13 +101,6 @@ export const ExTextarea = ({
                         />
                         <OnChangePlugin onChange={handleChange} />
                         <HistoryPlugin />
-                        <LinkPlugin
-                            validateUrl={() => true}
-                            attributes={{
-                                target: "_blank",
-                                rel: "noopener noreferrer"
-                            }}
-                        />
                         <AutoLinkPlugin
                             matchers={[
                                 (text: string) => {
@@ -160,12 +171,14 @@ function LinkClickPlugin() {
                 if (rootElement) {
                     rootElement.addEventListener('mousedown', (e) => {
                         const target = e.target as HTMLElement;
-                        // リンク要素かどうかをチェック
                         const linkElement = target.tagName === 'A' ?
                             target : target.closest('a');
 
                         if (linkElement) {
-                            e.stopPropagation();
+                            e.stopPropagation(); 
+                            e.preventDefault();  
+                            // リンクを新しいタブで開く
+                            window.open((linkElement as HTMLAnchorElement).href, '_blank', 'noopener,noreferrer');
                         }
                     });
                 }

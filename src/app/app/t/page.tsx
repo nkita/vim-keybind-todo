@@ -11,6 +11,7 @@ import { TodoContext } from "@/provider/todo";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import AppPageTemplate from "@/components/app-page-template";
 import { useSidebar } from "@/components/ui/sidebar";
+import { toast } from "sonner";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -30,6 +31,10 @@ export default function Home() {
   const [projectsLoading, setProjectsLoading] = useState(true)
   const [labelsLoading, setLabelsLoading] = useState(true)
 
+  const [isError, setIsError] = useState(false)
+
+  const [isLocalMode, setIsLocalMode] = useState(false)
+
   const config = useContext(TodoContext)
   const [isLoginLoading, setIsLoginLoading] = useState(true)
   const [isLogin, setIsLogin] = useState(true)
@@ -37,6 +42,7 @@ export default function Home() {
     if (isLoginLoading && !config.isLoading) {
       setIsLoginLoading(config.isLoading)
       setIsLogin(config.isLogin)
+      setIsLocalMode(!config.isLoading && !config.isLogin)
     }
   }, [isLoginLoading, config])
 
@@ -126,7 +132,16 @@ export default function Home() {
     if (config.token && config.list && isUpdate) {
       saveTodos(todos, prevTodos, config.list, config.token, isUpdate)
     }
-  }, [saveTodos, isUpdate, todos, config, prevTodos])
+    if (config.error && !isError) {
+      toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
+      setIsError(true)
+      setIsLocalMode(true)
+    }
+    if (!config.error && isError) {
+      setIsError(false)
+      toast.success("エラーが解消されました。", { duration: 5000, description: "画面更新してください。" })
+    }
+  }, [saveTodos, isUpdate, todos, config, prevTodos, isError])
   //***
 
   useEffect(() => {
@@ -143,17 +158,18 @@ export default function Home() {
     <AppPageTemplate>
       <article className={`h-screen w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>
         <Todo
-          todos={!isLoginLoading && isLogin ? todos : todosLS}
+          todos={isLocalMode ? todosLS : todos}
           prevTodos={prevTodos}
-          exProjects={!isLoginLoading && isLogin ? projects : projectsLS}
-          exLabels={!isLoginLoading && isLogin ? labels : labelsLS}
+          exProjects={isLocalMode ? projectsLS : projects}
+          exLabels={isLocalMode ? labelsLS : labels}
+          isLocalMode={isLocalMode}
           isSave={isSave}
           isUpdate={isUpdate}
-          loading={todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading}
-          setTodos={!isLoginLoading && isLogin ? setTodos : setTodosLS}
+          loading={isLocalMode ? false : (todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading)}
+          setTodos={isLocalMode ? setTodosLS : setTodos}
           setIsUpdate={setIsUpdate}
-          setExProjects={!isLoginLoading && isLogin ? setProjects : setProjectsLS}
-          setExLabels={!isLoginLoading && isLogin ? setLabels : setLabelsLS}
+          setExProjects={isLocalMode ? setProjectsLS : setProjects}
+          setExLabels={isLocalMode ? setLabelsLS : setLabels}
           onClickSaveButton={handleClickSaveButton}
         />
       </article >

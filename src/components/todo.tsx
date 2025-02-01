@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket, FileBox } from "lucide-react"
+import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket, FileBox, Cloud, CloudOff } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -31,10 +31,11 @@ import { ProjectEditModal } from "./project-edit-modal"
 import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
-import { SimpleSpinner } from "./ui/spinner"
+import { SimpleSpinner, Spinner } from "./ui/spinner"
 import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
 import { Project } from "next/dist/build/swc"
 import { SortableContext, verticalListSortingStrategy, useSortable, horizontalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable"
+import { mutate } from "swr"
 // import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
 
 const MAX_UNDO_COUNT = 10
@@ -49,6 +50,7 @@ export const Todo = (
         completionOnly,
         isSave,
         isUpdate,
+        isLocalMode,
         setTodos,
         setExProjects,
         setExLabels,
@@ -63,6 +65,7 @@ export const Todo = (
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
+        isLocalMode: boolean
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -867,17 +870,22 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, className, disabled, label, onClick }: { children: React.ReactNode, className?: string, disabled?: boolean, label?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
+    const MenuButton = ({ children, className, disabled, label, description, onClick }: { children: React.ReactNode, className?: string, disabled?: boolean, label?: string, description?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                         <button onClick={onClick}
                             onMouseDown={e => e.stopPropagation()}
-                            className={cn(className, `p-1 hover:cursor-pointer border disabled:text-secondary-foreground/20 hover:border-primary rounded-sm border-transparent transition-all`)} disabled={disabled}>{children}</button>
+                            className={cn(`p-1 hover:cursor-pointer border disabled:text-secondary-foreground/20 hover:border-primary rounded-sm border-transparent transition-all`, className)} disabled={disabled}>{children}</button>
                     </TooltipTrigger>
                     <TooltipContent className="text-xs" align="start" side="bottom">
-                        {label}
+                        <div className="text-xs whitespace-pre-wrap word-break">
+                            {label}
+                        </div>
+                        <div className="text-xs text-muted-foreground whitespace-pre-wrap word-break">
+                            {description}
+                        </div>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider >
@@ -1039,7 +1047,7 @@ export const Todo = (
                             <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                             <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
                             <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
+                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
                             <div className="hidden sm:block">
                                 <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
                                     {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
@@ -1053,9 +1061,31 @@ export const Todo = (
                                     <Columns size={16} />
                                 </MenuButton>
                             </div>
+                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
+                            <div>
+                                {loading ? (
+                                    <SimpleSpinner className="h-4 w-4 border-t-transparent p-1" />
+                                ) : (
+                                    <>
+                                        {isLocalMode ? (
+                                            <MenuButton
+                                                className="hover:border-transparent hover:cursor-default"
+                                                label={`ローカルモード`}
+                                                description={`オンラインモードへの切り替えは\n時間をおいてから再度画面更新をお試しください。`}
+                                                onClick={() => { }} ><CloudOff className="text-muted-foreground" size={16} /></MenuButton>
+                                        ) : (
+                                            <MenuButton
+                                                className="hover:border-transparent hover:cursor-default"
+                                                label="オンラインモード"
+                                                description={`入力したタスク情報はしばらく立つと自動的にクラウド上へ保存します。\n「保存」ボタンクリックですぐに保存することも可能です。`}
+                                                onClick={() => { }} ><Cloud className="text-primary2" size={16} /></MenuButton>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                         <div className="relative flex gap-2 items-center px-2">
-                            {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                            {!loading && !isLocalMode && isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                                 <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                                     {(isSave && isUpdate) ? (
                                         <SimpleSpinner className="border-primary-foreground h-4 w-4 p-1 border-t-transparent" />

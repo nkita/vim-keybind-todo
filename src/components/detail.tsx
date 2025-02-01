@@ -99,7 +99,7 @@ export const Detail = ({
                         </div>
                     </div>
                     <div className={`w-full p-5 `} >
-                        <div className="relative h-full w-full border py-2 my-4  rounded-md focus-within:border-primary bg-card">
+                        <div className="relative h-full w-full border pt-1 mt-2  rounded-md focus-within:border-primary bg-card">
                             <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
                                 {mode === "editDetail" ? (
                                     <span><kbd className="opacity-80">Esc</kbd>でもどる</span>
@@ -131,6 +131,7 @@ export const Detail = ({
                                 </div>
                             </div>
                         </div>
+                        <div className="flex justify-end pb-4 text-3sm text-muted-foreground">※URLは自動的にリンクへ変換します。</div>
                         <div className="flex flex-wrap gap-2">
                             {todo.labelId ? (
                                 <BottomLabel type={"labelId"} onClick={_ => onClick("labelId")} handleClick={handleClickDelete}>

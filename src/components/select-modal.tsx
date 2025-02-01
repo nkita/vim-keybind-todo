@@ -2,6 +2,7 @@ import { TodoProps, Mode, ComboboxDynamicItemProps } from "@/types"
 import { Modal } from "./ui/modal"
 import { DynamicSearchSelect } from "./ui/combobox-dynamic"
 import { useEffect, useState } from "react"
+import { find } from "lodash"
 
 export const SelectModal = (
     {
@@ -15,7 +16,7 @@ export const SelectModal = (
         register,
         rhfSetValue,
         position = "list",
-        item,
+        itemId,
         items,
         title = "",
         onClick,
@@ -24,7 +25,7 @@ export const SelectModal = (
         t: TodoProps
         index: number
         currentIndex: number
-        item: ComboboxDynamicItemProps | undefined
+        itemId: string | undefined
         items: ComboboxDynamicItemProps[]
         mode: Mode
         prefix: "text" | "priority" | "detail" | "projectId" | "labelId"
@@ -65,12 +66,12 @@ export const SelectModal = (
         }
         onClick(currentIndex, "normal")
     }
+    const itemLabel = find(items, { id: itemId ?? "" })?.name ?? ""
 
-    const itemLabel = item?.name ?? ""
-    const itemId = item?.id ?? ""
     return (
         <>
             <input type="hidden" {...register(`edit-${position}-${prefix}-${t.id}`, { value: itemId })} />
+
             <Modal
                 buttonLabel={itemLabel}
                 dialogTitle={`${title}の選択`}

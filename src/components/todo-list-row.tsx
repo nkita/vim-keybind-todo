@@ -169,7 +169,7 @@ export function TodoListRow({
                             className={`w-0`}
                             register={register}
                             rhfSetValue={rhfSetValue}
-                            item={lfind(exLabels, { id: t.labelId })}
+                            itemId={t.labelId}
                             items={exLabels.map(l => { return { id: l.id, name: l.name } })}
                             saveCloud={saveNewLabels}
                             title={"ラベル"}
@@ -191,7 +191,7 @@ export function TodoListRow({
                             register={register}
                             rhfSetValue={rhfSetValue}
                             saveCloud={saveNewProject}
-                            item={lfind(exProjects, { id: t.projectId })}
+                            itemId={t.projectId}
                             items={exProjects.map(p => { return { id: p.id, name: p.name } })}
                             title={"プロジェクト"}
                             onClick={onClick} />

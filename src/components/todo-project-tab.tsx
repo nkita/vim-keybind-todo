@@ -1,7 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import React, { useEffect, useContext } from "react"
+import React, { useContext } from "react"
 import { List, Box, X } from "lucide-react"
 import { postSaveProjects } from "@/lib/todo"
 import { TodoContext } from "@/provider/todo";
@@ -71,8 +71,8 @@ const ProjectTabContent = dynamic(() => Promise.resolve(({
             {...attributes}
             {...listeners}
             className={`
-                ${current ? "bg-card border-t-primary border-t border-x" : "bg-muted"}
-                h-full relative flex items-center  pr-2 
+                ${(!isDragging && isOver) ? "bg-primary2/10" : current ? "bg-card border-t-primary border-t border-x" : "bg-muted"}
+                h-full relative flex items-center  pr-2
                 `}
             ref={setNodeRefSortable}
         >
@@ -82,7 +82,7 @@ const ProjectTabContent = dynamic(() => Promise.resolve(({
                     onClick(index, 'projectTab')
                 }}
                 className={`text-xs focus-within:outline-none pl-4`}>
-                <span className={`flex gap-1 items-center ${(!isDragging && isOver) ? "font-semibold underline " : ""}`} >
+                <span className={`flex gap-1 items-center`} >
                     {project ? (
                         <> <Box className="w-3" />{project.name}</>
                     ) : (

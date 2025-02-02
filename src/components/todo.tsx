@@ -2,13 +2,13 @@
 import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRef } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
-import { keymap, completionTaskProjectName } from '@/components/config'
+import { keymap } from '@/components/config'
 import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual, findIndex, get, set, sortBy, filter } from "lodash";
+import { isEqual, findIndex, sortBy } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket, FileBox, Cloud, CloudOff } from "lucide-react"
+import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -28,15 +28,11 @@ import { ImperativePanelHandle } from "react-resizable-panels"
 import { Button } from "./ui/button"
 import { SidebarTrigger } from "./ui/sidebar"
 import { ProjectEditModal } from "./project-edit-modal"
-import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
-import { SimpleSpinner, Spinner } from "./ui/spinner"
-import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
-import { Project } from "next/dist/build/swc"
-import { SortableContext, verticalListSortingStrategy, useSortable, horizontalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable"
-import { mutate } from "swr"
-// import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
+import { SimpleSpinner } from "./ui/spinner"
+import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core"
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable"
 
 const MAX_UNDO_COUNT = 10
 
@@ -981,7 +977,7 @@ export const Todo = (
         const overCurrent = e.over?.data?.current
         if (overCurrent?.type === "projectTab") {
             if (activeCurrent?.type === "todo") {
-                const projectId = overCurrent?.id
+                const projectId = overCurrent ? overCurrent?.id : ""
                 const activeTodoId = activeCurrent?.id
                 handleSetTodos(todoFunc.update(todos, activeTodoId, { projectId: projectId }), prevTodos)
             }

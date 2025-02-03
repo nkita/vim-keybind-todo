@@ -111,7 +111,7 @@ export const Detail = ({
                                 handleClickDetail()
                                 e.stopPropagation()
                             }}>
-                                <div className="w-full h-full overflow-hidden">
+                                <div className="w-full h-full overflow-hidden pb-8">
                                     <ExTextarea
                                         t={todo}
                                         mode={mode}

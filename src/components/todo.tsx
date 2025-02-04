@@ -70,11 +70,11 @@ export const Todo = (
     }
 ) => {
     const [command, setCommand] = useState("")
-    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("todo_is_view_completion", true)
+    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("is_view_completion", true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
     const [prefix, setPrefix] = useState('text')
-    const [currentProjectId, setCurrentProjectId] = useState("")
+    const [currentProjectId, setCurrentProjectId] = useLocalStorage("current_project_id", "")
 
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
@@ -87,10 +87,10 @@ export const Todo = (
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-    const [isHelp, setHelp] = useLocalStorage("todo_is_help", false)
+    const [isHelp, setHelp] = useLocalStorage("is_help", false)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
-    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("is_open_right_panel", true)
     const resizeRef = useRef<ImperativePanelHandle>(null);
 
     const { register, setFocus, getValues, setValue, watch } = useForm()
@@ -106,6 +106,12 @@ export const Todo = (
             isOpenRightPanel ? panel.expand() : panel.collapse()
         }
     }, [isOpenRightPanel])
+
+    useEffect(() => {
+        if (currentProjectId && filterdTodos.length > 0) {
+            if (filterdProjects.filter(f => f.id === currentProjectId).length === 0) setCurrentProjectId("")
+        }
+    }, [currentProjectId, filterdProjects])
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false

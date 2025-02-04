@@ -14,7 +14,7 @@ import { ExternalLink } from "lucide-react";
 
 export default function Home() {
     const { loginWithRedirect, user, isLoading } = useAuth0();
-    const [_, setIsFirstVisit] = useLocalStorage<undefined | boolean>("todo_is_first_visit", undefined)
+    const [_, setIsFirstVisit] = useLocalStorage<undefined | boolean>("is_first_visit", undefined)
 
     const router = useRouter()
     const handleonClick = (isLogin?: boolean) => {

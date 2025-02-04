@@ -15,14 +15,14 @@ import { toast } from "sonner";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
-  const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("todo_data", [])
+  const [todosLS, setTodosLS] = useLocalStorage<TodoProps[]>("data", [])
   const [prevTodos, setPrevTodos] = useState<TodoProps[]>([])
 
   const [projects, setProjects] = useState<ProjectProps[]>([])
-  const [projectsLS, setProjectsLS] = useLocalStorage<ProjectProps[]>("todo_projects", [])
+  const [projectsLS, setProjectsLS] = useLocalStorage<ProjectProps[]>("projects", [])
 
   const [labels, setLabels] = useState<LabelProps[]>([])
-  const [labelsLS, setLabelsLS] = useLocalStorage<LabelProps[]>("todo_labels", [])
+  const [labelsLS, setLabelsLS] = useLocalStorage<LabelProps[]>("labels", [])
 
   const [isSave, setIsSave] = useState(false)
   const [isUpdate, setIsUpdate] = useState(false)

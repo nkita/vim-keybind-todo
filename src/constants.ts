@@ -1,1 +1,1 @@
-export const LOCAL_STORAGE_KEY = "shiba-todo-"
+export const LOCAL_STORAGE_KEY = "shiba-todo:"

@@ -26,7 +26,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { GearIcon } from "@radix-ui/react-icons";
 
 export default function Notification() {
-    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_info_date", undefined)
+    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("info_date", undefined)
     const { data: pullRequests, error } = useSWRImmutable(
         'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
         url => fetch(url).then(res => res.json())

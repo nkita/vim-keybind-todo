@@ -27,7 +27,7 @@ import { GearIcon } from "@radix-ui/react-icons";
 
 export default function Header() {
     const { user, isLoading: userLoading } = useAuth0();
-    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_info_date", undefined)
+    const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("info_date", undefined)
     const [isBadge, setIsBadge] = React.useState(false)
     const { data: pullRequests, error } = useSWRImmutable(
         'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',

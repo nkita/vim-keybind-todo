@@ -1,5 +1,5 @@
 import { TodoProps } from "@/types"
-import { MouseEvent } from "react"
+import { Dispatch, MouseEvent, SetStateAction, useState } from "react"
 export const Text = (
     {
         t,
@@ -11,6 +11,7 @@ export const Text = (
         className,
         register,
         position = "list",
+        setIsComposing,
     }: {
         t: TodoProps
         index: number
@@ -21,6 +22,7 @@ export const Text = (
         className?: string | undefined
         register: any
         position?: "list" | "content"
+        setIsComposing: Dispatch<SetStateAction<boolean>>
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
@@ -29,7 +31,7 @@ export const Text = (
         && currentPrefix === "text"
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))
     const val = t.text ?? ""
-
+    const [isComp, setIsComp] = useState(false)
     return (
         <>
             <div className={`${isView && "hidden"} ${className} border border-transparent `}>
@@ -47,6 +49,20 @@ export const Text = (
                 <input
                     tabIndex={-1}
                     className={_classNameCont}
+                    onCompositionStart={() => {
+                        setIsComp(true)
+                        setIsComposing(true)
+                    }}
+                    onCompositionEnd={(e) => {
+                        setTimeout(() => {
+                            setIsComp(false)
+                        }, 100)
+                    }}
+                    onKeyDown={e => {
+                        if (e.key === "Enter" && !isComp) {
+                            setIsComposing(false)
+                        }
+                    }}
                     type="text"
                     onFocus={e => e.currentTarget.setSelectionRange(val.length, val.length)}
                     {...register(`edit-${position}-text-${t.id}`, { value: t.text })}

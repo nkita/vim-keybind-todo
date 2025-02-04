@@ -12,6 +12,8 @@ import { find as lfind } from "lodash"
 import { SelectModal } from "./select-modal"
 import { LabelProps, Mode, ProjectProps, TodoProps } from "@/types"
 import { Box } from "lucide-react"
+import { SetStateAction } from "react"
+import { Dispatch } from "react"
 
 export function TodoListRow({
     t,
@@ -23,6 +25,7 @@ export function TodoListRow({
     currentProjectId,
     exLabels,
     exProjects,
+    setIsComposing,
     onClick,
     setCurrentIndex,
     common_color_css, register, rhfSetValue, saveNewLabels, saveNewProject, table_idx_width, table_completion_width, table_task_width }
@@ -34,6 +37,7 @@ export function TodoListRow({
         prefix: string
         mode: Mode
         currentProjectId: string
+        setIsComposing: Dispatch<SetStateAction<boolean>>
         exLabels: LabelProps[]
         exProjects: ProjectProps[]
         onClick: (id: number, prefix: string) => void
@@ -64,14 +68,15 @@ export function TodoListRow({
 
     return (
         <TableRow key={t.id}
-            className={`h-[2.5rem] ${common_color_css} group`}
+            className={`h-[2.5rem] ${common_color_css} group outline-none`}
             {...attributes}
             style={style}
             ref={setNodeRef}
             onMouseDown={e => {
                 setCurrentIndex(index)
-                e.preventDefault()
+                if (mode !== "normal") onClick(index, 'normal')
                 e.stopPropagation()
+                e.preventDefault()
             }}>
             <TableCell className={`
                      sticky left-0 
@@ -83,7 +88,7 @@ export function TodoListRow({
             >
                 <div className={` 
                          relative
-                         pl-2 pr-1  h-[2.5rem] flex items-center
+                         pl-2 pr-1 w-[2.0rem] h-[2.5rem] flex items-center
                          ${common_color_css}
                          hover:cursor-grab 
                          `}
@@ -140,6 +145,7 @@ export function TodoListRow({
                                ${t.priority === "3" && "text-destructive font-semibold"}
                             `}
                             mode={mode}
+                            setIsComposing={setIsComposing}
                             label={t.text}
                             register={register} />
                         {t.detail && !(mode === "edit" && currentIndex === index) &&
@@ -163,7 +169,7 @@ export function TodoListRow({
                             className={`w-0`}
                             register={register}
                             rhfSetValue={rhfSetValue}
-                            item={lfind(exLabels, { id: t.labelId })}
+                            itemId={t.labelId}
                             items={exLabels.map(l => { return { id: l.id, name: l.name } })}
                             saveCloud={saveNewLabels}
                             title={"ラベル"}
@@ -185,7 +191,7 @@ export function TodoListRow({
                             register={register}
                             rhfSetValue={rhfSetValue}
                             saveCloud={saveNewProject}
-                            item={lfind(exProjects, { id: t.projectId })}
+                            itemId={t.projectId}
                             items={exProjects.map(p => { return { id: p.id, name: p.name } })}
                             title={"プロジェクト"}
                             onClick={onClick} />

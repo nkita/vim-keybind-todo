@@ -23,6 +23,7 @@ export const TodoList = (
         sort,
         loading,
         onClick,
+        setIsComposing,
         setCurrentIndex,
         setExProjects,
         setExLabels,
@@ -39,6 +40,7 @@ export const TodoList = (
         sort: Sort
         loading: Boolean
         onClick: (id: number, prefix: string) => void
+        setIsComposing: Dispatch<SetStateAction<boolean>>
         setCurrentIndex: Dispatch<SetStateAction<number>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -156,11 +158,17 @@ export const TodoList = (
                                                         nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                     }
                                                     const common_color_css = `
-                                                    ${(mode !== "select" && mode !== "edit" && currentIndex === index) ? " bg-sky-100 text-todo-accent-foreground " : "bg-card"}
-                                                    ${mode === "select" && currentIndex === index ? " font-semibold bg-todo-accent " : ""}
-                                                    ${mode === "edit" && currentIndex === index ? " bg-card " : ""}
-                                                    ${t.is_complete ? "bg-muted/10  text-muted-foreground/40 focus-within:text-muted-foreground/60" : ""} 
-                                                `
+                                                        ${t.is_complete 
+                                                            ? "bg-muted text-muted-foreground/40 focus-within:text-muted-foreground/60" 
+                                                            : mode === "select" && currentIndex === index
+                                                            ? "bg-todo-accent font-semibold"
+                                                            : mode === "edit" && currentIndex === index
+                                                            ? "bg-card"
+                                                            : mode !== "select" && mode !== "edit" && currentIndex === index
+                                                            ? "bg-sky-100 text-todo-accent-foreground"
+                                                            : "bg-card"
+                                                        }
+                                                    `
                                                     return (
                                                         <TodoListRow
                                                             key={t.id}
@@ -181,6 +189,7 @@ export const TodoList = (
                                                             saveNewLabels={saveNewLabels}
                                                             saveNewProject={saveNewProject}
                                                             table_idx_width={table_idx_width}
+                                                            setIsComposing={setIsComposing}
                                                             table_completion_width={table_completion_width}
                                                             table_task_width={table_task_width}
                                                         />

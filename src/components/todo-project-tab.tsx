@@ -1,5 +1,7 @@
 'use client'
-import React, { useEffect, useContext } from "react"
+
+import dynamic from 'next/dynamic'
+import React, { useContext } from "react"
 import { List, Box, X } from "lucide-react"
 import { postSaveProjects } from "@/lib/todo"
 import { TodoContext } from "@/provider/todo";
@@ -7,27 +9,26 @@ import { ProjectProps } from "@/types"
 import { useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 
-export const ProjectTab = (
-    {
-        currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick, tabId
-    }: {
-        currentProjectId: string,
-        index: number,
-        project?: ProjectProps,
-        exProjects: ProjectProps[],
-        filterdProjects: ProjectProps[],
-        tabId: string,
-        setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
-        onClick: (index: number, prefix: string) => void
-    }
-) => {
+// DnDの機能を持つコンポーネントを動的インポート
+const ProjectTabContent = dynamic(() => Promise.resolve(({
+    currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick, tabId
+}: {
+    currentProjectId: string,
+    index: number,
+    project?: ProjectProps,
+    exProjects: ProjectProps[],
+    filterdProjects: ProjectProps[],
+    tabId: string,
+    setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
+    onClick: (index: number, prefix: string) => void
+}) => {
     const config = useContext(TodoContext)
     const { isOver, setNodeRef: setNodeRefDroppable } = useDroppable({
         id: tabId,
         data: {
             type: "projectTab",
             id: project?.id
-        }
+        },
     });
 
     const {
@@ -70,8 +71,8 @@ export const ProjectTab = (
             {...attributes}
             {...listeners}
             className={`
-                ${current ? "bg-card border-t-primary border-t border-x" : "bg-muted"}
-                h-full relative flex items-center  pr-2 
+                ${(!isDragging && isOver) ? "bg-primary2/10" : current ? "bg-card border-t-primary border-t border-x" : "bg-muted"}
+                h-full relative flex items-center  pr-2
                 `}
             ref={setNodeRefSortable}
         >
@@ -81,7 +82,7 @@ export const ProjectTab = (
                     onClick(index, 'projectTab')
                 }}
                 className={`text-xs focus-within:outline-none pl-4`}>
-                <span className={`flex gap-1 items-center ${(!isDragging && isOver) ? "font-semibold underline " : ""}`} >
+                <span className={`flex gap-1 items-center`} >
                     {project ? (
                         <> <Box className="w-3" />{project.name}</>
                     ) : (
@@ -93,4 +94,17 @@ export const ProjectTab = (
             <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${current || prevCurrent ? "border-transparent" : "border"} `}></div>
         </div>
     )
+}), { ssr: false })
+
+export const ProjectTab = (props: {
+    currentProjectId: string,
+    index: number,
+    project?: ProjectProps,
+    exProjects: ProjectProps[],
+    filterdProjects: ProjectProps[],
+    tabId: string,
+    setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
+    onClick: (index: number, prefix: string) => void
+}) => {
+    return <ProjectTabContent {...props} />
 }

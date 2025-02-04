@@ -2,13 +2,13 @@
 import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRef } from "react"
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
-import { keymap, completionTaskProjectName } from '@/components/config'
+import { keymap } from '@/components/config'
 import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { TodoList } from "./todo-list"
 import { Detail } from "./detail"
-import { isEqual, findIndex, get, set, sortBy, filter } from "lodash";
+import { isEqual, findIndex, sortBy } from "lodash";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Check, List, Redo2, Undo2, Save, IndentIncrease, IndentDecrease, Box, LayoutList, ListTodo, TentTree, PanelRightClose, CircleHelp, CircleCheck, Eye, EyeOffIcon, Columns, PlusCircle, Plus, PlusIcon, PlusSquareIcon, X, Settings2, GripVertical, Circle, Dog, Rocket, FileBox } from "lucide-react"
+import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -28,14 +28,11 @@ import { ImperativePanelHandle } from "react-resizable-panels"
 import { Button } from "./ui/button"
 import { SidebarTrigger } from "./ui/sidebar"
 import { ProjectEditModal } from "./project-edit-modal"
-import { useFetchProjects } from "@/lib/fetch"
 import { ProjectTab } from "./todo-project-tab"
 import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 import { SimpleSpinner } from "./ui/spinner"
-import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent, useDraggable, useDroppable } from "@dnd-kit/core"
-import { Project } from "next/dist/build/swc"
-import { SortableContext, verticalListSortingStrategy, useSortable, horizontalListSortingStrategy, rectSortingStrategy } from "@dnd-kit/sortable"
-// import { TooltipContent, TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip"
+import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core"
+import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable"
 
 const MAX_UNDO_COUNT = 10
 
@@ -49,6 +46,8 @@ export const Todo = (
         completionOnly,
         isSave,
         isUpdate,
+        isLocalMode,
+        todoMode,
         setTodos,
         setExProjects,
         setExLabels,
@@ -63,6 +62,8 @@ export const Todo = (
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
+        isLocalMode: boolean
+        todoMode: "List" | "Ganttc"
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -71,14 +72,14 @@ export const Todo = (
     }
 ) => {
     const [command, setCommand] = useState("")
-    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("todo_is_view_completion", true)
+    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage(todoMode + ":is_view_completion", true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
     const [prefix, setPrefix] = useState('text')
-    const [currentProjectId, setCurrentProjectId] = useState("")
+    const [currentProjectId, setCurrentProjectId] = useLocalStorage(todoMode + ":current_project_id", "")
 
     const [mode, setMode] = useState<Mode>('normal')
-    const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
+    const [sort, setSort] = useLocalStorage<Sort>(todoMode + ":sort-ls-key", undefined)
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [filterdProjects, setFilterdProjects] = useState<ProjectProps[]>(exProjects)
 
@@ -88,15 +89,15 @@ export const Todo = (
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-    const [isHelp, setHelp] = useLocalStorage("todo_is_help", false)
+    const [isHelp, setHelp] = useLocalStorage(todoMode + ":is_help", false)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
-    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("todo_is_open_right_panel", true)
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage(todoMode + ":is_open_right_panel", true)
     const resizeRef = useRef<ImperativePanelHandle>(null);
 
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
-
+    const [isComposing, setIsComposing] = useState(false)
     const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [log, setLog] = useState("")
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
@@ -107,6 +108,12 @@ export const Todo = (
             isOpenRightPanel ? panel.expand() : panel.collapse()
         }
     }, [isOpenRightPanel])
+
+    useEffect(() => {
+        if (currentProjectId && filterdTodos.length > 0) {
+            if (filterdProjects.filter(f => f.id === currentProjectId).length === 0) setCurrentProjectId("")
+        }
+    }, [currentProjectId, filterdProjects])
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
@@ -595,13 +602,13 @@ export const Todo = (
             setSelectTaskId(undefined)
             setMode("normal")
         } else {
-            if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
             setCommand('')
         }
-    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex, isComposing])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
-        if (!e.isComposing) {
+        if (!isComposing && !e.isComposing) {
             const newId = self.crypto.randomUUID()
             const newtask = {
                 id: newId,
@@ -621,13 +628,13 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
-        if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         setCommand('')
     }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
         if (prefix !== "text") return
-        if (!e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
         setCommand('')
     }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [todos, prevTodos, prefix, mode, filterdTodos, currentIndex])
 
@@ -745,7 +752,7 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['searchEsc'].enable))
     // search word
     useHotkeys(keymap['searchEnter'].keys, (e) => {
-        if (!e.isComposing) {
+        if (!isComposing && !e.isComposing) {
             const keyword = getValues('search').replace(/\s+/g, '')
             keyword
                 ? setSearchResultIndex(filterdTodos.map(t => t.text.toLocaleLowerCase().replace(/\s+/g, '').includes(keyword.toLowerCase().replace(/\s+/g, ''))))
@@ -795,7 +802,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
-        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filterdTodos, index)
         if (prefix === 'editDetail') {
             setCurrentIndex(index)
             setPrefix('detail')
@@ -867,17 +874,22 @@ export const Todo = (
         setUndoCount(u)
         setIsUpdate(true)
     }
-    const MenuButton = ({ children, className, disabled, label, onClick }: { children: React.ReactNode, className?: string, disabled?: boolean, label?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
+    const MenuButton = ({ children, className, disabled, label, description, onClick }: { children: React.ReactNode, className?: string, disabled?: boolean, label?: string, description?: string, onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void }) => {
         return (
             <TooltipProvider>
                 <Tooltip delayDuration={100}>
                     <TooltipTrigger asChild>
                         <button onClick={onClick}
                             onMouseDown={e => e.stopPropagation()}
-                            className={cn(className, `p-1 hover:cursor-pointer border disabled:text-secondary-foreground/20 hover:border-primary rounded-sm border-transparent transition-all`)} disabled={disabled}>{children}</button>
+                            className={cn(`p-1 hover:cursor-pointer border disabled:text-secondary-foreground/20 hover:border-primary rounded-sm border-transparent transition-all`, className)} disabled={disabled}>{children}</button>
                     </TooltipTrigger>
                     <TooltipContent className="text-xs" align="start" side="bottom">
-                        {label}
+                        <div className="text-xs whitespace-pre-wrap word-break">
+                            {label}
+                        </div>
+                        <div className="text-xs text-muted-foreground whitespace-pre-wrap word-break">
+                            {description}
+                        </div>
                     </TooltipContent>
                 </Tooltip>
             </TooltipProvider >
@@ -947,7 +959,6 @@ export const Todo = (
         const { x: deltaX, y: deltaY } = event.delta;
         const currentX = clickPosition.x + deltaX;
         const currentY = clickPosition.y + deltaY;
-        // console.log(deltaY, initialPosition.y + deltaY)
         const distance = calculateDistance(
             initialPosition.x,
             initialPosition.y,
@@ -974,7 +985,7 @@ export const Todo = (
         const overCurrent = e.over?.data?.current
         if (overCurrent?.type === "projectTab") {
             if (activeCurrent?.type === "todo") {
-                const projectId = overCurrent?.id
+                const projectId = overCurrent ? overCurrent?.id : ""
                 const activeTodoId = activeCurrent?.id
                 handleSetTodos(todoFunc.update(todos, activeTodoId, { projectId: projectId }), prevTodos)
             }
@@ -1040,7 +1051,7 @@ export const Todo = (
                             <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
                             <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
                             <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
-                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-8`}></div>
+                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
                             <div className="hidden sm:block">
                                 <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
                                     {viewCompletionTask ? <Eye size={16} /> : <EyeOffIcon size={16} />}
@@ -1054,9 +1065,31 @@ export const Todo = (
                                     <Columns size={16} />
                                 </MenuButton>
                             </div>
+                            <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
+                            <div>
+                                {loading ? (
+                                    <SimpleSpinner className="h-4 w-4 border-t-transparent p-1" />
+                                ) : (
+                                    <>
+                                        {isLocalMode ? (
+                                            <MenuButton
+                                                className="hover:border-transparent hover:cursor-default"
+                                                label={`ローカルモード`}
+                                                description={`オンラインモードへの切り替えは\n時間をおいてから再度画面更新をお試しください。`}
+                                                onClick={() => { }} ><CloudOff className="text-muted-foreground" size={16} /></MenuButton>
+                                        ) : (
+                                            <MenuButton
+                                                className="hover:border-transparent hover:cursor-default"
+                                                label="オンラインモード"
+                                                description={`入力したタスク情報はしばらく立つと自動的にクラウド上へ保存します。\n「保存」ボタンクリックですぐに保存することも可能です。`}
+                                                onClick={() => { }} ><Cloud className="text-primary2" size={16} /></MenuButton>
+                                        )}
+                                    </>
+                                )}
+                            </div>
                         </div>
                         <div className="relative flex gap-2 items-center px-2">
-                            {isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
+                            {!loading && !isLocalMode && isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
                                 <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
                                     {(isSave && isUpdate) ? (
                                         <SimpleSpinner className="border-primary-foreground h-4 w-4 p-1 border-t-transparent" />
@@ -1097,6 +1130,7 @@ export const Todo = (
                                         setCurrentIndex={setCurrentIndex}
                                         setExProjects={setExProjects}
                                         setExLabels={setExLabels}
+                                        setIsComposing={setIsComposing}
                                         register={register}
                                         rhfSetValue={setValue}
                                     />

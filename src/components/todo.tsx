@@ -47,6 +47,7 @@ export const Todo = (
         isSave,
         isUpdate,
         isLocalMode,
+        todoMode,
         setTodos,
         setExProjects,
         setExLabels,
@@ -62,6 +63,7 @@ export const Todo = (
         isSave: boolean
         isUpdate: boolean
         isLocalMode: boolean
+        todoMode: "List" | "Ganttc"
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -70,14 +72,14 @@ export const Todo = (
     }
 ) => {
     const [command, setCommand] = useState("")
-    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("is_view_completion", true)
+    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage(todoMode + ":is_view_completion", true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
     const [prefix, setPrefix] = useState('text')
-    const [currentProjectId, setCurrentProjectId] = useLocalStorage("current_project_id", "")
+    const [currentProjectId, setCurrentProjectId] = useLocalStorage(todoMode + ":current_project_id", "")
 
     const [mode, setMode] = useState<Mode>('normal')
-    const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
+    const [sort, setSort] = useLocalStorage<Sort>(todoMode + ":sort-ls-key", undefined)
     const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
     const [filterdProjects, setFilterdProjects] = useState<ProjectProps[]>(exProjects)
 
@@ -87,10 +89,10 @@ export const Todo = (
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-    const [isHelp, setHelp] = useLocalStorage("is_help", false)
+    const [isHelp, setHelp] = useLocalStorage(todoMode + ":is_help", false)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
-    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("is_open_right_panel", true)
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage(todoMode + ":is_open_right_panel", true)
     const resizeRef = useRef<ImperativePanelHandle>(null);
 
     const { register, setFocus, getValues, setValue, watch } = useForm()

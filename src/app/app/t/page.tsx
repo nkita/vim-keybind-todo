@@ -163,6 +163,7 @@ export default function Home() {
           exProjects={isLocalMode ? projectsLS : projects}
           exLabels={isLocalMode ? labelsLS : labels}
           isLocalMode={isLocalMode}
+          todoMode={"List"}
           isSave={isSave}
           isUpdate={isUpdate}
           loading={isLocalMode ? false : (todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading)}

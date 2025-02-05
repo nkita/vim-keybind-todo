@@ -1,0 +1,93 @@
+.taskListWrapper {
+  display: table;
+  border-bottom: #e6e4e4 1px solid;
+  border-left: #e6e4e4 1px solid;
+  border-right: #e6e4e4 1px solid;
+  box-shadow: rgba(122, 122, 122, 0.0588235) 0px 0px 6px 3px;
+  -webkit-box-shadow: rgba(122, 122, 122, 0.0588235) 0px 0px 6px 3px;
+  -moz-box-shadow: rgba(122, 122, 122, 0.0588235) 0px 0px 6px 3px;
+}
+
+.taskListTableRow {
+  display: table-row;
+  text-overflow: ellipsis;
+}
+
+.taskListTableRow:nth-of-type(even) {
+  background-color: #f5f5f5;
+}
+
+.taskListCell {
+  display: table-cell;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.taskListNameWrapper {
+  display: flex;
+}
+
+.taskListExpander {
+  cursor: pointer;
+  font-size: 9pt;
+  width: 15px;
+  background-color: transparent;
+  border: solid 1px #00000050;
+  border-radius: 3px;
+  margin: 7px;
+  line-height: 13px;
+  padding-left: 3px;
+}
+
+
+.taskLabel {
+  font-size: 16px;
+  width: 100%;
+  border: none;
+  outline: none;
+  padding-bottom: 8px;
+  background-color: transparent;
+  cursor: text;
+}
+
+
+.nameInput {
+  background-color: transparent;
+  border: none;
+  outline: 0;
+}
+
+.nameInput:focus {
+  border-bottom: 1px solid #d1d5db;
+}
+
+.taskListIcon {
+  opacity: 0;
+}
+
+.taskListCell:hover+.taskListIcon {
+  opacity: 1;
+}
+
+.taskListIcon:hover {
+  opacity: 1;
+}
+
+.select {
+  border: 0px;
+  border-bottom: 0.5px solid #d1d5db;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.select option {
+  font-weight: normal;
+  display: block;
+  white-space: nowrap;
+  min-height: 1.3em;
+  padding: 0px 100px 1px;
+  background: black;
+  font-size: 10pt;
+}

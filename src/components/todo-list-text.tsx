@@ -26,7 +26,7 @@ export const Text = (
     }
 ) => {
     const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => e.stopPropagation()
-    const _classNameCont = `p-1 w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-primary rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} ${label ? "" : "text-gray-400 focus:text-gray-600"}`
+    const _classNameCont = `m-1 text-xs w-full text-left outline-none bg-transparent ${position === "list" ? "truncate" : "focus:outline-primary rounded hover:cursor-text"} ${t["is_complete"] ? "line-through" : ""} ${label ? "" : "text-gray-400 focus:text-gray-600"}`
     const isView = currentIndex === index
         && currentPrefix === "text"
         && ((mode === "edit" && position === "list") || (mode === "editDetail" && position === "content"))

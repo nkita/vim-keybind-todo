@@ -66,9 +66,10 @@ export function TodoListRow({
         transition
     };
 
+    const rowH = "h-[35px]"
     return (
         <TableRow key={t.id}
-            className={`h-[2.5rem] ${common_color_css} group outline-none`}
+            className={`${rowH} ${common_color_css} group outline-none`}
             {...attributes}
             style={style}
             ref={setNodeRef}
@@ -81,14 +82,14 @@ export function TodoListRow({
             <TableCell className={`
                      sticky left-0 
                      text-sm text-right 
-                     z-10
+                     z-10 ${rowH}
                      p-0 m-0 ${table_idx_width}
                     `}
                 {...listeners}
             >
                 <div className={` 
                          relative
-                         pl-2 pr-1 w-[2.0rem] h-[2.5rem] flex items-center
+                         pl-2 pr-1 w-[2.0rem] flex items-center h-full
                          ${common_color_css}
                          hover:cursor-grab 
                          `}
@@ -100,7 +101,7 @@ export function TodoListRow({
                         {index + 1}
                     </span>
                 </div></TableCell>
-            <TableCell onClick={_ => onClick(index, 'completion')} className={`${table_completion_width} group hover:cursor-pointer`}>
+            <TableCell onClick={_ => onClick(index, 'completion')} className={` ${table_completion_width} group hover:cursor-pointer`}>
                 <div className="flex w-ful justify-center">
                     {mode === "select" && currentIndex === index ? (
                         <ChevronsUpDown className="text-primary h-3 w-3 " />

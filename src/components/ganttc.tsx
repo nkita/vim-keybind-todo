@@ -1,17 +1,20 @@
 import React, { useEffect, useState } from "react";
-import { Task, Configuration, GanttList } from "./ganttc/common/types/public-types";
+import { Task, Configuration, MessageType, GanttList } from "./ganttc/common/types/public-types";
 import { Gantt, ViewMode } from "@nkita/gantt-task-react";
-import { getStartEndDateForProject, initTasks, removeLocalStorageData, useWindowHeight } from "./ganttc/helper";
+// import { PeriodSwitch } from "./ganttc/components/period-switch";
+// import { AddTaskForm } from "./ganttc/components/add-task-form";
+import { convertToggle2Flag, getStartEndDateForProject, initTasks, removeLocalStorageData, useWindowHeight } from "./ganttc/helper";
 import { TaskListHeader } from "./ganttc/components/task-list-header";
 import { TaskListColumn } from "./ganttc/components/task-list-table";
-import { reOrder, reOrderAll, convertToggle2Flag, getData, pushData, pushNewData } from "./ganttc/helper";
+// import { seedDates, ganttDateRange } from "./helpers/date-helper";
+import styles from "./ganttc/index.module.css";
+import commonStyles from "./ganttc/css/index.module.css";
+
 import "@nkita/gantt-task-react/dist/index.css";
-import { TodoProps } from "@/types";
+
 
 // Init
-const Ganttc = (
-    { filterdTodos }: { filterdTodos: TodoProps[] }
-) => {
+const App = () => {
     const [view, setView] = useState<ViewMode>(ViewMode.Day);
     const [tasks, setTasks] = useState<Task[]>(initTasks());
     // const [notifyType, setNotifyType] = useState("info");
@@ -29,7 +32,7 @@ const Ganttc = (
     const [currentG, setCurrentG] = useState<GanttList | null>(null);
 
     const windowHeight = useWindowHeight();
-    const rowHeight = 35;
+    const rowHeight = 33;
     const headerHeight = 210;
     const date = new Date();
     const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDay());
@@ -38,23 +41,10 @@ const Ganttc = (
     const localStorageGanttListKey = 'ganttc_list';
     const localStorageInformationKey = 'information';
 
-    useEffect(() => {
-        setTasks(filterdTodos.map(t => {
-            return {
-                start: new Date(t.creationDate ?? ""),
-                end: new Date(t.creationDate ?? ""),
-                name: t.text,
-                id: t.id,
-                progress: 0,
-                type: "task",
-            }
-        }))
-    }, [filterdTodos])
-    // const toaster = useToaster();
-    // const message = (message: string, type: MessageType) => <Message showIcon type={type}>{message}</Message>;
-    // const info = (msg: string) => {
+    //   const message = (message: string, type: MessageType) => <Message showIcon type={type}>{message}</Message>;
+    //   const info = (msg: string) => {
     //     if (msg !== "") toaster.push(message(msg, "success"));
-    // }
+    //   }
 
     // const [scrollX, setScrollX] = useState(-1);
     let columnWidth = 23;
@@ -64,10 +54,36 @@ const Ganttc = (
         columnWidth = 150;
     }
 
+    //  First process. 
+    useEffect(() => {
+    }, [])
+
+
+    const handleSave = (createNewGC: boolean = false) => {
+    }
+    // const escFunction = React.useCallback((event:any) => {
+    //   if (event.keyCode === 27) {
+    //     // キーコードを判定して何かする。
+    //     console.log("Esc Key is pressed!");
+    //   }
+    // }, []);
+
+    // useEffect(() => {
+    //   document.addEventListener("keydown", escFunction, false);
+    // }, []);
 
     const handleTaskChange = (task: Task) => {
     };
 
+    const handleTaskAdd = (task: Task) => {
+    };
+
+    const handleGCDelete = () => {
+    };
+
+    const handleChangeGC = (localStorageGanttChartKey: string) => {
+
+    };
 
 
     const handleTaskDelete = (task: Task) => {
@@ -81,44 +97,118 @@ const Ganttc = (
     const handleDblClick = (task: Task) => {
         // alert("On Double Click event Id:" + task.id);
     };
+
     // タスクの削除、入れ替え処理をこの関数で行う。
     const handleSelect = (task: Task, isSelected: boolean) => {
-        // console.log(task.name + " has " + (isSelected ? "selected" : "unselected"));
-    }
+    };
 
     const handleExpanderClick = (task: Task) => {
+        setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
         // console.log("On expander click Id:" + task.id);
     };
 
-    if (tasks.length === 0) return <></>
+    const closeProject = () => {
+        setTasks(tasks.map((t) => {
+            if (t.type === "project") {
+                t.hideChildren = true;
+            }
+            return t;
+        }));
+    };
+
+    const end = new Date();
+    end.setDate(end.getDate() + 1);
 
     return (
-        <Gantt
-            tasks={tasks}
-            viewMode={view}
-            TaskListHeader={TaskListHeader}
-            TaskListTable={TaskListColumn}
-            onDateChange={handleTaskChange}
-            onDelete={handleTaskDelete}
-            onDoubleClick={handleDblClick}
-            onSelect={handleSelect}
-            onExpanderClick={handleExpanderClick}
-            preStepsCount={2}
-            handleWidth={5}
-            barBackgroundColor="skyblue"
-            viewDate={currentDate}
-            // viewTask={12}
-            listCellWidth={"100%"}
-            // ganttHeight={((rowHeight * tasks.length + headerHeight) > windowHeight) ? (windowHeight - headerHeight) : 0}
-            ganttHeight={0}
-            columnWidth={columnWidth}
-            locale={"ja-JP"}
-            rowHeight={rowHeight}
-            timeStep={86400000}
-            fontFamily={"proxima-nova, 'Helvetica Neue', Helvetica, Arial, sans-serif,'proxima-nova','Helvetica Neue',Helvetica,Arial,sans-serif"}
-        />
+        <>
+            <Gantt
+                tasks={[
+                    {
+                        id: "1",
+                        name: "タスク1",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "2",
+                        name: "タスク2",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "3",
+                        name: "タスク2",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "4",
+                        name: "タスク2",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "5",
+                        name: "タスク2",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "6",
+                        name: "タスク2",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "7",
+                        name: "タスク2",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    }
+                ]}
+                viewMode={view}
+                TaskListHeader={TaskListHeader}
+                TaskListTable={TaskListColumn}
+                onDateChange={handleTaskChange}
+                onDelete={handleTaskDelete}
+                onDoubleClick={handleDblClick}
+                onSelect={handleSelect}
+                onExpanderClick={handleExpanderClick}
+                preStepsCount={2}
+                handleWidth={5}
+                viewDate={currentDate}
+                // viewTask={12}
+                listCellWidth={convertToggle2Flag({
+                    title: viewTitle,
+                    icon: viewTitle,
+                    period: viewPeriod,
+                    progress: viewProgress
+                })}
+                // ganttHeight={((rowHeight * tasks.length + headerHeight) > windowHeight) ? (windowHeight - headerHeight) : 0}
+                ganttHeight={0}
+                columnWidth={columnWidth}
+                locale={"ja-JP"}
+                rowHeight={rowHeight}
+                timeStep={86400000}
+                fontFamily={"proxima-nova, 'Helvetica Neue', Helvetica, Arial, sans-serif,'proxima-nova','Helvetica Neue',Helvetica,Arial,sans-serif"}
+            />
+        </>
     );
 };
 
 
-export default Ganttc;
+export default App;

@@ -23,6 +23,7 @@ export const TodoList = (
         sort,
         loading,
         onClick,
+        todoMode,
         setIsComposing,
         setCurrentIndex,
         setExProjects,
@@ -39,6 +40,7 @@ export const TodoList = (
         currentProjectId: string
         sort: Sort
         loading: Boolean
+        todoMode: string
         onClick: (id: number, prefix: string) => void
         setIsComposing: Dispatch<SetStateAction<boolean>>
         setCurrentIndex: Dispatch<SetStateAction<number>>
@@ -107,7 +109,7 @@ export const TodoList = (
         <>
             <div className="h-full ">
                 {loading &&
-                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
+                    <div className={`flex justify-center items-center w-full ${todoMode === "List" ? hcssMainHeight : ""} bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">
                             <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                                 <span className="animate-bounce">Loading...</span>
@@ -115,7 +117,7 @@ export const TodoList = (
                         </div>
                     </div>
                 }
-                <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${hcssMainHeight} bg-muted table-scrollbar`} index={currentIndex}>
+                <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${todoMode === "List" ? hcssMainHeight : ""} bg-muted table-scrollbar`} index={currentIndex}>
                     <TableBody className=" text-sm border-b">
                         {loading &&
                             <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -158,15 +160,15 @@ export const TodoList = (
                                                         nextTabIndent = filterdTodos[nextIndex].indent ?? 0
                                                     }
                                                     const common_color_css = `
-                                                        ${t.is_complete 
-                                                            ? "bg-muted text-muted-foreground/40 focus-within:text-muted-foreground/60" 
+                                                        ${t.is_complete
+                                                            ? "bg-muted text-muted-foreground/40 focus-within:text-muted-foreground/60"
                                                             : mode === "select" && currentIndex === index
-                                                            ? "bg-todo-accent font-semibold"
-                                                            : mode === "edit" && currentIndex === index
-                                                            ? "bg-card"
-                                                            : mode !== "select" && mode !== "edit" && currentIndex === index
-                                                            ? "bg-sky-100 text-todo-accent-foreground"
-                                                            : "bg-card"
+                                                                ? "bg-todo-accent font-semibold"
+                                                                : mode === "edit" && currentIndex === index
+                                                                    ? "bg-card"
+                                                                    : mode !== "select" && mode !== "edit" && currentIndex === index
+                                                                        ? "bg-sky-100 text-todo-accent-foreground"
+                                                                        : "bg-card"
                                                         }
                                                     `
                                                     return (

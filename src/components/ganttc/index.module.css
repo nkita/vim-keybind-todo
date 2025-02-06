@@ -1,0 +1,52 @@
+.projectTitle {
+  height: 70px;
+  padding-top: 20px;
+}
+
+.projectTitle input {
+  font-size: 1.2em;
+  width: 80%;
+}
+
+.projectTitle input:focus{
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+.projectInput:focus {
+  font-weight: normal;
+  width: 80%;
+}
+
+.buttonArea {
+  height: 30px;
+  padding-top: 20px;
+  padding-right: 10px;
+  /* border: 1px #000 solid; */
+  text-align: right;
+}
+
+.logo {
+  color: '#000';
+  font-size: "1.4em";
+}
+
+.taskEmptyArea {
+  width: 99%;
+  border: 1px solid #000000;
+  position: relative;
+}
+
+.ganttArea {
+  width: 99%;
+}
+
+.displayOptionArea{
+  height:20px;
+}
+
+.displayOptionArea2{
+  height:25px;
+  padding-right:10px;
+  text-align:right;
+}

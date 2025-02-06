@@ -1110,9 +1110,32 @@ export const Todo = (
                     {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                     {/* オーバーレイ */}
                     {todoMode === "Ganttc" && filterdTodos.length > 0 &&
-                        <div className="h-full w-full overflow-y-auto">
-                            <Ganttc
-                                filterdTodos={filterdTodos} />
+                        <div className="relative flex h-full w-full overflow-y-auto">
+                            <div>
+                                <div className="h-[50px] border-y"></div>
+                                <TodoList
+                                    filterdTodos={filterdTodos}
+                                    currentIndex={currentIndex}
+                                    prefix={prefix}
+                                    mode={mode}
+                                    exProjects={exProjects}
+                                    exLabels={exLabels}
+                                    currentProjectId={currentProjectId}
+                                    sort={sort}
+                                    todoMode={todoMode}
+                                    loading={loading}
+                                    onClick={handleClickElement}
+                                    setCurrentIndex={setCurrentIndex}
+                                    setExProjects={setExProjects}
+                                    setExLabels={setExLabels}
+                                    setIsComposing={setIsComposing}
+                                    register={register}
+                                    rhfSetValue={setValue}
+                                />
+                            </div>
+                            <div className="overflow-x-auto overflow-y-hidden">
+                                <Ganttc />
+                            </div>
                         </div>
                     }
                     {todoMode === "List" &&
@@ -1134,6 +1157,7 @@ export const Todo = (
                                             currentProjectId={currentProjectId}
                                             sort={sort}
                                             loading={loading}
+                                            todoMode={todoMode}
                                             onClick={handleClickElement}
                                             setCurrentIndex={setCurrentIndex}
                                             setExProjects={setExProjects}

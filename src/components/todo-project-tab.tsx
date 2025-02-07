@@ -11,13 +11,13 @@ import { useSortable } from "@dnd-kit/sortable";
 
 // DnDの機能を持つコンポーネントを動的インポート
 const ProjectTabContent = dynamic(() => Promise.resolve(({
-    currentProjectId, index, project, filterdProjects, exProjects, setProjects, onClick, tabId
+    currentProjectId, index, project, filteredProjects, exProjects, setProjects, onClick, tabId
 }: {
     currentProjectId: string,
     index: number,
     project?: ProjectProps,
     exProjects: ProjectProps[],
-    filterdProjects: ProjectProps[],
+    filteredProjects: ProjectProps[],
     tabId: string,
     setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
     onClick: (index: number, prefix: string) => void
@@ -61,7 +61,7 @@ const ProjectTabContent = dynamic(() => Promise.resolve(({
         }
         setProjects(_projects)
     }
-    const currentProjectIdx = filterdProjects.map(p => p.id).indexOf(currentProjectId)
+    const currentProjectIdx = filteredProjects.map(p => p.id).indexOf(currentProjectId)
     const current = index === currentProjectIdx
     const prevCurrent = index === currentProjectIdx - 1
 
@@ -101,7 +101,7 @@ export const ProjectTab = (props: {
     index: number,
     project?: ProjectProps,
     exProjects: ProjectProps[],
-    filterdProjects: ProjectProps[],
+    filteredProjects: ProjectProps[],
     tabId: string,
     setProjects?: React.Dispatch<React.SetStateAction<ProjectProps[]>>,
     onClick: (index: number, prefix: string) => void

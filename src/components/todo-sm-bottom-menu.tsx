@@ -188,8 +188,8 @@ export const BottomMenu = (
             <nav className="fixed bottom-0 left-0 right-0 bg-card z-20 border-t-2 h-[110px]  drop-shadow-xl block sm:hidden w-full">
                 <div className="h-[35px] w-full">
                     <div className={`w-full h-full flex justify-start  items-end overflow-x-auto flex-nowrap text-nowrap hidden-scrollbar text-foreground`}>
-                        <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} />
-                        {projects && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={prefix} currentProjectId={currentProjectId} index={i} filterdProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} project={p} />)}
+                        <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} filteredProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} />
+                        {projects && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={prefix} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={projects} onClick={handleClickElement} project={p} />)}
                     </div>
                 </div>
                 <div className="flex justify-around items-start h-[75px] text-secondary-foreground/80 border-t">

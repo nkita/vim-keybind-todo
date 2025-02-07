@@ -32,7 +32,7 @@ const App = () => {
     const [currentG, setCurrentG] = useState<GanttList | null>(null);
 
     const windowHeight = useWindowHeight();
-    const rowHeight = 33;
+    const rowHeight = 35;
     const headerHeight = 210;
     const date = new Date();
     const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDay());
@@ -173,7 +173,95 @@ const App = () => {
                     },
                     {
                         id: "7",
-                        name: "タスク2",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
+                        start: new Date(),
+                        end: end,
+                        type: "task",
+                        progress: 0.5
+                    },
+                    {
+                        id: "17",
+                        name: "タスク7",
                         start: new Date(),
                         end: end,
                         type: "task",

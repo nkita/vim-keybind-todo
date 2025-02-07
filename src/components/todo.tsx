@@ -6,7 +6,7 @@ import { keymap } from '@/components/config'
 import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
-import { TodoList } from "./todo-list"
+import { NormalList } from "./todo-list/normal-list"
 import { Detail } from "./detail"
 import { isEqual, findIndex, sortBy } from "lodash";
 import {
@@ -33,7 +33,7 @@ import { ProjectTabSettingModal } from "./project-tab-setting-modal"
 import { SimpleSpinner } from "./ui/spinner"
 import { DndContext, DragEndEvent, DragMoveEvent, DragOverlay, DragStartEvent } from "@dnd-kit/core"
 import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable"
-import Ganttc from "./ganttc"
+import { GanttcList } from "./todo-list/ganttc-list"
 
 const MAX_UNDO_COUNT = 10
 
@@ -81,8 +81,8 @@ export const Todo = (
 
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>(todoMode + ":sort-ls-key", undefined)
-    const [filterdTodos, setFilterdTodos] = useState<TodoProps[]>(todos)
-    const [filterdProjects, setFilterdProjects] = useState<ProjectProps[]>(exProjects)
+    const [filteredTodos, setFilteredTodos] = useState<TodoProps[]>(todos)
+    const [filteredProjects, setFilteredProjects] = useState<ProjectProps[]>(exProjects)
 
     const [todoEnables, setTodoEnables] = useState<TodoEnablesProps>({
         enableAddTodo: true,
@@ -111,10 +111,10 @@ export const Todo = (
     }, [isOpenRightPanel])
 
     useEffect(() => {
-        if (currentProjectId && filterdTodos.length > 0) {
-            if (filterdProjects.filter(f => f.id === currentProjectId).length === 0) setCurrentProjectId("")
+        if (currentProjectId && filteredTodos.length > 0) {
+            if (filteredProjects.filter(f => f.id === currentProjectId).length === 0) setCurrentProjectId("")
         }
-    }, [currentProjectId, filterdProjects])
+    }, [currentProjectId, filteredProjects, filteredTodos, setCurrentProjectId])
 
     const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
         let enabledMode = false
@@ -132,7 +132,7 @@ export const Todo = (
                     if (s === sort) enabledSort = true
                 })
             }
-            enabledWithoutTask = filterdTodos.length === 0 ? keyConf.withoutTask ?? true : true
+            enabledWithoutTask = filteredTodos.length === 0 ? keyConf.withoutTask ?? true : true
         }
         return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true, useKey: keyConf?.useKey ?? false }
     }
@@ -146,7 +146,7 @@ export const Todo = (
 
     useEffect(() => {
         if (completionOnly) {
-            if (todos.length > 0) setFilterdTodos(todos)
+            if (todos.length > 0) setFilteredTodos(todos)
             return
         }
         let _todos = !currentProjectId ? [...todos] : todos.filter(t => t.projectId === currentProjectId)
@@ -176,42 +176,42 @@ export const Todo = (
                 });
             }
         }
-        setFilterdTodos(_todos)
-    }, [todos, currentProjectId, sort, completionOnly, viewCompletionTask, setFilterdTodos])
+        setFilteredTodos(_todos)
+    }, [todos, currentProjectId, sort, completionOnly, viewCompletionTask, setFilteredTodos])
 
     useEffect(() => {
         if (exProjects.length > 0) {
-            setFilterdProjects(sortBy(exProjects.filter(p => p.isTabDisplay), "sort"))
+            setFilteredProjects(sortBy(exProjects.filter(p => p.isTabDisplay), "sort"))
         }
     }, [exProjects])
 
     useEffect(() => {
         debugLog(`currentIndex:${currentIndex} mode:${mode} keepPositionId:${keepPositionId} prefix:${prefix} mode:${mode} `)
-        if (filterdTodos.length > 0 && currentIndex !== - 1) {
-            if (keepPositionId && currentIndex !== filterdTodos.map(t => t.id).indexOf(keepPositionId ? keepPositionId : "")) {
-                let index = filterdTodos.map(t => t.id).indexOf(keepPositionId)
+        if (filteredTodos.length > 0 && currentIndex !== - 1) {
+            if (keepPositionId && currentIndex !== filteredTodos.map(t => t.id).indexOf(keepPositionId ? keepPositionId : "")) {
+                let index = filteredTodos.map(t => t.id).indexOf(keepPositionId)
                 if (index === -1) {
-                    index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex > 0 ? currentIndex - 1 : currentIndex
+                    index = currentIndex >= filteredTodos.length ? filteredTodos.length - 1 : currentIndex > 0 ? currentIndex - 1 : currentIndex
                 }
                 setCurrentIndex(index)
                 setKeepPositionId(undefined)
             } else {
-                const id = filterdTodos[currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex].id
+                const id = filteredTodos[currentIndex >= filteredTodos.length ? filteredTodos.length - 1 : currentIndex].id
                 if (mode === 'edit' || mode === "editDetail") setFocus(`edit-${mode === "edit" ? "list" : "content"}-${prefix}-${id}`)
                 if (mode === 'normal' || mode === "select") setFocus(`list-${prefix}-${id}`)
                 if (mode === 'editOnSort') setFocus("newtask")
                 setIsLastPosition(true)
             }
         }
-    }, [filterdTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
+    }, [filteredTodos, mode, keepPositionId, currentIndex, prefix, setFocus, setValue])
 
 
     useEffect(() => {
         if (isLastPosition) {
-            if (currentIndex >= filterdTodos.length) setCurrentIndex(filterdTodos.length - 1)
+            if (currentIndex >= filteredTodos.length) setCurrentIndex(filteredTodos.length - 1)
             setIsLastPosition(false)
         }
-    }, [filterdTodos, currentIndex, isLastPosition])
+    }, [filteredTodos, currentIndex, isLastPosition])
 
     /*****
      * common function
@@ -235,13 +235,13 @@ export const Todo = (
         }
     }
 
-    const toNormalMode = (todos: TodoProps[], prevTodos: TodoProps[], mode: Mode, filterdTodos: TodoProps[], currentIndex: number) => {
-        if (filterdTodos.length === 0) {
+    const toNormalMode = (todos: TodoProps[], prevTodos: TodoProps[], mode: Mode, filteredTodos: TodoProps[], currentIndex: number) => {
+        if (filteredTodos.length === 0) {
             setPrefix('text')
             setMode('normal')
             return
         }
-        const targetTodo = filterdTodos[currentIndex]
+        const targetTodo = filteredTodos[currentIndex]
         if (targetTodo === undefined) {
             setPrefix('text')
             setMode('normal')
@@ -280,7 +280,7 @@ export const Todo = (
                 _todos = todoFunc.modify(todos, replace)
                 handleSetTodos(_todos, prevTodos)
             }
-            setCurrentIndex(todoFunc.getIndexById(filterdTodos, targetTodoId))
+            setCurrentIndex(todoFunc.getIndexById(filteredTodos, targetTodoId))
         }
         setPrefix('text')
         setMode('normal')
@@ -288,17 +288,17 @@ export const Todo = (
 
     const completeTask = (index: number, prevTodos: TodoProps[]) => {
         const _todos = todoFunc.modify(todos, {
-            id: filterdTodos[index].id,
-            is_complete: !filterdTodos[index].is_complete,
-            priority: filterdTodos[index].priority,
-            completionDate: !filterdTodos[index].is_complete ? new Date().toISOString() : null,
-            creationDate: filterdTodos[index].creationDate,
-            text: filterdTodos[index].text,
-            projectId: filterdTodos[index].projectId,
-            labelId: filterdTodos[index].labelId,
-            detail: filterdTodos[index].detail,
-            sort: filterdTodos[index].sort,
-            indent: filterdTodos[index].indent,
+            id: filteredTodos[index].id,
+            is_complete: !filteredTodos[index].is_complete,
+            priority: filteredTodos[index].priority,
+            completionDate: !filteredTodos[index].is_complete ? new Date().toISOString() : null,
+            creationDate: filteredTodos[index].creationDate,
+            text: filteredTodos[index].text,
+            projectId: filteredTodos[index].projectId,
+            labelId: filteredTodos[index].labelId,
+            detail: filteredTodos[index].detail,
+            sort: filteredTodos[index].sort,
+            indent: filteredTodos[index].indent,
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -353,12 +353,12 @@ export const Todo = (
         handleSetTodos(_todos, prevTodos)
     }
     const changeProject = (index: number) => {
-        setCurrentProjectId(index === -1 ? "" : filterdProjects[index].id)
+        setCurrentProjectId(index === -1 ? "" : filteredProjects[index].id)
         setCurrentIndex(0)
         setCommand('')
     }
 
-    const keepPosition = (filterdTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filterdTodos.length > 0 ? filterdTodos[currentIndex].id : undefined)
+    const keepPosition = (filteredTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filteredTodos.length > 0 ? filteredTodos[currentIndex].id : undefined)
 
     /** hotkeys  */
     useHotkeys('*', (e) => {
@@ -388,19 +388,19 @@ export const Todo = (
         setCommand('')
         if (mode === "select") {
             if (currentIndex <= 0 || !selectTaskId) return
-            handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex - 1].id), prevTodos)
+            handleSetTodos(todoFunc.swap(todos, selectTaskId, filteredTodos[currentIndex - 1].id), prevTodos)
         }
-    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos, filterdTodos])
+    }, setKeyEnableDefine(keymap['up'].enable), [todos, currentIndex, mode, selectTaskId, prevTodos, filteredTodos])
 
     // move to down
     useHotkeys(keymap['down'].keys, (e) => {
-        if (currentIndex < filterdTodos.length - 1) setCurrentIndex(currentIndex + 1)
+        if (currentIndex < filteredTodos.length - 1) setCurrentIndex(currentIndex + 1)
         setCommand('')
         if (mode === "select") {
-            if (currentIndex >= filterdTodos.length - 1 || !selectTaskId) return
-            handleSetTodos(todoFunc.swap(todos, selectTaskId, filterdTodos[currentIndex + 1].id), prevTodos)
+            if (currentIndex >= filteredTodos.length - 1 || !selectTaskId) return
+            handleSetTodos(todoFunc.swap(todos, selectTaskId, filteredTodos[currentIndex + 1].id), prevTodos)
         }
-    }, setKeyEnableDefine(keymap['down'].enable), [todos, currentIndex, filterdTodos, mode, selectTaskId, prevTodos])
+    }, setKeyEnableDefine(keymap['down'].enable), [todos, currentIndex, filteredTodos, mode, selectTaskId, prevTodos])
 
     useHotkeys(keymap['moveToTop'].keys, (e) => {
         setCurrentIndex(0)
@@ -412,28 +412,28 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['moveToTop'].enable), [mode, selectTaskId, todos, prevTodos])
 
     useHotkeys(keymap['moveToEnd'].keys, (e) => {
-        setCurrentIndex(filterdTodos.length - 1)
+        setCurrentIndex(filteredTodos.length - 1)
         if (mode === "select") {
-            if (currentIndex >= filterdTodos.length - 1 || !selectTaskId) return
+            if (currentIndex >= filteredTodos.length - 1 || !selectTaskId) return
             handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, selectTaskId), todos.length - 1), prevTodos)
         }
         // if (mode !== "select") setMode('normal')
-    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filterdTodos, mode, selectTaskId, todos, prevTodos])
+    }, setKeyEnableDefine(keymap['moveToEnd'].enable), [filteredTodos, mode, selectTaskId, todos, prevTodos])
 
     // move to right project
     useHotkeys(keymap['moveProjectRight'].keys, (e) => {
-        handleMoveProject("right", filterdProjects, currentProjectId)
-    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [filterdProjects, currentProjectId])
+        handleMoveProject("right", filteredProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectRight'].enable), [filteredProjects, currentProjectId])
 
     // move to left project
     useHotkeys(keymap['moveProjectLeft'].keys, (e) => {
-        handleMoveProject("left", filterdProjects, currentProjectId)
-    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [filterdProjects, currentProjectId])
+        handleMoveProject("left", filteredProjects, currentProjectId)
+    }, setKeyEnableDefine(keymap['moveProjectLeft'].enable), [filteredProjects, currentProjectId])
 
     // insert task 
     useHotkeys(keymap['insert'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        const _indent = filterdTodos[currentIndex].indent ?? 0
+        const _indent = filteredTodos[currentIndex].indent ?? 0
         handleSetTodos(todoFunc.add(currentIndex, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setMode('edit')
     }, setKeyEnableDefine(keymap['insert'].enable), [currentIndex, todos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
@@ -455,7 +455,7 @@ export const Todo = (
     // append task 
     useHotkeys(keymap['append'].keys, (e) => {
         if (!todoEnables.enableAddTodo) return toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
-        const _indent = currentIndex + 1 < filterdTodos.length ? filterdTodos[currentIndex + 1].indent ?? 0 : 0
+        const _indent = currentIndex + 1 < filteredTodos.length ? filteredTodos[currentIndex + 1].indent ?? 0 : 0
         handleSetTodos(todoFunc.add(currentIndex + 1, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask, indent: _indent }), prevTodos)
         setCurrentIndex(currentIndex + 1)
         setMode('edit')
@@ -466,16 +466,16 @@ export const Todo = (
         if (!todoEnables.enableAddTodo) {
             toast.error(jaJson.追加可能タスク数を超えた場合のエラー)
         } else {
-            handleSetTodos(todoFunc.add(filterdTodos.length, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
-            setCurrentIndex(filterdTodos.length)
+            handleSetTodos(todoFunc.add(filteredTodos.length, todos, { projectId: currentProjectId, viewCompletionTask: viewCompletionTask }), prevTodos)
+            setCurrentIndex(filteredTodos.length)
             setMode('edit')
         }
-    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filterdTodos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
+    }, setKeyEnableDefine(keymap['appendBottom'].enable), [filteredTodos, currentProjectId, viewCompletionTask, todoEnables, prevTodos])
 
     // delete task
-    const deleteTask = (currentIndex: number, filterdTodos: TodoProps[], prevTodos: TodoProps[]) => {
-        handleSetTodos(todoFunc.delete(todos, filterdTodos[currentIndex].id), prevTodos)
-        const index = currentIndex >= filterdTodos.length ? filterdTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
+    const deleteTask = (currentIndex: number, filteredTodos: TodoProps[], prevTodos: TodoProps[]) => {
+        handleSetTodos(todoFunc.delete(todos, filteredTodos[currentIndex].id), prevTodos)
+        const index = currentIndex >= filteredTodos.length ? filteredTodos.length - 1 : currentIndex === 0 ? currentIndex : currentIndex - 1
         setCurrentIndex(index)
         setMode('normal')
         setPrefix('text')
@@ -483,12 +483,12 @@ export const Todo = (
     useHotkeys(keymap['deleteModal'].keys, (e) => {
         setMode('modal')
         setPrefix('delete')
-    }, setKeyEnableDefine(keymap['deleteModal'].enable), [todos, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['deleteModal'].enable), [todos, filteredTodos, currentIndex])
 
     useHotkeys(keymap['delete'].keys, (e) => {
         if (prefix !== 'delete') return
-        deleteTask(currentIndex, filterdTodos, prevTodos)
-    }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filterdTodos, prevTodos, prefix])
+        deleteTask(currentIndex, filteredTodos, prevTodos)
+    }, setKeyEnableDefine(keymap['delete'].enable), [currentIndex, filteredTodos, prevTodos, prefix])
 
     // change to edit mode
     useHotkeys(keymap['editText'].keys, (e) => {
@@ -501,12 +501,12 @@ export const Todo = (
     //     setMode('edit')
     // }, setKeyEnableDefine(keymap['editPriority'].enable))
     useHotkeys(keymap['increasePriority'].keys, (e) => {
-        priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
-    }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
+        priorityTask(todos, prevTodos, filteredTodos[currentIndex].id, 'plus')
+    }, setKeyEnableDefine(keymap['increasePriority'].enable), [todos, filteredTodos, currentIndex, prevTodos])
 
     useHotkeys(keymap['decreasePriority'].keys, (e) => {
-        priorityTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
-    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filterdTodos, currentIndex, prevTodos])
+        priorityTask(todos, prevTodos, filteredTodos[currentIndex].id, 'minus')
+    }, setKeyEnableDefine(keymap['decreasePriority'].enable), [todos, filteredTodos, currentIndex, prevTodos])
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
@@ -523,8 +523,8 @@ export const Todo = (
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
         completeTask(currentIndex, prevTodos)
-        if (!viewCompletionTask && currentIndex >= filterdTodos.length - 1) setCurrentIndex(filterdTodos.length - 1)
-    }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filterdTodos, prevTodos])
+        if (!viewCompletionTask && currentIndex >= filteredTodos.length - 1) setCurrentIndex(filteredTodos.length - 1)
+    }, setKeyEnableDefine(keymap['completion'].enable), [currentIndex, filteredTodos, prevTodos])
 
     // change sort mode
     // useHotkeys(keymap['sortMode'].keys, (e) => {
@@ -534,28 +534,28 @@ export const Todo = (
     // toggle view commpletion / incompletion
     useHotkeys(keymap['toggleCompletionTask'].keys, (e) => {
         if (completionOnly) return
-        keepPosition(filterdTodos, currentIndex)
+        keepPosition(filteredTodos, currentIndex)
         setViewCompletionTask(!viewCompletionTask)
-    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['toggleCompletionTask'].enable), [viewCompletionTask, filteredTodos, currentIndex])
 
 
     useHotkeys(keymap['undo'].keys, (e) => {
         if (historyTodos.length === 0 || undoCount >= historyTodos.length - 1) return
         undo(undoCount, historyTodos)
-    }, setKeyEnableDefine(keymap['undo'].enable), [todos, undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['undo'].enable), [todos, undoCount, historyTodos, prevTodos, filteredTodos, currentIndex])
 
     useHotkeys(keymap['redo'].keys, (e) => {
         if (historyTodos.length === 0 || undoCount <= 0) return
         redo(undoCount, historyTodos)
-    }, setKeyEnableDefine(keymap['redo'].enable), [undoCount, historyTodos, prevTodos, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['redo'].enable), [undoCount, historyTodos, prevTodos, filteredTodos, currentIndex])
 
     useHotkeys(keymap['indent'].keys, (e) => {
-        indentTask(todos, prevTodos, filterdTodos[currentIndex].id, 'plus')
-    }, setKeyEnableDefine(keymap['indent'].enable), [todos, prevTodos, filterdTodos, currentIndex])
+        indentTask(todos, prevTodos, filteredTodos[currentIndex].id, 'plus')
+    }, setKeyEnableDefine(keymap['indent'].enable), [todos, prevTodos, filteredTodos, currentIndex])
 
     useHotkeys(keymap['unIndnet'].keys, (e) => {
-        indentTask(todos, prevTodos, filterdTodos[currentIndex].id, 'minus')
-    }, setKeyEnableDefine(keymap['unIndnet'].enable), [todos, prevTodos, filterdTodos, currentIndex])
+        indentTask(todos, prevTodos, filteredTodos[currentIndex].id, 'minus')
+    }, setKeyEnableDefine(keymap['unIndnet'].enable), [todos, prevTodos, filteredTodos, currentIndex])
 
     /*******************
      * 
@@ -563,16 +563,16 @@ export const Todo = (
      * 
      *******************/
     useHotkeys(keymap['sortPriority'].keys, (e) => {
-        keepPosition(filterdTodos, currentIndex)
+        keepPosition(filteredTodos, currentIndex)
         setSort("priority")
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortPriority'].enable), [currentIndex, filterdTodos])
+    }, setKeyEnableDefine(keymap['sortPriority'].enable), [currentIndex, filteredTodos])
 
     useHotkeys(keymap['sortClear'].keys, (e) => {
-        keepPosition(filterdTodos, currentIndex)
+        keepPosition(filteredTodos, currentIndex)
         setSort(undefined)
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortClear'].enable), [filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['sortClear'].enable), [filteredTodos, currentIndex])
 
     useHotkeys(keymap['sortCreationDate'].keys, (e) => {
         setSort("creationDate")
@@ -580,10 +580,10 @@ export const Todo = (
     }, setKeyEnableDefine(keymap['sortCreationDate'].enable))
 
     useHotkeys(keymap['sortCompletion'].keys, (e) => {
-        keepPosition(filterdTodos, currentIndex)
+        keepPosition(filteredTodos, currentIndex)
         setSort("is_complete")
         setMode("normal")
-    }, setKeyEnableDefine(keymap['sortCompletion'].enable), [filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['sortCompletion'].enable), [filteredTodos, currentIndex])
 
 
     // change command mode
@@ -603,10 +603,10 @@ export const Todo = (
             setSelectTaskId(undefined)
             setMode("normal")
         } else {
-            if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
             setCommand('')
         }
-    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex, isComposing])
+    }, setKeyEnableDefine(keymap['normalMode'].enable), [todos, prevTodos, mode, filteredTodos, currentIndex, isComposing])
 
     useHotkeys(keymap['normalModeOnSort'].keys, (e) => {
         if (!isComposing && !e.isComposing) {
@@ -620,24 +620,24 @@ export const Todo = (
             if (!todoFunc.isEmpty(newtask)) {
                 handleSetTodos([newtask, ...todos], prevTodos)
                 setValue("newtask", "")
-                keepPosition(filterdTodos, currentIndex, newId)
+                keepPosition(filteredTodos, currentIndex, newId)
             }
             setPrefix('text')
             setMode('normal')
         }
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalModeOnSort'].enable), [currentProjectId, filteredTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetail'].keys, (e) => {
-        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
         setCommand('')
-    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [todos, prevTodos, mode, filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), [todos, prevTodos, mode, filteredTodos, currentIndex])
 
     useHotkeys(keymap['normalModefromEditDetailText'].keys, (e) => {
         if (prefix !== "text") return
-        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (!isComposing && !e.isComposing) toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
         setCommand('')
-    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [todos, prevTodos, prefix, mode, filterdTodos, currentIndex])
+    }, { ...setKeyEnableDefine(keymap['normalModefromEditDetail'].enable), preventDefault: prefix === "text" }, [todos, prevTodos, prefix, mode, filteredTodos, currentIndex])
 
     useHotkeys(keymap['numberMode'].keys, (e) => {
         setCommand(command + e.key)
@@ -660,7 +660,7 @@ export const Todo = (
      *****************/
     const moveToLine = (line: number) => {
         if (!isNaN(line)) {
-            if (filterdTodos.length >= line) {
+            if (filteredTodos.length >= line) {
                 setCurrentIndex(line - 1)
                 return true
             } else {
@@ -756,11 +756,11 @@ export const Todo = (
         if (!isComposing && !e.isComposing) {
             const keyword = getValues('search').replace(/\s+/g, '')
             keyword
-                ? setSearchResultIndex(filterdTodos.map(t => t.text.toLocaleLowerCase().replace(/\s+/g, '').includes(keyword.toLowerCase().replace(/\s+/g, ''))))
+                ? setSearchResultIndex(filteredTodos.map(t => t.text.toLocaleLowerCase().replace(/\s+/g, '').includes(keyword.toLowerCase().replace(/\s+/g, ''))))
                 : setSearchResultIndex([])
             setMode("normal")
         }
-    }, setKeyEnableDefine(keymap['searchEnter'].enable), [filterdTodos])
+    }, setKeyEnableDefine(keymap['searchEnter'].enable), [filteredTodos])
 
     // help toggle
     useHotkeys(keymap['viewHelp'].keys, (e) => {
@@ -787,9 +787,9 @@ export const Todo = (
      *******************/
 
     useHotkeys(keymap['select'].keys, (e) => {
-        setSelectTaskId(filterdTodos[currentIndex].id)
+        setSelectTaskId(filteredTodos[currentIndex].id)
         setMode('select')
-    }, setKeyEnableDefine(keymap['select'].enable), [filterdTodos, currentIndex])
+    }, setKeyEnableDefine(keymap['select'].enable), [filteredTodos, currentIndex])
 
     const handleClickElement = (index: number, prefix: string) => {
         if (prefix === 'completion') completeTask(index, prevTodos)
@@ -803,7 +803,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode('modal')
         }
-        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filterdTodos, index)
+        if (prefix === 'normal') toNormalMode(todos, prevTodos, mode, filteredTodos, index)
         if (prefix === 'editDetail') {
             setCurrentIndex(index)
             setPrefix('detail')
@@ -816,7 +816,7 @@ export const Todo = (
             setPrefix(prefix)
             setMode("editDetail")
         }
-        if (prefix === "normal") toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+        if (prefix === "normal") toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
         if (['projectId', 'labelId'].includes(prefix)) {
             setPrefix(prefix)
             setMode('modal')
@@ -824,7 +824,7 @@ export const Todo = (
     }
     const handleMainMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         if (mode !== "modal" && mode !== "normal") {
-            toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
         }
         e.preventDefault()
         e.stopPropagation();
@@ -832,7 +832,7 @@ export const Todo = (
 
     const handleDetailMouseDown = (e: MouseEvent<HTMLDivElement>) => {
         if (mode !== "modal" && mode !== "normal") {
-            toNormalMode(todos, prevTodos, mode, filterdTodos, currentIndex)
+            toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
         }
         e.stopPropagation();
     }
@@ -919,9 +919,9 @@ export const Todo = (
         if (touchEndX === 0) return
         const swipeDistance = touchEndX - touchStartX;
         // 右にスワイプ
-        if (swipeDistance > swipeThreshold) handleMoveProject("left", filterdProjects, currentProjectId);
+        if (swipeDistance > swipeThreshold) handleMoveProject("left", filteredProjects, currentProjectId);
         // 左にスワイプ
-        if (swipeDistance < -swipeThreshold) handleMoveProject("right", filterdProjects, currentProjectId);
+        if (swipeDistance < -swipeThreshold) handleMoveProject("right", filteredProjects, currentProjectId);
         setTouchStartX(0);
         setTouchEndX(0);
     };
@@ -933,10 +933,10 @@ export const Todo = (
         if (!currentProjectId && projectTop.current) {
             projectTop.current.scrollIntoView({ behavior: "smooth" })
         }
-        if (filterdProjects.length - 1 === findIndex(filterdProjects, p => p.id === currentProjectId) && projectLast.current) {
+        if (filteredProjects.length - 1 === findIndex(filteredProjects, p => p.id === currentProjectId) && projectLast.current) {
             projectLast.current.scrollIntoView({ behavior: "smooth" })
         }
-    }, [currentProjectId, filterdProjects])
+    }, [currentProjectId, filteredProjects])
 
     /** ドラッグイベント処理 */
     const [isDragging, setIsDragging] = useState(false);
@@ -1006,7 +1006,7 @@ export const Todo = (
             const overTodoId = overCurrent?.id
             const activeTodoId = activeCurrent?.id
             handleSetTodos(todoFunc.move(todos, todoFunc.getIndexById(todos, activeTodoId), todoFunc.getIndexById(todos, overTodoId)), prevTodos)
-            setCurrentIndex(todoFunc.getIndexById(filterdTodos, overTodoId))
+            setCurrentIndex(todoFunc.getIndexById(filteredTodos, overTodoId))
         }
     };
 
@@ -1018,9 +1018,9 @@ export const Todo = (
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />
                             {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
-                            <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filterdProjects={filterdProjects} exProjects={exProjects} setProjects={setExProjects} />
-                            <SortableContext items={filterdProjects.map(p => p.id)} strategy={rectSortingStrategy}>
-                                {!loading && filterdProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filterdProjects={filterdProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                            <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filteredProjects={filteredProjects} exProjects={exProjects} setProjects={setExProjects} />
+                            <SortableContext items={filteredProjects.map(p => p.id)} strategy={rectSortingStrategy}>
+                                {!loading && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                             </SortableContext>
                             {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
                             {/* <div className="w-full h-full border-b"></div> */}
@@ -1050,8 +1050,8 @@ export const Todo = (
                             <div className="block md:hidden"><SidebarTrigger className="border" /></div>
                             <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
                             <MenuButton label="やり直し（Redo）" onClick={() => redo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount <= 0}><Redo2 size={16} /></MenuButton>
-                            <MenuButton label="インデント" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "plus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
-                            <MenuButton label="インデントを戻す" onClick={() => filterdTodos[currentIndex] && indentTask(todos, prevTodos, filterdTodos[currentIndex].id, "minus")} disabled={(filterdTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
+                            <MenuButton label="インデント" onClick={() => filteredTodos[currentIndex] && indentTask(todos, prevTodos, filteredTodos[currentIndex].id, "plus")} disabled={(filteredTodos[currentIndex]?.indent ?? 0) === 1} ><IndentIncrease size={16} /></MenuButton>
+                            <MenuButton label="インデントを戻す" onClick={() => filteredTodos[currentIndex] && indentTask(todos, prevTodos, filteredTodos[currentIndex].id, "minus")} disabled={(filteredTodos[currentIndex]?.indent ?? 0) === 0}><IndentDecrease size={16} /></MenuButton>
                             <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
                             <div className="hidden sm:block">
                                 <MenuButton label={`${viewCompletionTask ? "完了したタスクも表示" : "進行中タスクのみ表示"}`} onClick={_ => setViewCompletionTask(prev => !prev)}>
@@ -1109,37 +1109,29 @@ export const Todo = (
                     {/* オーバーレイ */}
                     {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                     {/* オーバーレイ */}
-                    {todoMode === "Ganttc" && filterdTodos.length > 0 &&
-                        <div className="relative flex h-full w-full overflow-y-auto">
-                            <div>
-                                <div className="h-[50px] border-y"></div>
-                                <TodoList
-                                    filterdTodos={filterdTodos}
-                                    currentIndex={currentIndex}
-                                    prefix={prefix}
-                                    mode={mode}
-                                    exProjects={exProjects}
-                                    exLabels={exLabels}
-                                    currentProjectId={currentProjectId}
-                                    sort={sort}
-                                    todoMode={todoMode}
-                                    loading={loading}
-                                    onClick={handleClickElement}
-                                    setCurrentIndex={setCurrentIndex}
-                                    setExProjects={setExProjects}
-                                    setExLabels={setExLabels}
-                                    setIsComposing={setIsComposing}
-                                    register={register}
-                                    rhfSetValue={setValue}
-                                />
-                            </div>
-                            <div className="overflow-x-auto overflow-y-hidden">
-                                <Ganttc />
-                            </div>
-                        </div>
-                    }
-                    {todoMode === "List" &&
-                        <div className={`w-full h-full`} onMouseDown={handleMainMouseDown}>
+                    <div className={`w-full h-full`} onMouseDown={handleMainMouseDown}>
+                        {todoMode === "Ganttc" &&
+                            <GanttcList
+                                filteredTodos={filteredTodos}
+                                currentIndex={currentIndex}
+                                prefix={prefix}
+                                mode={mode}
+                                exProjects={exProjects}
+                                exLabels={exLabels}
+                                currentProjectId={currentProjectId}
+                                sort={sort}
+                                loading={loading}
+                                todoMode={todoMode}
+                                onClick={handleClickElement}
+                                setCurrentIndex={setCurrentIndex}
+                                setExProjects={setExProjects}
+                                setExLabels={setExLabels}
+                                setIsComposing={setIsComposing}
+                                register={register}
+                                rhfSetValue={setValue}
+                            />
+                        }
+                        {todoMode === "List" &&
                             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                                 <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
                                     <div
@@ -1147,8 +1139,8 @@ export const Todo = (
                                         onTouchMove={handleTouchMove}
                                         onTouchEnd={handleTouchEnd}
                                         className={`z-20 h-[calc(100%-70px)]  w-full border-t sm:h-[calc(100%-30px)]`}>
-                                        <TodoList
-                                            filterdTodos={filterdTodos}
+                                        <NormalList
+                                            filteredTodos={filteredTodos}
                                             currentIndex={currentIndex}
                                             prefix={prefix}
                                             mode={mode}
@@ -1183,16 +1175,16 @@ export const Todo = (
                                     ) : (
                                         <>
                                             <div className={`w-full h-full z-20`}>
-                                                {(!filterdTodos[currentIndex] || !filterdTodos[currentIndex].text) &&
+                                                {(!filteredTodos[currentIndex] || !filteredTodos[currentIndex].text) &&
                                                     <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
                                                         <TentTree className="w-7 h-7" />
                                                         タスクを追加、または選択してください。
                                                     </div>
                                                 }
-                                                {todoMode === "List" && filterdTodos[currentIndex] && filterdTodos[currentIndex].text &&
+                                                {todoMode === "List" && filteredTodos[currentIndex] && filteredTodos[currentIndex].text &&
                                                     <div className="border-t">
                                                         <Detail
-                                                            todo={filterdTodos[currentIndex]}
+                                                            todo={filteredTodos[currentIndex]}
                                                             exProjects={exProjects}
                                                             exLabels={exLabels}
                                                             prefix={prefix}
@@ -1210,42 +1202,42 @@ export const Todo = (
                                     )}
                                 </ResizablePanel>
                             </ResizablePanelGroup>
-                            <DeleteModal
-                                currentIndex={currentIndex}
-                                filterdTodos={filterdTodos}
-                                prevTodos={prevTodos}
-                                currentPrefix={prefix}
-                                mode={mode}
-                                onClick={handleClickDetailElement}
-                                onDelete={deleteTask}
-                            />
-                            <BottomMenu
-                                todos={todos}
-                                prevTodos={prevTodos}
-                                completionOnly={completionOnly}
-                                viewCompletionTask={viewCompletionTask}
-                                projects={exProjects}
-                                filteredProjects={filterdProjects}
-                                currentProjectId={currentProjectId}
-                                handleClickElement={handleClickElement}
-                                setViewCompletionTask={setViewCompletionTask}
-                                setCurrentProjectId={setCurrentProjectId}
-                                setMode={setMode}
-                                handleSetTodos={handleSetTodos}
-                                todoEnables={todoEnables}
-                            />
-                            {!loading &&
-                                <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
-                                    <Usage
-                                        sort={sort}
-                                        mode={mode}
-                                        setHelp={setHelp}
-                                        isTodos={filterdTodos.length > 0}
-                                    />
-                                </div>
-                            }
-                        </div >
-                    }
+                        }
+                        <DeleteModal
+                            currentIndex={currentIndex}
+                            filteredTodos={filteredTodos}
+                            prevTodos={prevTodos}
+                            currentPrefix={prefix}
+                            mode={mode}
+                            onClick={handleClickDetailElement}
+                            onDelete={deleteTask}
+                        />
+                        <BottomMenu
+                            todos={todos}
+                            prevTodos={prevTodos}
+                            completionOnly={completionOnly}
+                            viewCompletionTask={viewCompletionTask}
+                            projects={exProjects}
+                            filteredProjects={filteredProjects}
+                            currentProjectId={currentProjectId}
+                            handleClickElement={handleClickElement}
+                            setViewCompletionTask={setViewCompletionTask}
+                            setCurrentProjectId={setCurrentProjectId}
+                            setMode={setMode}
+                            handleSetTodos={handleSetTodos}
+                            todoEnables={todoEnables}
+                        />
+                        {!loading &&
+                            <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
+                                <Usage
+                                    sort={sort}
+                                    mode={mode}
+                                    setHelp={setHelp}
+                                    isTodos={filteredTodos.length > 0}
+                                />
+                            </div>
+                        }
+                    </div >
                 </div >
             </DndContext >
         </>

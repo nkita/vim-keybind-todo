@@ -1,6 +1,6 @@
 import { TodoProps } from "@/types"
 import { Dispatch, MouseEvent, SetStateAction, useState } from "react"
-export const Text = (
+export const ListRowText = (
     {
         t,
         index,

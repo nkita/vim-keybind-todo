@@ -1,15 +1,15 @@
 'use client'
 
 import { useSortable } from "@dnd-kit/sortable"
-import { TableRow, TableCell } from "./ui/table"
+import { TableRow, TableCell } from "../ui/table"
 import { ChevronsUpDown, GripVertical } from "lucide-react"
 import { FaCircleCheck, FaRegCircle } from "react-icons/fa6"
 import { Star } from "lucide-react"
 import { StickyNote, Tag } from "lucide-react"
-import { Button } from "./ui/button"
-import { Text } from "./todo-list-text"
+import { Button } from "../ui/button"
+import { ListRowText } from "./list-row-text"
 import { find as lfind } from "lodash"
-import { SelectModal } from "./select-modal"
+import { SelectModal } from "../select-modal"
 import { LabelProps, Mode, ProjectProps, TodoProps } from "@/types"
 import { Box } from "lucide-react"
 import { SetStateAction } from "react"
@@ -66,7 +66,7 @@ export function TodoListRow({
         transition
     };
 
-    const rowH = "h-[35px]"
+    const rowH = "h-[33px]"
     return (
         <TableRow key={t.id}
             className={`${rowH} ${common_color_css} group outline-none`}
@@ -135,7 +135,7 @@ export function TodoListRow({
                     {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
                     {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
                     <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1">
-                        <Text
+                        <ListRowText
                             t={t}
                             index={index}
                             currentIndex={currentIndex}

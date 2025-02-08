@@ -124,22 +124,6 @@ const App = () => {
             <Gantt
                 tasks={[
                     {
-                        id: "1",
-                        name: "タスク1",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "2",
-                        name: "タスク2",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
                         id: "3",
                         name: "タスク2",
                         start: new Date(),
@@ -173,86 +157,6 @@ const App = () => {
                     },
                     {
                         id: "7",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
                         name: "タスク7",
                         start: new Date(),
                         end: end,

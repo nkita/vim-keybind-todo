@@ -1,5 +1,5 @@
 'use client'
-import React, { Dispatch, SetStateAction } from "react"
+import React, { Dispatch, SetStateAction, useEffect } from "react"
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { List } from "./list"
@@ -50,29 +50,28 @@ export const GanttcList = (
     const [isDragging, setIsDragging] = React.useState(false);
     const [dividerPosition, setDividerPosition] = React.useState(50);
     const containerRef = React.useRef<HTMLDivElement>(null);
+    const innerContainerRef = React.useRef<HTMLDivElement>(null);
 
     const handleMouseDown = (e: React.MouseEvent) => {
-        console.log("koko.")
         setIsDragging(true);
     };
 
     const handleMouseMove = React.useCallback((e: MouseEvent) => {
         if (!isDragging || !containerRef.current) return;
-
         const containerRect = containerRef.current.getBoundingClientRect();
         const newPosition = ((e.clientX - containerRect.left) / containerRect.width) * 100;
 
-        // 最小値と最大値を設定（20%から80%の間で制限）
-        const clampedPosition = Math.min(Math.max(newPosition, 20), 80);
-        console.log("koko.")
+        // containerRefの幅に基づいて制限（10%から80%の間）
+        const clampedPosition = Math.min(Math.max(newPosition, 10), 80);
         setDividerPosition(clampedPosition);
     }, [isDragging]);
+
 
     const handleMouseUp = React.useCallback(() => {
         setIsDragging(false);
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (isDragging) {
             window.addEventListener('mousemove', handleMouseMove);
             window.addEventListener('mouseup', handleMouseUp);
@@ -97,10 +96,11 @@ export const GanttcList = (
                     </div>
                 ) : (
                     <>
-                        <div ref={containerRef} className="h-full flex overflow-auto relative bg-yellow-200">
+                        <div ref={containerRef} className="h-full flex overflow-auto relative">
                             <div
-                                style={{ width: `${dividerPosition}%` }}
-                                className="h-full sticky left-0 z-20 shadow-md bg-yellow-100"
+                                ref={innerContainerRef}
+                                style={{ width: `${dividerPosition}%`, minWidth: `${dividerPosition}%` }}
+                                className="h-full sticky left-0 z-10 shadow-md"
                             >
                                 <div className="w-full h-[50px] border-y bg-muted sticky top-0 z-20 shadow-md"></div>
                                 <List
@@ -124,15 +124,14 @@ export const GanttcList = (
                                 />
                             </div>
                             <div
-                                className="absolute z-10 h-full w-1 bg-gray-200 cursor-col-resize hover:bg-gray-400 active:bg-gray-600"
-                                style={{ left: `${dividerPosition}%` }}
+                                className="fixed w-[2px] h-[87%] bg-gray-200 cursor-col-resize hover:bg-gray-400 active:bg-primary z-30"
+                                style={{ 
+                                    left: containerRef.current 
+                                        ? containerRef.current.getBoundingClientRect().left + (containerRef.current.clientWidth * dividerPosition / 100)
+                                        : 0,
+                                }}
                                 onMouseDown={handleMouseDown}
                             />
-                            {/*
-                    <div
-                        style={{ width: `${100 - dividerPosition}%`}}
-                        className=" overflow-x-auto h-full bg-yellow-200 z-20"
-                    > */}
                             <Ganttc />
                         </div>
                         <div className={`hidden sm:block bg-card text-accent-foreground rounded-b-sm`} />

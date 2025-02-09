@@ -11,12 +11,32 @@ import styles from "./ganttc/index.module.css";
 import commonStyles from "./ganttc/css/index.module.css";
 
 import "@nkita/gantt-task-react/dist/index.css";
+import { TodoProps } from "@/types";
+import { ProjectProps } from "@/types";
+import { LabelProps } from "@/types";
+import { TentTree } from "lucide-react";
 
 
 // Init
-const App = () => {
+const App = ({
+    filteredTodos,
+    currentIndex,
+    prefix,
+    mode,
+    exProjects,
+    exLabels,
+    currentProjectId,
+}: {
+    filteredTodos: TodoProps[]
+    currentIndex: number
+    prefix: string
+    mode: string
+    exProjects: ProjectProps[]
+    exLabels: LabelProps[]
+    currentProjectId: string
+}) => {
     const [view, setView] = useState<ViewMode>(ViewMode.Day);
-    const [tasks, setTasks] = useState<Task[]>(initTasks());
+    // const [tasks, setTasks] = useState<Task[]>(initTasks());
     // const [notifyType, setNotifyType] = useState("info");
     // const [notifyMessage, setNotifyMessage] = useState("");
     const [title, setTitle] = useState("");
@@ -54,11 +74,17 @@ const App = () => {
         columnWidth = 150;
     }
 
+
+    const tasks = filteredTodos.map((t) => ({
+        id: t.id,
+        name: t.text,
+        start: new Date(t.creationDate ?? new Date()),
+        end: new Date(t.completionDate ?? new Date()),
+        type: "task",
+        progress: t.is_complete ? 100 : 0,
+    }));
+
     //  First process. 
-    useEffect(() => {
-    }, [])
-
-
     const handleSave = (createNewGC: boolean = false) => {
     }
     // const escFunction = React.useCallback((event:any) => {
@@ -103,75 +129,25 @@ const App = () => {
     };
 
     const handleExpanderClick = (task: Task) => {
-        setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
+        // setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
         // console.log("On expander click Id:" + task.id);
     };
 
-    const closeProject = () => {
-        setTasks(tasks.map((t) => {
-            if (t.type === "project") {
-                t.hideChildren = true;
-            }
-            return t;
-        }));
-    };
 
     const end = new Date();
     end.setDate(end.getDate() + 1);
 
+    if (tasks.length === 0 || !tasks) {
+        return (
+            <div className="flex justify-center items-center h-full w-full text-muted-foreground">
+                <TentTree /> <span className="ml-2 ">No Data </span>
+            </div>
+        )
+    }
     return (
         <>
             <Gantt
-                tasks={[
-                    {
-                        id: "3",
-                        name: "タスク2",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "4",
-                        name: "タスク2",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "5",
-                        name: "タスク2",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "6",
-                        name: "タスク2",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "7",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    },
-                    {
-                        id: "17",
-                        name: "タスク7",
-                        start: new Date(),
-                        end: end,
-                        type: "task",
-                        progress: 0.5
-                    }
-                ]}
+                tasks={tasks}
                 viewMode={view}
                 TaskListHeader={TaskListHeader}
                 TaskListTable={TaskListColumn}
@@ -191,7 +167,6 @@ const App = () => {
                     progress: viewProgress
                 })}
                 // ganttHeight={((rowHeight * tasks.length + headerHeight) > windowHeight) ? (windowHeight - headerHeight) : 0}
-                ganttHeight={0}
                 columnWidth={columnWidth}
                 locale={"ja-JP"}
                 rowHeight={rowHeight}

@@ -1109,27 +1109,43 @@ export const Todo = (
                     {/* オーバーレイ */}
                     {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                     {/* オーバーレイ */}
-                    <div className={`w-full h-full`} onMouseDown={handleMainMouseDown}>
+                    <div className={`w-full h-full bg-muted`} onMouseDown={handleMainMouseDown}>
                         {todoMode === "Ganttc" &&
-                            <GanttcList
-                                filteredTodos={filteredTodos}
-                                currentIndex={currentIndex}
-                                prefix={prefix}
-                                mode={mode}
-                                exProjects={exProjects}
-                                exLabels={exLabels}
-                                currentProjectId={currentProjectId}
-                                sort={sort}
-                                loading={loading}
-                                todoMode={todoMode}
-                                onClick={handleClickElement}
-                                setCurrentIndex={setCurrentIndex}
-                                setExProjects={setExProjects}
-                                setExLabels={setExLabels}
-                                setIsComposing={setIsComposing}
-                                register={register}
-                                rhfSetValue={setValue}
-                            />
+                            <>
+                                <div
+                                    onTouchStart={handleTouchStart}
+                                    onTouchMove={handleTouchMove}
+                                    onTouchEnd={handleTouchEnd}
+                                    className={`z-20 h-[calc(100%-70px)]  w-full border-t sm:h-[calc(100%-30px)]`}>
+                                    <GanttcList
+                                        filteredTodos={filteredTodos}
+                                        currentIndex={currentIndex}
+                                        prefix={prefix}
+                                        mode={mode}
+                                        exProjects={exProjects}
+                                        exLabels={exLabels}
+                                        currentProjectId={currentProjectId}
+                                        sort={sort}
+                                        loading={loading}
+                                        todoMode={todoMode}
+                                        onClick={handleClickElement}
+                                        setCurrentIndex={setCurrentIndex}
+                                        setExProjects={setExProjects}
+                                        setExLabels={setExLabels}
+                                        setIsComposing={setIsComposing}
+                                        register={register}
+                                        rhfSetValue={setValue}
+                                    />
+                                </div>
+                                <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
+                                    {command ? (
+                                        <span>Line：{command}</span>
+                                    ) : (
+                                        <span>No：{currentIndex + 1}</span>
+                                    )}
+                                    {mode}
+                                </div>
+                            </>
                         }
                         {todoMode === "List" &&
                             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>

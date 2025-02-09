@@ -71,6 +71,18 @@ export const GanttcList = (
         setIsDragging(false);
     }, []);
 
+    // ウィンドウリサイズ時のハンドラーを追加
+    const handleResize = React.useCallback(() => {
+        console.log("handleResize")
+        if (containerRef.current) {
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const currentPixelPosition = containerRect.width * (dividerPosition / 100);
+            const newPosition = (currentPixelPosition / containerRect.width) * 100;
+            const clampedPosition = Math.min(Math.max(newPosition, 10), 80);
+            setDividerPosition(clampedPosition);
+        }
+    }, [dividerPosition]);
+
     useEffect(() => {
         if (isDragging) {
             window.addEventListener('mousemove', handleMouseMove);
@@ -81,6 +93,14 @@ export const GanttcList = (
             window.removeEventListener('mouseup', handleMouseUp);
         };
     }, [isDragging, handleMouseMove, handleMouseUp]);
+
+    // リサイズイベントリスナーを追加
+    useEffect(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [handleResize]);
 
     return (
         <>
@@ -102,7 +122,7 @@ export const GanttcList = (
                                 style={{ width: `${dividerPosition}%`, minWidth: `${dividerPosition}%` }}
                                 className="h-full sticky left-0 z-10 shadow-md"
                             >
-                                <div className="w-full h-[50px] border-y bg-muted sticky top-0 z-20 shadow-md"></div>
+                                <div className="w-full h-[50px] border-y bg-muted sticky top-0 z-20 shadow-sm"></div>
                                 <List
                                     filteredTodos={filteredTodos}
                                     currentIndex={currentIndex}
@@ -124,15 +144,23 @@ export const GanttcList = (
                                 />
                             </div>
                             <div
-                                className="fixed w-[2px] h-[87%] bg-gray-200 cursor-col-resize hover:bg-gray-400 active:bg-primary z-30"
-                                style={{ 
-                                    left: containerRef.current 
+                                className="fixed w-[4px] h-[calc(100%-140px)] cursor-col-resize hover:bg-primary/20 z-10"
+                                style={{
+                                    left: containerRef.current
                                         ? containerRef.current.getBoundingClientRect().left + (containerRef.current.clientWidth * dividerPosition / 100)
                                         : 0,
                                 }}
                                 onMouseDown={handleMouseDown}
                             />
-                            <Ganttc />
+                            <Ganttc
+                                filteredTodos={filteredTodos}
+                                currentIndex={currentIndex}
+                                prefix={prefix}
+                                mode={mode}
+                                exProjects={exProjects}
+                                exLabels={exLabels}
+                                currentProjectId={currentProjectId}
+                            />
                         </div>
                         <div className={`hidden sm:block bg-card text-accent-foreground rounded-b-sm`} />
                     </>

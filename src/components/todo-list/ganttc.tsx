@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Task, Configuration, MessageType, GanttList } from "./ganttc/common/types/public-types";
+import { Task, Configuration, MessageType, GanttList, TaskType } from "./ganttc/common/types/public-types";
 import { Gantt, ViewMode } from "@nkita/gantt-task-react";
 // import { PeriodSwitch } from "./ganttc/components/period-switch";
 // import { AddTaskForm } from "./ganttc/components/add-task-form";
+import { yyyymmddhhmmss } from "@/lib/time";
 import { convertToggle2Flag, getStartEndDateForProject, initTasks, removeLocalStorageData, useWindowHeight } from "./ganttc/helper";
 import { TaskListHeader } from "./ganttc/components/task-list-header";
 import { TaskListColumn } from "./ganttc/components/task-list-table";
@@ -26,6 +27,7 @@ const App = ({
     exProjects,
     exLabels,
     currentProjectId,
+    onChangePeriod,
 }: {
     filteredTodos: TodoProps[]
     currentIndex: number
@@ -34,6 +36,7 @@ const App = ({
     exProjects: ProjectProps[]
     exLabels: LabelProps[]
     currentProjectId: string
+    onChangePeriod: (todoId: string, startDate: string, endDate: string) => void
 }) => {
     const [view, setView] = useState<ViewMode>(ViewMode.Day);
     // const [tasks, setTasks] = useState<Task[]>(initTasks());
@@ -78,9 +81,9 @@ const App = ({
     const tasks = filteredTodos.map((t) => ({
         id: t.id,
         name: t.text,
-        start: new Date(t.creationDate ?? new Date()),
-        end: new Date(t.completionDate ?? new Date()),
-        type: "task",
+        start: new Date(t.startDate ?? new Date()),
+        end: new Date(t.endDate ?? new Date()),
+        type: "task" as TaskType,
         progress: t.is_complete ? 100 : 0,
     }));
 
@@ -99,6 +102,8 @@ const App = ({
     // }, []);
 
     const handleTaskChange = (task: Task) => {
+        console.log("handleTaskChange", task)
+        onChangePeriod(task.id, yyyymmddhhmmss(task.start), yyyymmddhhmmss(task.end))
     };
 
     const handleTaskAdd = (task: Task) => {

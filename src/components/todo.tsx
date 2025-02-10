@@ -266,6 +266,9 @@ export const Todo = (
             projectId: getValues(`edit-list-projectId-${targetTodoId}`),
             labelId: getValues(`edit-list-labelId-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
+            startDate: targetTodo.startDate,
+            endDate: targetTodo.endDate,
+            inProgress: targetTodo.inProgress,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
         }
@@ -299,6 +302,9 @@ export const Todo = (
             detail: filteredTodos[index].detail,
             sort: filteredTodos[index].sort,
             indent: filteredTodos[index].indent,
+            startDate: filteredTodos[index].startDate,
+            endDate: filteredTodos[index].endDate,
+            inProgress: filteredTodos[index].inProgress,
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -327,6 +333,9 @@ export const Todo = (
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
+            startDate: targetTodo.startDate,
+            endDate: targetTodo.endDate,
+            inProgress: targetTodo.inProgress,
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -349,6 +358,9 @@ export const Todo = (
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: indent,
+            startDate: targetTodo.startDate,
+            endDate: targetTodo.endDate,
+            inProgress: targetTodo.inProgress,
         })
         handleSetTodos(_todos, prevTodos)
     }
@@ -359,6 +371,20 @@ export const Todo = (
     }
 
     const keepPosition = (filteredTodos: TodoProps[], currentIndex: number, id?: string) => setKeepPositionId(id ? id : filteredTodos.length > 0 ? filteredTodos[currentIndex].id : undefined)
+
+    const changePeriod = (todoId: string, todos: TodoProps[], prevTodos: TodoProps[], startDate: string, endDate: string) => {
+        const _todos = todos.map(t => {
+            if (t.id === todoId) {
+                return { ...t, startDate: startDate, endDate: endDate }
+            }
+            return t
+        })
+        handleSetTodos(_todos, prevTodos)
+    }
+    const handlePeriodChange = (todoId: string, startDate: string, endDate: string) => {
+        toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
+        changePeriod(todoId, todos, prevTodos, startDate, endDate)
+    }
 
     /** hotkeys  */
     useHotkeys('*', (e) => {
@@ -615,7 +641,10 @@ export const Todo = (
                 id: newId,
                 creationDate: yyyymmddhhmmss(new Date()),
                 text: getValues(`newtask`),
-                projectId: currentProjectId
+                projectId: currentProjectId,
+                startDate: yyyymmddhhmmss(new Date()),
+                endDate: yyyymmddhhmmss(new Date(new Date().setHours(23, 59, 59))),
+                inProgress: 0,
             }
             if (!todoFunc.isEmpty(newtask)) {
                 handleSetTodos([newtask, ...todos], prevTodos)
@@ -1010,6 +1039,7 @@ export const Todo = (
         }
     };
 
+
     return (
         <>
             <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
@@ -1135,6 +1165,7 @@ export const Todo = (
                                         setIsComposing={setIsComposing}
                                         register={register}
                                         rhfSetValue={setValue}
+                                        onChangePeriod={handlePeriodChange}
                                     />
                                 </div>
                                 <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">

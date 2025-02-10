@@ -7,45 +7,47 @@ import Ganttc from "./ganttc"
 import { ResizableHandle, ResizablePanel } from "../ui/resizable"
 import { ResizablePanelGroup } from "../ui/resizable"
 
-export const GanttcList = (
-    {
-        filteredTodos,
-        currentIndex,
-        prefix,
-        mode,
-        exProjects,
-        exLabels,
-        currentProjectId,
-        sort,
-        loading,
-        onClick,
-        todoMode,
-        setIsComposing,
-        setCurrentIndex,
-        setExProjects,
-        setExLabels,
-        register,
-        rhfSetValue,
-    }: {
-        filteredTodos: TodoProps[]
-        currentIndex: number
-        prefix: string
-        mode: Mode
-        exProjects: ProjectProps[]
-        exLabels: LabelProps[]
-        currentProjectId: string
-        sort: Sort
-        loading: Boolean
-        todoMode: string
-        onClick: (id: number, prefix: string) => void
-        setIsComposing: Dispatch<SetStateAction<boolean>>
-        setCurrentIndex: Dispatch<SetStateAction<number>>
-        setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
-        setExLabels: Dispatch<SetStateAction<LabelProps[]>>
-        register: UseFormRegister<FieldValues>
-        rhfSetValue: UseFormSetValue<FieldValues>
-    }
-) => {
+interface GanttcListProps {
+    filteredTodos: TodoProps[]
+    currentIndex: number
+    prefix: string
+    mode: Mode
+    exProjects: ProjectProps[]
+    exLabels: LabelProps[]
+    currentProjectId: string
+    sort: Sort
+    loading: Boolean
+    todoMode: string
+    onClick: (id: number, prefix: string) => void
+    setIsComposing: Dispatch<SetStateAction<boolean>>
+    setCurrentIndex: Dispatch<SetStateAction<number>>
+    setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
+    setExLabels: Dispatch<SetStateAction<LabelProps[]>>
+    register: UseFormRegister<FieldValues>
+    rhfSetValue: UseFormSetValue<FieldValues>
+    onChangePeriod: (todoId: string, startDate: string, endDate: string) => void
+}
+
+export const GanttcList = ({
+    filteredTodos,
+    currentIndex,
+    prefix,
+    mode,
+    exProjects,
+    exLabels,
+    currentProjectId,
+    sort,
+    loading,
+    onClick,
+    todoMode,
+    setIsComposing,
+    setCurrentIndex,
+    setExProjects,
+    setExLabels,
+    register,
+    rhfSetValue,
+    onChangePeriod
+}: GanttcListProps) => {
     const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
     const [isDragging, setIsDragging] = React.useState(false);
     const [dividerPosition, setDividerPosition] = React.useState(50);
@@ -144,7 +146,7 @@ export const GanttcList = (
                                 />
                             </div>
                             <div
-                                className="fixed w-[4px] h-[calc(100%-140px)] cursor-col-resize hover:bg-primary/20 z-10"
+                                className="fixed w-[4px] h-[calc(100%-125px)] cursor-col-resize hover:bg-primary/20 z-10"
                                 style={{
                                     left: containerRef.current
                                         ? containerRef.current.getBoundingClientRect().left + (containerRef.current.clientWidth * dividerPosition / 100)
@@ -160,6 +162,7 @@ export const GanttcList = (
                                 exProjects={exProjects}
                                 exLabels={exLabels}
                                 currentProjectId={currentProjectId}
+                                onChangePeriod={onChangePeriod}
                             />
                         </div>
                         <div className={`hidden sm:block bg-card text-accent-foreground rounded-b-sm`} />

@@ -30,6 +30,9 @@ export const todoFunc = {
                     projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
+                    startDate: yyyymmddhhmmss(new Date(new Date().setHours(0, 0, 0))),
+                    endDate: yyyymmddhhmmss(new Date(new Date().setHours(23, 59, 59))),
+                    inProgress: 0,
                 },
                 ...todos.slice(index === 0 ? 0 : todos.length)
             ]
@@ -48,6 +51,9 @@ export const todoFunc = {
                     projectId: options.projectId ?? "",
                     is_complete: false,
                     indent: options.indent ?? 0,
+                    startDate: yyyymmddhhmmss(new Date(new Date().setHours(0, 0, 0))),
+                    endDate: yyyymmddhhmmss(new Date(new Date().setHours(23, 59, 59))),
+                    inProgress: 0,
                 },
                 ...todos.slice(_index + 1)
             ]
@@ -66,6 +72,9 @@ export const todoFunc = {
             labelId: t.id === replace.id ? replace.labelId : t.labelId,
             sort: t.id === replace.id ? replace.sort : t.sort,
             indent: t.id === replace.id ? replace.indent : t.indent,
+            startDate: t.id === replace.id ? replace.startDate : t.startDate,
+            endDate: t.id === replace.id ? replace.endDate : t.endDate,
+            inProgress: t.id === replace.id ? replace.inProgress : t.inProgress,
         }
     }),
     /**

@@ -8,6 +8,9 @@ export interface TodoProps {
     detail?: string
     projectId?: string    // +projctId
     labelId?: string    // @labelId
+    startDate: string
+    endDate: string
+    inProgress?: number
     isArchived?: boolean
     sort?: number
     limitDate?: string

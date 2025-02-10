@@ -382,7 +382,9 @@ export const Todo = (
         handleSetTodos(_todos, prevTodos)
     }
     const handlePeriodChange = (todoId: string, startDate: string, endDate: string) => {
-        toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
+        if (mode !== "normal") {
+            toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
+        }
         changePeriod(todoId, todos, prevTodos, startDate, endDate)
     }
 
@@ -582,6 +584,46 @@ export const Todo = (
     useHotkeys(keymap['unIndnet'].keys, (e) => {
         indentTask(todos, prevTodos, filteredTodos[currentIndex].id, 'minus')
     }, setKeyEnableDefine(keymap['unIndnet'].enable), [todos, prevTodos, filteredTodos, currentIndex])
+
+    /*******************
+     * 
+     * Ganttc mode
+     * 
+     *******************/
+    useHotkeys(keymap['expandEndDate'].keys, (e) => {
+        const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
+        currentEndDate.setDate(currentEndDate.getDate() + 1)
+        const endDate = currentEndDate.toISOString().split('T')[0]
+        handlePeriodChange(filteredTodos[currentIndex].id, filteredTodos[currentIndex].startDate, endDate)
+    }, setKeyEnableDefine(keymap['expandEndDate'].enable), [filteredTodos, currentIndex])
+
+    useHotkeys(keymap['shrinkEndDate'].keys, (e) => {
+        const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
+        currentEndDate.setDate(currentEndDate.getDate() - 1)
+        const endDate = currentEndDate.toISOString().split('T')[0]
+        handlePeriodChange(filteredTodos[currentIndex].id, filteredTodos[currentIndex].startDate, endDate)
+    }, setKeyEnableDefine(keymap['shrinkEndDate'].enable), [filteredTodos, currentIndex])
+
+    useHotkeys(keymap['shiftPeriodForward'].keys, (e) => {
+        const currentStartDate = new Date(filteredTodos[currentIndex].startDate)
+        const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
+        currentStartDate.setDate(currentStartDate.getDate() + 1)
+        currentEndDate.setDate(currentEndDate.getDate() + 1)
+        const startDate = currentStartDate.toISOString().split('T')[0]
+        const endDate = currentEndDate.toISOString().split('T')[0]
+        handlePeriodChange(filteredTodos[currentIndex].id, startDate, endDate)
+    }, setKeyEnableDefine(keymap['shiftPeriodForward'].enable), [filteredTodos, currentIndex])
+
+    useHotkeys(keymap['shiftPeriodBackward'].keys, (e) => {
+        const currentStartDate = new Date(filteredTodos[currentIndex].startDate)
+        const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
+        currentStartDate.setDate(currentStartDate.getDate() - 1)
+        currentEndDate.setDate(currentEndDate.getDate() - 1)
+        const startDate = currentStartDate.toISOString().split('T')[0]
+        const endDate = currentEndDate.toISOString().split('T')[0]
+        handlePeriodChange(filteredTodos[currentIndex].id, startDate, endDate)
+    }, setKeyEnableDefine(keymap['shiftPeriodBackward'].enable), [filteredTodos, currentIndex])
+
 
     /*******************
      * 

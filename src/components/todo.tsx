@@ -1263,7 +1263,7 @@ export const Todo = (
                                         <></>
                                     ) : (
                                         <>
-                                            <div className={`w-full h-full z-20`}>
+                                            <div className={`w-full h-full z-20 overflow-y-auto scroll-bar`}>
                                                 {(!filteredTodos[currentIndex] || !filteredTodos[currentIndex].text) &&
                                                     <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
                                                         <TentTree className="w-7 h-7" />

@@ -266,8 +266,8 @@ export const Todo = (
             projectId: getValues(`edit-list-projectId-${targetTodoId}`),
             labelId: getValues(`edit-list-labelId-${targetTodoId}`),
             detail: getValues(`edit-content-detail-${targetTodoId}`) ?? "",
-            startDate: targetTodo.startDate,
-            endDate: targetTodo.endDate,
+            startDate: targetTodo.startDate ?? yyyymmddhhmmss(new Date(new Date(targetTodo.creationDate || new Date()).setHours(0, 0, 0))),
+            endDate: targetTodo.endDate ?? yyyymmddhhmmss(new Date(new Date(targetTodo.creationDate || new Date()).setHours(23, 59, 59))),
             inProgress: targetTodo.inProgress,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
@@ -302,8 +302,8 @@ export const Todo = (
             detail: filteredTodos[index].detail,
             sort: filteredTodos[index].sort,
             indent: filteredTodos[index].indent,
-            startDate: filteredTodos[index].startDate,
-            endDate: filteredTodos[index].endDate,
+            startDate: filteredTodos[index].startDate ?? yyyymmddhhmmss(new Date(new Date(filteredTodos[index].creationDate || new Date()).setHours(0, 0, 0))),
+            endDate: filteredTodos[index].endDate ?? yyyymmddhhmmss(new Date(new Date(filteredTodos[index].creationDate || new Date()).setHours(23, 59, 59))),
             inProgress: filteredTodos[index].inProgress,
         })
         handleSetTodos(_todos, prevTodos)
@@ -333,8 +333,8 @@ export const Todo = (
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: targetTodo.indent,
-            startDate: targetTodo.startDate,
-            endDate: targetTodo.endDate,
+            startDate: targetTodo.startDate ?? yyyymmddhhmmss(new Date(new Date(targetTodo.creationDate || new Date()).setHours(0, 0, 0))),
+            endDate: targetTodo.endDate ?? yyyymmddhhmmss(new Date(new Date(targetTodo.creationDate || new Date()).setHours(23, 59, 59))),
             inProgress: targetTodo.inProgress,
         })
         handleSetTodos(_todos, prevTodos)
@@ -358,8 +358,8 @@ export const Todo = (
             detail: targetTodo.detail,
             sort: targetTodo.sort,
             indent: indent,
-            startDate: targetTodo.startDate,
-            endDate: targetTodo.endDate,
+            startDate: targetTodo.startDate ?? yyyymmddhhmmss(new Date(new Date(targetTodo.creationDate || new Date()).setHours(0, 0, 0))),
+            endDate: targetTodo.endDate ?? yyyymmddhhmmss(new Date(new Date(targetTodo.creationDate || new Date()).setHours(23, 59, 59))),
             inProgress: targetTodo.inProgress,
         })
         handleSetTodos(_todos, prevTodos)
@@ -1163,7 +1163,7 @@ export const Todo = (
                         </div>
                         <div className="relative flex gap-2 items-center px-2">
                             {!loading && !isLocalMode && isSave !== undefined && isUpdate !== undefined && onClickSaveButton !== undefined && user &&
-                                <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => onClickSaveButton} disabled={!isUpdate}>
+                                <Button variant={"default"} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90" onClick={onClickSaveButton} disabled={!isUpdate}>
                                     {(isSave && isUpdate) ? (
                                         <SimpleSpinner className="border-primary-foreground h-4 w-4 p-1 border-t-transparent" />
                                     ) : (

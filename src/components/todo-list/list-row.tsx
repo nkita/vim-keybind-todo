@@ -209,6 +209,9 @@ export function TodoListRow({
                             }}>編集</Button>
                     </div>
                 </div>
+                {/* <div className="text-4sm px-2 text-muted-foreground">
+                    {t.startDate.split(' ')[0]} - {t.endDate.split(' ')[0]}
+                </div> */}
             </TableCell>
         </TableRow >
     );

@@ -1,7 +1,7 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useContext } from "react"
+import { useState, useEffect, useContext, useRef, useMemo, useCallback } from "react"
 import { TodoProps, SaveTodosReturnProps, ProjectProps, LabelProps } from "@/types"
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchTodo, postFetch, useFetchProjects, useFetchLabels } from "@/lib/fetch";
@@ -99,8 +99,7 @@ export default function Home() {
     }
   }, [fetch_labels, config, labelsLoading])
 
-  const handleSaveTodos = async (
-    todos: TodoProps[],
+  const handleSaveTodos = async (todos: TodoProps[],
     prevTodos: TodoProps[],
     listID: string | null,
     token: string | null,
@@ -123,15 +122,46 @@ export default function Home() {
     }
   }
 
-  /**
-   * オートセーブ
-   * */
-  const saveTodos = debounce((todos, prevTodos, listID, token, isUpdate) => handleSaveTodos(todos, prevTodos, listID, token, isUpdate), 5000)
+  // isUpdateの参照を保持するref
+  const isUpdateRef = useRef(isUpdate);
+  const isSaveRef = useRef(isSave);
+
+  // isUpdateが変更されたらrefを更新
+  useEffect(() => {
+    isUpdateRef.current = isUpdate;
+    isSaveRef.current = isSave;
+  }, [isUpdate, isSave]);
+
+  const debouncedSave = useMemo(
+    () => debounce((
+      todos: TodoProps[],
+      prevTodos: TodoProps[],
+      listID: string | null,
+      token: string | null
+    ) => {
+      if (isUpdateRef.current && !isSaveRef.current) {
+        handleSaveTodos(todos, prevTodos, listID, token, true);
+      }
+    }, 5000),
+    [] // 依存配列を空に
+  );
+
+  const saveTodos = useCallback(
+    (todos: TodoProps[], prevTodos: TodoProps[], listID: string | null, token: string | null) => {
+      debouncedSave(todos, prevTodos, listID, token);
+    },
+    [debouncedSave]
+  );
 
   useEffect(() => {
-    if (config.token && config.list && isUpdate) {
-      saveTodos(todos, prevTodos, config.list, config.token, isUpdate)
+    if (config.token && config.list && isUpdate && !isSave) {
+      // isUpdateを引数から除去
+      saveTodos(todos, prevTodos, config.list, config.token);
     }
+  }, [todos, config.token, config.list, isUpdate, isSave, saveTodos, prevTodos]);
+
+  // エラー処理用のuseEffect
+  useEffect(() => {
     if (config.error && !isError) {
       toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
       setIsError(true)
@@ -141,8 +171,7 @@ export default function Home() {
       setIsError(false)
       toast.success("エラーが解消されました。", { duration: 5000, description: "画面更新してください。" })
     }
-  }, [saveTodos, isUpdate, todos, config, prevTodos, isError])
-  //***
+  }, [config.error, isError]);
 
   useEffect(() => {
     if (!userLoading && !user && isUpdate) {

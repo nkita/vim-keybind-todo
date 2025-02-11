@@ -102,7 +102,6 @@ const App = ({
     // }, []);
 
     const handleTaskChange = (task: Task) => {
-        console.log("handleTaskChange", task)
         onChangePeriod(task.id, yyyymmddhhmmss(task.start), yyyymmddhhmmss(task.end))
     };
 

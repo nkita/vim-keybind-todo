@@ -23,7 +23,6 @@ export const List = (
         sort,
         loading,
         onClick,
-        todoMode,
         setIsComposing,
         setCurrentIndex,
         setExProjects,
@@ -40,7 +39,6 @@ export const List = (
         currentProjectId: string
         sort: Sort
         loading: Boolean
-        todoMode: string
         onClick: (id: number, prefix: string) => void
         setIsComposing: Dispatch<SetStateAction<boolean>>
         setCurrentIndex: Dispatch<SetStateAction<number>>
@@ -97,7 +95,7 @@ export const List = (
         set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
     }, [currentProjectId])
     return (
-        <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${todoMode === "List" ? hcssMainHeight : ""} table-scrollbar`} index={currentIndex}>
+        <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"}  ${hcssMainHeight} table-scrollbar`} index={currentIndex}>
             <TableBody className=" text-sm border-b">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>

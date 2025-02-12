@@ -16,7 +16,6 @@ interface GanttcListProps {
     currentProjectId: string
     sort: Sort
     loading: Boolean
-    todoMode: string
     onClick: (id: number, prefix: string) => void
     setIsComposing: Dispatch<SetStateAction<boolean>>
     setCurrentIndex: Dispatch<SetStateAction<number>>
@@ -38,7 +37,6 @@ export const GanttcList = ({
     sort,
     loading,
     onClick,
-    todoMode,
     setIsComposing,
     setCurrentIndex,
     setExProjects,
@@ -107,7 +105,7 @@ export const GanttcList = ({
             <div className="h-full">
                 {loading ? (
 
-                    <div className={`flex justify-center items-center w-full ${todoMode === "List" ? hcssMainHeight : ""} bg-muted border-y-0 `}>
+                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">
                             <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                                 <span className="animate-bounce">Loading...</span>
@@ -135,7 +133,6 @@ export const GanttcList = ({
                                         sort={sort}
                                         loading={loading}
                                         onClick={onClick}
-                                        todoMode={todoMode}
                                         setIsComposing={setIsComposing}
                                         setCurrentIndex={setCurrentIndex}
                                         setExProjects={setExProjects}

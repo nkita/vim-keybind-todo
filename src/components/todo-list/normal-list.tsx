@@ -16,7 +16,6 @@ export const NormalList = (
         sort,
         loading,
         onClick,
-        todoMode,
         setIsComposing,
         setCurrentIndex,
         setExProjects,
@@ -33,7 +32,6 @@ export const NormalList = (
         currentProjectId: string
         sort: Sort
         loading: Boolean
-        todoMode: string
         onClick: (id: number, prefix: string) => void
         setIsComposing: Dispatch<SetStateAction<boolean>>
         setCurrentIndex: Dispatch<SetStateAction<number>>
@@ -50,7 +48,7 @@ export const NormalList = (
         <>
             <div className="h-full ">
                 {loading &&
-                    <div className={`flex justify-center items-center w-full ${todoMode === "List" ? hcssMainHeight : ""} bg-muted border-y-0 `}>
+                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">
                             <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                                 <span className="animate-bounce">Loading...</span>
@@ -69,7 +67,6 @@ export const NormalList = (
                     sort={sort}
                     loading={loading}
                     onClick={onClick}
-                    todoMode={todoMode}
                     setIsComposing={setIsComposing}
                     setCurrentIndex={setCurrentIndex}
                     setExProjects={setExProjects}

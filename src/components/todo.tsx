@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff } from "lucide-react"
+import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, BarChart, List, BarChart2, GanttChart, LineChart, ListTodo } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -48,7 +48,6 @@ export const Todo = (
         isSave,
         isUpdate,
         isLocalMode,
-        todoMode,
         setTodos,
         setExProjects,
         setExLabels,
@@ -64,7 +63,6 @@ export const Todo = (
         isSave: boolean
         isUpdate: boolean
         isLocalMode: boolean
-        todoMode: "List" | "Ganttc"
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -73,14 +71,14 @@ export const Todo = (
     }
 ) => {
     const [command, setCommand] = useState("")
-    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage(todoMode + ":is_view_completion", true)
+    const [viewCompletionTask, setViewCompletionTask] = useLocalStorage("is_view_completion", true)
     const [currentIndex, setCurrentIndex] = useState<number>(0)
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
     const [prefix, setPrefix] = useState('text')
-    const [currentProjectId, setCurrentProjectId] = useLocalStorage(todoMode + ":current_project_id", "")
-
+    const [currentProjectId, setCurrentProjectId] = useLocalStorage("current_project_id", "")
+    const [displayMode, setDisplayMode] = useLocalStorage<"List" | "Ganttc">("display_mode", "List")
     const [mode, setMode] = useState<Mode>('normal')
-    const [sort, setSort] = useLocalStorage<Sort>(todoMode + ":sort-ls-key", undefined)
+    const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
     const [filteredTodos, setFilteredTodos] = useState<TodoProps[]>(todos)
     const [filteredProjects, setFilteredProjects] = useState<ProjectProps[]>(exProjects)
 
@@ -90,10 +88,10 @@ export const Todo = (
     })
     const [historyTodos, setHistoryTodos] = useState<TodoProps[][]>([])
     const [undoCount, setUndoCount] = useState(0)
-    const [isHelp, setHelp] = useLocalStorage(todoMode + ":is_help", false)
+    const [isHelp, setHelp] = useLocalStorage("is_help", false)
     const [isLastPosition, setIsLastPosition] = useState(false)
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
-    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage(todoMode + ":is_open_right_panel", true)
+    const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("is_open_right_panel", true)
     const resizeRef = useRef<ImperativePanelHandle>(null);
 
     const { register, setFocus, getValues, setValue, watch } = useForm()
@@ -587,20 +585,26 @@ export const Todo = (
 
     /*******************
      * 
-     * Ganttc mode
+     * Display Ganttc mode
      * 
      *******************/
+    useHotkeys(keymap['changeDisplayMode'].keys, (e) => {
+        setDisplayMode(displayMode === "Ganttc" ? "List" : "Ganttc")
+    }, setKeyEnableDefine(keymap['changeDisplayMode'].enable), [displayMode])
+
     useHotkeys(keymap['expandEndDate'].keys, (e) => {
         const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
         currentEndDate.setDate(currentEndDate.getDate() + 1)
-        const endDate = currentEndDate.toISOString().split('T')[0]
+        currentEndDate.setHours(23, 59, 59)
+        const endDate = currentEndDate.toString()
         handlePeriodChange(filteredTodos[currentIndex].id, filteredTodos[currentIndex].startDate, endDate)
     }, setKeyEnableDefine(keymap['expandEndDate'].enable), [filteredTodos, currentIndex])
 
     useHotkeys(keymap['shrinkEndDate'].keys, (e) => {
         const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
         currentEndDate.setDate(currentEndDate.getDate() - 1)
-        const endDate = currentEndDate.toISOString().split('T')[0]
+        currentEndDate.setHours(23, 59, 59)
+        const endDate = currentEndDate.toString()
         handlePeriodChange(filteredTodos[currentIndex].id, filteredTodos[currentIndex].startDate, endDate)
     }, setKeyEnableDefine(keymap['shrinkEndDate'].enable), [filteredTodos, currentIndex])
 
@@ -609,8 +613,10 @@ export const Todo = (
         const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
         currentStartDate.setDate(currentStartDate.getDate() + 1)
         currentEndDate.setDate(currentEndDate.getDate() + 1)
-        const startDate = currentStartDate.toISOString().split('T')[0]
-        const endDate = currentEndDate.toISOString().split('T')[0]
+        currentStartDate.setHours(0, 0, 0)
+        currentEndDate.setHours(23, 59, 59)
+        const startDate = currentStartDate.toString()
+        const endDate = currentEndDate.toString()
         handlePeriodChange(filteredTodos[currentIndex].id, startDate, endDate)
     }, setKeyEnableDefine(keymap['shiftPeriodForward'].enable), [filteredTodos, currentIndex])
 
@@ -619,8 +625,10 @@ export const Todo = (
         const currentEndDate = new Date(filteredTodos[currentIndex].endDate)
         currentStartDate.setDate(currentStartDate.getDate() - 1)
         currentEndDate.setDate(currentEndDate.getDate() - 1)
-        const startDate = currentStartDate.toISOString().split('T')[0]
-        const endDate = currentEndDate.toISOString().split('T')[0]
+        currentStartDate.setHours(0, 0, 0)
+        currentEndDate.setHours(23, 59, 59)
+        const startDate = currentStartDate.toString()
+        const endDate = currentEndDate.toString()
         handlePeriodChange(filteredTodos[currentIndex].id, startDate, endDate)
     }, setKeyEnableDefine(keymap['shiftPeriodBackward'].enable), [filteredTodos, currentIndex])
 
@@ -684,7 +692,7 @@ export const Todo = (
                 creationDate: yyyymmddhhmmss(new Date()),
                 text: getValues(`newtask`),
                 projectId: currentProjectId,
-                startDate: yyyymmddhhmmss(new Date()),
+                startDate: yyyymmddhhmmss(new Date(new Date().setHours(0, 0, 0))),
                 endDate: yyyymmddhhmmss(new Date(new Date().setHours(23, 59, 59))),
                 inProgress: 0,
             }
@@ -1134,31 +1142,20 @@ export const Todo = (
                                 <MenuButton label="ヘルプ表示/非表示" onClick={() => setHelp(prev => !prev)} ><CircleHelp size={16} /></MenuButton>
                             </div>
                             <div className="hidden sm:block">
-                                <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} >
+                                <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} disabled={displayMode === "Ganttc"} >
                                     <Columns size={16} />
                                 </MenuButton>
                             </div>
                             <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
-                            <div>
-                                {loading ? (
-                                    <SimpleSpinner className="h-4 w-4 border-t-transparent p-1" />
-                                ) : (
-                                    <>
-                                        {isLocalMode ? (
-                                            <MenuButton
-                                                className="hover:border-transparent hover:cursor-default"
-                                                label={`ローカルモード`}
-                                                description={`オンラインモードへの切り替えは\n時間をおいてから再度画面更新をお試しください。`}
-                                                onClick={() => { }} ><CloudOff className="text-muted-foreground" size={16} /></MenuButton>
-                                        ) : (
-                                            <MenuButton
-                                                className="hover:border-transparent hover:cursor-default"
-                                                label="オンラインモード"
-                                                description={`入力したタスク情報はしばらく立つと自動的にクラウド上へ保存します。\n「保存」ボタンクリックですぐに保存することも可能です。`}
-                                                onClick={() => { }} ><Cloud className="text-primary2" size={16} /></MenuButton>
-                                        )}
-                                    </>
-                                )}
+                            <div className="hidden sm:block">
+                                <MenuButton
+                                    className={`${displayMode === "List" ? "bg-accent text-accent-foreground" : ""}`}
+                                    label="リストモード" description={`表示モードをリスト形式に切り替えます。 \n [g]キーで表示モードを交互に切り替えます。`} onClick={() => setDisplayMode("List")} ><ListTodo size={16} /></MenuButton>
+                            </div>
+                            <div className="hidden sm:block">
+                                <MenuButton
+                                    className={`${displayMode === "Ganttc" ? "bg-accent text-accent-foreground" : ""}`}
+                                    label="ガントチャートモード" description={`表示モードをガントチャート形式に切り替えます。 \n [g]キーで表示モードを交互に切り替えます。`} onClick={() => setDisplayMode("Ganttc")} ><GanttChart size={16} /></MenuButton>
                             </div>
                         </div>
                         <div className="relative flex gap-2 items-center px-2">
@@ -1182,7 +1179,7 @@ export const Todo = (
                     {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                     {/* オーバーレイ */}
                     <div className={`w-full h-[calc(100%-70px)] bg-muted sm:h-[calc(100%-30px)]`} onMouseDown={handleMainMouseDown}>
-                        {todoMode === "Ganttc" &&
+                        {displayMode === "Ganttc" &&
                             <>
                                 <div
                                     onTouchStart={handleTouchStart}
@@ -1199,7 +1196,6 @@ export const Todo = (
                                         currentProjectId={currentProjectId}
                                         sort={sort}
                                         loading={loading}
-                                        todoMode={todoMode}
                                         onClick={handleClickElement}
                                         setCurrentIndex={setCurrentIndex}
                                         setExProjects={setExProjects}
@@ -1212,7 +1208,7 @@ export const Todo = (
                                 </div>
                             </>
                         }
-                        {todoMode === "List" &&
+                        {displayMode === "List" &&
                             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                                 <ResizablePanel defaultSize={60} minSize={20} className={` relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
                                     <div
@@ -1230,7 +1226,6 @@ export const Todo = (
                                             currentProjectId={currentProjectId}
                                             sort={sort}
                                             loading={loading}
-                                            todoMode={todoMode}
                                             onClick={handleClickElement}
                                             setCurrentIndex={setCurrentIndex}
                                             setExProjects={setExProjects}
@@ -1254,7 +1249,7 @@ export const Todo = (
                                                         タスクを追加、または選択してください。
                                                     </div>
                                                 }
-                                                {todoMode === "List" && filteredTodos[currentIndex] && filteredTodos[currentIndex].text &&
+                                                {displayMode === "List" && filteredTodos[currentIndex] && filteredTodos[currentIndex].text &&
                                                     <div className="border-t">
                                                         <Detail
                                                             todo={filteredTodos[currentIndex]}
@@ -1282,7 +1277,30 @@ export const Todo = (
                             ) : (
                                 <span>No：{currentIndex + 1}</span>
                             )}
-                            {mode}
+                            <div className="flex items-center gap-2">
+                                {mode}
+                                <div>
+                                    {loading ? (
+                                        <SimpleSpinner className="h-4 w-4 border-t-transparent p-1" />
+                                    ) : (
+                                        <>
+                                            {isLocalMode ? (
+                                                <MenuButton
+                                                    className="hover:border-transparent hover:cursor-default"
+                                                    label={`ローカルモード`}
+                                                    description={`オンラインモードへの切り替えは\n時間をおいてから再度画面更新をお試しください。`}
+                                                    onClick={() => { }} ><CloudOff className="text-muted-foreground" size={16} /></MenuButton>
+                                            ) : (
+                                                <MenuButton
+                                                    className="hover:border-transparent hover:cursor-default"
+                                                    label="オンラインモード"
+                                                    description={`入力したタスク情報はしばらく立つと自動的にクラウド上へ保存します。\n「保存」ボタンクリックですぐに保存することも可能です。`}
+                                                    onClick={() => { }} ><Cloud className="text-primary2" size={16} /></MenuButton>
+                                            )}
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                         <DeleteModal
                             currentIndex={currentIndex}

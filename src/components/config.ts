@@ -65,6 +65,7 @@ export type Keymap = {
     shrinkEndDate: KeymapItem;
     shiftPeriodForward: KeymapItem;
     shiftPeriodBackward: KeymapItem;
+    changeDisplayMode: KeymapItem;
 };
 
 export const keymap: Keymap = {
@@ -402,28 +403,34 @@ export const keymap: Keymap = {
         keys: ['shift+ArrowUp'],
         keysDisp: ['shift+↑'],
         enable: { mode: ["normal"], useKey: true },
-        type: ["other"],
+        type: ["edit"],
         description: "終了日を伸ばす"
     },
     shrinkEndDate: {
         keys: ['shift+ArrowDown'],
         keysDisp: ['shift+↓'],
         enable: { mode: ["normal"], useKey: true },
-        type: ["other"],
+        type: ["edit"],
         description: "終了日を縮める"
     },
     shiftPeriodForward: {
         keys: ['shift+ArrowRight'],
         keysDisp: ['shift+→'],
         enable: { mode: ["normal"], useKey: true },
-        type: ["other"],
+        type: ["edit"],
         description: "期間を先にずらす"
     },
     shiftPeriodBackward: {
         keys: ['shift+ArrowLeft'],
         keysDisp: ['shift+←'],
         enable: { mode: ["normal"], useKey: true },
-        type: ["other"],
+        type: ["edit"],
         description: "期間を後ろにずらす"
+    },
+    changeDisplayMode: {
+        keys: ['g'],
+        enable: { mode: ["normal"] },
+        type: ["view"],
+        description: "表示モードを切り替える"
     }
 }

@@ -90,14 +90,8 @@ export function AppSidebar() {
                         <SidebarGroupLabel>Menu</SidebarGroupLabel>
                         <SidebarMenuItem>
                             <ExSidebarMenuButton href="/app/t">
-                                <ListTodo />
-                                <span>リスト</span>
-                            </ExSidebarMenuButton>
-                        </SidebarMenuItem>
-                        <SidebarMenuItem>
-                            <ExSidebarMenuButton href="/app/c">
-                                <GanttChart />
-                                <span>ガントチャート</span>
+                                <Bike />
+                                <span>タスク管理</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
                         <SidebarMenuItem>

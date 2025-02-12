@@ -4,8 +4,7 @@ import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { List } from "./list"
 import Ganttc from "./ganttc"
-import { ResizableHandle, ResizablePanel } from "../ui/resizable"
-import { ResizablePanelGroup } from "../ui/resizable"
+import { useLocalStorage } from "@/hook/useLocalStrorage"
 
 interface GanttcListProps {
     filteredTodos: TodoProps[]
@@ -50,7 +49,7 @@ export const GanttcList = ({
 }: GanttcListProps) => {
     const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
     const [isDragging, setIsDragging] = React.useState(false);
-    const [dividerPosition, setDividerPosition] = React.useState(50);
+    const [dividerPosition, setDividerPosition] = useLocalStorage("ganttc-divider-position", 50)
     const containerRef = React.useRef<HTMLDivElement>(null);
     const innerContainerRef = React.useRef<HTMLDivElement>(null);
 
@@ -66,7 +65,7 @@ export const GanttcList = ({
         // containerRefの幅に基づいて制限（10%から80%の間）
         const clampedPosition = Math.min(Math.max(newPosition, 10), 80);
         setDividerPosition(clampedPosition);
-    }, [isDragging]);
+    }, [isDragging, setDividerPosition]);
 
 
     const handleMouseUp = React.useCallback(() => {
@@ -75,7 +74,6 @@ export const GanttcList = ({
 
     // ウィンドウリサイズ時のハンドラーを追加
     const handleResize = React.useCallback(() => {
-        console.log("handleResize")
         if (containerRef.current) {
             const containerRect = containerRef.current.getBoundingClientRect();
             const currentPixelPosition = containerRect.width * (dividerPosition / 100);
@@ -83,7 +81,7 @@ export const GanttcList = ({
             const clampedPosition = Math.min(Math.max(newPosition, 10), 80);
             setDividerPosition(clampedPosition);
         }
-    }, [dividerPosition]);
+    }, [dividerPosition, setDividerPosition]);
 
     useEffect(() => {
         if (isDragging) {

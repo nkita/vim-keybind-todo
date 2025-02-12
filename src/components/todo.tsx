@@ -1181,14 +1181,14 @@ export const Todo = (
                     {/* オーバーレイ */}
                     {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                     {/* オーバーレイ */}
-                    <div className={`w-full h-full bg-muted`} onMouseDown={handleMainMouseDown}>
+                    <div className={`w-full h-[calc(100%-70px)] bg-muted sm:h-[calc(100%-30px)]`} onMouseDown={handleMainMouseDown}>
                         {todoMode === "Ganttc" &&
                             <>
                                 <div
                                     onTouchStart={handleTouchStart}
                                     onTouchMove={handleTouchMove}
                                     onTouchEnd={handleTouchEnd}
-                                    className={`z-20 h-[calc(100%-70px)]  w-full border-t sm:h-[calc(100%-30px)]`}>
+                                    className={`z-20 h-full w-full border-t `}>
                                     <GanttcList
                                         filteredTodos={filteredTodos}
                                         currentIndex={currentIndex}
@@ -1210,24 +1210,16 @@ export const Todo = (
                                         onChangePeriod={handlePeriodChange}
                                     />
                                 </div>
-                                <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
-                                    {command ? (
-                                        <span>Line：{command}</span>
-                                    ) : (
-                                        <span>No：{currentIndex + 1}</span>
-                                    )}
-                                    {mode}
-                                </div>
                             </>
                         }
                         {todoMode === "List" &&
                             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
-                                <ResizablePanel defaultSize={60} minSize={20} className={`relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
+                                <ResizablePanel defaultSize={60} minSize={20} className={` relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
                                     <div
                                         onTouchStart={handleTouchStart}
                                         onTouchMove={handleTouchMove}
                                         onTouchEnd={handleTouchEnd}
-                                        className={`z-20 h-[calc(100%-70px)]  w-full border-t sm:h-[calc(100%-30px)]`}>
+                                        className={`z-20  w-full border-t h-full`}>
                                         <NormalList
                                             filteredTodos={filteredTodos}
                                             currentIndex={currentIndex}
@@ -1247,14 +1239,6 @@ export const Todo = (
                                             register={register}
                                             rhfSetValue={setValue}
                                         />
-                                    </div>
-                                    <div className="h-[30px] flex items-center justify-between w-full bg-card border-y text-xs px-2">
-                                        {command ? (
-                                            <span>Line：{command}</span>
-                                        ) : (
-                                            <span>No：{currentIndex + 1}</span>
-                                        )}
-                                        {mode}
                                     </div>
                                 </ResizablePanel>
                                 <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
@@ -1292,6 +1276,14 @@ export const Todo = (
                                 </ResizablePanel>
                             </ResizablePanelGroup>
                         }
+                        <div className="h-[30px] items-center justify-between w-full bg-card border-y text-xs px-2 hidden sm:flex">
+                            {command ? (
+                                <span>Line：{command}</span>
+                            ) : (
+                                <span>No：{currentIndex + 1}</span>
+                            )}
+                            {mode}
+                        </div>
                         <DeleteModal
                             currentIndex={currentIndex}
                             filteredTodos={filteredTodos}

@@ -97,7 +97,7 @@ export const List = (
         set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
     }, [currentProjectId])
     return (
-        <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${todoMode === "List" ? hcssMainHeight : ""} bg-muted table-scrollbar`} index={currentIndex}>
+        <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"} ${todoMode === "List" ? hcssMainHeight : ""} table-scrollbar`} index={currentIndex}>
             <TableBody className=" text-sm border-b">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>

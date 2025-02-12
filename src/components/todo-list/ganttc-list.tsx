@@ -123,28 +123,30 @@ export const GanttcList = ({
                                 className="h-full sticky left-0 z-10 shadow-md"
                             >
                                 <div className="w-full h-[50px] border-y bg-muted sticky top-0 z-20 shadow-sm"></div>
-                                <List
-                                    filteredTodos={filteredTodos}
-                                    currentIndex={currentIndex}
-                                    prefix={prefix}
-                                    mode={mode}
-                                    exProjects={exProjects}
-                                    exLabels={exLabels}
-                                    currentProjectId={currentProjectId}
-                                    sort={sort}
-                                    loading={loading}
-                                    onClick={onClick}
-                                    todoMode={todoMode}
-                                    setIsComposing={setIsComposing}
-                                    setCurrentIndex={setCurrentIndex}
-                                    setExProjects={setExProjects}
-                                    setExLabels={setExLabels}
-                                    register={register}
-                                    rhfSetValue={rhfSetValue}
-                                />
+                                <div className="w-full h-[calc(100%-50px)]">
+                                    <List
+                                        filteredTodos={filteredTodos}
+                                        currentIndex={currentIndex}
+                                        prefix={prefix}
+                                        mode={mode}
+                                        exProjects={exProjects}
+                                        exLabels={exLabels}
+                                        currentProjectId={currentProjectId}
+                                        sort={sort}
+                                        loading={loading}
+                                        onClick={onClick}
+                                        todoMode={todoMode}
+                                        setIsComposing={setIsComposing}
+                                        setCurrentIndex={setCurrentIndex}
+                                        setExProjects={setExProjects}
+                                        setExLabels={setExLabels}
+                                        register={register}
+                                        rhfSetValue={rhfSetValue}
+                                    />
+                                </div>
                             </div>
                             <div
-                                className="fixed w-[4px] h-[calc(100%-125px)] cursor-col-resize hover:bg-primary/20 z-10"
+                                className="fixed w-[4px] h-[calc(100%-125px)] cursor-col-resize z-10"
                                 style={{
                                     left: containerRef.current
                                         ? containerRef.current.getBoundingClientRect().left + (containerRef.current.clientWidth * dividerPosition / 100)

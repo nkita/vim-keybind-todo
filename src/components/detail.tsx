@@ -155,7 +155,7 @@ export const Detail = ({
                         <div className="h-[3rem]" />
                     </div>
                     <div
-                        className={`absolute h-[3rem] bottom-0 border-t-2 border-muted border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
+                        className={`absolute h-[3rem] bottom-0 border-muted border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
                         <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                     </div>
                     <div className="h-16 sm:h-0"></div>

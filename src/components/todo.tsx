@@ -379,11 +379,13 @@ export const Todo = (
         })
         handleSetTodos(_todos, prevTodos)
     }
-    const handlePeriodChange = (todoId: string, startDate: string, endDate: string) => {
+    const handlePeriodChange = (todoId: string, startDate: Date, endDate: Date) => {
         if (mode !== "normal") {
             toNormalMode(todos, prevTodos, mode, filteredTodos, currentIndex)
         }
-        changePeriod(todoId, todos, prevTodos, startDate, endDate)
+        const startDateStr = yyyymmddhhmmss(startDate)
+        const endDateStr = yyyymmddhhmmss(endDate)
+        changePeriod(todoId, todos, prevTodos, startDateStr, endDateStr)
     }
 
     /** hotkeys  */
@@ -597,7 +599,7 @@ export const Todo = (
         currentEndDate.setDate(currentEndDate.getDate() + 1)
         currentEndDate.setHours(23, 59, 59)
         const endDate = currentEndDate.toString()
-        handlePeriodChange(filteredTodos[currentIndex].id, filteredTodos[currentIndex].startDate, endDate)
+        handlePeriodChange(filteredTodos[currentIndex].id, new Date(filteredTodos[currentIndex].startDate), new Date(endDate))
     }, setKeyEnableDefine(keymap['expandEndDate'].enable), [filteredTodos, currentIndex])
 
     useHotkeys(keymap['shrinkEndDate'].keys, (e) => {
@@ -605,7 +607,7 @@ export const Todo = (
         currentEndDate.setDate(currentEndDate.getDate() - 1)
         currentEndDate.setHours(23, 59, 59)
         const endDate = currentEndDate.toString()
-        handlePeriodChange(filteredTodos[currentIndex].id, filteredTodos[currentIndex].startDate, endDate)
+        handlePeriodChange(filteredTodos[currentIndex].id, new Date(filteredTodos[currentIndex].startDate), new Date(endDate))
     }, setKeyEnableDefine(keymap['shrinkEndDate'].enable), [filteredTodos, currentIndex])
 
     useHotkeys(keymap['shiftPeriodForward'].keys, (e) => {
@@ -617,7 +619,7 @@ export const Todo = (
         currentEndDate.setHours(23, 59, 59)
         const startDate = currentStartDate.toString()
         const endDate = currentEndDate.toString()
-        handlePeriodChange(filteredTodos[currentIndex].id, startDate, endDate)
+        handlePeriodChange(filteredTodos[currentIndex].id, new Date(startDate), new Date(endDate))
     }, setKeyEnableDefine(keymap['shiftPeriodForward'].enable), [filteredTodos, currentIndex])
 
     useHotkeys(keymap['shiftPeriodBackward'].keys, (e) => {
@@ -629,7 +631,7 @@ export const Todo = (
         currentEndDate.setHours(23, 59, 59)
         const startDate = currentStartDate.toString()
         const endDate = currentEndDate.toString()
-        handlePeriodChange(filteredTodos[currentIndex].id, startDate, endDate)
+        handlePeriodChange(filteredTodos[currentIndex].id, new Date(startDate), new Date(endDate))
     }, setKeyEnableDefine(keymap['shiftPeriodBackward'].enable), [filteredTodos, currentIndex])
 
 
@@ -1215,7 +1217,7 @@ export const Todo = (
                                         onTouchStart={handleTouchStart}
                                         onTouchMove={handleTouchMove}
                                         onTouchEnd={handleTouchEnd}
-                                        className={`z-20  w-full border-t h-full`}>
+                                        className={`z-20 w-full border-t h-full`}>
                                         <NormalList
                                             filteredTodos={filteredTodos}
                                             currentIndex={currentIndex}

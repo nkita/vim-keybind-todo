@@ -23,7 +23,7 @@ interface GanttcListProps {
     setExLabels: Dispatch<SetStateAction<LabelProps[]>>
     register: UseFormRegister<FieldValues>
     rhfSetValue: UseFormSetValue<FieldValues>
-    onChangePeriod: (todoId: string, startDate: string, endDate: string) => void
+    onChangePeriod: (todoId: string, startDate: Date, endDate: Date) => void
 }
 
 export const GanttcList = ({
@@ -114,7 +114,7 @@ export const GanttcList = ({
                     </div>
                 ) : (
                     <>
-                        <div ref={containerRef} className="h-full flex overflow-auto relative">
+                        <div ref={containerRef} className="h-full flex overflow-auto scrollbar relative">
                             <div
                                 ref={innerContainerRef}
                                 style={{ width: `${dividerPosition}%`, minWidth: `${dividerPosition}%` }}
@@ -137,6 +137,7 @@ export const GanttcList = ({
                                         setCurrentIndex={setCurrentIndex}
                                         setExProjects={setExProjects}
                                         setExLabels={setExLabels}
+                                        onChangePeriod={onChangePeriod}
                                         register={register}
                                         rhfSetValue={rhfSetValue}
                                     />

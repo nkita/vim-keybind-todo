@@ -29,6 +29,7 @@ export const List = (
         setExLabels,
         register,
         rhfSetValue,
+        onChangePeriod,
     }: {
         filteredTodos: TodoProps[]
         currentIndex: number
@@ -46,6 +47,7 @@ export const List = (
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
         register: UseFormRegister<FieldValues>
         rhfSetValue: UseFormSetValue<FieldValues>
+        onChangePeriod?: (todoId: string, startDate: Date, endDate: Date) => void
     }
 ) => {
 
@@ -163,6 +165,7 @@ export const List = (
                                                     exProjects={exProjects}
                                                     onClick={onClick}
                                                     setCurrentIndex={setCurrentIndex}
+                                                    onChangePeriod={onChangePeriod}
                                                     common_color_css={common_color_css}
                                                     register={register}
                                                     rhfSetValue={rhfSetValue}

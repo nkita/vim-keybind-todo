@@ -36,7 +36,7 @@ const App = ({
     exProjects: ProjectProps[]
     exLabels: LabelProps[]
     currentProjectId: string
-    onChangePeriod: (todoId: string, startDate: string, endDate: string) => void
+    onChangePeriod: (todoId: string, startDate: Date, endDate: Date) => void
 }) => {
     const [view, setView] = useState<ViewMode>(ViewMode.Day);
     // const [tasks, setTasks] = useState<Task[]>(initTasks());
@@ -102,7 +102,7 @@ const App = ({
     // }, []);
 
     const handleTaskChange = (task: Task) => {
-        onChangePeriod(task.id, yyyymmddhhmmss(task.start), yyyymmddhhmmss(task.end))
+        onChangePeriod(task.id, task.start, task.end)
     };
 
     const handleTaskAdd = (task: Task) => {

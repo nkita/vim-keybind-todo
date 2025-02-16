@@ -176,6 +176,10 @@ const App = ({
                 rowHeight={rowHeight}
                 timeStep={86400000}
                 fontFamily={"proxima-nova, 'Helvetica Neue', Helvetica, Arial, sans-serif,'proxima-nova','Helvetica Neue',Helvetica,Arial,sans-serif"}
+                // todayColor="#E0F2FE" // bg-sky-100
+                holidayColor="rgba(230, 230, 230, 0.5)"
+                currentLineColor="rgba(224, 242, 254, 0.7)"
+                currentLineTaskId={filteredTodos[currentIndex] ? filteredTodos[currentIndex].id : ""}
             />
         </>
     );

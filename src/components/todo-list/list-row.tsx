@@ -282,7 +282,7 @@ const PopupCalendar = ({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <div className="border flex items-center gap-1 p-1 rounded-md bg-card/50 backdrop-blur-md hover:cursor-pointer hover:border-primary transition-all duration-200">
+                <div className="flex items-center gap-1 p-1 rounded-md bg-card/50 backdrop-blur-md hover:cursor-pointer border border-transparent hover:border-primary transition-all duration-200">
                     <CalendarDays className="w-4 h-4" />
                     <span className="w-8 text-center">{formatDate(t.startDate)}</span> - <span className="w-8 text-center">{formatDateWithWarning(t.endDate)}</span>
                 </div>
@@ -301,37 +301,6 @@ const PopupCalendar = ({
                             <Button size={"sm"} className="w-full" onClick={handleSave}>保存</Button>
                         </div>
                     </div>
-                    {/* <div className="relative w-full h-full">
-                        <span className="text-sm pt-4 pb-1 block px-1">From</span>
-                        <div className="flex w-[200px] gap-2 overflow-x-auto table-scrollbar">
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>明日</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>明後日</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>3日後</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>4日後</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>5日後</Button>
-                        </div>
-                        <span className="text-sm pt-4 pb-1 block px-1">To</span>
-                        <div className="flex w-[200px] gap-2 overflow-x-auto table-scrollbar">
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>明日</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>明後日</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>3日後</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>4日後</Button>
-                            <Button size={"sm"} variant={"outline"} onClick={_ => { }}>5日後</Button>
-                        </div>
-                        <span className="text-sm pt-4 pb-1 block px-1">期間(日)</span>
-                        <Input type="number" className="w-[200px] h-[30px] rounded-md border-none" onFocus={e => {
-                            e.target.select()
-                        }} value={duration} onChange={e => {
-                            console.log(e.target.value)
-                            setDuration(Number(e.target.value))
-                        }} />
-                        <div className="absolute bottom-0 w-full">
-                            <div className="flex justify-between gap-2">
-                                <Button size={"sm"} className="w-full" variant={"secondary"} onClick={_ => { }}>キャンセル</Button>
-                                <Button size={"sm"} className="w-full" onClick={_ => { }}>保存</Button>
-                            </div>
-                        </div>
-                    </div> */}
                 </div>
             </PopoverContent>
         </Popover>

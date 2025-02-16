@@ -56,6 +56,7 @@ export const NormalList = (
                         </div>
                     </div>
                 }
+                <div className="w-full h-[50px] border-y bg-muted sticky top-0 z-20 shadow-sm"></div>
                 <List
                     filteredTodos={filteredTodos}
                     currentIndex={currentIndex}

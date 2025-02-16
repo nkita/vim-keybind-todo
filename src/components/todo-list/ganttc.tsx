@@ -143,9 +143,13 @@ const App = ({
 
     if (tasks.length === 0 || !tasks) {
         return (
-            <div className="flex justify-center items-center h-full w-full text-muted-foreground">
-                <TentTree /> <span className="ml-2 ">No Data </span>
+            <div className="flex flex-col justify-center items-center h-full w-full text-muted-foreground bg-card">
+                <TentTree className="w-7 h-7" />
+                タスクを追加、または選択してください。
             </div>
+            // <div className="flex justify-center items-center h-full w-full text-muted-foreground">
+            //     <TentTree /> <span className="ml-2 ">No Data </span>
+            // </div>
         )
     }
     return (

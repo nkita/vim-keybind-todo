@@ -1244,7 +1244,7 @@ export const Todo = (
                                         <></>
                                     ) : (
                                         <>
-                                            <div className={`w-full h-full z-20 overflow-y-auto scroll-bar`}>
+                                            <div className={`w-full h-full z-20 overflow-y-auto scroll-bar border-t`}>
                                                 {(!filteredTodos[currentIndex] || !filteredTodos[currentIndex].text) &&
                                                     <div className="flex flex-col items-center text-muted-foreground justify-center h-full">
                                                         <TentTree className="w-7 h-7" />
@@ -1252,20 +1252,18 @@ export const Todo = (
                                                     </div>
                                                 }
                                                 {displayMode === "List" && filteredTodos[currentIndex] && filteredTodos[currentIndex].text &&
-                                                    <div className="border-t">
-                                                        <Detail
-                                                            todo={filteredTodos[currentIndex]}
-                                                            exProjects={exProjects}
-                                                            exLabels={exLabels}
-                                                            prefix={prefix}
-                                                            mode={mode}
-                                                            onMouseDownEvent={handleDetailMouseDown}
-                                                            onClick={handleClickDetailElement}
-                                                            setValue={setValue}
-                                                            watch={watch}
-                                                            register={register}
-                                                        />
-                                                    </div>
+                                                    <Detail
+                                                        todo={filteredTodos[currentIndex]}
+                                                        exProjects={exProjects}
+                                                        exLabels={exLabels}
+                                                        prefix={prefix}
+                                                        mode={mode}
+                                                        onMouseDownEvent={handleDetailMouseDown}
+                                                        onClick={handleClickDetailElement}
+                                                        setValue={setValue}
+                                                        watch={watch}
+                                                        register={register}
+                                                    />
                                                 }
                                             </div>
                                         </>

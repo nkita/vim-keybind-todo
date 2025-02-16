@@ -22,6 +22,7 @@ export const List = (
         currentProjectId,
         sort,
         loading,
+        displayMode,
         onClick,
         setIsComposing,
         setCurrentIndex,
@@ -40,6 +41,7 @@ export const List = (
         currentProjectId: string
         sort: Sort
         loading: Boolean
+        displayMode?: string
         onClick: (id: number, prefix: string) => void
         setIsComposing: Dispatch<SetStateAction<boolean>>
         setCurrentIndex: Dispatch<SetStateAction<number>>
@@ -97,7 +99,7 @@ export const List = (
         set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
     }, [currentProjectId])
     return (
-        <Table className={`w-full overflow-x-hidden sm:overflow-x-auto ${loading && "hidden"}  ${hcssMainHeight} table-scrollbar`} index={currentIndex}>
+        <Table index={currentIndex}>
             <TableBody className=" text-sm border-b">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
@@ -127,7 +129,7 @@ export const List = (
                     <>
                         {filteredTodos.length === 0 ? (
                             <TableRow className="text-center  text-muted-foreground text-xs">
-                                <TableCell className="p-2 border-none"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
+                                <TableCell className="p-4 border-none bg-card"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
                             </TableRow>
                         ) : (
                             <>
@@ -175,6 +177,7 @@ export const List = (
                                                     setIsComposing={setIsComposing}
                                                     table_completion_width={table_completion_width}
                                                     table_task_width={table_task_width}
+                                                    displayMode={displayMode}
                                                 />
                                             )
                                         })

@@ -118,30 +118,28 @@ export const GanttcList = ({
                             <div
                                 ref={innerContainerRef}
                                 style={{ width: `${dividerPosition}%`, minWidth: `${dividerPosition}%` }}
-                                className="h-full sticky left-0 z-10 shadow-md"
+                                className="w-full sticky left-0 z-10 shadow-md"
                             >
-                                <div className="w-full h-[50px] border-y bg-muted sticky top-0 z-20 shadow-sm"></div>
-                                <div className="w-full h-[calc(100%-50px)]">
-                                    <List
-                                        filteredTodos={filteredTodos}
-                                        currentIndex={currentIndex}
-                                        prefix={prefix}
-                                        mode={mode}
-                                        exProjects={exProjects}
-                                        exLabels={exLabels}
-                                        currentProjectId={currentProjectId}
-                                        sort={sort}
-                                        loading={loading}
-                                        onClick={onClick}
-                                        setIsComposing={setIsComposing}
-                                        setCurrentIndex={setCurrentIndex}
-                                        setExProjects={setExProjects}
-                                        setExLabels={setExLabels}
-                                        onChangePeriod={onChangePeriod}
-                                        register={register}
-                                        rhfSetValue={rhfSetValue}
-                                    />
-                                </div>
+                                <div className="w-full h-[50px] border-y bg-card sticky top-0 z-20 shadow-sm"></div>
+                                <List
+                                    filteredTodos={filteredTodos}
+                                    currentIndex={currentIndex}
+                                    prefix={prefix}
+                                    mode={mode}
+                                    exProjects={exProjects}
+                                    exLabels={exLabels}
+                                    currentProjectId={currentProjectId}
+                                    sort={sort}
+                                    loading={loading}
+                                    onClick={onClick}
+                                    setIsComposing={setIsComposing}
+                                    setCurrentIndex={setCurrentIndex}
+                                    setExProjects={setExProjects}
+                                    setExLabels={setExLabels}
+                                    onChangePeriod={onChangePeriod}
+                                    register={register}
+                                    rhfSetValue={rhfSetValue}
+                                />
                             </div>
                             <div
                                 className="fixed w-[4px] h-[calc(100%-125px)] cursor-col-resize z-10"

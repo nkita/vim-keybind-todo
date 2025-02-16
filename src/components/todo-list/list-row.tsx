@@ -32,6 +32,7 @@ export function TodoListRow({
     nextTabIndent,
     prefix,
     mode,
+    displayMode,
     currentProjectId,
     exLabels,
     exProjects,
@@ -47,6 +48,7 @@ export function TodoListRow({
         nextTabIndent: number
         prefix: string
         mode: Mode
+        displayMode: string
         currentProjectId: string
         setIsComposing: Dispatch<SetStateAction<boolean>>
         onChangePeriod?: (todoId: string, startDate: Date, endDate: Date) => void
@@ -163,8 +165,8 @@ export function TodoListRow({
                             label={t.text}
                             register={register} />
                         {t.detail && !(mode === "edit" && currentIndex === index) &&
-                            <span className={`hidden sm:flex font-light  items-center text-5sm  text-primary p-1`}>
-                                <StickyNote className="h-3 w-3" />
+                            <span className={`hidden sm:flex font-light gap-1  items-center text-5sm px-2  text-primary rounded-full border border-primary`}>
+                                <StickyNote className="h-3 w-3" />メモ有
                             </span>
                         }
                         {t.labelId && !(mode === "edit" && currentIndex === index) &&

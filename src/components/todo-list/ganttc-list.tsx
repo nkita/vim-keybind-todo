@@ -5,6 +5,7 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { List } from "./list"
 import Ganttc from "./ganttc"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
+import { GanttChart } from "lucide-react"
 
 interface GanttcListProps {
     filteredTodos: TodoProps[]
@@ -120,7 +121,10 @@ export const GanttcList = ({
                                 style={{ width: `${dividerPosition}%`, minWidth: `${dividerPosition}%` }}
                                 className="w-full sticky left-0 z-10 shadow-md"
                             >
-                                <div className="w-full h-[50px] border-y bg-card sticky top-0 z-20 shadow-sm"></div>
+                                <div className="flex text-muted-foreground text-xs items-center justify-between w-full h-[50px] border-b bg-card/80 backdrop-blur-sm sticky top-0 z-20 shadow-sm">
+                                    <span className="px-4 items-center gap-2 flex"><GanttChart className="w-4 h-4" />ガントチャートモード</span>
+                                    {/* <span className="px-4">タイトル / 期間</span> */}
+                                </div>
                                 <List
                                     filteredTodos={filteredTodos}
                                     currentIndex={currentIndex}

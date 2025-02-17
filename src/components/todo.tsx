@@ -1180,7 +1180,7 @@ export const Todo = (
                     {/* オーバーレイ */}
                     {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
                     {/* オーバーレイ */}
-                    <div className={`w-full h-[calc(100%-70px)] bg-muted sm:h-[calc(100%-30px)]`} onMouseDown={handleMainMouseDown}>
+                    <div className={`w-full h-[calc(100%-70px)] sm:h-[calc(100%-30px)]`} onMouseDown={handleMainMouseDown}>
                         {displayMode === "Ganttc" &&
                             <>
                                 <div

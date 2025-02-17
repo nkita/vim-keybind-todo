@@ -149,7 +149,7 @@ export function TodoListRow({
                     }
                     {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
                     {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
-                    <div className=" w-full pr-2 sm:pr-0 flex items-center gap-1">
+                    <div className=" w-full pr-2 sm:pr-0 flex items-center gap-2">
                         <ListRowText
                             t={t}
                             index={index}
@@ -175,6 +175,12 @@ export function TodoListRow({
                                 {lfind(exLabels, { id: t.labelId })?.name}
                             </span>
                         }
+                        {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
+                            <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
+                                <Box className="h-3 w-3" />
+                                {lfind(exProjects, { id: t.projectId })?.name}
+                            </span>
+                        }
                         <SelectModal
                             t={t}
                             index={index}
@@ -190,12 +196,6 @@ export function TodoListRow({
                             saveCloud={saveNewLabels}
                             title={"ラベル"}
                             onClick={onClick} />
-                        {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
-                            <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
-                                <Box className="h-3 w-3" />
-                                {lfind(exProjects, { id: t.projectId })?.name}
-                            </span>
-                        }
                         <SelectModal
                             t={t}
                             index={index}

@@ -137,7 +137,7 @@ export function TodoListRow({
                     }
                     {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
                     {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
-                    <div className="relative w-full pr-2 sm:pr-0 flex items-center gap-1 ">
+                    <div className="relative w-full pr-2 sm:pr-0 flex items-center gap-3 ">
                         <ListRowText
                             t={t}
                             index={index}
@@ -154,20 +154,21 @@ export function TodoListRow({
                         {displayMode === "normal" &&
                             <>
                                 {t.detail &&
-                                    <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center text-5sm px-2  text-muted-foreground underline`}>
-                                        <StickyNote className="h-3 w-3" />メモあり
+                                    <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center text-6sm px-2  text-muted-foreground border rounded-full`}>
+                                        <StickyNote className="h-3 w-3" />メモ
                                     </span>
                                 }
                                 {(t.labelId || (!currentProjectId && t.projectId)) &&
-                                    <div className="flex border border-primary/50 rounded-full">
-                                        <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center text-5sm px-2 text-ex-label`}>
-                                            <Tag className="h-3 w-3" />
-                                            {lfind(exLabels, { id: t.labelId })?.name}
-                                        </span>
-                                        {!currentProjectId &&
+                                    <div className="flex border rounded-full px-2 shadow-sm text-6sm">
+                                        {t.labelId &&
+                                            <span className={`whitespace-nowrap hidden sm:flex gap-1 pr-2  items-center  text-ex-label`}>
+                                                <Tag className="h-3 w-3" />
+                                                {lfind(exLabels, { id: t.labelId })?.name}
+                                            </span>
+                                        }
+                                        {!currentProjectId && t.projectId &&
                                             <>
-                                                <span className="text-muted-foreground/30 px-1">/</span>
-                                                <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center  rounded-full text-5sm px-2 text-ex-project`}>
+                                                <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center  rounded-full text-ex-project`}>
                                                     <Box className="h-3 w-3" />
                                                     {lfind(exProjects, { id: t.projectId })?.name}
                                                 </span>
@@ -272,20 +273,31 @@ const PopupCalendar = ({
     t: TodoProps
     onChangePeriod: (todoId: string, startDate: Date, endDate: Date) => void
 }) => {
+    const [open, setOpen] = useState(false)
     const [date, setDate] = useState<DateRange | undefined>({
         from: new Date(t.startDate),
         to: new Date(t.endDate)
     })
-    const [duration, setDuration] = useState(dayjs(t.endDate).diff(dayjs(t.startDate), 'day'))
+    
+    const handleCancel = () => {
+        setDate({
+            from: new Date(t.startDate),
+            to: new Date(t.endDate)
+        })
+        setOpen(false)
+    }
+    
     const handleSave = () => {
         const startDate = date?.from ?? new Date()
         const endDate = date?.to ?? new Date()
         startDate.setHours(0, 0, 0, 0)
         endDate.setHours(23, 59, 59, 999)
         onChangePeriod(t.id, startDate, endDate)
+        setOpen(false)
     }
+    
     return (
-        <Popover>
+        <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
                 <div className="flex items-center justify-center gap-1 rounded-md bg-card/50 px-2 backdrop-blur-xl hover:cursor-pointer border border-transparent hover:border-primary transition-all duration-200">
                     <CalendarDays className="w-3 h-3" />
@@ -302,7 +314,7 @@ const PopupCalendar = ({
                             className="rounded-md border-none"
                         />
                         <div className="flex justify-between gap-2">
-                            <Button size={"sm"} className="w-full" variant={"secondary"} onClick={_ => { }}>キャンセル</Button>
+                            <Button size={"sm"} className="w-full" variant={"secondary"} onClick={handleCancel}>キャンセル</Button>
                             <Button size={"sm"} className="w-full" onClick={handleSave}>保存</Button>
                         </div>
                     </div>

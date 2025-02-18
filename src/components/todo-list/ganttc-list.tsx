@@ -125,7 +125,7 @@ export const GanttcList = ({
                                     <span className="px-4 items-center gap-2 flex"><GanttChart className="w-4 h-4" />ガントチャートモード</span>
                                     {/* <span className="px-4">タイトル / 期間</span> */}
                                 </div>
-                                <div className="overflow-x-scroll">
+                                <div className="overflow-x-scroll table-scrollbar">
                                     <List
                                         filteredTodos={filteredTodos}
                                         currentIndex={currentIndex}

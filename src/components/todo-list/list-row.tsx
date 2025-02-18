@@ -48,7 +48,7 @@ export function TodoListRow({
         nextTabIndent: number
         prefix: string
         mode: Mode
-        displayMode: string
+        displayMode?: string
         currentProjectId: string
         setIsComposing: Dispatch<SetStateAction<boolean>>
         onChangePeriod?: (todoId: string, startDate: Date, endDate: Date) => void
@@ -94,28 +94,16 @@ export function TodoListRow({
                 e.stopPropagation()
                 e.preventDefault()
             }}>
-            <TableCell className={`
-                     sticky left-0 
-                     text-sm text-right 
-                     z-10 ${rowH}
-                     p-0 m-0 ${table_idx_width}
-                    `}
-                {...listeners}
-            >
-                <div className={` 
-                         relative
-                         pl-2 pr-1 w-[2.0rem] flex items-center h-full
-                         ${common_color_css}
-                         hover:cursor-grab 
-                         `}
-                >
+            <TableCell className={`sticky left-0 text-sm text-right z-10 ${rowH} p-0 m-0 ${table_idx_width}`} {...listeners}>
+                <div className={`relative pl-2 pr-1 w-[2.0rem] flex items-center h-full ${common_color_css} hover:cursor-grab`}>
                     <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-100 opacity-0 transition-all duration-200 overflow-hidden">
                         <GripVertical className="w-4 h-4 text-muted-foreground" />
                     </span>
                     <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-0 opacity-100 transition-all duration-200 overflow-hidden">
                         {index + 1}
                     </span>
-                </div></TableCell>
+                </div>
+            </TableCell>
             <TableCell onClick={_ => onClick(index, 'completion')} className={` ${table_completion_width} group hover:cursor-pointer`}>
                 <div className="flex w-ful justify-center">
                     {mode === "select" && currentIndex === index ? (
@@ -127,8 +115,8 @@ export function TodoListRow({
                     )}
                 </div>
             </TableCell>
-            <TableCell className={`${table_task_width} relative`}>
-                <div className="flex w-[calc(100%-20px)] sm:w-full h-full justify-between  items-center">
+            <TableCell>
+                <div className="flex w-full h-full justify-between  items-center relative">
                     <span className="text-primary/90 flex text-md">
                         {t.indent !== undefined &&
                             <>
@@ -149,7 +137,7 @@ export function TodoListRow({
                     }
                     {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
                     {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
-                    <div className=" w-full pr-2 sm:pr-0 flex items-center gap-2">
+                    <div className="relative w-full pr-2 sm:pr-0 flex items-center gap-1 ">
                         <ListRowText
                             t={t}
                             index={index}
@@ -158,76 +146,91 @@ export function TodoListRow({
                             className={`
                                ${t.priority === "1" && "text-primary"}
                                ${t.priority === "2" && "text-destructive"}
-                               ${t.priority === "3" && "text-destructive font-semibold"}
-                            `}
+                               ${t.priority === "3" && "text-destructive font-semibold"}`}
                             mode={mode}
                             setIsComposing={setIsComposing}
                             label={t.text}
                             register={register} />
-                        {t.detail && !(mode === "edit" && currentIndex === index) &&
-                            <span className={`hidden sm:flex font-light gap-1  items-center text-5sm px-2  text-primary rounded-full border border-primary`}>
-                                <StickyNote className="h-3 w-3" />メモ有
-                            </span>
+                        {displayMode === "normal" &&
+                            <>
+                                {t.detail &&
+                                    <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center text-5sm px-2  text-muted-foreground underline`}>
+                                        <StickyNote className="h-3 w-3" />メモあり
+                                    </span>
+                                }
+                                {(t.labelId || (!currentProjectId && t.projectId)) &&
+                                    <div className="flex border border-primary/50 rounded-full">
+                                        <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center text-5sm px-2 text-ex-label`}>
+                                            <Tag className="h-3 w-3" />
+                                            {lfind(exLabels, { id: t.labelId })?.name}
+                                        </span>
+                                        {!currentProjectId &&
+                                            <>
+                                                <span className="text-muted-foreground/30 px-1">/</span>
+                                                <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center  rounded-full text-5sm px-2 text-ex-project`}>
+                                                    <Box className="h-3 w-3" />
+                                                    {lfind(exProjects, { id: t.projectId })?.name}
+                                                </span>
+                                            </>
+                                        }
+                                    </div>
+                                }
+                            </>
                         }
-                        {t.labelId && !(mode === "edit" && currentIndex === index) &&
-                            <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-label rounded-full text-5sm px-2 text-ex-label`}>
-                                <Tag className="h-3 w-3" />
-                                {lfind(exLabels, { id: t.labelId })?.name}
-                            </span>
-                        }
-                        {!currentProjectId && t.projectId && !(mode === "edit" && currentIndex === index) &&
-                            <span className={`hidden sm:flex gap-1 font-light  items-center border border-ex-project rounded-full text-5sm px-2 text-ex-project`}>
-                                <Box className="h-3 w-3" />
-                                {lfind(exProjects, { id: t.projectId })?.name}
-                            </span>
-                        }
-                        <SelectModal
-                            t={t}
-                            index={index}
-                            currentIndex={currentIndex}
-                            prefix={"labelId"}
-                            currentPrefix={prefix}
-                            mode={mode}
-                            className={`w-0`}
-                            register={register}
-                            rhfSetValue={rhfSetValue}
-                            itemId={t.labelId}
-                            items={exLabels.map(l => { return { id: l.id, name: l.name } })}
-                            saveCloud={saveNewLabels}
-                            title={"ラベル"}
-                            onClick={onClick} />
-                        <SelectModal
-                            t={t}
-                            index={index}
-                            currentIndex={currentIndex}
-                            prefix={"projectId"}
-                            currentPrefix={prefix}
-                            mode={mode}
-                            className={`w-0`}
-                            register={register}
-                            rhfSetValue={rhfSetValue}
-                            saveCloud={saveNewProject}
-                            itemId={t.projectId}
-                            items={exProjects.map(p => { return { id: p.id, name: p.name } })}
-                            title={"プロジェクト"}
-                            onClick={onClick} />
                     </div>
-                    {!(mode === "edit" && currentIndex === index) && onChangePeriod && (
-                        <div className="absolute right-0 hidden sm:block text-4sm px-2 text-muted-foreground">
+                    {onChangePeriod && (
+                        <div className="absolute right-0  sm:block text-4sm text-muted-foreground">
                             <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
                         </div>
                     )}
-                    <div className={`absolute right-0 flex sm:hidden items-center w-[90px] justify-end gap-1 px-2 h-full ${common_color_css}`}>
-                        {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
-                        {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
-                        <Button size={"sm"}
-                            className="text-xs h-7"
-                            onClick={e => {
-                                e.stopPropagation()
-                                e.preventDefault()
-                                onClick(index, 'editDetail')
-                            }}>編集</Button>
-                    </div>
+                    <SelectModal
+                        t={t}
+                        index={index}
+                        currentIndex={currentIndex}
+                        prefix={"labelId"}
+                        currentPrefix={prefix}
+                        mode={mode}
+                        className={`w-0`}
+                        register={register}
+                        rhfSetValue={rhfSetValue}
+                        itemId={t.labelId}
+                        items={exLabels.map(l => { return { id: l.id, name: l.name } })}
+                        saveCloud={saveNewLabels}
+                        title={"ラベル"}
+                        onClick={onClick} />
+                    <SelectModal
+                        t={t}
+                        index={index}
+                        currentIndex={currentIndex}
+                        prefix={"projectId"}
+                        currentPrefix={prefix}
+                        mode={mode}
+                        className={`w-0`}
+                        register={register}
+                        rhfSetValue={rhfSetValue}
+                        saveCloud={saveNewProject}
+                        itemId={t.projectId}
+                        items={exProjects.map(p => { return { id: p.id, name: p.name } })}
+                        title={"プロジェクト"}
+                        onClick={onClick} />
+                </div>
+            </TableCell>
+            {
+                displayMode === "normal" &&
+                <TableCell className="w-[100px] px-2">
+                </TableCell>
+            }
+            <TableCell className="w-[90px] sm:hidden overflow-hidden">
+                <div className={`flex px-2 items-center gap-2 justify-end`}>
+                    {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
+                    {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
+                    <Button size={"sm"}
+                        className="text-xs h-7"
+                        onClick={e => {
+                            e.stopPropagation()
+                            e.preventDefault()
+                            onClick(index, 'editDetail')
+                        }}>編集</Button>
                 </div>
             </TableCell>
         </TableRow >
@@ -284,8 +287,8 @@ const PopupCalendar = ({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <div className="flex items-center gap-1 p-1 rounded-md bg-card/50 backdrop-blur-md hover:cursor-pointer border border-transparent hover:border-primary transition-all duration-200">
-                    <CalendarDays className="w-4 h-4" />
+                <div className="flex items-center justify-center gap-1 rounded-md bg-card/50 px-2 backdrop-blur-xl hover:cursor-pointer border border-transparent hover:border-primary transition-all duration-200">
+                    <CalendarDays className="w-3 h-3" />
                     <span className="w-8 text-center">{formatDate(t.startDate)}</span> - <span className="w-8 text-center">{formatDateWithWarning(t.endDate)}</span>
                 </div>
             </PopoverTrigger>

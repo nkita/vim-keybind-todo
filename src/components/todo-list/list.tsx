@@ -55,14 +55,9 @@ export const List = (
 
     const config = useContext(TodoContext)
     const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
-    const [table_project_width, set_table_project_width] = useState("w-0 sm:w-[15%] max-w-[20%]")
-    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
 
     const table_idx_width = "w-[30px]"
     const table_completion_width = "w-[30px]"
-    const table_priority_width = "w-[30px]"
-    const table_label_width = "w-0 sm:w-[15%] max-w-[20%]"
-    // const table_project_width = "w-0 sm:w-[15%] max-w-[20%]"
 
 
     const saveNewProject = (id: string, name: string) => {
@@ -90,47 +85,27 @@ export const List = (
     }
 
     useEffect(() => {
-        const hidden = "hidden"
         const wTaskALL = "w-[calc(100%-90px)] sm:w-[calc(70%-90px)]"
         const wTaskProject = "w-[calc(100%-90px)] sm:w-[calc(85%-90px)]"
-        const wProject = "w-0 sm:w-[15%] max-w-[20%]"
 
-        set_table_project_width(currentProjectId === "" ? wProject : hidden)
         set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
     }, [currentProjectId])
     return (
         <Table index={currentIndex}>
-            <TableBody className=" text-sm border-b">
+            <TableBody className=" text-sm border-b overflow-hidden">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                         <TableCell className="h-full">Loading...</TableCell>
                     </TableRow>
                 }
-                {(sort !== undefined && mode === "editOnSort") &&
-                    <TableRow className={`bg-accent text-accent-foreground`}>
-                        <TableCell className={table_idx_width}></TableCell>
-                        <TableCell className={table_completion_width}></TableCell>
-                        <TableCell className={table_priority_width}></TableCell>
-                        <TableCell className={table_task_width}>
-                            <input
-                                tabIndex={-1}
-                                className={`p-1 w-full text-left  outline-none bg-transparent font-semibold`}
-                                type="text"
-                                maxLength={prefix === 'priority' ? 1 : -1}
-                                {...register(`newtask`)}
-                            // onFocus={e => e.currentTarget.setSelectionRange(t[prefix].length, t.text.length)}
-                            />
-                        </TableCell >
-                        <TableCell className={table_project_width} ></TableCell>
-                        <TableCell className={`${table_label_width} font-light text-lab text-ex-project`}>{currentProjectId}</TableCell>
-                    </TableRow>
-                }
                 {!loading &&
                     <>
                         {filteredTodos.length === 0 ? (
-                            <TableRow className="text-center  text-muted-foreground text-xs">
-                                <TableCell className="p-4 border-none bg-card"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
-                            </TableRow>
+                            <>
+                                <TableRow className="text-center  text-muted-foreground text-xs">
+                                    <TableCell className="p-4 border-none"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
+                                </TableRow>
+                            </>
                         ) : (
                             <>
                                 <SortableContext items={filteredTodos.map(t => t.id)} strategy={verticalListSortingStrategy}>

@@ -47,7 +47,7 @@ export const NormalList = (
     }
 ) => {
 
-    const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
+    const hcssMainHeight = "h-full"
 
     return (
         <>

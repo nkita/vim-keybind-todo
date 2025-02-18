@@ -119,34 +119,36 @@ export const GanttcList = ({
                             <div
                                 ref={innerContainerRef}
                                 style={{ width: `${dividerPosition}%`, minWidth: `${dividerPosition}%` }}
-                                className="w-full sticky left-0 z-10 shadow-md"
+                                className={`sticky left-0 z-10`}
                             >
                                 <div className="flex text-muted-foreground text-xs items-center justify-between w-full h-[50px] border-b bg-card/80 backdrop-blur-sm sticky top-0 z-20 shadow-sm">
                                     <span className="px-4 items-center gap-2 flex"><GanttChart className="w-4 h-4" />ガントチャートモード</span>
                                     {/* <span className="px-4">タイトル / 期間</span> */}
                                 </div>
-                                <List
-                                    filteredTodos={filteredTodos}
-                                    currentIndex={currentIndex}
-                                    prefix={prefix}
-                                    mode={mode}
-                                    exProjects={exProjects}
-                                    exLabels={exLabels}
-                                    currentProjectId={currentProjectId}
-                                    sort={sort}
-                                    loading={loading}
-                                    onClick={onClick}
-                                    setIsComposing={setIsComposing}
-                                    setCurrentIndex={setCurrentIndex}
-                                    setExProjects={setExProjects}
-                                    setExLabels={setExLabels}
-                                    onChangePeriod={onChangePeriod}
-                                    register={register}
-                                    rhfSetValue={rhfSetValue}
-                                />
+                                <div className="overflow-x-scroll">
+                                    <List
+                                        filteredTodos={filteredTodos}
+                                        currentIndex={currentIndex}
+                                        prefix={prefix}
+                                        mode={mode}
+                                        exProjects={exProjects}
+                                        exLabels={exLabels}
+                                        currentProjectId={currentProjectId}
+                                        sort={sort}
+                                        loading={loading}
+                                        onClick={onClick}
+                                        setIsComposing={setIsComposing}
+                                        setCurrentIndex={setCurrentIndex}
+                                        setExProjects={setExProjects}
+                                        setExLabels={setExLabels}
+                                        onChangePeriod={onChangePeriod}
+                                        register={register}
+                                        rhfSetValue={rhfSetValue}
+                                    />
+                                </div>
                             </div>
                             <div
-                                className="fixed w-[4px] h-[calc(100%-125px)] cursor-col-resize z-10"
+                                className="fixed w-[1px] h-[calc(100%-125px)] cursor-col-resize z-20 border-r"
                                 style={{
                                     left: containerRef.current
                                         ? containerRef.current.getBoundingClientRect().left + (containerRef.current.clientWidth * dividerPosition / 100)

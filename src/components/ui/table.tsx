@@ -13,11 +13,6 @@ const Table = React.forwardRef<
   HTMLTableElement,
   TableProps
 >(({ className, index, ...props }, ref) => {
-  const _ref = React.useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    if (_ref.current && index !== undefined && index < 5) _ref.current.scrollTop = 0
-  }, [index])
 
   return (
     <table

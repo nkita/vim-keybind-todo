@@ -91,7 +91,7 @@ export const List = (
         set_table_task_width(currentProjectId === "" ? wTaskALL : wTaskProject)
     }, [currentProjectId])
     return (
-        <Table index={currentIndex}>
+        <Table>
             <TableBody className=" text-sm border-b overflow-hidden">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>

@@ -12,7 +12,7 @@ import { find as lfind } from "lodash"
 import { SelectModal } from "../select-modal"
 import { LabelProps, Mode, ProjectProps, TodoProps } from "@/types"
 import { Box } from "lucide-react"
-import { SetStateAction, useState } from "react"
+import { SetStateAction, useEffect, useRef, useState } from "react"
 import { Dispatch } from "react"
 import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
@@ -80,8 +80,7 @@ export function TodoListRow({
         transition
     };
 
-    const rowH = "h-[33px]"
-
+    const rowH = "h-[35px]"
     return (
         <TableRow key={t.id}
             className={`${rowH} ${common_color_css} group outline-none`}
@@ -278,7 +277,7 @@ const PopupCalendar = ({
         from: new Date(t.startDate),
         to: new Date(t.endDate)
     })
-    
+
     const handleCancel = () => {
         setDate({
             from: new Date(t.startDate),
@@ -286,7 +285,7 @@ const PopupCalendar = ({
         })
         setOpen(false)
     }
-    
+
     const handleSave = () => {
         const startDate = date?.from ?? new Date()
         const endDate = date?.to ?? new Date()
@@ -295,7 +294,7 @@ const PopupCalendar = ({
         onChangePeriod(t.id, startDate, endDate)
         setOpen(false)
     }
-    
+
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>

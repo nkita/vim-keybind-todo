@@ -27,6 +27,8 @@ const App = ({
     exProjects,
     exLabels,
     currentProjectId,
+    TaskListHeader,
+    TaskListTable,
     onChangePeriod,
 }: {
     filteredTodos: TodoProps[]
@@ -36,6 +38,24 @@ const App = ({
     exProjects: ProjectProps[]
     exLabels: LabelProps[]
     currentProjectId: string
+    TaskListHeader?: React.FC<{
+        rowHeight: number;
+        rowWidth: string;
+        fontFamily: string;
+        fontSize: string;
+        locale: string;
+    }>
+    TaskListTable?: React.FC<{
+        rowHeight: number;
+        rowWidth: string;
+        fontFamily: string;
+        fontSize: string;
+        locale: string;
+        tasks: Task[];
+        selectedTaskId: string;
+        setSelectedTask: (taskId: string) => void;
+        onExpanderClick: (task: Task) => void;
+    }>
     onChangePeriod: (todoId: string, startDate: Date, endDate: Date) => void
 }) => {
     const [view, setView] = useState<ViewMode>(ViewMode.Day);
@@ -157,8 +177,18 @@ const App = ({
             <Gantt
                 tasks={tasks}
                 viewMode={view}
-                TaskListHeader={TaskListHeader}
-                TaskListTable={TaskListColumn}
+                TaskListHeader={({ headerHeight, rowWidth, fontFamily, fontSize }) => 
+                    TaskListHeader ? (
+                        <TaskListHeader
+                            rowHeight={headerHeight}
+                            rowWidth={rowWidth}
+                            fontFamily={fontFamily}
+                            fontSize={fontSize}
+                            locale="ja-JP"
+                        />
+                    ) : null
+                }
+                TaskListTable={TaskListTable}
                 onDateChange={handleTaskChange}
                 onDelete={handleTaskDelete}
                 onDoubleClick={handleDblClick}
@@ -174,7 +204,8 @@ const App = ({
                     period: viewPeriod,
                     progress: viewProgress
                 })}
-                // ganttHeight={((rowHeight * tasks.length + headerHeight) > windowHeight) ? (windowHeight - headerHeight) : 0}
+                // ganttHeight={windowHeight - headerHeight}
+                ganttHeight={0}
                 columnWidth={columnWidth}
                 locale={"ja-JP"}
                 rowHeight={rowHeight}

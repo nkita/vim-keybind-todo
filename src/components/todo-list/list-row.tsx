@@ -177,12 +177,12 @@ export function TodoListRow({
                                 }
                             </>
                         }
+                        {onChangePeriod && (
+                            <div className="absolute right-0  sm:block text-4sm text-muted-foreground">
+                                <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
+                            </div>
+                        )}
                     </div>
-                    {onChangePeriod && (
-                        <div className="absolute right-0  sm:block text-4sm text-muted-foreground">
-                            <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
-                        </div>
-                    )}
                     <SelectModal
                         t={t}
                         index={index}

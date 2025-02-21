@@ -47,10 +47,8 @@ export const GanttcList = ({
     onChangePeriod
 }: GanttcListProps) => {
     const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
-    const [isDragging, setIsDragging] = React.useState(false);
     const [dividerPosition, setDividerPosition] = useLocalStorage("ganttc-divider-position", 50)
     const containerRef = React.useRef<HTMLDivElement>(null);
-    const innerContainerRef = React.useRef<HTMLDivElement>(null);
     const MIN_WIDTH = 200;
     const [headerWidth, setHeaderWidth] = useState(400);
     const dragRef = useRef({
@@ -163,7 +161,6 @@ export const GanttcList = ({
     return (
         <>
             {loading ? (
-
                 <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
                     <div className="flex text-sm items-center justify-center h-full w-full ">
                         <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
@@ -172,7 +169,48 @@ export const GanttcList = ({
                     </div>
                 </div>
             ) : (
-                <div className="w-full h-full overflow-x-scroll table-scrollbar">
+                <div className="w-full h-full overflow-x-scroll table-scrollbar relative">
+                    <div
+                        style={{ width: `${headerWidth}px` }}
+                        className="absolute left-0 z-10">
+                        <div className="relative overflow-x-scroll">
+                            <div
+                                style={{ width: `${headerWidth}px` }}
+                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm sticky top-0"
+                            >
+                                <span className="px-4 items-center gap-2 flex">
+                                    <GanttChart className="w-4 h-4" />ガントチャートモード
+                                </span>
+                                <div
+                                    className="absolute top-0 right-0 w-1 h-full cursor-col-resize"
+                                    onMouseDown={handleMouseDown}
+                                />
+                            </div>
+                            <List
+                                filteredTodos={filteredTodos}
+                                currentIndex={currentIndex}
+                                prefix={prefix}
+                                mode={mode}
+                                exProjects={exProjects}
+                                exLabels={exLabels}
+                                currentProjectId={currentProjectId}
+                                sort={sort}
+                                loading={loading}
+                                onClick={onClick}
+                                setIsComposing={setIsComposing}
+                                setCurrentIndex={setCurrentIndex}
+                                setExProjects={setExProjects}
+                                setExLabels={setExLabels}
+                                onChangePeriod={onChangePeriod}
+                                register={register}
+                                rhfSetValue={rhfSetValue}
+                            />
+                            <div
+                                className="absolute top-0 right-0 w-2 h-full cursor-col-resize"
+                                onMouseDown={handleMouseDown}
+                            />
+                        </div>
+                    </div>
                     <Ganttc
                         filteredTodos={filteredTodos}
                         currentIndex={currentIndex}
@@ -200,33 +238,9 @@ export const GanttcList = ({
                         }}
                         TaskListTable={() => {
                             return (
-                                <>
-                                    <div className="relative">
-                                        <List
-                                            filteredTodos={filteredTodos}
-                                            currentIndex={currentIndex}
-                                            prefix={prefix}
-                                            mode={mode}
-                                            exProjects={exProjects}
-                                            exLabels={exLabels}
-                                            currentProjectId={currentProjectId}
-                                            sort={sort}
-                                            loading={loading}
-                                            onClick={onClick}
-                                            setIsComposing={setIsComposing}
-                                            setCurrentIndex={setCurrentIndex}
-                                            setExProjects={setExProjects}
-                                            setExLabels={setExLabels}
-                                            onChangePeriod={onChangePeriod}
-                                            register={register}
-                                            rhfSetValue={rhfSetValue}
-                                        />
-                                        <div
-                                            className="absolute top-0 right-0 w-2 h-full cursor-col-resize"
-                                            onMouseDown={handleMouseDown}
-                                        />
-                                    </div>
-                                </>
+                                <div
+                                    style={{ width: `${headerWidth}px` }}
+                                />
                             )
                         }}
                     />

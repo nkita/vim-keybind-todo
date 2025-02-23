@@ -126,7 +126,17 @@ export const GanttcList = ({
         };
     }, [handleMouseMove, handleMouseUp]);
 
+    const listRef = useRef<HTMLDivElement>(null);
+    const [scrollTop, setScrollTop] = useState(0);
+    const [ganttcScrollTop, setGanttcScrollTop] = useState(0);
 
+    useEffect(() => {
+        if (listRef.current?.scrollTop !== ganttcScrollTop) {
+            listRef.current?.scrollTo({
+                top: ganttcScrollTop,
+            });
+        }
+    }, [ganttcScrollTop]);
     return (
         <>
             {loading ? (
@@ -138,23 +148,23 @@ export const GanttcList = ({
                     </div>
                 </div>
             ) : (
-                <div className="w-full h-full overflow-x-scroll relative">
+                <div className="w-full h-full overflow-auto relative" >
                     <div
                         style={{ width: `${headerWidth}px` }}
-                        className="absolute left-0 z-10">
-                        <div className="relative overflow-x-scroll scrollbar">
+                        className="absolute left-0 z-10 h-[300px]">
+                        <div
+                            style={{ width: `${headerWidth}px` }}
+                            className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
+                        >
+                            <span className="px-4 items-center gap-2 flex">
+                                <GanttChart className="w-4 h-4" />ガントチャートモード
+                            </span>
                             <div
-                                style={{ width: `${headerWidth}px` }}
-                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
-                            >
-                                <span className="px-4 items-center gap-2 flex">
-                                    <GanttChart className="w-4 h-4" />ガントチャートモード
-                                </span>
-                                <div
-                                    className="absolute top-0 right-0 w-1 h-full cursor-col-resize"
-                                    onMouseDown={handleMouseDown}
-                                />
-                            </div>
+                                className="absolute top-0 right-0 w-1 h-full cursor-col-resize"
+                                onMouseDown={handleMouseDown}
+                            />
+                        </div>
+                        <div className="relative overflow-auto scrollbar h-full" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <List
                                 filteredTodos={filteredTodos}
                                 currentIndex={currentIndex}
@@ -174,13 +184,11 @@ export const GanttcList = ({
                                 register={register}
                                 rhfSetValue={rhfSetValue}
                             />
-                            <div
-                                className="absolute top-0 right-0 w-2 h-full cursor-col-resize"
-                                onMouseDown={handleMouseDown}
-                            />
                         </div>
                     </div>
                     <Ganttc
+                        scrollTop={scrollTop}
+                        setGanttcScrollTop={setGanttcScrollTop}
                         filteredTodos={filteredTodos}
                         currentIndex={currentIndex}
                         prefix={prefix}

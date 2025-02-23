@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Task, Configuration, MessageType, GanttList, TaskType } from "./ganttc/common/types/public-types";
-import { Gantt, ViewMode } from "@nkita/gantt-task-react";
+import { Gantt, ViewMode, GanttRef } from "@nkita/gantt-task-react";
 // import { PeriodSwitch } from "./ganttc/components/period-switch";
 // import { AddTaskForm } from "./ganttc/components/add-task-form";
 import { yyyymmddhhmmss } from "@/lib/time";
@@ -30,6 +30,8 @@ const App = ({
     TaskListHeader,
     TaskListTable,
     onChangePeriod,
+    scrollTop,
+    setGanttcScrollTop
 }: {
     filteredTodos: TodoProps[]
     currentIndex: number
@@ -38,6 +40,8 @@ const App = ({
     exProjects: ProjectProps[]
     exLabels: LabelProps[]
     currentProjectId: string
+    scrollTop?: number
+    setGanttcScrollTop?: (scrollTop: number) => void
     TaskListHeader?: React.FC<{
         rowHeight: number;
         rowWidth: string;
@@ -69,6 +73,17 @@ const App = ({
     const [viewProgress, setViewProgress] = useState(true);
     const [saveButtonFlg, setSaveButtonDisable] = useState(true);
     const [saveHistory, setSaveHistory] = useState<Configuration[]>([]);
+
+    const ganttRef = useRef<GanttRef>(null);
+
+    useEffect(() => {
+        if (ganttRef.current
+            && scrollTop !== undefined
+            && ganttRef.current.getScrollY() !== scrollTop
+        ) {
+            ganttRef.current.setScrollY(scrollTop);
+        }
+    }, [scrollTop]);
 
     // ガントチャート切り替え対応
     const [glist, setGList] = useState<GanttList[]>([]);
@@ -172,12 +187,20 @@ const App = ({
             // </div>
         )
     }
+
+    const handleGanntcScrollChange = (scrollTop: number) => {
+        if (setGanttcScrollTop) {
+            setGanttcScrollTop(scrollTop);
+        }
+    }
     return (
         <>
             <Gantt
+                onScrollChange={handleGanntcScrollChange}
+                ref={ganttRef}
                 tasks={tasks}
                 viewMode={view}
-                TaskListHeader={({ headerHeight, rowWidth, fontFamily, fontSize }) => 
+                TaskListHeader={({ headerHeight, rowWidth, fontFamily, fontSize }) =>
                     TaskListHeader ? (
                         <TaskListHeader
                             rowHeight={headerHeight}
@@ -205,7 +228,7 @@ const App = ({
                     progress: viewProgress
                 })}
                 // ganttHeight={windowHeight - headerHeight}
-                ganttHeight={0}
+                ganttHeight={300}
                 columnWidth={columnWidth}
                 locale={"ja-JP"}
                 rowHeight={rowHeight}

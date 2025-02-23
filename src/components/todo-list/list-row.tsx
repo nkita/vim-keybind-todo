@@ -12,7 +12,7 @@ import { find as lfind } from "lodash"
 import { SelectModal } from "../select-modal"
 import { LabelProps, Mode, ProjectProps, TodoProps } from "@/types"
 import { Box } from "lucide-react"
-import { SetStateAction, useEffect, useRef, useState } from "react"
+import { SetStateAction, useState } from "react"
 import { Dispatch } from "react"
 import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
@@ -20,7 +20,6 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { DateRange } from "react-day-picker"
-import { Input } from "../ui/input"
 
 dayjs.extend(relativeTime)
 dayjs.locale('ja')

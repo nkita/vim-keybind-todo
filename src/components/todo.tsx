@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, BarChart, List, BarChart2, GanttChart, LineChart, ListTodo } from "lucide-react"
+import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, GanttChart, ListTodo } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -1104,8 +1104,6 @@ export const Todo = (
                             <SortableContext items={filteredProjects.map(p => p.id)} strategy={rectSortingStrategy}>
                                 {!loading && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
                             </SortableContext>
-                            {/* <div className="text-transparent border-b min-w-[80px] h-[10px]" /> */}
-                            {/* <div className="w-full h-full border-b"></div> */}
                             <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
                                 <ProjectEditModal
                                     buttonLabel={<Plus size={14} />}
@@ -1177,9 +1175,6 @@ export const Todo = (
                     </div>
                 </header >
                 <div className={`w-full h-[calc(100%-3rem)] sm:h-[calc(100%-5.8rem)]`}>
-                    {/* オーバーレイ */}
-                    {/* <div className={`fixed top-0 left-0 right-0 bottom-0 bg-black/50 z-10 ${mode === "editDetail" ? "block sm:hidden" : "hidden"}`} onMouseDown={handleMainMouseDown} /> */}
-                    {/* オーバーレイ */}
                     <div className={`w-full h-[calc(100%-70px)] sm:h-[calc(100%-30px)]`} onMouseDown={handleMainMouseDown}>
                         {displayMode === "Ganttc" &&
                             <>

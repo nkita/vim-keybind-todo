@@ -47,10 +47,8 @@ export const GanttcList = ({
     onChangePeriod
 }: GanttcListProps) => {
     const hcssMainHeight = "h-[calc(100%-80px)] sm:h-full"
-    const [dividerPosition, setDividerPosition] = useLocalStorage("ganttc-divider-position", 50)
-    const containerRef = React.useRef<HTMLDivElement>(null);
     const MIN_WIDTH = 200;
-    const [headerWidth, setHeaderWidth] = useState(400);
+    const [headerWidth, setHeaderWidth] = useLocalStorage("ganttc-width", 400);
     const dragRef = useRef({
         isDragging: false,
         startX: 0,
@@ -94,7 +92,7 @@ export const GanttcList = ({
             window.removeEventListener('resize', debouncedResize);
             clearTimeout(timeoutId);
         };
-    }, []);
+    }, [maxWidth, setHeaderWidth]);
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
@@ -112,7 +110,7 @@ export const GanttcList = ({
         const newWidth = dragRef.current.startWidth + diff;
         const clampedWidth = Math.min(Math.max(newWidth, MIN_WIDTH), maxWidth);
         setHeaderWidth(clampedWidth);
-    }, [maxWidth]);
+    }, [maxWidth, setHeaderWidth]);
 
     const handleMouseUp = useCallback(() => {
         dragRef.current.isDragging = false;
@@ -128,35 +126,6 @@ export const GanttcList = ({
         };
     }, [handleMouseMove, handleMouseUp]);
 
-    // ウィンドウリサイズ時のハンドラーを修正
-    const handleResize = React.useCallback(() => {
-        if (containerRef.current) {
-            const containerRect = containerRef.current.getBoundingClientRect();
-            const currentPixelPosition = containerRect.width * (dividerPosition / 100);
-            const newPosition = (currentPixelPosition / containerRect.width) * 100;
-            const clampedPosition = Math.min(Math.max(newPosition, 10), 80);
-
-            // 現在の値と新しい値が異なる場合のみ更新
-            if (Math.abs(clampedPosition - dividerPosition) > 0.1) {
-                setDividerPosition(clampedPosition);
-            }
-        }
-    }, [dividerPosition, setDividerPosition]);
-
-    // リサイズイベントリスナーにデバウンスを追加
-    useEffect(() => {
-        let timeoutId: NodeJS.Timeout;
-        const debouncedResize = () => {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(handleResize, 100);
-        };
-
-        window.addEventListener('resize', debouncedResize);
-        return () => {
-            window.removeEventListener('resize', debouncedResize);
-            clearTimeout(timeoutId);
-        };
-    }, [handleResize]);
 
     return (
         <>
@@ -169,14 +138,14 @@ export const GanttcList = ({
                     </div>
                 </div>
             ) : (
-                <div className="w-full h-full overflow-x-scroll table-scrollbar relative">
+                <div className="w-full h-full overflow-x-scroll relative">
                     <div
                         style={{ width: `${headerWidth}px` }}
                         className="absolute left-0 z-10">
-                        <div className="relative overflow-x-scroll">
+                        <div className="relative overflow-x-scroll scrollbar">
                             <div
                                 style={{ width: `${headerWidth}px` }}
-                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm sticky top-0"
+                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
                             >
                                 <span className="px-4 items-center gap-2 flex">
                                     <GanttChart className="w-4 h-4" />ガントチャートモード
@@ -224,15 +193,8 @@ export const GanttcList = ({
                             return (
                                 <div
                                     style={{ width: `${headerWidth}px` }}
-                                    className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm sticky top-0"
+                                    className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm "
                                 >
-                                    <span className="px-4 items-center gap-2 flex">
-                                        <GanttChart className="w-4 h-4" />ガントチャートモード
-                                    </span>
-                                    <div
-                                        className="absolute top-0 right-0 w-1 h-full cursor-col-resize"
-                                        onMouseDown={handleMouseDown}
-                                    />
                                 </div>
                             )
                         }}

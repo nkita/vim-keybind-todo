@@ -1122,7 +1122,6 @@ export const Todo = (
             <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
                 <header className={cn(`shrink-0 h-[${HEADER_HEIGHT_SM}px] sm:h-[${HEADER_PROJECT_TAB_HEIGHT + HEADER_MENU_BAR_HEIGHT}px] gap-2 transition-[width,height] ease-linear bg-muted text-muted-foreground`)}>
                     <div
-                        style={{ height: `${HEADER_PROJECT_TAB_HEIGHT}px` }}
                         className={cn(`relative w-full h-0 sm:h-[${HEADER_PROJECT_TAB_HEIGHT}px] border-b`)}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />

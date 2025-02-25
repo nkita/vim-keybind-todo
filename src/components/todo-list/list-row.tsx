@@ -142,6 +142,7 @@ export function TodoListRow({
                             currentIndex={currentIndex}
                             currentPrefix={prefix}
                             className={`
+                               w-full sm:w-fit
                                ${t.priority === "1" && "text-primary"}
                                ${t.priority === "2" && "text-destructive"}
                                ${t.priority === "3" && "text-destructive font-semibold"}`}
@@ -157,7 +158,7 @@ export function TodoListRow({
                                     </span>
                                 }
                                 {(t.labelId || (!currentProjectId && t.projectId)) &&
-                                    <div className="flex border rounded-full px-2 shadow-sm text-6sm">
+                                    <div className="hidden sm:flex border rounded-full px-2 shadow-sm text-6sm">
                                         {t.labelId &&
                                             <span className={`whitespace-nowrap hidden sm:flex gap-1 pr-2  items-center  text-ex-label`}>
                                                 <Tag className="h-3 w-3" />
@@ -181,6 +182,17 @@ export function TodoListRow({
                                 <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
                             </div>
                         )}
+                        <div className={`sm:hidden absolute right-0 w-[100px] bg-card/50 backdrop-blur-sm overflow-hidden flex px-2 items-center gap-2 justify-end`}>
+                            {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
+                            {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
+                            <Button size={"sm"}
+                                className="text-xs h-7"
+                                onClick={e => {
+                                    e.stopPropagation()
+                                    e.preventDefault()
+                                    onClick(index, 'editDetail')
+                                }}>編集</Button>
+                        </div>
                     </div>
                     <SelectModal
                         t={t}
@@ -212,24 +224,6 @@ export function TodoListRow({
                         items={exProjects.map(p => { return { id: p.id, name: p.name } })}
                         title={"プロジェクト"}
                         onClick={onClick} />
-                </div>
-            </TableCell>
-            {
-                displayMode === "normal" &&
-                <TableCell className="w-[100px] px-2">
-                </TableCell>
-            }
-            <TableCell className="w-[90px] sm:hidden overflow-hidden">
-                <div className={`flex px-2 items-center gap-2 justify-end`}>
-                    {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
-                    {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
-                    <Button size={"sm"}
-                        className="text-xs h-7"
-                        onClick={e => {
-                            e.stopPropagation()
-                            e.preventDefault()
-                            onClick(index, 'editDetail')
-                        }}>編集</Button>
                 </div>
             </TableCell>
         </TableRow >

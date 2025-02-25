@@ -92,7 +92,7 @@ export const List = (
     }, [currentProjectId])
     return (
         <Table>
-            <TableBody className=" text-sm border-b overflow-hidden">
+            <TableBody className=" text-sm border-b">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                         <TableCell className="h-full">Loading...</TableCell>

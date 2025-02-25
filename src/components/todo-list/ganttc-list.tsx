@@ -6,7 +6,7 @@ import { List } from "./list"
 import Ganttc from "./ganttc"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GanttChart } from "lucide-react"
-
+import { cn } from "@/lib/utils"
 interface GanttcListProps {
     filteredTodos: TodoProps[]
     currentIndex: number
@@ -16,6 +16,7 @@ interface GanttcListProps {
     exLabels: LabelProps[]
     currentProjectId: string
     sort: Sort
+    height: number
     loading: Boolean
     onClick: (id: number, prefix: string) => void
     setIsComposing: Dispatch<SetStateAction<boolean>>
@@ -37,6 +38,7 @@ export const GanttcList = ({
     currentProjectId,
     sort,
     loading,
+    height,
     onClick,
     setIsComposing,
     setCurrentIndex,
@@ -137,6 +139,7 @@ export const GanttcList = ({
             });
         }
     }, [ganttcScrollTop]);
+
     return (
         <>
             {loading ? (
@@ -148,23 +151,25 @@ export const GanttcList = ({
                     </div>
                 </div>
             ) : (
-                <div className="w-full h-full overflow-auto relative" >
+                <div
+                    style={{ height: `${height}px` }}
+                    className={`w-full relative table-scrollbar`} >
                     <div
-                        style={{ width: `${headerWidth}px` }}
-                        className="absolute left-0 z-10 h-[300px]">
-                        <div
-                            style={{ width: `${headerWidth}px` }}
-                            className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
-                        >
-                            <span className="px-4 items-center gap-2 flex">
-                                <GanttChart className="w-4 h-4" />ガントチャートモード
-                            </span>
+                        style={{ width: `${headerWidth}px`, height: `${height}px` }}
+                        className="absolute left-0 overflow-auto z-10 ">
+                        <div className="relative overflow-auto no-scrollbar h-full" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <div
-                                className="absolute top-0 right-0 w-1 h-full cursor-col-resize"
-                                onMouseDown={handleMouseDown}
-                            />
-                        </div>
-                        <div className="relative overflow-auto scrollbar h-full" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
+                                style={{ width: `${headerWidth}px` }}
+                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
+                            >
+                                <span className="px-4 items-center gap-2 flex">
+                                    <GanttChart className="w-4 h-4" />ガントチャートモード
+                                </span>
+                                <div
+                                    className="absolute top-0 right-0 w-1 h-full cursor-col-resize"
+                                    onMouseDown={handleMouseDown}
+                                />
+                            </div>
                             <List
                                 filteredTodos={filteredTodos}
                                 currentIndex={currentIndex}
@@ -197,6 +202,7 @@ export const GanttcList = ({
                         exLabels={exLabels}
                         currentProjectId={currentProjectId}
                         onChangePeriod={onChangePeriod}
+                        height={height}
                         TaskListHeader={() => {
                             return (
                                 <div

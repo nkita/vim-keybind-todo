@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, GanttChart, ListTodo } from "lucide-react"
+import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, GanttChart, ListTodo, Wallpaper } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -36,6 +36,10 @@ import { SortableContext, rectSortingStrategy } from "@dnd-kit/sortable"
 import { GanttcList } from "./todo-list/ganttc-list"
 
 const MAX_UNDO_COUNT = 10
+const HEADER_HEIGHT_SM = 48 // 3rem
+const HEADER_PROJECT_TAB_HEIGHT = 40
+const HEADER_MENU_BAR_HEIGHT = 50
+const BOTTOM_MENU_HEIGHT = 30
 
 export const Todo = (
     {
@@ -100,6 +104,28 @@ export const Todo = (
     const [currentKeys, setCurrentKeys] = useState<String[]>([])
     const [log, setLog] = useState("")
     const [searchResultIndex, setSearchResultIndex] = useState<boolean[]>([])
+    const [windowHeight, setWindowHeight] = useState(0)
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setWindowHeight(window.innerHeight)
+
+            const handleResize = () => {
+                setWindowHeight(window.innerHeight)
+            }
+
+            window.addEventListener('resize', handleResize)
+            return () => window.removeEventListener('resize', handleResize)
+        }
+    }, [])
+
+    // 初期値を0に設定
+    const mainHeight = windowHeight === 0 ? 0 : windowHeight - (
+        window.innerWidth >= 640 ?
+            HEADER_PROJECT_TAB_HEIGHT + HEADER_MENU_BAR_HEIGHT :
+            HEADER_HEIGHT_SM
+    )
+    const contentHeight = windowHeight === 0 ? 0 : mainHeight - BOTTOM_MENU_HEIGHT
 
     useEffect(() => {
         const panel = resizeRef.current;
@@ -1091,12 +1117,13 @@ export const Todo = (
         }
     };
 
-
     return (
         <>
             <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
-                <header className={`shrink-0 h-[3rem] sm:h-[5.8rem] gap-2 transition-[width,height] ease-linear bg-muted text-muted-foreground`}>
-                    <div className={`relative w-full h-0 sm:h-[2.8rem] border-b`}>
+                <header className={cn(`shrink-0 h-[${HEADER_HEIGHT_SM}px] sm:h-[${HEADER_PROJECT_TAB_HEIGHT + HEADER_MENU_BAR_HEIGHT}px] gap-2 transition-[width,height] ease-linear bg-muted text-muted-foreground`)}>
+                    <div
+                        style={{ height: `${HEADER_PROJECT_TAB_HEIGHT}px` }}
+                        className={cn(`relative w-full h-0 sm:h-[${HEADER_PROJECT_TAB_HEIGHT}px] border-b`)}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />
                             {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
@@ -1125,7 +1152,8 @@ export const Todo = (
                             <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
                         </div>
                     </div>
-                    <div className="flex justify-between items-center h-[3rem] bg-card text-card-foreground">
+                    <div
+                        className={`flex justify-between items-center h-[${HEADER_MENU_BAR_HEIGHT}px] bg-card text-card-foreground`}>
                         <div className="flex items-center gap-2 h-full px-2 mx-2 ">
                             <div className="block md:hidden"><SidebarTrigger className="border" /></div>
                             <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
@@ -1174,15 +1202,15 @@ export const Todo = (
                         </div>
                     </div>
                 </header >
-                <div className={`w-full h-[calc(100%-3rem)] sm:h-[calc(100%-5.8rem)]`}>
-                    <div className={`w-full h-[calc(100%-70px)] sm:h-[calc(100%-30px)]`} onMouseDown={handleMainMouseDown}>
+                <div className="w-full bg-card">
+                    <div style={{ height: contentHeight }} className="w-full" onMouseDown={handleMainMouseDown}>
                         {displayMode === "Ganttc" &&
                             <>
                                 <div
                                     onTouchStart={handleTouchStart}
                                     onTouchMove={handleTouchMove}
                                     onTouchEnd={handleTouchEnd}
-                                    className={`z-20 h-full w-full border-t `}>
+                                    className={`z-20 h-full w-full border-t sm:block hidden`}>
                                     <GanttcList
                                         filteredTodos={filteredTodos}
                                         currentIndex={currentIndex}
@@ -1201,7 +1229,17 @@ export const Todo = (
                                         register={register}
                                         rhfSetValue={setValue}
                                         onChangePeriod={handlePeriodChange}
+                                        height={contentHeight-20}
                                     />
+                                </div>
+                                <div className="flex sm:hidden text-muted-foreground text-xs justify-center items-center h-full">
+                                    <div className="flex flex-col items-center gap-2">
+                                        <Wallpaper className="w-8 h-8" />
+                                        <p className="text-center">
+                                            画面幅が狭くてガントチャートを表示できません。<br />
+                                            PCで画面をめいいっぱい広げてご利用ください！
+                                        </p>
+                                    </div>
                                 </div>
                             </>
                         }
@@ -1266,7 +1304,7 @@ export const Todo = (
                                 </ResizablePanel>
                             </ResizablePanelGroup>
                         }
-                        <div className="h-[30px] items-center justify-between w-full bg-card border-y text-xs px-2 hidden sm:flex">
+                        <div className={cn(`h-[${BOTTOM_MENU_HEIGHT}px] border-t items-center justify-between w-full bg-card text-xs px-2 hidden sm:flex`)}>
                             {command ? (
                                 <span>Line：{command}</span>
                             ) : (

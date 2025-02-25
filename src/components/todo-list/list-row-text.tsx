@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils"
 import { TodoProps } from "@/types"
 import { Dispatch, MouseEvent, SetStateAction, useState } from "react"
 export const ListRowText = (
@@ -34,7 +35,7 @@ export const ListRowText = (
     const [isComp, setIsComp] = useState(false)
     return (
         <>
-            <div className={`${isView && "hidden"} ${className} border border-transparent `}>
+            <div className={cn(`${isView && "hidden"} border border-transparent `, className)}>
                 <button
                     tabIndex={-1}
                     autoFocus={currentIndex === index}
@@ -45,7 +46,7 @@ export const ListRowText = (
                     </span>
                 </button>
             </div >
-            <div className={`${!isView && "hidden"} ${className} border-2 border-primary rounded-md h-full w-[80%]`} onMouseDown={e => e.stopPropagation()}>
+            <div className={cn(`${!isView && "hidden"} border-2 border-primary rounded-md h-full w-[80%]`, className)} onMouseDown={e => e.stopPropagation()}>
                 <input
                     tabIndex={-1}
                     className={_classNameCont}

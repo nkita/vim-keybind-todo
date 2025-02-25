@@ -27,6 +27,7 @@ const App = ({
     exProjects,
     exLabels,
     currentProjectId,
+    height,
     TaskListHeader,
     TaskListTable,
     onChangePeriod,
@@ -40,6 +41,7 @@ const App = ({
     exProjects: ProjectProps[]
     exLabels: LabelProps[]
     currentProjectId: string
+    height: number
     scrollTop?: number
     setGanttcScrollTop?: (scrollTop: number) => void
     TaskListHeader?: React.FC<{
@@ -228,7 +230,7 @@ const App = ({
                     progress: viewProgress
                 })}
                 // ganttHeight={windowHeight - headerHeight}
-                ganttHeight={300}
+                ganttHeight={height ? height - 50 : 0}
                 columnWidth={columnWidth}
                 locale={"ja-JP"}
                 rowHeight={rowHeight}

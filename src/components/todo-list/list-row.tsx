@@ -1,7 +1,6 @@
 'use client'
 
 import { useSortable } from "@dnd-kit/sortable"
-import { TableRow, TableCell } from "../ui/table"
 import { CalendarDays, ChevronsUpDown, GripVertical, X } from "lucide-react"
 import { FaCircleCheck, FaRegCircle } from "react-icons/fa6"
 import { Star } from "lucide-react"
@@ -20,7 +19,8 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { DateRange } from "react-day-picker"
-
+import { TableViewRow as TableRow, TableViewCell as TableCell } from "@/components/ui/table-view"
+import { cn } from "@/lib/utils"
 dayjs.extend(relativeTime)
 dayjs.locale('ja')
 
@@ -39,7 +39,7 @@ export function TodoListRow({
     onChangePeriod,
     onClick,
     setCurrentIndex,
-    common_color_css, register, rhfSetValue, saveNewLabels, saveNewProject, table_idx_width, table_completion_width, table_task_width }
+    common_color_css, register, rhfSetValue, saveNewLabels, saveNewProject, table_task_width }
     : {
         t: TodoProps
         index: number
@@ -60,8 +60,6 @@ export function TodoListRow({
         rhfSetValue: (name: string, value: any) => void
         saveNewLabels: (id: string, name: string) => void
         saveNewProject: (id: string, name: string) => void
-        table_idx_width: string
-        table_completion_width: string
         table_task_width: string
     }
 
@@ -92,8 +90,8 @@ export function TodoListRow({
                 e.stopPropagation()
                 e.preventDefault()
             }}>
-            <TableCell className={`sticky left-0 text-sm text-right z-10 ${rowH} p-0 m-0 ${table_idx_width}`} {...listeners}>
-                <div className={`relative pl-2 pr-1 w-[2.0rem] flex items-center h-full ${common_color_css} hover:cursor-grab`}>
+            <TableCell className={`sticky left-0 text-sm text-right z-10 ${rowH} p-0 m-0 w-[30px]`} {...listeners}>
+                <div className={`relative pl-2 pr-1 w-[2.0rem] h-[99%] ${common_color_css} hover:cursor-grab`}>
                     <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-100 opacity-0 transition-all duration-200 overflow-hidden">
                         <GripVertical className="w-4 h-4 text-muted-foreground" />
                     </span>
@@ -102,7 +100,7 @@ export function TodoListRow({
                     </span>
                 </div>
             </TableCell>
-            <TableCell onClick={_ => onClick(index, 'completion')} className={` ${table_completion_width} group hover:cursor-pointer`}>
+            <TableCell onClick={_ => onClick(index, 'completion')} className={`w-[30px] group hover:cursor-pointer`}>
                 <div className="flex w-ful justify-center">
                     {mode === "select" && currentIndex === index ? (
                         <ChevronsUpDown className="text-primary h-3 w-3 " />
@@ -113,7 +111,7 @@ export function TodoListRow({
                     )}
                 </div>
             </TableCell>
-            <TableCell>
+            <TableCell className={`w-[calc(100%-60px)] sm:w-[calc(100%-60px)]`}>
                 <div className="flex w-full h-full justify-between  items-center relative">
                     <span className="text-primary/90 flex text-md">
                         {t.indent !== undefined &&
@@ -135,53 +133,49 @@ export function TodoListRow({
                     }
                     {t.priority === "2" && <Star className="w-3 h-3 text-destructive" strokeWidth={3} />}
                     {t.priority === "1" && <Star className="w-3 h-3 text-primary" strokeWidth={3} />}
-                    <div className="relative w-full pr-2 sm:pr-0 flex items-center gap-3 ">
-                        <ListRowText
-                            t={t}
-                            index={index}
-                            currentIndex={currentIndex}
-                            currentPrefix={prefix}
-                            className={`
-                               w-full sm:w-fit
+                    <div className="relative w-full flex items-center justify-between ">
+                        <div className="flex items-center gap-1 w-full">
+                            <ListRowText
+                                t={t}
+                                index={index}
+                                currentIndex={currentIndex}
+                                currentPrefix={prefix}
+                                className={`
                                ${t.priority === "1" && "text-primary"}
                                ${t.priority === "2" && "text-destructive"}
                                ${t.priority === "3" && "text-destructive font-semibold"}`}
-                            mode={mode}
-                            setIsComposing={setIsComposing}
-                            label={t.text}
-                            register={register} />
-                        {displayMode === "normal" &&
-                            <>
+                                mode={mode}
+                                setIsComposing={setIsComposing}
+                                label={t.text}
+                                register={register}
+                            />
+                        </div>
+                        {displayMode === "normal" && !(mode === "edit" && currentIndex === index) &&
+                            <div className="absolute right-2 hidden sm:flex text-4sm gap-1 bg-card/10 backdrop-blur-sm rounded-sm">
                                 {t.detail &&
-                                    <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center text-6sm px-2  text-muted-foreground border rounded-full`}>
+                                    <ListIconSpan>
                                         <StickyNote className="h-3 w-3" />メモ
-                                    </span>
+                                    </ListIconSpan>
                                 }
-                                {(t.labelId || (!currentProjectId && t.projectId)) &&
-                                    <div className="hidden sm:flex border rounded-full px-2 shadow-sm text-6sm">
-                                        {t.labelId &&
-                                            <span className={`whitespace-nowrap hidden sm:flex gap-1 pr-2  items-center  text-ex-label`}>
-                                                <Tag className="h-3 w-3" />
-                                                {lfind(exLabels, { id: t.labelId })?.name}
-                                            </span>
-                                        }
-                                        {!currentProjectId && t.projectId &&
-                                            <>
-                                                <span className={`whitespace-nowrap hidden sm:flex gap-1  items-center  rounded-full text-ex-project`}>
-                                                    <Box className="h-3 w-3" />
-                                                    {lfind(exProjects, { id: t.projectId })?.name}
-                                                </span>
-                                            </>
-                                        }
-                                    </div>
+                                {t.labelId &&
+                                    <ListIconSpan className={`text-ex-label`}>
+                                        <Tag className="h-3 w-3" />
+                                        {lfind(exLabels, { id: t.labelId })?.name}
+                                    </ListIconSpan>
                                 }
-                            </>
-                        }
-                        {onChangePeriod && (
-                            <div className="absolute right-0  sm:block text-4sm text-muted-foreground">
-                                <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
+                                {!currentProjectId && t.projectId &&
+                                    <ListIconSpan className={` text-ex-project`}>
+                                        <Box className="h-3 w-3" />
+                                        {lfind(exProjects, { id: t.projectId })?.name}
+                                    </ListIconSpan>
+                                }
                             </div>
-                        )}
+                        }
+                        {onChangePeriod && !(mode === "edit" && currentIndex === index) &&
+                            <ListIconSpan className={`absolute right-2 font-normal hover:border-primary transition-all duration-200`}>
+                                <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
+                            </ListIconSpan>
+                        }
                         <div className={`sm:hidden absolute right-0 w-[100px] bg-card/50 backdrop-blur-sm overflow-hidden flex px-2 items-center gap-2 justify-end`}>
                             {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
                             {t.projectId && <span className="bg-ex-project text-ex-project rounded-full w-2 h-2" />}
@@ -291,7 +285,7 @@ const PopupCalendar = ({
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <div className="flex items-center justify-center gap-1 rounded-md bg-card/50 px-2 backdrop-blur-xl hover:cursor-pointer border border-transparent hover:border-primary transition-all duration-200">
+                <div className="flex items-center">
                     <CalendarDays className="w-3 h-3" />
                     <span className="w-8 text-center">{formatDate(t.startDate)}</span> - <span className="w-8 text-center">{formatDateWithWarning(t.endDate)}</span>
                 </div>
@@ -313,5 +307,13 @@ const PopupCalendar = ({
                 </div>
             </PopoverContent>
         </Popover>
+    )
+}
+
+const ListIconSpan = ({ children, className }: { children: React.ReactNode, className?: string }) => {
+    return (
+        <div className={cn(`whitespace-nowrap gap-1 flex items-center text-4sm px-2 bg-card backdrop-blur-sm text-muted-foreground border shadow-sm rounded-sm`, className)}>
+            {children}
+        </div>
     )
 }

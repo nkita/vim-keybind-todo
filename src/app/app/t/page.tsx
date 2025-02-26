@@ -183,6 +183,7 @@ export default function Home() {
   }, [user, userLoading, todosLS, isUpdate, projectsLS])
 
   const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
+
   return (
     <AppPageTemplate>
       <article className={`h-screen w-screen ${open ? "md:w-[calc(100vw-16rem)]" : "md:w-[calc(100vw-3rem)]"}`}>

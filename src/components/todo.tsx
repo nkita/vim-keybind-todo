@@ -1116,13 +1116,14 @@ export const Todo = (
             setCurrentIndex(todoFunc.getIndexById(filteredTodos, overTodoId))
         }
     };
-
+    
     return (
         <>
             <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
                 <header className={cn(`shrink-0 h-[${HEADER_HEIGHT_SM}px] sm:h-[${HEADER_PROJECT_TAB_HEIGHT + HEADER_MENU_BAR_HEIGHT}px] gap-2 transition-[width,height] ease-linear bg-muted text-muted-foreground`)}>
                     <div
-                        className={cn(`relative w-full h-0 sm:h-[${HEADER_PROJECT_TAB_HEIGHT}px] border-b`)}>
+                        style={{ height: HEADER_PROJECT_TAB_HEIGHT }}
+                        className={cn(`hidden sm:block relative w-full border-b`)}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
                             <div ref={projectTop} />
                             {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
@@ -1201,8 +1202,28 @@ export const Todo = (
                         </div>
                     </div>
                 </header >
-                <div className="w-full bg-card">
+                <div className="w-full bg-muted">
                     <div style={{ height: contentHeight }} className="w-full" onMouseDown={handleMainMouseDown}>
+                        {loading &&
+                            <div className="flex flex-col gap-6 justify-center items-center h-screen w-full">
+                                <div className="flex space-x-2">
+                                    {[0, 1, 2, 3].map((index) => (
+                                        <div
+                                            key={index}
+                                            className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                                            style={{
+                                                animationDelay: `${index * 0.15}s`,
+                                                animationDuration: '0.8s'
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                                <div className="flex flex-col items-center gap-1">
+                                    <span className="font-semibold text-primary">データを読み込み中</span>
+                                    <span className="text-sm text-muted-foreground">少々お待ちください...</span>
+                                </div>
+                            </div>
+                        }
                         {displayMode === "Ganttc" &&
                             <>
                                 <div
@@ -1228,7 +1249,7 @@ export const Todo = (
                                         register={register}
                                         rhfSetValue={setValue}
                                         onChangePeriod={handlePeriodChange}
-                                        height={contentHeight-20}
+                                        height={contentHeight - 20}
                                     />
                                 </div>
                                 <div className="flex sm:hidden text-muted-foreground text-xs justify-center items-center h-full">
@@ -1303,7 +1324,7 @@ export const Todo = (
                                 </ResizablePanel>
                             </ResizablePanelGroup>
                         }
-                        <div className={cn(`h-[${BOTTOM_MENU_HEIGHT}px] border-t items-center justify-between w-full bg-card text-xs px-2 hidden sm:flex`)}>
+                        <div className={cn(`h-[${BOTTOM_MENU_HEIGHT}px] absolute bottom-0 border-t items-center justify-between w-full bg-card text-xs px-2 hidden sm:flex`)}>
                             {command ? (
                                 <span>Line：{command}</span>
                             ) : (

@@ -2,7 +2,6 @@
 import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from "react"
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
-import { Table, TableRow, TableBody, TableCell } from "../ui/table"
 import { TodoContext } from "@/provider/todo";
 import { postSaveLabels, postSaveProjects } from "@/lib/todo"
 import { TodoListRow } from "./list-row"
@@ -10,6 +9,7 @@ import {
     SortableContext,
     verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { TableView as Table, TableViewBody as TableBody, TableViewRow as TableRow, TableViewCell as TableCell } from "@/components/ui/table-view";
 
 export const List = (
     {
@@ -56,9 +56,6 @@ export const List = (
     const config = useContext(TodoContext)
     const [table_task_width, set_table_task_width] = useState("w-[calc(100%-90px)] sm:w-[calc(70%-90px)]")
 
-    const table_idx_width = "w-[30px]"
-    const table_completion_width = "w-[30px]"
-
 
     const saveNewProject = (id: string, name: string) => {
         const _project = { id: id, name: name, isPublic: false, isTabDisplay: true, sort: exProjects.length }
@@ -92,7 +89,7 @@ export const List = (
     }, [currentProjectId])
     return (
         <Table>
-            <TableBody className=" text-sm border-b">
+            <TableBody className="text-sm">
                 {loading &&
                     <TableRow className={`bg-accent text-accent-foreground font-semibold text-center`}>
                         <TableCell className="h-full">Loading...</TableCell>
@@ -102,8 +99,8 @@ export const List = (
                     <>
                         {filteredTodos.length === 0 ? (
                             <>
-                                <TableRow className="text-center  text-muted-foreground text-xs">
-                                    <TableCell className="p-4 border-none"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
+                                <TableRow className="text-center text-muted-foreground text-xs border-none">
+                                    <TableCell className="p-4 w-full"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
                                 </TableRow>
                             </>
                         ) : (
@@ -148,9 +145,7 @@ export const List = (
                                                     rhfSetValue={rhfSetValue}
                                                     saveNewLabels={saveNewLabels}
                                                     saveNewProject={saveNewProject}
-                                                    table_idx_width={table_idx_width}
                                                     setIsComposing={setIsComposing}
-                                                    table_completion_width={table_completion_width}
                                                     table_task_width={table_task_width}
                                                     displayMode={displayMode}
                                                 />

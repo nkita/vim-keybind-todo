@@ -5,8 +5,9 @@ import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { List } from "./list"
 import Ganttc from "./ganttc"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
-import { GanttChart } from "lucide-react"
+import { Edit, ArrowLeftRight, ArrowDown, GanttChart, Check, Plus, TentTree } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { QuickUsage } from "../usage-quick"
 interface GanttcListProps {
     filteredTodos: TodoProps[]
     currentIndex: number
@@ -139,6 +140,15 @@ export const GanttcList = ({
             });
         }
     }, [ganttcScrollTop]);
+    if (!loading && filteredTodos.length === 0) {
+        return (
+            <div className="flex flex-col justify-center items-center h-full w-full text-muted-foreground bg-card">
+                <TentTree className="w-7 h-7" />
+                <span className="py-4">タスクを追加、または選択してください。</span>
+                <QuickUsage className="" />
+            </div>
+        )
+    }
 
     return (
         <>
@@ -153,14 +163,14 @@ export const GanttcList = ({
             ) : (
                 <div
                     style={{ height: `${height}px` }}
-                    className={`w-full relative table-scrollbar`} >
+                    className={`w-full relative bg-muted`} >
                     <div
                         style={{ width: `${headerWidth}px`, height: `${height}px` }}
-                        className="absolute left-0 overflow-auto z-10 ">
-                        <div className="relative overflow-auto no-scrollbar h-full" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
+                        className="absolute left-0 overflow-auto z-10 bg-muted">
+                        <div className="relative overflow-auto  h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <div
                                 style={{ width: `${headerWidth}px` }}
-                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
+                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b  bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
                             >
                                 <span className="px-4 items-center gap-2 flex">
                                     <GanttChart className="w-4 h-4" />ガントチャートモード
@@ -170,6 +180,10 @@ export const GanttcList = ({
                                     onMouseDown={handleMouseDown}
                                 />
                             </div>
+                            <div
+                                className="absolute top-0 right-0 w-[1px]  hover:w-[2px] bg-muted  h-full cursor-col-resize z-20"
+                                onMouseDown={handleMouseDown}
+                            />
                             <List
                                 filteredTodos={filteredTodos}
                                 currentIndex={currentIndex}
@@ -190,36 +204,39 @@ export const GanttcList = ({
                                 rhfSetValue={rhfSetValue}
                             />
                         </div>
+                        <QuickUsage className="absolute bottom-1 z-0" />
                     </div>
-                    <Ganttc
-                        scrollTop={scrollTop}
-                        setGanttcScrollTop={setGanttcScrollTop}
-                        filteredTodos={filteredTodos}
-                        currentIndex={currentIndex}
-                        prefix={prefix}
-                        mode={mode}
-                        exProjects={exProjects}
-                        exLabels={exLabels}
-                        currentProjectId={currentProjectId}
-                        onChangePeriod={onChangePeriod}
-                        height={height}
-                        TaskListHeader={() => {
-                            return (
-                                <div
-                                    style={{ width: `${headerWidth}px` }}
-                                    className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm "
-                                >
-                                </div>
-                            )
-                        }}
-                        TaskListTable={() => {
-                            return (
-                                <div
-                                    style={{ width: `${headerWidth}px` }}
-                                />
-                            )
-                        }}
-                    />
+                    <div className="z-10 bg-muted">
+                        <Ganttc
+                            scrollTop={scrollTop}
+                            setGanttcScrollTop={setGanttcScrollTop}
+                            filteredTodos={filteredTodos}
+                            currentIndex={currentIndex}
+                            prefix={prefix}
+                            mode={mode}
+                            exProjects={exProjects}
+                            exLabels={exLabels}
+                            currentProjectId={currentProjectId}
+                            onChangePeriod={onChangePeriod}
+                            height={height}
+                            TaskListHeader={() => {
+                                return (
+                                    <div
+                                        style={{ width: `${headerWidth}px` }}
+                                        className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm "
+                                    >
+                                    </div>
+                                )
+                            }}
+                            TaskListTable={() => {
+                                return (
+                                    <div
+                                        style={{ width: `${headerWidth}px` }}
+                                    />
+                                )
+                            }}
+                        />
+                    </div>
                 </div >
             )}
         </>

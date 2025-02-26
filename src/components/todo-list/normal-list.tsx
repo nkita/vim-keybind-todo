@@ -63,7 +63,7 @@ export const NormalList = (
                     </div>
                 }
                 <div className={`relative w-full ${loading && "hidden"}  ${hcssMainHeight} table-scrollbar`} >
-                    <div className="hidden sm:flex text-muted-foreground text-xs items-center justify-between w-full  h-[50px] border-b bg-card/80 backdrop-blur-sm sticky top-0 z-30 shadow-sm">
+                    <div className="hidden sm:flex text-muted-foreground text-xs items-center justify-between w-full  h-[50px] border-b bg-card sticky top-0 z-30 shadow-sm">
                         <span className="px-4 items-center gap-2 flex"><ListTodo className="w-4 h-4" />リストモード</span>
                         {/* <span className="px-4">タイトル</span> */}
                     </div>

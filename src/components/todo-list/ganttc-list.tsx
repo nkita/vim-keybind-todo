@@ -64,10 +64,20 @@ export const GanttcList = ({
     // 画面幅の状態管理
     const [maxWidth, setMaxWidth] = useState(() => window.innerWidth * 0.8);
 
+    // ガントチャートの高さを管理
+    const [ganttcHeight, setGanttcHeight] = useState(height);
+
     // ヘッダー幅が最大幅を超えないように監視
     useEffect(() => {
         headerWidthRef.current = headerWidth;
     }, [headerWidth]);
+
+    // ガントチャートの高さを管理
+    useEffect(() => {
+        const rowH = 35;
+        const h = filteredTodos.length * rowH + 50;
+        setGanttcHeight(height > h ? h : height);
+    }, [height, filteredTodos]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -166,11 +176,11 @@ export const GanttcList = ({
                     className={`w-full relative bg-muted`} >
                     <div
                         style={{ width: `${headerWidth}px`, height: `${height}px` }}
-                        className="absolute left-0 overflow-auto z-10 bg-muted">
-                        <div className="relative overflow-auto  h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
+                        className="absolute left-0 overflow-hidden z-10 bg-muted">
+                        <div className="relative overflow-hidden h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <div
                                 style={{ width: `${headerWidth}px` }}
-                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b  bg-card/80 backdrop-blur-sm z-20 sticky top-0 shadow-sm"
+                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b  bg-card  z-20 sticky top-0 shadow-sm"
                             >
                                 <span className="px-4 items-center gap-2 flex">
                                     <GanttChart className="w-4 h-4" />ガントチャートモード
@@ -204,40 +214,38 @@ export const GanttcList = ({
                                 rhfSetValue={rhfSetValue}
                             />
                         </div>
-                        <QuickUsage className="absolute bottom-1 z-0" />
+                        <QuickUsage className="absolute bottom-1 z-0 opacity-60" />
                     </div>
-                    <div className="z-10 bg-muted">
-                        <Ganttc
-                            scrollTop={scrollTop}
-                            setGanttcScrollTop={setGanttcScrollTop}
-                            filteredTodos={filteredTodos}
-                            currentIndex={currentIndex}
-                            prefix={prefix}
-                            mode={mode}
-                            exProjects={exProjects}
-                            exLabels={exLabels}
-                            currentProjectId={currentProjectId}
-                            onChangePeriod={onChangePeriod}
-                            height={height}
-                            TaskListHeader={() => {
-                                return (
-                                    <div
-                                        style={{ width: `${headerWidth}px` }}
-                                        className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm "
-                                    >
-                                    </div>
-                                )
-                            }}
-                            TaskListTable={() => {
-                                return (
-                                    <div
-                                        style={{ width: `${headerWidth}px` }}
-                                    />
-                                )
-                            }}
-                        />
-                    </div>
-                </div >
+                    <Ganttc
+                        scrollTop={scrollTop}
+                        setGanttcScrollTop={setGanttcScrollTop}
+                        filteredTodos={filteredTodos}
+                        currentIndex={currentIndex}
+                        prefix={prefix}
+                        mode={mode}
+                        exProjects={exProjects}
+                        exLabels={exLabels}
+                        currentProjectId={currentProjectId}
+                        onChangePeriod={onChangePeriod}
+                        height={ganttcHeight}
+                        TaskListHeader={() => {
+                            return (
+                                <div
+                                    style={{ width: `${headerWidth}px` }}
+                                    className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b bg-card/80 backdrop-blur-sm z-20 shadow-sm "
+                                >
+                                </div>
+                            )
+                        }}
+                        TaskListTable={() => {
+                            return (
+                                <div
+                                    style={{ width: `${headerWidth}px` }}
+                                />
+                            )
+                        }}
+                    />
+                </div>
             )}
         </>
     )

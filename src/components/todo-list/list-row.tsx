@@ -21,6 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover"
 import { DateRange } from "react-day-picker"
 import { TableViewRow as TableRow, TableViewCell as TableCell } from "@/components/ui/table-view"
 import { cn } from "@/lib/utils"
+import { ListTag } from "../ui/list-tag"
 dayjs.extend(relativeTime)
 dayjs.locale('ja')
 
@@ -153,28 +154,28 @@ export function TodoListRow({
                         {displayMode === "normal" && !(mode === "edit" && currentIndex === index) &&
                             <div className="absolute right-2 hidden sm:flex text-4sm gap-1 bg-card/10 backdrop-blur-sm rounded-sm">
                                 {t.detail &&
-                                    <ListIconSpan>
+                                    <ListTag>
                                         <StickyNote className="h-3 w-3" />メモ
-                                    </ListIconSpan>
+                                    </ListTag>
                                 }
                                 {t.labelId &&
-                                    <ListIconSpan className={`text-ex-label`}>
+                                    <ListTag className={`text-ex-label`}>
                                         <Tag className="h-3 w-3" />
                                         {lfind(exLabels, { id: t.labelId })?.name}
-                                    </ListIconSpan>
+                                    </ListTag>
                                 }
                                 {!currentProjectId && t.projectId &&
-                                    <ListIconSpan className={` text-ex-project`}>
+                                    <ListTag className={` text-ex-project`}>
                                         <Box className="h-3 w-3" />
                                         {lfind(exProjects, { id: t.projectId })?.name}
-                                    </ListIconSpan>
+                                    </ListTag>
                                 }
                             </div>
                         }
                         {onChangePeriod && !(mode === "edit" && currentIndex === index) &&
-                            <ListIconSpan className={`absolute right-2 font-normal hover:border-primary transition-all duration-200`}>
+                            <ListTag className={`absolute right-2 font-normal hover:border-primary transition-all duration-200`}>
                                 <PopupCalendar t={t} onChangePeriod={onChangePeriod} />
-                            </ListIconSpan>
+                            </ListTag>
                         }
                         <div className={`sm:hidden absolute right-0 w-[100px] bg-card/50 backdrop-blur-sm overflow-hidden flex px-2 items-center gap-2 justify-end`}>
                             {t.labelId && <span className="bg-ex-label text-ex-label rounded-full w-2 h-2" />}
@@ -307,13 +308,5 @@ const PopupCalendar = ({
                 </div>
             </PopoverContent>
         </Popover>
-    )
-}
-
-const ListIconSpan = ({ children, className }: { children: React.ReactNode, className?: string }) => {
-    return (
-        <div className={cn(`whitespace-nowrap gap-1 flex items-center text-4sm px-2 bg-card backdrop-blur-sm text-muted-foreground border shadow-sm rounded-sm`, className)}>
-            {children}
-        </div>
     )
 }

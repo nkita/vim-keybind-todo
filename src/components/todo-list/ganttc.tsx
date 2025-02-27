@@ -1,23 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Task, Configuration, MessageType, GanttList, TaskType } from "./ganttc/common/types/public-types";
+import { Task, TaskType } from "./ganttc/common/types/public-types";
 import { Gantt, ViewMode, GanttRef } from "@nkita/gantt-task-react";
-// import { PeriodSwitch } from "./ganttc/components/period-switch";
-// import { AddTaskForm } from "./ganttc/components/add-task-form";
-import { yyyymmddhhmmss } from "@/lib/time";
-import { convertToggle2Flag, getStartEndDateForProject, initTasks, removeLocalStorageData, useWindowHeight } from "./ganttc/helper";
-import { TaskListHeader } from "./ganttc/components/task-list-header";
-import { TaskListColumn } from "./ganttc/components/task-list-table";
-// import { seedDates, ganttDateRange } from "./helpers/date-helper";
-import styles from "./ganttc/index.module.css";
-import commonStyles from "./ganttc/css/index.module.css";
+import { Box, StickyNote, Tag } from "lucide-react";
 
 import "@nkita/gantt-task-react/dist/index.css";
 import { TodoProps } from "@/types";
 import { ProjectProps } from "@/types";
 import { LabelProps } from "@/types";
 import { TentTree } from "lucide-react";
-import { Button } from "../ui/button";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
+import { ListTag } from "../ui/list-tag";
 
 // Init
 const App = ({
@@ -33,7 +25,8 @@ const App = ({
     TaskListTable,
     onChangePeriod,
     scrollTop,
-    setGanttcScrollTop
+    setGanttcScrollTop,
+    setCurrentIndex
 }: {
     filteredTodos: TodoProps[]
     currentIndex: number
@@ -45,6 +38,7 @@ const App = ({
     height: number
     scrollTop?: number
     setGanttcScrollTop?: (scrollTop: number) => void
+    setCurrentIndex: (index: number) => void
     TaskListHeader?: React.FC<{
         rowHeight: number;
         rowWidth: string;
@@ -67,16 +61,6 @@ const App = ({
 }) => {
     const [view, setView] = useLocalStorage<ViewMode>("ganttc_view", ViewMode.Month);
     const [viewDate, setViewDate] = useState(new Date());
-    // const [tasks, setTasks] = useState<Task[]>(initTasks());
-    // const [notifyType, setNotifyType] = useState("info");
-    // const [notifyMessage, setNotifyMessage] = useState("");
-    const [title, setTitle] = useState("");
-    const [viewTask, setViewTask] = useState(0);
-    const [viewTitle, setViewTitle] = useState(true);
-    const [viewPeriod, setViewPeriod] = useState(true);
-    const [viewProgress, setViewProgress] = useState(true);
-    const [saveButtonFlg, setSaveButtonDisable] = useState(true);
-    const [saveHistory, setSaveHistory] = useState<Configuration[]>([]);
 
     const ganttRef = useRef<GanttRef>(null);
 
@@ -89,25 +73,10 @@ const App = ({
         }
     }, [scrollTop]);
 
-    // ガントチャート切り替え対応
-    const [glist, setGList] = useState<GanttList[]>([]);
-    const [currentG, setCurrentG] = useState<GanttList | null>(null);
 
-    const windowHeight = useWindowHeight();
     const rowHeight = 35;
-    const headerHeight = 210;
 
-    // キー名
-    const localStorageGanttListKey = 'ganttc_list';
-    const localStorageInformationKey = 'information';
-
-    //   const message = (message: string, type: MessageType) => <Message showIcon type={type}>{message}</Message>;
-    //   const info = (msg: string) => {
-    //     if (msg !== "") toaster.push(message(msg, "success"));
-    //   }
-
-    // const [scrollX, setScrollX] = useState(-1);
-    let columnWidth = 23;
+    let columnWidth = 25;
     if (view === ViewMode.Month) {
         columnWidth = 200;
     } else if (view === ViewMode.Week) {
@@ -124,49 +93,9 @@ const App = ({
         progress: t.is_complete ? 100 : 0,
     }));
 
-    //  First process. 
-    const handleSave = (createNewGC: boolean = false) => {
-    }
-    // const escFunction = React.useCallback((event:any) => {
-    //   if (event.keyCode === 27) {
-    //     // キーコードを判定して何かする。
-    //     console.log("Esc Key is pressed!");
-    //   }
-    // }, []);
-
-    // useEffect(() => {
-    //   document.addEventListener("keydown", escFunction, false);
-    // }, []);
-
     const handleTaskChange = (task: Task) => {
         onChangePeriod(task.id, task.start, task.end)
     };
-
-    const handleTaskAdd = (task: Task) => {
-    };
-
-
-    const handleTaskDelete = (task: Task) => {
-    };
-
-    // const handleProgressChange = async (task: Task) => {
-    //   setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
-    //   console.log("On progress change Id:" + task.id);
-    // };
-
-    const handleDblClick = (task: Task) => {
-        // alert("On Double Click event Id:" + task.id);
-    };
-
-    // タスクの削除、入れ替え処理をこの関数で行う。
-    const handleSelect = (task: Task, isSelected: boolean) => {
-    };
-
-    const handleExpanderClick = (task: Task) => {
-        // setTasks(tasks.map((t) => (t.id === task.id ? task : t)));
-        // console.log("On expander click Id:" + task.id);
-    };
-
 
     const end = new Date();
     end.setDate(end.getDate() + 1);
@@ -190,10 +119,16 @@ const App = ({
         setView(mode);
     };
 
+    const handleTaskClick = (task: Task) => {
+        const index = filteredTodos.findIndex(t => t.id === task.id);
+        if (index !== -1) {
+            setCurrentIndex(index);
+        }
+    }
+
     return (
         <div className="relative">
             <Gantt
-                onScrollChange={handleGanntcScrollChange}
                 ref={ganttRef}
                 tasks={tasks}
                 viewMode={view}
@@ -209,74 +144,140 @@ const App = ({
                     ) : null
                 }
                 TaskListTable={TaskListTable}
-                onDateChange={handleTaskChange}
-                onDelete={handleTaskDelete}
-                onDoubleClick={handleDblClick}
-                onSelect={handleSelect}
-                onExpanderClick={handleExpanderClick}
                 preStepsCount={2}
-                handleWidth={5}
+                handleWidth={6}
                 viewDate={viewDate}
-                // viewTask={12}
-                listCellWidth={convertToggle2Flag({
-                    title: viewTitle,
-                    icon: viewTitle,
-                    period: viewPeriod,
-                    progress: viewProgress
-                })}
-                // ganttHeight={windowHeight - headerHeight}
                 ganttHeight={height ? height - 50 : 0}
                 columnWidth={columnWidth}
                 locale={"ja-JP"}
                 rowHeight={rowHeight}
                 timeStep={86400000}
+                fontSize={"12px"}
                 fontFamily={"proxima-nova, 'Helvetica Neue', Helvetica, Arial, sans-serif,'proxima-nova','Helvetica Neue',Helvetica,Arial,sans-serif"}
-                todayColor="rgba(255, 0, 0, 0.1)" // 透過の赤で薄い感じに変更
+                todayColor="rgba(255, 0, 0, 0.1)"
                 holidayColor={view === ViewMode.Day ? "rgba(230, 230, 230, 0.5)" : "rgba(255, 0, 0, 0)"}
                 currentLineColor="rgba(224, 242, 254, 0.7)"
                 currentLineTaskId={filteredTodos[currentIndex] ? filteredTodos[currentIndex].id : ""}
+                onDateChange={handleTaskChange}
+                onClick={handleTaskClick}
+                onScrollChange={handleGanntcScrollChange}
+                TooltipContent={({ task }) => (
+                    <TooltipContentCustom
+                        task={task}
+                        filteredTodos={filteredTodos}
+                        exProjects={exProjects}
+                        exLabels={exLabels}
+                    />
+                )}
             />
-            <div
-                className="absolute right-[10px] bottom-[20px] z-10 flex items-center gap-2">
-                <div className="flex items-center p-1 bg-background border rounded-md shadow-md">
-                    <button
-                        onClick={() => {
-                            const prevDay = new Date();
-                            prevDay.setDate(prevDay.getDate() - 2);
-                            setViewDate(prevDay);
-                        }}
-                        className={`z-10 px-3 py-1 text-xs rounded-sm transition-all duration-200 hover:bg-accent `}
-                    >
-                        今日
-                    </button>
-                </div>
-                <div className="flex items-center p-1 bg-background border rounded-md shadow-md">
-                    <div className="relative flex items-center">
-                        <button
-                            onClick={() => handleViewModeChange(ViewMode.Month)}
-                            className={`z-10 px-3 py-1 text-xs rounded-md transition-all duration-200 ${view === ViewMode.Month ? 'text-primary-foreground font-medium' : 'text-muted-foreground hover:bg-accent'}`}
-                        >
-                            月
-                        </button>
-                        <button
-                            onClick={() => handleViewModeChange(ViewMode.Day)}
-                            className={`z-10 px-3 py-1 text-xs rounded-md transition-all duration-200 ${view === ViewMode.Day ? 'text-primary-foreground font-medium' : 'text-muted-foreground hover:bg-accent'}`}
-                        >
-                            日
-                        </button>
-                        <div
-                            className="absolute top-0 left-0 h-full bg-primary rounded-sm transition-all duration-300 shadow-sm"
-                            style={{
-                                width: '50%',
-                                transform: view === ViewMode.Month ? 'translateX(0)' : 'translateX(100%)'
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
+            <BottomButton
+                viewDate={viewDate}
+                setViewDate={setViewDate}
+                handleViewModeChange={handleViewModeChange}
+                view={view}
+            />
         </div>
     );
 };
 
+const TooltipContentCustom = ({ task, filteredTodos, exProjects, exLabels }: { task: Task, filteredTodos: TodoProps[], exProjects: ProjectProps[], exLabels: LabelProps[] }) => {
+    // タスクに対応するTodoを検索
+    const todo = filteredTodos.find(t => t.id === task.id);
+    // プロジェクト情報を取得
+    const project = todo && todo.projectId ? exProjects.find(p => p.id === todo.projectId) : null;
+    // ラベル情報を取得
+    const labels = todo && todo.labelId ?
+        [exLabels.find(l => l.id === todo.labelId)] : [];
+
+    const detail = todo && todo.detail ? todo.detail : "";
+    // 日付フォーマット関数
+    const formatDateWithDay = (date: Date) => {
+        return `${date.toLocaleDateString('ja-JP')} (${['日', '月', '火', '水', '木', '金', '土'][date.getDay()]})`;
+    };
+
+    return (
+        <div className="p-3 bg-popover border rounded-md shadow-md max-w-xs">
+            <h3 className="font-medium text-sm mb-2">{task.name}</h3>
+            <div className="text-xs space-y-4 text-muted-foreground">
+                <div className="flex items-center gap-2">
+                    {formatDateWithDay(task.start)} 〜 {formatDateWithDay(task.end)}
+                </div>
+                <div className="flex flex-wrap gap-1">
+                    {detail && (
+                        <ListTag>
+                            <StickyNote className="h-3 w-3" />
+                            メモ
+                        </ListTag>
+                    )}
+                    {project && (
+                        <ListTag className={`text-ex-project`}>
+                            <Box className="h-3 w-3" />
+                            {project.name}
+                        </ListTag>
+                    )}
+
+                    {labels.length > 0 && labels.map((label, i) => label && (
+                        <ListTag className={`text-ex-label`} key={`label-${label.id}-${i}`}>
+                            <Tag className="h-3 w-3" />
+                            {label.name}
+                        </ListTag>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+const BottomButton = ({
+    viewDate,
+    setViewDate,
+    handleViewModeChange,
+    view
+}: {
+    viewDate: Date
+    setViewDate: (date: Date) => void
+    handleViewModeChange: (mode: ViewMode) => void
+    view: ViewMode
+}) => {
+    return (
+        <div className="absolute right-[10px] top-[50px] z-10 flex items-center gap-2">
+            <div className="flex items-center p-1 bg-background border rounded-md shadow-md">
+                <button
+                    onClick={() => {
+                        const prevDay = new Date();
+                        prevDay.setDate(prevDay.getDate() - 2);
+                        setViewDate(prevDay);
+                    }}
+                    className={`z-10 px-3 py-1 text-xs rounded-sm transition-all duration-200 hover:bg-accent `}
+                >
+                    今日
+                </button>
+            </div>
+            <div className="flex items-center p-1 bg-background border rounded-md shadow-md">
+                <div className="relative flex items-center">
+                    <button
+                        onClick={() => handleViewModeChange(ViewMode.Month)}
+                        className={`z-10 px-3 py-1 text-xs rounded-md transition-all duration-200 ${view === ViewMode.Month ? 'text-primary-foreground font-medium' : 'text-muted-foreground hover:bg-accent'}`}
+                    >
+                        月
+                    </button>
+                    <button
+                        onClick={() => handleViewModeChange(ViewMode.Day)}
+                        className={`z-10 px-3 py-1 text-xs rounded-md transition-all duration-200 ${view === ViewMode.Day ? 'text-primary-foreground font-medium' : 'text-muted-foreground hover:bg-accent'}`}
+                    >
+                        日
+                    </button>
+                    <div
+                        className="absolute top-0 left-0 h-full bg-primary rounded-sm transition-all duration-300 shadow-sm"
+                        style={{
+                            width: '50%',
+                            transform: view === ViewMode.Month ? 'translateX(0)' : 'translateX(100%)'
+                        }}
+                    />
+                </div>
+            </div>
+        </div>
+    )
+}
 
 export default App;

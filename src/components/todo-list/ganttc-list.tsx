@@ -228,6 +228,7 @@ export const GanttcList = ({
                         currentProjectId={currentProjectId}
                         onChangePeriod={onChangePeriod}
                         height={ganttcHeight}
+                        setCurrentIndex={setCurrentIndex}
                         TaskListHeader={() => {
                             return (
                                 <div

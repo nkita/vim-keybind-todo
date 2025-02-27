@@ -71,16 +71,16 @@ const ProjectTabContent = dynamic(() => Promise.resolve(({
             {...attributes}
             {...listeners}
             className={`
-                ${(!isDragging && isOver) ? "bg-primary2/10" : current ? "bg-card border-t-primary border-t border-x" : "bg-muted"}
+                ${(!isDragging && isOver) ? "bg-primary2/10" : current ? "bg-card border-t-primary border-t border-x" : "bg-muted hover:bg-accent"}
                 h-full relative flex items-center  pr-2
                 `}
             ref={setNodeRefSortable}
+            onMouseDown={e => {
+                onClick(index, 'projectTab')
+            }}
         >
             <button
                 ref={setNodeRefDroppable}
-                onMouseDown={e => {
-                    onClick(index, 'projectTab')
-                }}
                 className={`text-xs focus-within:outline-none pl-4`}>
                 <span className={`flex gap-1 items-center`} >
                     {project ? (
@@ -90,7 +90,7 @@ const ProjectTabContent = dynamic(() => Promise.resolve(({
                     )}
                 </span >
             </button >
-            {(project && setProjects) && <button tabIndex={-1} className={`m-1 p-1 border border-transparent rounded-sm hover:border-primary `} onMouseDown={handleHidden}><X className="h-3 w-3" /></button>}
+            {(project && setProjects) && <button tabIndex={-1} className={`m-1 p-1 border border-transparent rounded-full hover:bg-primary/10 `} onMouseDown={handleHidden}><X className="h-3 w-3" /></button>}
             <div className={`absolute inset-y-1/4 right-0 h-1/2 border-r ${current || prevCurrent ? "border-transparent" : "border"} `}></div>
         </div>
     )

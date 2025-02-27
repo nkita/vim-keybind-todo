@@ -16,7 +16,8 @@ import { TodoProps } from "@/types";
 import { ProjectProps } from "@/types";
 import { LabelProps } from "@/types";
 import { TentTree } from "lucide-react";
-
+import { Button } from "../ui/button";
+import { useLocalStorage } from "@/hook/useLocalStrorage";
 
 // Init
 const App = ({
@@ -64,7 +65,8 @@ const App = ({
     }>
     onChangePeriod: (todoId: string, startDate: Date, endDate: Date) => void
 }) => {
-    const [view, setView] = useState<ViewMode>(ViewMode.Day);
+    const [view, setView] = useLocalStorage<ViewMode>("ganttc_view", ViewMode.Month);
+    const [viewDate, setViewDate] = useState(new Date());
     // const [tasks, setTasks] = useState<Task[]>(initTasks());
     // const [notifyType, setNotifyType] = useState("info");
     // const [notifyMessage, setNotifyMessage] = useState("");
@@ -94,8 +96,6 @@ const App = ({
     const windowHeight = useWindowHeight();
     const rowHeight = 35;
     const headerHeight = 210;
-    const date = new Date();
-    const currentDate = new Date(date.getFullYear(), date.getMonth(), date.getDay());
 
     // キー名
     const localStorageGanttListKey = 'ganttc_list';
@@ -145,13 +145,6 @@ const App = ({
     const handleTaskAdd = (task: Task) => {
     };
 
-    const handleGCDelete = () => {
-    };
-
-    const handleChangeGC = (localStorageGanttChartKey: string) => {
-
-    };
-
 
     const handleTaskDelete = (task: Task) => {
     };
@@ -184,9 +177,6 @@ const App = ({
                 <TentTree className="w-7 h-7" />
                 タスクを追加、または選択してください。
             </div>
-            // <div className="flex justify-center items-center h-full w-full text-muted-foreground">
-            //     <TentTree /> <span className="ml-2 ">No Data </span>
-            // </div>
         )
     }
 
@@ -195,8 +185,13 @@ const App = ({
             setGanttcScrollTop(scrollTop);
         }
     }
+
+    const handleViewModeChange = (mode: ViewMode) => {
+        setView(mode);
+    };
+
     return (
-        <>
+        <div className="relative">
             <Gantt
                 onScrollChange={handleGanntcScrollChange}
                 ref={ganttRef}
@@ -221,7 +216,7 @@ const App = ({
                 onExpanderClick={handleExpanderClick}
                 preStepsCount={2}
                 handleWidth={5}
-                viewDate={currentDate}
+                viewDate={viewDate}
                 // viewTask={12}
                 listCellWidth={convertToggle2Flag({
                     title: viewTitle,
@@ -236,12 +231,50 @@ const App = ({
                 rowHeight={rowHeight}
                 timeStep={86400000}
                 fontFamily={"proxima-nova, 'Helvetica Neue', Helvetica, Arial, sans-serif,'proxima-nova','Helvetica Neue',Helvetica,Arial,sans-serif"}
-                // todayColor="#E0F2FE" // bg-sky-100
-                holidayColor="rgba(230, 230, 230, 0.5)"
+                todayColor="rgba(255, 0, 0, 0.1)" // 透過の赤で薄い感じに変更
+                holidayColor={view === ViewMode.Day ? "rgba(230, 230, 230, 0.5)" : "rgba(255, 0, 0, 0)"}
                 currentLineColor="rgba(224, 242, 254, 0.7)"
                 currentLineTaskId={filteredTodos[currentIndex] ? filteredTodos[currentIndex].id : ""}
             />
-        </>
+            <div
+                className="absolute right-[10px] bottom-[20px] z-10 flex items-center gap-2">
+                <div className="flex items-center p-1 bg-background border rounded-md shadow-md">
+                    <button
+                        onClick={() => {
+                            const prevDay = new Date();
+                            prevDay.setDate(prevDay.getDate() - 2);
+                            setViewDate(prevDay);
+                        }}
+                        className={`z-10 px-3 py-1 text-xs rounded-sm transition-all duration-200 hover:bg-accent `}
+                    >
+                        今日
+                    </button>
+                </div>
+                <div className="flex items-center p-1 bg-background border rounded-md shadow-md">
+                    <div className="relative flex items-center">
+                        <button
+                            onClick={() => handleViewModeChange(ViewMode.Month)}
+                            className={`z-10 px-3 py-1 text-xs rounded-md transition-all duration-200 ${view === ViewMode.Month ? 'text-primary-foreground font-medium' : 'text-muted-foreground hover:bg-accent'}`}
+                        >
+                            月
+                        </button>
+                        <button
+                            onClick={() => handleViewModeChange(ViewMode.Day)}
+                            className={`z-10 px-3 py-1 text-xs rounded-md transition-all duration-200 ${view === ViewMode.Day ? 'text-primary-foreground font-medium' : 'text-muted-foreground hover:bg-accent'}`}
+                        >
+                            日
+                        </button>
+                        <div
+                            className="absolute top-0 left-0 h-full bg-primary rounded-sm transition-all duration-300 shadow-sm"
+                            style={{
+                                width: '50%',
+                                transform: view === ViewMode.Month ? 'translateX(0)' : 'translateX(100%)'
+                            }}
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 

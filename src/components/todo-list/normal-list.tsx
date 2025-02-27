@@ -3,11 +3,7 @@ import React, { Dispatch, SetStateAction } from "react"
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
 import { List } from "./list"
-import { ArrowUpDown, ListTodo } from "lucide-react"
-import { Plus } from "lucide-react"
-import { ArrowLeftRight } from "lucide-react"
-import { Check } from "lucide-react"
-import { Edit } from "lucide-react"
+import { ListTodo } from "lucide-react"
 import { QuickUsage } from "../usage-quick"
 
 export const NormalList = (

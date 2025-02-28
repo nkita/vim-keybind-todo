@@ -197,7 +197,6 @@ const App = ({
                 setViewDate={setViewDate}
                 handleViewModeChange={handleViewModeChange}
                 view={view}
-                PRE_STEPS_COUNT={PRE_STEPS_COUNT}
             />
         </div>
     );

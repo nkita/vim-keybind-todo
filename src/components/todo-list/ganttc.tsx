@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { Task, TaskType } from "./ganttc/common/types/public-types";
 import { Gantt, ViewMode, GanttRef } from "@nkita/gantt-task-react";
 import { Box, StickyNote, Tag } from "lucide-react";
@@ -61,16 +61,45 @@ const App = ({
 }) => {
     const [view, setView] = useLocalStorage<ViewMode>("ganttc_view", ViewMode.Month);
     const [viewDate, setViewDate] = useState(new Date());
-
     const ganttRef = useRef<GanttRef>(null);
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const PRE_STEPS_COUNT = 5;
+
+    // currentIndexが変更されたときにviewDateを更新する
+    useEffect(() => {
+        if (filteredTodos.length > 0 && currentIndex >= 0 && currentIndex < filteredTodos.length) {
+            const currentTodo = filteredTodos[currentIndex];
+            if (currentTodo.startDate) {
+                const date = new Date(currentTodo.startDate);
+                date.setDate(date.getDate() - PRE_STEPS_COUNT);
+                setViewDate(date);
+            }
+        }
+    }, [currentIndex, filteredTodos]);
 
     useEffect(() => {
+        const scrollY = ganttRef.current?.getScrollY();
         if (ganttRef.current
             && scrollTop !== undefined
-            && ganttRef.current.getScrollY() !== scrollTop
+            && scrollY !== scrollTop
         ) {
-            ganttRef.current.setScrollY(scrollTop);
+            // 既存のタイマーをクリア
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+
+            // 0.1秒後に実行するタイマーを設定
+            debounceTimerRef.current = setTimeout(() => {
+                ganttRef.current?.setScrollY(scrollTop);
+            }, 100); // 0.1秒 = 100ミリ秒
         }
+
+        // クリーンアップ関数
+        return () => {
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+        };
     }, [scrollTop]);
 
 
@@ -119,12 +148,6 @@ const App = ({
         setView(mode);
     };
 
-    const handleTaskClick = (task: Task) => {
-        const index = filteredTodos.findIndex(t => t.id === task.id);
-        if (index !== -1) {
-            setCurrentIndex(index);
-        }
-    }
 
     return (
         <div className="relative">
@@ -144,7 +167,7 @@ const App = ({
                     ) : null
                 }
                 TaskListTable={TaskListTable}
-                preStepsCount={2}
+                preStepsCount={PRE_STEPS_COUNT}
                 handleWidth={6}
                 viewDate={viewDate}
                 ganttHeight={height ? height - 50 : 0}
@@ -159,7 +182,6 @@ const App = ({
                 currentLineColor="rgba(224, 242, 254, 0.7)"
                 currentLineTaskId={filteredTodos[currentIndex] ? filteredTodos[currentIndex].id : ""}
                 onDateChange={handleTaskChange}
-                onClick={handleTaskClick}
                 onScrollChange={handleGanntcScrollChange}
                 TooltipContent={({ task }) => (
                     <TooltipContentCustom
@@ -175,6 +197,7 @@ const App = ({
                 setViewDate={setViewDate}
                 handleViewModeChange={handleViewModeChange}
                 view={view}
+                PRE_STEPS_COUNT={PRE_STEPS_COUNT}
             />
         </div>
     );
@@ -232,7 +255,7 @@ const BottomButton = ({
     viewDate,
     setViewDate,
     handleViewModeChange,
-    view
+    view,
 }: {
     viewDate: Date
     setViewDate: (date: Date) => void
@@ -245,7 +268,7 @@ const BottomButton = ({
                 <button
                     onClick={() => {
                         const prevDay = new Date();
-                        prevDay.setDate(prevDay.getDate() - 2);
+                        prevDay.setDate(prevDay.getDate());
                         setViewDate(prevDay);
                     }}
                     className={`z-10 px-3 py-1 text-xs rounded-sm transition-all duration-200 hover:bg-accent `}

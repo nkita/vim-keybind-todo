@@ -214,7 +214,6 @@ export const GanttcList = ({
                                 rhfSetValue={rhfSetValue}
                             />
                         </div>
-                        <QuickUsage className="absolute bottom-1 z-0 opacity-60" />
                     </div>
                     <Ganttc
                         scrollTop={scrollTop}

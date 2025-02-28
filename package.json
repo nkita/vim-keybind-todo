@@ -18,7 +18,7 @@
     "@hello-pangea/dnd": "^17.0.0",
     "@hookform/resolvers": "^3.9.1",
     "@lexical/react": "^0.23.1",
-    "@nkita/gantt-task-react": "^0.3.17",
+    "@nkita/gantt-task-react": "^0.3.18",
     "@radix-ui/react-accordion": "^1.2.1",
     "@radix-ui/react-avatar": "^1.0.4",
     "@radix-ui/react-dialog": "^1.1.2",

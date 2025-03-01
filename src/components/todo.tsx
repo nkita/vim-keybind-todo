@@ -125,7 +125,7 @@ export const Todo = (
             HEADER_PROJECT_TAB_HEIGHT + HEADER_MENU_BAR_HEIGHT :
             HEADER_HEIGHT_SM
     )
-    const contentHeight = windowHeight === 0 ? 0 : mainHeight - BOTTOM_MENU_HEIGHT
+    const contentHeight = windowHeight === 0 ? 200 : mainHeight - BOTTOM_MENU_HEIGHT
 
     useEffect(() => {
         const panel = resizeRef.current;
@@ -1116,7 +1116,7 @@ export const Todo = (
             setCurrentIndex(todoFunc.getIndexById(filteredTodos, overTodoId))
         }
     };
-    
+
     return (
         <>
             <DndContext onDragStart={handleDragStart} onDragMove={handleDragMove} onDragEnd={handleDragEnd}>
@@ -1202,10 +1202,11 @@ export const Todo = (
                         </div>
                     </div>
                 </header >
-                <div className="w-full bg-muted">
+                <div style={{ height: contentHeight + BOTTOM_MENU_HEIGHT }} className="w-full bg-muted relative">
                     <div style={{ height: contentHeight }} className="w-full" onMouseDown={handleMainMouseDown}>
                         {loading &&
-                            <div className="flex flex-col gap-6 justify-center items-center h-screen w-full">
+                            <div
+                                className="flex flex-col gap-6 justify-center items-center h-full w-full">
                                 <div className="flex space-x-2">
                                     {[0, 1, 2, 3].map((index) => (
                                         <div
@@ -1224,7 +1225,7 @@ export const Todo = (
                                 </div>
                             </div>
                         }
-                        {displayMode === "Ganttc" &&
+                        {!loading && displayMode === "Ganttc" &&
                             <>
                                 <div
                                     onTouchStart={handleTouchStart}
@@ -1263,7 +1264,7 @@ export const Todo = (
                                 </div>
                             </>
                         }
-                        {displayMode === "List" &&
+                        {!loading && displayMode === "List" &&
                             <ResizablePanelGroup direction="horizontal" autoSaveId={"list_detail"}>
                                 <ResizablePanel defaultSize={60} minSize={20} className={` relative ${mode === "editDetail" ? "hidden sm:block" : "block"} transition-transform`}>
                                     <div
@@ -1324,37 +1325,39 @@ export const Todo = (
                                 </ResizablePanel>
                             </ResizablePanelGroup>
                         }
-                        <div className={cn(`h-[${BOTTOM_MENU_HEIGHT}px] absolute bottom-0 border-t items-center justify-between w-full bg-card text-xs px-2 hidden sm:flex`)}>
-                            {command ? (
-                                <span>Line：{command}</span>
-                            ) : (
-                                <span>No：{currentIndex + 1}</span>
-                            )}
-                            <div className="flex items-center gap-2">
-                                {mode}
-                                <div>
-                                    {loading ? (
-                                        <SimpleSpinner className="h-4 w-4 border-t-transparent p-1" />
-                                    ) : (
-                                        <>
-                                            {isLocalMode ? (
-                                                <MenuButton
-                                                    className="hover:border-transparent hover:cursor-default"
-                                                    label={`ローカルモード`}
-                                                    description={`オンラインモードへの切り替えは\n時間をおいてから再度画面更新をお試しください。`}
-                                                    onClick={() => { }} ><CloudOff className="text-muted-foreground" size={16} /></MenuButton>
-                                            ) : (
-                                                <MenuButton
-                                                    className="hover:border-transparent hover:cursor-default"
-                                                    label="オンラインモード"
-                                                    description={`入力したタスク情報はしばらく立つと自動的にクラウド上へ保存します。\n「保存」ボタンクリックですぐに保存することも可能です。`}
-                                                    onClick={() => { }} ><Cloud className="text-primary2" size={16} /></MenuButton>
-                                            )}
-                                        </>
-                                    )}
+                        {!loading &&
+                            <div className={cn(`h-[${BOTTOM_MENU_HEIGHT}px] absolute bottom-0 border-t items-center justify-between w-full bg-card text-xs px-2 hidden sm:flex`)}>
+                                {command ? (
+                                    <span>Line：{command}</span>
+                                ) : (
+                                    <span>No：{currentIndex + 1}</span>
+                                )}
+                                <div className="flex items-center gap-2">
+                                    {mode}
+                                    <div>
+                                        {loading ? (
+                                            <SimpleSpinner className="h-4 w-4 border-t-transparent p-1" />
+                                        ) : (
+                                            <>
+                                                {isLocalMode ? (
+                                                    <MenuButton
+                                                        className="hover:border-transparent hover:cursor-default"
+                                                        label={`ローカルモード`}
+                                                        description={`オンラインモードへの切り替えは\n時間をおいてから再度画面更新をお試しください。`}
+                                                        onClick={() => { }} ><CloudOff className="text-muted-foreground" size={16} /></MenuButton>
+                                                ) : (
+                                                    <MenuButton
+                                                        className="hover:border-transparent hover:cursor-default"
+                                                        label="オンラインモード"
+                                                        description={`入力したタスク情報はしばらく立つと自動的にクラウド上へ保存します。\n「保存」ボタンクリックですぐに保存することも可能です。`}
+                                                        onClick={() => { }} ><Cloud className="text-primary2" size={16} /></MenuButton>
+                                                )}
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        }
                         <DeleteModal
                             currentIndex={currentIndex}
                             filteredTodos={filteredTodos}

@@ -176,7 +176,7 @@ export const GanttcList = ({
                     className={`w-full relative bg-muted`} >
                     <div
                         style={{ width: `${headerWidth}px`, height: `${height}px` }}
-                        className="absolute left-0 overflow-hidden z-10 bg-muted">
+                        className="absolute left-0 overflow-hidden z-10">
                         <div className="relative overflow-hidden h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <div
                                 style={{ width: `${headerWidth}px` }}

@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss"
 
 const ex = {
-	label: "#10b981",
-	project: "#3b82f6"
+	label: "oklch(0.527 0.154 150.069)",
+	project: "oklch(0.488 0.243 264.376)",
 }
 const todo = {
 	background: 'hsl(var(--todo-background))',

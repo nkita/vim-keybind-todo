@@ -49,9 +49,9 @@ export function NavUser() {
             {(!user && !userLoading) &&
                 <SidebarMenuItem>
                     <SidebarMenuButton asChild>
-                        <Button className="w-full h-12 bg-primary border-sidebar-border" variant={"outline"} onClick={_ => loginWithRedirect()}>
+                        <Button className="w-full h-12 bg-transparent" variant={"outline"} onClick={_ => loginWithRedirect()}>
                             <LogIn className="h-4 w-4" />
-                            <span>Log in</span>
+                            <span>Login</span>
                         </Button>
                     </SidebarMenuButton>
                 </SidebarMenuItem>

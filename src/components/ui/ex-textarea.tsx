@@ -174,10 +174,10 @@ function LinkClickPlugin() {
                         const linkElement = target.tagName === 'A' ?
                             target : target.closest('a');
 
-                        if (linkElement) {
+                        // 編集可能な状態の場合は、リンククリックの処理をスキップ
+                        if (linkElement && !editor.isEditable()) {
                             e.stopPropagation(); 
                             e.preventDefault();  
-                            // リンクを新しいタブで開く
                             window.open((linkElement as HTMLAnchorElement).href, '_blank', 'noopener,noreferrer');
                         }
                     });

@@ -1,0 +1,44 @@
+.taskLabel {
+  background-color: transparent;
+  border: none;
+  outline: 0;
+  font-size: 10pt;
+  padding-left: 10px;
+  cursor: text;
+}
+
+.taskLabel:focus {
+  border: none;
+  outline: 0;
+  background-color: transparent;
+  font-size: 10pt;
+  cursor: text;
+}
+
+.contents {
+  padding-left: 15px;
+}
+
+.icon {
+  padding-right: 10px;
+}
+
+.space {
+  padding-right: 10px;
+}
+
+.fontSizeXS {
+  font-size: 0.5em;
+}
+
+.fontSizeS {
+  font-size: 0.8em;
+}
+
+.fontSizeM {
+  font-size: 1.2em;
+}
+
+.fontSizeL {
+  font-size: 1.5em;
+}

@@ -14,7 +14,7 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, Bike, ExternalLink, LineChart, PanelLeftClose, PawPrint } from "lucide-react"
+import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"

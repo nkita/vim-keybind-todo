@@ -1,8 +1,6 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { ArrowLeftRight, ArrowUpDown, Check, Edit, Plus } from "lucide-react"
-
 
 type exTableProps = {
   index?: number | undefined
@@ -15,54 +13,13 @@ const Table = React.forwardRef<
   HTMLTableElement,
   TableProps
 >(({ className, index, ...props }, ref) => {
-  const _ref = React.useRef<HTMLDivElement>(null)
-
-  React.useEffect(() => {
-    if (_ref.current && index !== undefined && index < 3) _ref.current.scrollTop = 0
-  }, [index])
 
   return (
-    <>
-      <div className={cn("flex flex-col justify-between overflow-auto w-full flex-nowrap text-nowrap", className)} ref={_ref}>
-        <table
-          ref={ref}
-          className={"w-full caption-bottom text-sm table table-fixed sm:table-auto"}
-          {...props}
-        />
-        <section className="w-full h-[150px] hidden sm:flex gap-8 md:gap-4 text-4sm text-muted-foreground truncate justify-center items-center">
-          <div className="flex flex-col h-full justify-center items-center gap-2">
-            <kbd>k</kbd>
-            <span className="flex flex-col items-center"><ArrowUpDown className="h-4" /><span className="hidden md:inline">タスクの移動</span></span>
-            <kbd>j</kbd>
-          </div>
-          <div className="flex flex-col justify-center items-center gap-2 h-full">
-            <div className="flex gap-2 items-center">
-              <kbd>h</kbd>
-              <ArrowLeftRight className="h-4" />
-              <kbd>l</kbd>
-            </div>
-            <span className="hidden md:inline">プロジェクトの移動</span>
-          </div>
-          <div className="flex flex-col justify-center items-start gap-2 h-full">
-            <div className="flex gap-2 items-center">
-              <Edit className="h-4" />
-              <kbd>Enter</kbd>
-              <span className="hidden md:inline">タスクの編集</span>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Check className="h-4" />
-              <kbd>Space</kbd>
-              <span className="hidden md:inline">タスクの完了</span>
-            </div>
-            <div className="flex gap-2 items-center">
-              <Plus className="h-4" />
-              <kbd>I</kbd>
-              <span className="hidden md:inline">タスクの追加（先頭へ）</span>
-            </div>
-          </div>
-        </section>
-      </div>
-    </>
+    <table
+      ref={ref}
+      className={cn("w-full caption-bottom text-sm table table-fixed sm:table-auto", className)}
+      {...props}
+    />
   )
 })
 Table.displayName = "Table"

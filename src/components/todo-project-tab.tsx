@@ -71,7 +71,7 @@ const ProjectTabContent = dynamic(() => Promise.resolve(({
             {...attributes}
             {...listeners}
             className={`
-                ${(!isDragging && isOver) ? "bg-primary2/10" : current ? "bg-card border-t-primary border-t border-x" : "bg-muted hover:bg-accent"}
+                ${(!isDragging && isOver) ? "bg-primary2/10" : current ? "bg-card border-t-primary/60 border-t-2 border-x" : "text-muted-foreground bg-muted hover:bg-accent"}
                 h-full relative flex items-center  pr-2
                 `}
             ref={setNodeRefSortable}

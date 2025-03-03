@@ -18,7 +18,7 @@ export interface TodoProps {
     updateDate?: string
 }
 
-
+export type DisplayMode = "List" | "Ganttc"
 export type Sort = "text" | "priority" | "creationDate" | "is_complete" | "sort" | undefined
 export type Mode = "normal" | "edit" | "editDetail" | "editOnSort" | "sort" | "command" | "number" | "search" | "modal" | "select" | "editProject" | "editProjectTab"
 

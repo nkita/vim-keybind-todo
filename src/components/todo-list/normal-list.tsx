@@ -44,13 +44,12 @@ export const NormalList = (
     }
 ) => {
 
-    const hcssMainHeight = "h-full"
 
     return (
         <>
             <div className="h-full ">
                 {loading &&
-                    <div className={`flex justify-center items-center w-full ${hcssMainHeight} bg-muted border-y-0 `}>
+                    <div className={`flex justify-center items-center w-full bg-muted border-y-0 `}>
                         <div className="flex text-sm items-center justify-center h-full w-full ">
                             <span className="flex justify-center items-center px-10 py-5 font-semibold rounded-md bg-card text-card-foreground shadow-lg">
                                 <span className="animate-bounce">Loading...</span>
@@ -58,12 +57,12 @@ export const NormalList = (
                         </div>
                     </div>
                 }
-                <div className={`relative w-full ${loading && "hidden"}  ${hcssMainHeight} table-scrollbar`} >
-                    <div className="hidden sm:flex text-muted-foreground text-xs items-center justify-between w-full  h-[50px] border-b bg-card sticky top-0 z-30 shadow-sm">
-                        <span className="px-4 items-center gap-2 flex"><ListTodo className="w-4 h-4" />リストモード</span>
-                        {/* <span className="px-4">タイトル</span> */}
-                    </div>
-                    <div className="relative z-20 w-">
+                <div className={`relative w-full ${loading && "hidden"} h-full overflow-y-auto `} >
+                    <div className="relative z-20 w-full h-full">
+                        <div className="hidden sm:flex text-muted-foreground text-xs items-center justify-between w-full h-[50px] border-b bg-card sticky top-0 z-30 shadow-sm">
+                            <span className="px-4 items-center gap-2 flex"><ListTodo className="w-4 h-4" />リストモード</span>
+                            {/* <span className="px-4">タイトル</span> */}
+                        </div>
                         <List
                             filteredTodos={filteredTodos}
                             currentIndex={currentIndex}
@@ -83,7 +82,6 @@ export const NormalList = (
                             register={register}
                             rhfSetValue={rhfSetValue}
                         />
-                        <div className="h-[90px] bg-yellow-50 w-1" />
                     </div>
                     <QuickUsage className="absolute bottom-2 " />
                 </div>

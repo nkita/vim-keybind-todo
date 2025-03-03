@@ -62,9 +62,9 @@ export const Detail = ({
 
     return (
         <>
-            <div className="w-full h-full text-card-foreground bg-secondary/60" onMouseDown={onMouseDownEvent}>
+            <div className="w-full h-full text-card-foreground relative" onMouseDown={onMouseDownEvent}>
                 <div className="w-full h-full overflow-auto scroll-bar">
-                    <div className={`flex sticky top-0 w-full border-b-2 border-muted font-bold items-center gap-2 bg-card px-5 py-5 z-30 `} onMouseDown={e => e.stopPropagation()} >
+                    <div className={`flex sticky top-0 w-full text-default border-b-2 border-muted font-bold items-center gap-2 bg-card px-5 z-30 h-[50px] `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
                             {
                                 todo["is_complete"] ? <FaCircleCheck /> : <FaRegCircle />
@@ -98,7 +98,7 @@ export const Detail = ({
 
                         </div>
                     </div>
-                    <div className={`w-full p-5 `} >
+                    <div className={`w-full p-5 bg-background relative`} >
                         <div className="relative h-full w-full border pt-1 mt-2  rounded-md focus-within:border-primary bg-card">
                             <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
                                 {mode === "editDetail" ? (
@@ -152,13 +152,12 @@ export const Detail = ({
                                 </BottomButton>
                             )}
                         </div>
-                        <div className="h-[3rem]" />
-                    </div>
-                    <div
-                        className={`absolute h-[3rem] bottom-0 border-muted border-x-0 w-full text-xs py-4 px-5 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
-                        <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                     </div>
                     <div className="h-16 sm:h-0"></div>
+                </div>
+                <div
+                    className={`absolute bottom-0 border-muted border-x-0 w-full text-xs px-5 py-2 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
+                    <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                 </div>
             </div >
         </>

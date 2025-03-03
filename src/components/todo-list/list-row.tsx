@@ -78,7 +78,7 @@ export function TodoListRow({
         transition
     };
 
-    const rowH = "h-[35px]"
+    const rowH = "h-[40px]"
     return (
         <TableRow key={t.id}
             className={`${rowH} ${common_color_css} group outline-none`}
@@ -91,8 +91,8 @@ export function TodoListRow({
                 e.stopPropagation()
                 e.preventDefault()
             }}>
-            <TableCell className={`sticky left-0 text-sm text-right z-10 ${rowH} p-0 m-0 w-[30px]`} {...listeners}>
-                <div className={`relative pl-2 pr-1 w-[2.0rem] h-[99%] ${common_color_css} hover:cursor-grab`}>
+            <TableCell className={`sticky left-0 text-right z-10 h-full p-0 m-0 w-[30px]`} {...listeners}>
+                <div className={`relative pl-2 pr-1 w-full h-full ${common_color_css} hover:cursor-grab`}>
                     <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-100 opacity-0 transition-all duration-200 overflow-hidden">
                         <GripVertical className="w-4 h-4 text-muted-foreground" />
                     </span>
@@ -114,7 +114,7 @@ export function TodoListRow({
             </TableCell>
             <TableCell className={`w-[calc(100%-60px)] sm:w-[calc(100%-60px)]`}>
                 <div className="flex w-full h-full justify-between  items-center relative">
-                    <span className="text-primary/90 flex text-md">
+                    <span className="text-primary/90 flex ">
                         {t.indent !== undefined &&
                             <>
                                 {t.indent === 1 &&

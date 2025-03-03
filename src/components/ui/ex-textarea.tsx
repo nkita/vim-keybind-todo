@@ -105,7 +105,7 @@ export const ExTextarea = ({
                             matchers={[
                                 (text: string) => {
                                     const match = createLinkMatcherWithRegExp(URL_MATCHER)(text);
-                                    if (match === null) return null;
+                                    if (match === null || (mode === "editDetail" && prefix === "detail")) return null;
                                     return {
                                         ...match,
                                         attributes: {
@@ -176,8 +176,8 @@ function LinkClickPlugin() {
 
                         // 編集可能な状態の場合は、リンククリックの処理をスキップ
                         if (linkElement && !editor.isEditable()) {
-                            e.stopPropagation(); 
-                            e.preventDefault();  
+                            e.stopPropagation();
+                            e.preventDefault();
                             window.open((linkElement as HTMLAnchorElement).href, '_blank', 'noopener,noreferrer');
                         }
                     });

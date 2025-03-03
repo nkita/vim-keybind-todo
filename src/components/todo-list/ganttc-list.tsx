@@ -74,7 +74,7 @@ export const GanttcList = ({
 
     // ガントチャートの高さを管理
     useEffect(() => {
-        const rowH = 35;
+        const rowH = 40;
         const h = filteredTodos.length * rowH + 50;
         setGanttcHeight(height > h ? h : height);
     }, [height, filteredTodos]);
@@ -152,10 +152,10 @@ export const GanttcList = ({
     }, [ganttcScrollTop]);
     if (!loading && filteredTodos.length === 0) {
         return (
-            <div className="flex flex-col justify-center items-center h-full w-full text-muted-foreground bg-card">
+            <div className="flex flex-col justify-center items-center h-full w-full text-muted-foreground bg-card border-t">
                 <TentTree className="w-7 h-7" />
-                <span className="py-4">タスクを追加、または選択してください。</span>
-                <QuickUsage className="" />
+                <span className="py-8"><kbd>I</kbd> ( <kbd>Shift</kbd> + <kbd>i</kbd> ) でタスクを追加してみましょう</span>
+                <QuickUsage />
             </div>
         )
     }
@@ -180,7 +180,7 @@ export const GanttcList = ({
                         <div className="relative overflow-hidden h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <div
                                 style={{ width: `${headerWidth}px` }}
-                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-b  bg-card  z-20 sticky top-0 shadow-sm"
+                                className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-y  bg-card  z-20 sticky top-0 shadow-sm"
                             >
                                 <span className="px-4 items-center gap-2 flex">
                                     <GanttChart className="w-4 h-4" />ガントチャートモード
@@ -191,7 +191,7 @@ export const GanttcList = ({
                                 />
                             </div>
                             <div
-                                className="absolute top-0 right-0 w-[1px]  hover:w-[2px] bg-muted  h-full cursor-col-resize z-20"
+                                className="absolute top-0 right-0 w-[1px]  hover:w-[3px] bg-muted hover:bg-primary/20  h-full cursor-col-resize z-20"
                                 onMouseDown={handleMouseDown}
                             />
                             <List
@@ -244,6 +244,7 @@ export const GanttcList = ({
                                 />
                             )
                         }}
+                        taskListWidth={headerWidth}
                     />
                 </div>
             )}

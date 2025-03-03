@@ -99,7 +99,7 @@ export const List = (
                     <>
                         {filteredTodos.length === 0 ? (
                             <>
-                                <TableRow className="text-center text-muted-foreground text-xs border-none">
+                                <TableRow className="text-center text-muted-foreground border-none">
                                     <TableCell className="p-4 w-full"><kbd>I</kbd>（ <kbd>Shift</kbd>+<kbd>i</kbd> ）で初めてのタスクを追加しましょう。</TableCell>
                                 </TableRow>
                             </>

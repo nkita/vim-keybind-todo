@@ -23,6 +23,7 @@ const App = ({
     height,
     TaskListHeader,
     TaskListTable,
+    taskListWidth,
     onChangePeriod,
     scrollTop,
     setGanttcScrollTop,
@@ -37,6 +38,7 @@ const App = ({
     currentProjectId: string
     height: number
     scrollTop?: number
+    taskListWidth: number
     setGanttcScrollTop?: (scrollTop: number) => void
     setCurrentIndex: (index: number) => void
     TaskListHeader?: React.FC<{
@@ -103,7 +105,7 @@ const App = ({
     }, [scrollTop]);
 
 
-    const rowHeight = 35;
+    const rowHeight = 40;
 
     let columnWidth = 25;
     if (view === ViewMode.Month) {
@@ -191,6 +193,7 @@ const App = ({
                         exLabels={exLabels}
                     />
                 )}
+                taskListWidth={taskListWidth}
             />
             <BottomButton
                 viewDate={viewDate}

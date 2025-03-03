@@ -3,7 +3,7 @@ import React, { useState, MouseEvent, useEffect, Dispatch, SetStateAction, useRe
 import { useHotkeys, } from "react-hotkeys-hook"
 import { useForm } from "react-hook-form"
 import { keymap } from '@/components/config'
-import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
+import { TodoEnablesProps, TodoProps, Sort, Mode, ProjectProps, LabelProps, DisplayMode } from "@/types"
 import { todoFunc } from "@/lib/todo"
 import { yyyymmddhhmmss } from "@/lib/time"
 import { NormalList } from "./todo-list/normal-list"
@@ -80,7 +80,7 @@ export const Todo = (
     const [keepPositionId, setKeepPositionId] = useState<string | undefined>(undefined)
     const [prefix, setPrefix] = useState('text')
     const [currentProjectId, setCurrentProjectId] = useLocalStorage("current_project_id", "")
-    const [displayMode, setDisplayMode] = useLocalStorage<"List" | "Ganttc">("display_mode", "List")
+    const [displayMode, setDisplayMode] = useLocalStorage<DisplayMode>("display_mode", "List")
     const [mode, setMode] = useState<Mode>('normal')
     const [sort, setSort] = useLocalStorage<Sort>("sort-ls-key", undefined)
     const [filteredTodos, setFilteredTodos] = useState<TodoProps[]>(todos)
@@ -140,9 +140,10 @@ export const Todo = (
         }
     }, [currentProjectId, filteredProjects, filteredTodos, setCurrentProjectId])
 
-    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean } | undefined) => {
+    const setKeyEnableDefine = (keyConf: { mode?: Mode[], sort?: Sort[], withoutTask?: boolean, useKey?: boolean, displayMode?: DisplayMode[] } | undefined) => {
         let enabledMode = false
         let enabledSort = true
+        let enabledDisplayMode = true
         let enabledWithoutTask = true
         if (keyConf !== undefined) {
             if (keyConf.mode !== undefined) {
@@ -156,9 +157,15 @@ export const Todo = (
                     if (s === sort) enabledSort = true
                 })
             }
+            if (keyConf.displayMode !== undefined) {
+                enabledDisplayMode = false
+                keyConf.displayMode.forEach(dm => {
+                    if (dm === displayMode) enabledDisplayMode = true
+                })
+            }
             enabledWithoutTask = filteredTodos.length === 0 ? keyConf.withoutTask ?? true : true
         }
-        return { enabled: enabledMode && enabledSort && enabledWithoutTask, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true, useKey: keyConf?.useKey ?? false }
+        return { enabled: enabledMode && enabledSort && enabledWithoutTask && enabledDisplayMode, enableOnContentEditable: true, enableOnFormTags: true, preventDefault: true, useKey: keyConf?.useKey ?? false }
     }
 
     useEffect(() => {
@@ -1231,7 +1238,7 @@ export const Todo = (
                                     onTouchStart={handleTouchStart}
                                     onTouchMove={handleTouchMove}
                                     onTouchEnd={handleTouchEnd}
-                                    className={`z-20 h-full w-full border-t sm:block hidden`}>
+                                    className={`z-20 h-full w-full sm:block hidden`}>
                                     <GanttcList
                                         filteredTodos={filteredTodos}
                                         currentIndex={currentIndex}
@@ -1292,7 +1299,7 @@ export const Todo = (
                                         />
                                     </div>
                                 </ResizablePanel>
-                                <ResizableHandle tabIndex={-1} className="hidden sm:block cursor-col-resize " />
+                                <ResizableHandle tabIndex={-1} className="hidden sm:block w-[3px] bg-transparent hover:bg-primary/20  cursor-col-resize " />
                                 <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                                     {loading ? (
                                         <></>
@@ -1383,10 +1390,11 @@ export const Todo = (
                             todoEnables={todoEnables}
                         />
                         {!loading &&
-                            <div className={`absolute bottom-1 h-3/4  ${(isHelp && mode !== "editDetail") ? "w-full" : "w-0 hidden text-nowrap"} z-30  transition-all animate-fade-in`}>
+                            <div className={`absolute bottom-0 ${(isHelp && mode !== "editDetail") ? "h-3/4 opacity-100" : "h-0 opacity-0 pointer-events-none"} w-full z-30 transition-all duration-300 ease-in-out overflow-hidden`}>
                                 <Usage
                                     sort={sort}
                                     mode={mode}
+                                    displayMode={displayMode}
                                     setHelp={setHelp}
                                     isTodos={filteredTodos.length > 0}
                                 />

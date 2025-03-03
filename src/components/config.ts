@@ -1,9 +1,9 @@
-import { Sort, Mode } from "@/types"
+import { Sort, Mode, DisplayMode } from "@/types"
 export type KeymapItemType = "focus" | "edit" | "add" | "sort" | "other" | "view"
 export type KeymapItem = {
     keys: string[]
     keysDisp?: string[]
-    enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean, useKey?: boolean } // and
+    enable?: { sort?: Sort[], mode: Mode[], withoutTask?: boolean, useKey?: boolean, displayMode?: DisplayMode[] } // and
     type: KeymapItemType[]
     description: string
     options?: any
@@ -321,7 +321,7 @@ export const keymap: Keymap = {
     editDetail: {
         keys: ['shift+d'],
         keysDisp: ['D'],
-        enable: { mode: ["normal"], withoutTask: false },
+        enable: { mode: ["normal"], displayMode: ["List"], withoutTask: false },
         type: ["edit"],
         description: "詳細を編集する"
     },
@@ -402,28 +402,28 @@ export const keymap: Keymap = {
     expandEndDate: {
         keys: ['shift+ArrowUp'],
         keysDisp: ['shift+↑'],
-        enable: { mode: ["normal"], useKey: true },
+        enable: { mode: ["normal"], useKey: true, displayMode: ["Ganttc"] },
         type: ["edit"],
         description: "終了日を伸ばす"
     },
     shrinkEndDate: {
         keys: ['shift+ArrowDown'],
         keysDisp: ['shift+↓'],
-        enable: { mode: ["normal"], useKey: true },
+        enable: { mode: ["normal"], useKey: true, displayMode: ["Ganttc"] },
         type: ["edit"],
         description: "終了日を縮める"
     },
     shiftPeriodForward: {
         keys: ['shift+ArrowRight'],
         keysDisp: ['shift+→'],
-        enable: { mode: ["normal"], useKey: true },
+        enable: { mode: ["normal"], useKey: true, displayMode: ["Ganttc"] },
         type: ["edit"],
         description: "期間を先にずらす"
     },
     shiftPeriodBackward: {
         keys: ['shift+ArrowLeft'],
         keysDisp: ['shift+←'],
-        enable: { mode: ["normal"], useKey: true },
+        enable: { mode: ["normal"], useKey: true, displayMode: ["Ganttc"] },
         type: ["edit"],
         description: "期間を後ろにずらす"
     },

@@ -16,6 +16,7 @@ interface GanttcListProps {
     exProjects: ProjectProps[]
     exLabels: LabelProps[]
     currentProjectId: string
+    rowHeight: number
     sort: Sort
     height: number
     loading: Boolean
@@ -37,6 +38,7 @@ export const GanttcList = ({
     exProjects,
     exLabels,
     currentProjectId,
+    rowHeight,
     sort,
     loading,
     height,
@@ -74,10 +76,9 @@ export const GanttcList = ({
 
     // ガントチャートの高さを管理
     useEffect(() => {
-        const rowH = 40;
-        const h = filteredTodos.length * rowH + 50;
+        const h = filteredTodos.length * rowHeight + 50;
         setGanttcHeight(height > h ? h : height);
-    }, [height, filteredTodos]);
+    }, [height, filteredTodos, rowHeight]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -177,7 +178,7 @@ export const GanttcList = ({
                     <div
                         style={{ width: `${headerWidth}px`, height: `${height}px` }}
                         className="absolute left-0 overflow-hidden z-10">
-                        <div className="relative overflow-hidden h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
+                        <div className="relative overflow-y-auto overflow-x-hidden no-scrollbar h-full z-10" ref={listRef} onScroll={e => setScrollTop(e.currentTarget.scrollTop)}>
                             <div
                                 style={{ width: `${headerWidth}px` }}
                                 className="flex text-muted-foreground text-xs items-center justify-between h-[50px] border-y  bg-card  z-20 sticky top-0 shadow-sm"
@@ -204,6 +205,7 @@ export const GanttcList = ({
                                 currentProjectId={currentProjectId}
                                 sort={sort}
                                 loading={loading}
+                                rowHeight={rowHeight}
                                 onClick={onClick}
                                 setIsComposing={setIsComposing}
                                 setCurrentIndex={setCurrentIndex}
@@ -227,6 +229,7 @@ export const GanttcList = ({
                         currentProjectId={currentProjectId}
                         onChangePeriod={onChangePeriod}
                         height={ganttcHeight}
+                        rowHeight={rowHeight}
                         setCurrentIndex={setCurrentIndex}
                         TaskListHeader={() => {
                             return (

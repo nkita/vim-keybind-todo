@@ -20,7 +20,7 @@ import { toast } from "sonner"
 import jaJson from "@/dictionaries/ja.json"
 import { cn, debugLog } from "@/lib/utils"
 import { DeleteModal } from "./delete-modal"
-import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, GanttChart, ListTodo, Wallpaper } from "lucide-react"
+import { Redo2, Undo2, Save, IndentIncrease, IndentDecrease, TentTree, CircleHelp, Eye, EyeOffIcon, Columns, Plus, Settings2, FileBox, Cloud, CloudOff, GanttChart, ListTodo, Wallpaper, ZoomIn, ZoomOut } from "lucide-react"
 import { BottomMenu } from "@/components/todo-sm-bottom-menu";
 import { useAuth0 } from "@auth0/auth0-react"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -97,6 +97,8 @@ export const Todo = (
     const [selectTaskId, setSelectTaskId] = useState<string | undefined>(undefined)
     const [isOpenRightPanel, setIsOpenRightPanel] = useLocalStorage("is_open_right_panel", true)
     const resizeRef = useRef<ImperativePanelHandle>(null);
+    const rowHeight = [30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50]
+    const [rowHeightIndex, setRowHeightIndex] = useLocalStorage("row_height_index", 0)
 
     const { register, setFocus, getValues, setValue, watch } = useForm()
     const { user, isLoading } = useAuth0()
@@ -1160,7 +1162,8 @@ export const Todo = (
                         </div>
                     </div>
                     <div
-                        className={`flex justify-between items-center h-[${HEADER_MENU_BAR_HEIGHT}px] bg-card text-card-foreground`}>
+                        style={{ height: `${HEADER_MENU_BAR_HEIGHT}px` }}
+                        className={`flex justify-between items-center  bg-card text-card-foreground`}>
                         <div className="flex items-center gap-2 h-full px-2 mx-2 ">
                             <div className="block md:hidden"><SidebarTrigger className="border" /></div>
                             <MenuButton label="元に戻す（Undo）" onClick={() => undo(undoCount, historyTodos)} disabled={historyTodos.length === 0 || undoCount >= historyTodos.length - 1}><Undo2 size={16} /></MenuButton>
@@ -1180,6 +1183,18 @@ export const Todo = (
                                 <MenuButton label="詳細パネルの表示/非表示" onClick={() => setIsOpenRightPanel(prev => !prev)} disabled={displayMode === "Ganttc"} >
                                     <Columns size={16} />
                                 </MenuButton>
+                            </div>
+                            <div className="hidden sm:block">
+                                <MenuButton label="文字サイズを小さく" disabled={rowHeightIndex === 0 || rowHeightIndex === undefined} onClick={() => setRowHeightIndex(prev => {
+                                    if (prev === undefined) return 0
+                                    return prev > 0 ? prev - 1 : 0
+                                })} ><ZoomOut size={16} /></MenuButton>
+                            </div>
+                            <div className="hidden sm:block">
+                                <MenuButton label="文字サイズを大きく" disabled={rowHeightIndex === rowHeight.length - 1 || rowHeightIndex === undefined} onClick={() => setRowHeightIndex(prev => {
+                                    if (prev === undefined) return 1
+                                    return prev < rowHeight.length - 1 ? prev + 1 : prev
+                                })} ><ZoomIn size={16} /></MenuButton>
                             </div>
                             <div className={`hidden sm:block inset-y-1/4 right-0 h-1/2 border-r w-3`}></div>
                             <div className="hidden sm:block">
@@ -1258,6 +1273,7 @@ export const Todo = (
                                         rhfSetValue={setValue}
                                         onChangePeriod={handlePeriodChange}
                                         height={contentHeight - 20}
+                                        rowHeight={rowHeight[rowHeightIndex]}
                                     />
                                 </div>
                                 <div className="flex sm:hidden text-muted-foreground text-xs justify-center items-center h-full">
@@ -1296,6 +1312,7 @@ export const Todo = (
                                             setIsComposing={setIsComposing}
                                             register={register}
                                             rhfSetValue={setValue}
+                                            rowHeight={rowHeight[rowHeightIndex]}
                                         />
                                     </div>
                                 </ResizablePanel>

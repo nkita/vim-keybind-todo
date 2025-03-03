@@ -21,6 +21,7 @@ const App = ({
     exLabels,
     currentProjectId,
     height,
+    rowHeight,
     TaskListHeader,
     TaskListTable,
     taskListWidth,
@@ -37,6 +38,7 @@ const App = ({
     exLabels: LabelProps[]
     currentProjectId: string
     height: number
+    rowHeight: number
     scrollTop?: number
     taskListWidth: number
     setGanttcScrollTop?: (scrollTop: number) => void
@@ -103,9 +105,6 @@ const App = ({
             }
         };
     }, [scrollTop]);
-
-
-    const rowHeight = 40;
 
     let columnWidth = 25;
     if (view === ViewMode.Month) {

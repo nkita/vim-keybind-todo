@@ -6,13 +6,14 @@ export const useLocalStorage = <T>(key: string, defaultValue: T): [T, Dispatch<S
 
     useEffect(() => {
         const data = localStorage.getItem(LOCAL_STORAGE_KEY + key)
-        if (data && data !== "undefined") {
+        if (data !== null && data !== "undefined") {
             setValue(JSON.parse(data))
         }
     }, [key])
 
     const setValueAndStorage: Dispatch<SetStateAction<T>> = (v) => {
-        localStorage.setItem(LOCAL_STORAGE_KEY + key, JSON.stringify(v))
+        const valueToStore = typeof v === 'function' ? (v as Function)(value) : v;
+        localStorage.setItem(LOCAL_STORAGE_KEY + key, JSON.stringify(valueToStore))
         setValue(v)
     }
 

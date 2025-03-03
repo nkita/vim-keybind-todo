@@ -21,6 +21,7 @@ export const List = (
         exLabels,
         currentProjectId,
         sort,
+        rowHeight,
         loading,
         displayMode,
         onClick,
@@ -40,6 +41,7 @@ export const List = (
         exLabels: LabelProps[]
         currentProjectId: string
         sort: Sort
+        rowHeight: number
         loading: Boolean
         displayMode?: string
         onClick: (id: number, prefix: string) => void
@@ -134,6 +136,7 @@ export const List = (
                                                     nextTabIndent={nextTabIndent}
                                                     prefix={prefix}
                                                     mode={mode}
+                                                    rowHeight={rowHeight}
                                                     currentProjectId={currentProjectId}
                                                     exLabels={exLabels}
                                                     exProjects={exProjects}

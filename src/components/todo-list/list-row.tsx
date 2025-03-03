@@ -36,6 +36,7 @@ export function TodoListRow({
     currentProjectId,
     exLabels,
     exProjects,
+    rowHeight,
     setIsComposing,
     onChangePeriod,
     onClick,
@@ -48,6 +49,7 @@ export function TodoListRow({
         nextTabIndent: number
         prefix: string
         mode: Mode
+        rowHeight: number
         displayMode?: string
         currentProjectId: string
         setIsComposing: Dispatch<SetStateAction<boolean>>
@@ -75,15 +77,15 @@ export function TodoListRow({
 
     const style = {
         transform: transform ? `translate3d(0px, ${transform.y}px, 0)` : undefined,
-        transition
+        transition,
     };
 
-    const rowH = "h-[40px]"
+    const fontSize = rowHeight / 2 - 5
     return (
         <TableRow key={t.id}
-            className={`${rowH} ${common_color_css} group outline-none`}
+            className={`${common_color_css} group outline-none`}
             {...attributes}
-            style={style}
+            style={{ ...style, height: `${rowHeight}px`, fontSize: `${fontSize}px` }}
             ref={setNodeRef}
             onMouseDown={e => {
                 setCurrentIndex(index)
@@ -91,7 +93,9 @@ export function TodoListRow({
                 e.stopPropagation()
                 e.preventDefault()
             }}>
-            <TableCell className={`sticky left-0 text-right z-10 h-full p-0 m-0 w-[30px]`} {...listeners}>
+            <TableCell
+                style={{ width: `${rowHeight - 10}px` }}
+                className={`sticky left-0 text-right z-10 h-full p-0 m-0`} {...listeners}>
                 <div className={`relative pl-2 pr-1 w-full h-full ${common_color_css} hover:cursor-grab`}>
                     <span className="w-full h-full flex justify-center items-center absolute left-0 top-0 group-hover:opacity-100 opacity-0 transition-all duration-200 overflow-hidden">
                         <GripVertical className="w-4 h-4 text-muted-foreground" />
@@ -101,13 +105,22 @@ export function TodoListRow({
                     </span>
                 </div>
             </TableCell>
-            <TableCell onClick={_ => onClick(index, 'completion')} className={`w-[30px] group hover:cursor-pointer`}>
-                <div className="flex w-ful justify-center">
+            <TableCell
+                style={{ width: `${rowHeight - 11}px` }}
+                onClick={_ => onClick(index, 'completion')} className={`group hover:cursor-pointer`}>
+                <div className="flex w-full h-full justify-center">
                     {mode === "select" && currentIndex === index ? (
                         <ChevronsUpDown className="text-primary h-3 w-3 " />
                     ) : (
                         <>
-                            {t.is_complete ? <FaCircleCheck className="text-primary" /> : <FaRegCircle className="text-gray-500" />}
+                            {t.is_complete ?
+                                <FaCircleCheck
+                                    style={{ width: `${rowHeight - 20}px`, height: `${rowHeight - 20}px` }}
+                                    className="text-primary" /> :
+                                <FaCircleCheck
+                                    style={{ width: `${rowHeight - 20}px`, height: `${rowHeight - 20}px` }}
+                                    className="border border-primary text-transparent bg-transparent rounded-full hover:text-primary transition-all duration-200" />
+                            }
                         </>
                     )}
                 </div>
@@ -152,7 +165,7 @@ export function TodoListRow({
                             />
                         </div>
                         {displayMode === "normal" && !(mode === "edit" && currentIndex === index) &&
-                            <div className="absolute right-2 hidden sm:flex text-4sm gap-1 bg-card/10 backdrop-blur-sm rounded-sm">
+                            <div className="absolute right-2 hidden sm:flex gap-1 bg-card/10 backdrop-blur-sm rounded-sm">
                                 {t.detail &&
                                     <ListTag>
                                         <StickyNote className="h-3 w-3" />メモ

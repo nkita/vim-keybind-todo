@@ -12,6 +12,7 @@ export const NormalList = (
         currentIndex,
         prefix,
         mode,
+        rowHeight,
         exProjects,
         exLabels,
         currentProjectId,
@@ -29,6 +30,7 @@ export const NormalList = (
         currentIndex: number
         prefix: string
         mode: Mode
+        rowHeight: number
         exProjects: ProjectProps[]
         exLabels: LabelProps[]
         currentProjectId: string
@@ -74,6 +76,7 @@ export const NormalList = (
                             sort={sort}
                             loading={loading}
                             onClick={onClick}
+                            rowHeight={rowHeight}
                             displayMode={"normal"}
                             setIsComposing={setIsComposing}
                             setCurrentIndex={setCurrentIndex}

@@ -131,7 +131,7 @@ export const Detail = ({
                                 </div>
                             </div>
                         </div>
-                        <div className="flex justify-end pb-4 text-3sm text-muted-foreground">※URLは自動的にリンクへ変換します。</div>
+                        <div className="flex justify-end py-2 text-3sm text-muted-foreground" />
                         <div className="flex flex-wrap gap-2">
                             {todo.labelId ? (
                                 <BottomLabel type={"labelId"} onClick={_ => onClick("labelId")} handleClick={handleClickDelete}>

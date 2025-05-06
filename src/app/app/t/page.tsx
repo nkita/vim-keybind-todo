@@ -12,6 +12,7 @@ import { useLocalStorage } from "@/hook/useLocalStrorage";
 import AppPageTemplate from "@/components/app-page-template";
 import { useSidebar } from "@/components/ui/sidebar";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -38,6 +39,8 @@ export default function Home() {
   const config = useContext(TodoContext)
   const [isLoginLoading, setIsLoginLoading] = useState(true)
   const [isLogin, setIsLogin] = useState(true)
+  const router = useRouter();
+
   useEffect(() => {
     if (isLoginLoading && !config.isLoading) {
       setIsLoginLoading(config.isLoading)
@@ -51,7 +54,7 @@ export default function Home() {
   const { data: fetch_projects, isLoading: fetch_projects_loading } = useFetchProjects(config.list, config.token)
   const { data: fetch_labels, isLoading: fetch_labels_loading } = useFetchLabels(config.list, config.token)
 
-  const { user, isLoading: userLoading } = useAuth0();
+  const { user, isLoading: userLoading, logout } = useAuth0();
   const { open } = useSidebar()
 
   useEffect(() => {
@@ -163,15 +166,26 @@ export default function Home() {
   // エラー処理用のuseEffect
   useEffect(() => {
     if (config.error && !isError) {
-      toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
-      setIsError(true)
-      setIsLocalMode(true)
+      if (!config.token) {
+        toast.error(config.error, { duration: 5000, description: "ユーザーを認証できませんでした。ログアウトします。" })
+        logout({
+          logoutParams: {
+            returnTo: `${window.location.origin}/app/t`
+          }
+        })
+        setIsError(true)
+        setIsLocalMode(true)
+      } else {
+        toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
+        setIsError(true)
+        setIsLocalMode(true)
+      }
     }
     if (!config.error && isError) {
       setIsError(false)
       toast.success("エラーが解消されました。", { duration: 5000, description: "画面更新してください。" })
     }
-  }, [config.error, isError]);
+  }, [config.error, isError, config.token, logout]);
 
   useEffect(() => {
     if (!userLoading && !user && isUpdate) {

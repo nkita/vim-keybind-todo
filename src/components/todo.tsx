@@ -1224,12 +1224,11 @@ export const Todo = (
                         </div>
                     </div>
                 </header >
-                <div style={{ height: contentHeight + BOTTOM_MENU_HEIGHT }} className="w-full bg-muted relative">
+                <div style={{ height: contentHeight + BOTTOM_MENU_HEIGHT }} className="w-full  relative">
                     <div style={{ height: contentHeight }} className="w-full" onMouseDown={handleMainMouseDown}>
                         {loading &&
-                            <div
-                                className="flex flex-col gap-6 justify-center items-center h-full w-full">
-                                <div className="flex space-x-2">
+                            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div className="flex w-full justify-center space-x-2">
                                     {[0, 1, 2, 3].map((index) => (
                                         <div
                                             key={index}
@@ -1246,6 +1245,9 @@ export const Todo = (
                                     <span className="text-sm text-muted-foreground">少々お待ちください...</span>
                                 </div>
                             </div>
+                            // <div
+                            //     className="flex flex-col gap-6 justify-center items-center w-full">
+                            // </div>
                         }
                         {!loading && displayMode === "Ganttc" &&
                             <>

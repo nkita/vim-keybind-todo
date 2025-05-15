@@ -1318,7 +1318,7 @@ export const Todo = (
                                         />
                                     </div>
                                 </ResizablePanel>
-                                <ResizableHandle tabIndex={-1} className="hidden sm:block w-[3px] bg-transparent hover:bg-primary/20  cursor-col-resize " />
+                                <ResizableHandle tabIndex={-1} className="hidden sm:block w-[1px] bg-primary/20 hover:bg-primary/20  cursor-col-resize " />
                                 <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                                     {loading ? (
                                         <></>

@@ -7,25 +7,20 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuBadge,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
 import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"
 import React, { useEffect, useState, useContext } from "react"
-import useSWR from "swr"
-import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
 import { usePathname } from "next/navigation"
-import { toast } from "sonner"
-import { Button } from "./ui/button"
 import { TodoContext } from "@/provider/todo"
 import { Modal } from "./ui/modal"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
@@ -33,10 +28,14 @@ import { Input } from "./ui/input"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { getFetch, postFetch, useFetchList } from "@/lib/fetch";
+import { toast } from "sonner"
 
 const listSchema = z.object({
     name: z.string().min(1, { message: "リスト名を入力してください" }),
 })
+
+const baseUrl = `${process.env.NEXT_PUBLIC_API}/api/list`
 
 export function AppSidebar() {
     const {
@@ -44,7 +43,7 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    const { list, lists, isLoading, isLogin, error, setListId } = useContext(TodoContext)
+    const { list, lists, isLoading,token, isLogin, error, setListId, } = useContext(TodoContext)
     const [isListOpen, setIsListOpen] = useState(true)
     
     // モーダル関連の状態
@@ -81,21 +80,36 @@ export function AppSidebar() {
     }
 
     // フォーム送信処理
-    const onSubmit = (values: z.infer<typeof listSchema>) => {
-        if (modalType === 'add') {
-            // リスト追加のロジック
-            toast.success(`リスト「${values.name}」を追加しました`)
-        } else if (modalType === 'edit' && selectedList) {
-            // リスト編集のロジック
-            toast.success(`リスト「${values.name}」を更新しました`)
+    const onSubmit = async (values: z.infer<typeof listSchema>) => {
+        try {
+            if (modalType === 'add') {
+                // リスト追加のロジック
+                const response = await postFetch(baseUrl, token, {
+                    name: values.name
+                });
+                    toast.success(`リスト「${values.name}」を追加しました`)
+            } else if (modalType === 'edit' && selectedList) {
+                // リスト編集のロジック
+                const editUrl = `${baseUrl}/${selectedList.id}`;
+                const response = await postFetch(editUrl, token, {
+                    name: values.name
+                });
+                    toast.success(`リスト「${values.name}」を更新しました`)
+                    // リストを再読み込み
+            }
+            closeModal()
+        } catch (error) {
+            console.error('API call failed:', error)
+            toast.error('処理中にエラーが発生しました')
         }
-        closeModal()
     }
 
-    // 削除処理
+    // 削除処理（将来の実装用にコメントアウト）
     const handleDelete = () => {
         if (selectedList) {
-            // リスト削除のロジック
+            // TODO: 削除APIの実装を検討中
+            // const deleteUrl = `${baseUrl}/${selectedList.id}`;
+            // await deleteFetch(deleteUrl);
             toast.success(`リスト「${selectedList.name}」を削除しました`)
             closeModal()
         }

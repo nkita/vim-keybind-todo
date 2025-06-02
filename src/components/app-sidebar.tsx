@@ -14,11 +14,11 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint } from "lucide-react"
+import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint, ChevronDown, Pencil } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useContext } from "react"
 import useSWR from "swr"
 import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
@@ -26,6 +26,7 @@ import { FaXTwitter } from "react-icons/fa6"
 import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "./ui/button"
+import { TodoContext } from "@/provider/todo"
 
 export function AppSidebar() {
     const {
@@ -33,6 +34,8 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
+    const { list, lists, isLoading, isLogin, error, setListId } = useContext(TodoContext)
+    const [isListOpen, setIsListOpen] = useState(true)
     // const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_last_checked_date", undefined)
     // const { data: pullRequests, error } = useSWR(
     //     'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
@@ -100,6 +103,30 @@ export function AppSidebar() {
                                 <span>実績</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
+                        {isLogin && lists && lists.length > 0 && (
+                            <>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton onClick={() => setIsListOpen(!isListOpen)}>
+                                        <List className="w-4 h-4" />
+                                        <span>リスト</span>
+                                        <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${isListOpen ? "rotate-180" : ""}`} />
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                {isListOpen && lists.map(l => (
+                                    <SidebarMenuItem key={l.id} className="">
+                                        <SidebarMenuButton onClick={() => setListId(l.id)} className={`${list === l.id ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""}`}>
+                                            <span className="w-4 h-4 flex items-center justify-center font-medium border rounded-full p-2">{l.name.charAt(0)}</span>
+                                            <span>{l.name}</span>
+                                        </SidebarMenuButton>
+                                        <SidebarMenuAction>
+                                            <button className="h-4 w-4 group " onClick={() => alert(2)}>
+                                                <Pencil className="h-4 w-4" />
+                                            </button>
+                                        </SidebarMenuAction>
+                                    </SidebarMenuItem>
+                                ))}
+                            </>
+                        )}
                         {/* <SidebarMenuItem>
                             <ExSidebarMenuButton href="#" disabled>
                                 <Settings className="w-4 h-4" />

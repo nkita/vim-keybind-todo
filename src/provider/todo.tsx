@@ -4,21 +4,26 @@ import { createContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getFetch, postFetch, useFetchList } from "@/lib/fetch";
 import { mutate } from "swr";
+import { useLocalStorage } from "@/hook/useLocalStrorage";
 
 type TodoConfigProps = {
     list: string | null
+    lists: { id: string, name: string }[] | null
     token: string | null
     isLoading: boolean
     isLogin: boolean
     error: string | undefined
+    setListId: (id: string | null) => void
 }
-const defaultValue = { list: null, token: null, isLoading: true, isLogin: false, error: undefined }
+const defaultValue = { list: null, lists: [], token: null, isLoading: true, isLogin: false, error: undefined, setListId: () => { } }
+
 
 export const TodoContext = createContext<TodoConfigProps>(defaultValue)
 
 export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
     const { getAccessTokenSilently, user, isLoading } = useAuth0();
     const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
+    const [listId, setListId] = useLocalStorage<string | null>("list_id", null)
 
     useEffect(() => {
         async function getToken() {
@@ -52,17 +57,25 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
                         })
                         .catch(e => { setConfig(prev => ({ ...prev, error: "リストの作成に失敗しました" })) })
                 } else if (l && l.length > 0) {
-                    setConfig(prev => ({ ...prev, list: l[0].id, isLoading: false, error: undefined }))
+                    let _id = l[0].id
+                    if (listId && l.find(l => l.id === listId)) _id = listId
+                    setListId(_id)
+                    setConfig(prev => ({ ...prev, list: _id, lists: l, isLoading: false, error: undefined }))
                 }
             }).catch(e => {
                 setConfig(prev => ({ ...prev, isLoading: false, error: "リストの取得に失敗しました。" }))
             })
         }
-    }, [config])
+    }, [config.token, config.isLoading, listId, setListId])
 
+    const handleSetListId = (id: string | null) => {
+        console.log("setListId kokokita?" )
+        setListId(id)
+        setConfig(prev => ({ ...prev, list: id }))
+    }
 
     return (
-        <TodoContext.Provider value={config}>
+        <TodoContext.Provider value={{ ...config, setListId: handleSetListId }}>
             {children}
         </TodoContext.Provider>
     )

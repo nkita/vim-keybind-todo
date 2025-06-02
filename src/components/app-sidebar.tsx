@@ -14,7 +14,7 @@ import {
     SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint, ChevronDown, Pencil } from "lucide-react"
+import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"
@@ -27,6 +27,16 @@ import { usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { Button } from "./ui/button"
 import { TodoContext } from "@/provider/todo"
+import { Modal } from "./ui/modal"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
+import { Input } from "./ui/input"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+
+const listSchema = z.object({
+    name: z.string().min(1, { message: "リスト名を入力してください" }),
+})
 
 export function AppSidebar() {
     const {
@@ -36,42 +46,70 @@ export function AppSidebar() {
 
     const { list, lists, isLoading, isLogin, error, setListId } = useContext(TodoContext)
     const [isListOpen, setIsListOpen] = useState(true)
-    // const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_last_checked_date", undefined)
-    // const { data: pullRequests, error } = useSWR(
-    //     'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
-    //     url => fetch(url).then(res => res.json())
-    // );
-    // const [isUpdateDialog, setIsUpdateDialog] = useState(false)
-    // useEffect(() => {
-    //     if (pullRequests && pullRequests.length > 0) {
-    //         const latestDate = new Date(pullRequests[0].closed_at).getTime()
+    
+    // モーダル関連の状態
+    const [modalType, setModalType] = useState<'add' | 'edit' | 'delete' | null>(null)
+    const [selectedList, setSelectedList] = useState<any>(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
-    //         if (checkInfoDate === undefined) {
-    //             setCheckInfoDate(latestDate)
-    //             return
-    //         }
+    const form = useForm<z.infer<typeof listSchema>>({
+        resolver: zodResolver(listSchema),
+        defaultValues: {
+            name: "",
+        },
+    })
 
-    //         if (isUpdateDialog) return
+    // モーダルを開く関数
+    const openModal = (type: 'add' | 'edit' | 'delete', listItem?: any) => {
+        setModalType(type)
+        setSelectedList(listItem || null)
+        setIsModalOpen(true)
+        
+        if (type === 'edit' && listItem) {
+            form.setValue('name', listItem.name)
+        } else {
+            form.reset()
+        }
+    }
 
-    //         if (latestDate > checkInfoDate) {
-    //             setIsUpdateDialog(true)
-    //             toast.custom((id) => {
-    //                 return (
-    //                     <div className="p-4 border-primary border rounded-lg">
-    //                         <span>最新バージョンがリリースされています🎉 <br /> 画面の更新をお願いします✨</span>
-    //                         <div className="flex justify-between pt-2">
-    //                             <Button variant={"outline"} onClick={() => toast.dismiss(id)}>閉じる</Button>
-    //                             <Button onClick={() => {
-    //                                 setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
-    //                                 location.reload()
-    //                             }} className="w-full ml-4" >更新する</Button>
-    //                         </div>
-    //                     </div>
-    //                 )
-    //             }, { duration: Infinity, action: { label: "close", onClick: () => toast.dismiss() }, closeButton: true })
-    //         }
-    //     }
-    // }, [checkInfoDate, pullRequests, setCheckInfoDate, isUpdateDialog])
+    // モーダルを閉じる関数
+    const closeModal = () => {
+        setModalType(null)
+        setSelectedList(null)
+        setIsModalOpen(false)
+        form.reset()
+    }
+
+    // フォーム送信処理
+    const onSubmit = (values: z.infer<typeof listSchema>) => {
+        if (modalType === 'add') {
+            // リスト追加のロジック
+            toast.success(`リスト「${values.name}」を追加しました`)
+        } else if (modalType === 'edit' && selectedList) {
+            // リスト編集のロジック
+            toast.success(`リスト「${values.name}」を更新しました`)
+        }
+        closeModal()
+    }
+
+    // 削除処理
+    const handleDelete = () => {
+        if (selectedList) {
+            // リスト削除のロジック
+            toast.success(`リスト「${selectedList.name}」を削除しました`)
+            closeModal()
+        }
+    }
+
+    // モーダルタイトルとボタンテキストを取得
+    const getModalTitle = () => {
+        switch (modalType) {
+            case 'add': return '新しいリスト'
+            case 'edit': return 'リストを編集'
+            case 'delete': return 'リストを削除'
+            default: return ''
+        }
+    }
 
     return (
         <Sidebar collapsible="icon" className="border-r-sidebar-border" >
@@ -103,6 +141,7 @@ export function AppSidebar() {
                                 <span>実績</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
+                        <SidebarGroupLabel>List</SidebarGroupLabel>
                         {isLogin && lists && lists.length > 0 && (
                             <>
                                 <SidebarMenuItem>
@@ -112,27 +151,63 @@ export function AppSidebar() {
                                         <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${isListOpen ? "rotate-180" : ""}`} />
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                                {isListOpen && lists.map(l => (
-                                    <SidebarMenuItem key={l.id} className="">
-                                        <SidebarMenuButton onClick={() => setListId(l.id)} className={`${list === l.id ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""}`}>
-                                            <span className="w-4 h-4 flex items-center justify-center font-medium border rounded-full p-2">{l.name.charAt(0)}</span>
-                                            <span>{l.name}</span>
-                                        </SidebarMenuButton>
-                                        <SidebarMenuAction>
-                                            <button className="h-4 w-4 group " onClick={() => alert(2)}>
-                                                <Pencil className="h-4 w-4" />
-                                            </button>
-                                        </SidebarMenuAction>
-                                    </SidebarMenuItem>
-                                ))}
+                                {isListOpen && open &&
+                                    <>
+                                        {lists.map(l => (
+                                            <SidebarMenuItem key={l.id} className="group relative">
+                                                <SidebarMenuButton onClick={() => setListId(l.id)} className={`${list === l.id ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""} pr-20`}>
+                                                    <span className="w-4 h-4 flex items-center justify-center font-medium border rounded-full p-2">{l.name.charAt(0)}</span>
+                                                    <span>{l.name}</span>
+                                                </SidebarMenuButton>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+                                                    <button
+                                                        className="h-4 w-4 flex items-center justify-center transition-colors group"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            openModal('edit', l);
+                                                        }}
+                                                        title="リストを編集"
+                                                    >
+                                                        <Pencil className="h-4 w-4 hover:scale-110" />
+                                                    </button>
+                                                    <button
+                                                        className="h-4 w-4 flex items-center justify-center transition-colors group"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            openModal('delete', l);
+                                                        }}
+                                                        title="リストを削除"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-destructive/90 hover:scale-110 transition-colors" />
+                                                    </button>
+                                                </div>
+                                            </SidebarMenuItem>
+                                        ))}
+                                        <SidebarMenuItem>
+                                            <SidebarMenuButton
+                                                onClick={() => openModal('add')}
+                                                className="text-accent hover:text-foreground hover:border-primary/50 transition-colors"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                                <span>新しいリスト</span>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    </>
+                                }
                             </>
                         )}
-                        {/* <SidebarMenuItem>
-                            <ExSidebarMenuButton href="#" disabled>
-                                <Settings className="w-4 h-4" />
-                                <span>設定</span>
-                            </ExSidebarMenuButton>
-                        </SidebarMenuItem> */}
+                        {/* ログインしているがリストがない場合の表示 */}
+                        {isLogin && (!lists || lists.length === 0) && (
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    onClick={() => openModal('add')}
+                                    className="text-sidebar-primary-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    <span>最初のリストを作成</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        )}
                     </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup >
@@ -186,6 +261,60 @@ export function AppSidebar() {
                 </SidebarMenu>
                 <NavUser />
             </SidebarFooter>
+
+            {/* モーダル */}
+            <Modal
+                buttonLabel=""
+                dialogTitle={getModalTitle()}
+                className="hidden"
+                open={isModalOpen}
+                onClickOpen={() => {}}
+                onClickChange={closeModal}
+            >
+                {modalType === 'delete' ? (
+                    <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                            リスト「{selectedList?.name}」を削除しますか？
+                            <br />
+                            削除したリストは復元できません。
+                        </p>
+                        <div className="flex justify-end space-x-2">
+                            <Button variant="outline" onClick={closeModal}>
+                                キャンセル
+                            </Button>
+                            <Button variant="destructive" onClick={handleDelete}>
+                                削除する
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>リスト名</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="リスト名を入力" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex justify-end space-x-2">
+                                <Button type="button" variant="outline" onClick={closeModal}>
+                                    キャンセル
+                                </Button>
+                                <Button type="submit">
+                                    {modalType === 'add' ? '作成' : '更新'}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                )}
+            </Modal>
         </Sidebar>
     )
 }

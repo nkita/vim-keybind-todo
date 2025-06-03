@@ -13,9 +13,11 @@ type TodoConfigProps = {
     isLoading: boolean
     isLogin: boolean
     error: string | undefined
+    mode: string | null
     setListId: (id: string | null) => void
+    setMode: (mode: string | null) => void
 }
-const defaultValue = { list: null, lists: [], token: null, isLoading: true, isLogin: false, error: undefined, setListId: () => { } }
+const defaultValue = { list: null, lists: [], token: null, isLoading: true, isLogin: false, error: undefined, mode: null, setListId: () => { }, setMode: () => { } }
 
 
 export const TodoContext = createContext<TodoConfigProps>(defaultValue)
@@ -24,6 +26,7 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
     const { getAccessTokenSilently, user, isLoading } = useAuth0();
     const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
     const [listId, setListId] = useLocalStorage<string | null>("list_id", null)
+    const [mode, setMode] = useState<string | null>(null)
 
     useEffect(() => {
         async function getToken() {
@@ -74,8 +77,13 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
         setConfig(prev => ({ ...prev, list: id }))
     }
 
+    const handleSetMode = (mode: string | null) => {
+        setMode(mode)
+        setConfig(prev => ({ ...prev, mode: mode }))
+    }
+
     return (
-        <TodoContext.Provider value={{ ...config, setListId: handleSetListId }}>
+        <TodoContext.Provider value={{ ...config, mode: mode, setListId: handleSetListId, setMode: handleSetMode }}>
             {children}
         </TodoContext.Provider>
     )

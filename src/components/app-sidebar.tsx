@@ -43,9 +43,9 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    const { list, lists, isLoading,token, isLogin, error, setListId, } = useContext(TodoContext)
+    const { list, lists, isLoading, token, isLogin, error, setListId, setMode } = useContext(TodoContext)
     const [isListOpen, setIsListOpen] = useState(true)
-    
+
     // モーダル関連の状態
     const [modalType, setModalType] = useState<'add' | 'edit' | 'delete' | null>(null)
     const [selectedList, setSelectedList] = useState<any>(null)
@@ -63,7 +63,8 @@ export function AppSidebar() {
         setModalType(type)
         setSelectedList(listItem || null)
         setIsModalOpen(true)
-        
+        setMode('modal')
+
         if (type === 'edit' && listItem) {
             form.setValue('name', listItem.name)
         } else {
@@ -76,6 +77,7 @@ export function AppSidebar() {
         setModalType(null)
         setSelectedList(null)
         setIsModalOpen(false)
+        setMode(null)
         form.reset()
     }
 
@@ -87,15 +89,15 @@ export function AppSidebar() {
                 const response = await postFetch(baseUrl, token, {
                     name: values.name
                 });
-                    toast.success(`リスト「${values.name}」を追加しました`)
+                toast.success(`リスト「${values.name}」を追加しました`)
             } else if (modalType === 'edit' && selectedList) {
                 // リスト編集のロジック
                 const editUrl = `${baseUrl}/${selectedList.id}`;
                 const response = await postFetch(editUrl, token, {
                     name: values.name
                 });
-                    toast.success(`リスト「${values.name}」を更新しました`)
-                    // リストを再読み込み
+                toast.success(`リスト「${values.name}」を更新しました`)
+                // リストを再読み込み
             }
             closeModal()
         } catch (error) {
@@ -282,7 +284,7 @@ export function AppSidebar() {
                 dialogTitle={getModalTitle()}
                 className="hidden"
                 open={isModalOpen}
-                onClickOpen={() => {}}
+                onClickOpen={() => { }}
                 onClickChange={closeModal}
             >
                 {modalType === 'delete' ? (

@@ -52,6 +52,7 @@ export const Todo = (
         isSave,
         isUpdate,
         isLocalMode,
+        contextMode,
         setTodos,
         setExProjects,
         setExLabels,
@@ -67,6 +68,7 @@ export const Todo = (
         isSave: boolean
         isUpdate: boolean
         isLocalMode: boolean
+        contextMode: string | null
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -120,6 +122,15 @@ export const Todo = (
             return () => window.removeEventListener('resize', handleResize)
         }
     }, [])
+
+    // contextModeからmodeを同期
+    useEffect(() => {
+        if (contextMode === 'modal') {
+            setMode('modal')
+        } else if (contextMode === null && mode === 'modal') {
+            setMode('normal')
+        }
+    }, [contextMode, mode])
 
     // 初期値を0に設定
     const mainHeight = windowHeight === 0 ? 0 : windowHeight - (

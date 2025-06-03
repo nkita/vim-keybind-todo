@@ -209,6 +209,7 @@ export default function Home() {
           isLocalMode={isLocalMode}
           isSave={isSave}
           isUpdate={isUpdate}
+          contextMode={config.mode}
           loading={isLocalMode ? false : (todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading)}
           setTodos={isLocalMode ? setTodosLS : setTodos}
           setIsUpdate={setIsUpdate}

@@ -1,103 +1,132 @@
 "use client"
-import { FC, PropsWithChildren, useState, useEffect, useRef } from "react";
-import { createContext } from "react";
-import { useAuth0 } from "@auth0/auth0-react";
-import { getFetch, postFetch, useFetchList } from "@/lib/fetch";
-import { mutate } from "swr";
+import { FC, PropsWithChildren, createContext, useCallback, useMemo, useState } from "react";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
-import useSWR from "swr";
+import { useAuthToken } from "@/hook/useAuthToken";
+import { useListsData } from "@/hook/useListsData";
 
-type TodoConfigProps = {
-    list: string | null
-    lists: { id: string, name: string }[] | null
-    token: string | null
-    isLoading: boolean
-    isLogin: boolean
-    error: string | undefined
-    mode: string | null
-    setListId: (id: string | null) => void
-    setMode: (mode: string | null) => void
+// 型定義の改善
+export interface ListItem {
+    id: string;
+    name: string;
 }
-const defaultValue = { list: null, lists: [], token: null, isLoading: true, isLogin: false, error: undefined, mode: null, setListId: () => { }, setMode: () => { } }
 
+export interface TodoContextValue {
+    list: string | null;
+    lists: ListItem[] | null;
+    token: string | null;
+    isLoading: boolean;
+    isLogin: boolean;
+    error: string | undefined;
+    mode: string | null;
+    setListId: (id: string | null) => void;
+    setMode: (mode: string | null) => void;
+}
 
-export const TodoContext = createContext<TodoConfigProps>(defaultValue)
+// デフォルト値の改善
+const createDefaultValue = (): TodoContextValue => ({
+    list: null,
+    lists: null,
+    token: null,
+    isLoading: true,
+    isLogin: false,
+    error: undefined,
+    mode: null,
+    setListId: () => {},
+    setMode: () => {},
+});
+
+export const TodoContext = createContext<TodoContextValue>(createDefaultValue());
 
 export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
-    const { getAccessTokenSilently, user, isLoading } = useAuth0();
-    const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
-    const [listId, setListId] = useLocalStorage<string | null>("list_id", null)
-    const [mode, setMode] = useState<string | null>(null)
+    const [listId, setListId] = useLocalStorage<string | null>("list_id", null);
+    const [mode, setMode] = useState<string | null>(null);
     
-    const baseUrl = `${process.env.NEXT_PUBLIC_API}/api/list`
-    const { data: fetchedLists, error: swrError } = useSWR(
-        config.token ? [baseUrl, config.token] : null,
-        ([url, token]) => getFetch<{ id: string, name: string }[]>(url, token)
-    )
-
-    useEffect(() => {
-        async function getToken() {
-            try {
-                const token = await getAccessTokenSilently()
-                setConfig(prev => ({ ...prev, token: token, isLoading: !!token, isLogin: !!token, error: undefined }))
-            } catch (e) {
-                setConfig(prev => ({ ...prev, isLoading: false, error: "認証に失敗しました。ログインし直すか、時間をおいてから再度お試しください。" }))
-                console.error(e)
-            }
-        }
-        if (!isLoading) {
-            if (user) {
-                getToken()
-            } else {
-                setConfig(prev => ({ ...prev, isLoading: false }))
-            }
-        }
-    }, [getAccessTokenSilently, user, isLoading])
-
-    const prevListsRef = useRef<{ id: string, name: string }[] | null>(null)
+    // 認証関連のロジックを分離
+    const { token, isLoading: authLoading, isLogin, error: authError } = useAuthToken();
     
-    // リスト一覧の取得と初期設定
-    useEffect(() => {
-        if (fetchedLists && fetchedLists.length > 0) {
-            // 前回のリストと比較して変更があった場合のみ処理
-            if (JSON.stringify(prevListsRef.current) !== JSON.stringify(fetchedLists)) {
-                prevListsRef.current = fetchedLists
-                
-                let _id = fetchedLists[0].id
-                if (listId && fetchedLists.find(l => l.id === listId)) _id = listId
-                
-                setListId(_id)
-                setConfig(prev => ({ ...prev, list: _id, lists: fetchedLists, isLoading: false, error: undefined }))
-            }
-        } else if (fetchedLists !== undefined && fetchedLists.length === 0 && config.token) {
-            // リストがない場合は初期リストを作成
-            postFetch(baseUrl, config.token, { name: "first list" })
-                .then(_ => {
-                    mutate([baseUrl, config.token])
-                    setConfig(prev => ({ ...prev, error: undefined }))
-                })
-                .catch(e => { setConfig(prev => ({ ...prev, error: "リストの作成に失敗しました" })) })
+    // リストデータ関連のロジックを分離
+    const { 
+        lists, 
+        isLoading: listsLoading, 
+        error: listsError,
+        createInitialList 
+    } = useListsData(token);
+
+    // リストIDの設定ロジック
+    const handleSetListId = useCallback((id: string | null) => {
+        setListId(id);
+    }, [setListId]);
+
+    // モードの設定ロジック
+    const handleSetMode = useCallback((newMode: string | null) => {
+        setMode(newMode);
+    }, [setMode]);
+
+    // 現在選択されているリストIDの決定
+    const currentListId = useMemo(() => {
+        if (!lists || lists.length === 0) return null;
+        
+        // 保存されているlistIdが有効な場合はそれを使用
+        if (listId && lists.find(l => l.id === listId)) {
+            return listId;
         }
         
-        if (swrError) {
-            setConfig(prev => ({ ...prev, isLoading: false, error: "リストの取得に失敗しました。" }))
+        // そうでなければ最初のリストを使用
+        const firstListId = lists[0].id;
+        if (firstListId !== listId) {
+            handleSetListId(firstListId);
         }
-    }, [fetchedLists, swrError])
+        return firstListId;
+    }, [lists, listId, handleSetListId]);
 
-    const handleSetListId = (id: string | null) => {
-        console.log("setListId kokokita?" )
-        setListId(id)
-        setConfig(prev => ({ ...prev, list: id }))
-    }
+    // 全体のローディング状態
+    const isLoading = authLoading || listsLoading;
+    
+    // エラーの統合
+    const error = authError || listsError;
 
-    const handleSetMode = (mode: string | null) => {
-        setMode(mode)
-        setConfig(prev => ({ ...prev, mode: mode }))
-    }
+    // 空のリストの場合の初期リスト作成
+    const handleEmptyLists = useCallback(async () => {
+        if (lists !== null && lists.length === 0 && token && !isLoading) {
+            try {
+                await createInitialList();
+            } catch (err) {
+                console.error('Failed to create initial list:', err);
+            }
+        }
+    }, [lists, token, isLoading, createInitialList]);
+
+    // 空のリストの場合の処理
+    useMemo(() => {
+        handleEmptyLists();
+    }, [handleEmptyLists]);
+
+    // Context値の生成
+    const contextValue = useMemo<TodoContextValue>(() => ({
+        list: currentListId,
+        lists: lists,
+        token: token,
+        isLoading: isLoading,
+        isLogin: isLogin,
+        error: error,
+        mode: mode,
+        setListId: handleSetListId,
+        setMode: handleSetMode,
+    }), [
+        currentListId,
+        lists,
+        token,
+        isLoading,
+        isLogin,
+        error,
+        mode,
+        handleSetListId,
+        handleSetMode,
+    ]);
 
     return (
-        <TodoContext.Provider value={{ ...config, mode: mode, setListId: handleSetListId, setMode: handleSetMode }}>
+        <TodoContext.Provider value={contextValue}>
             {children}
         </TodoContext.Provider>
-    )
-}
+    );
+};

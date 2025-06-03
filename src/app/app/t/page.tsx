@@ -1,13 +1,13 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useContext, useRef, useMemo, useCallback } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { TodoProps, SaveTodosReturnProps, ProjectProps, LabelProps } from "@/types"
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchTodo, postFetch, useFetchProjects, useFetchLabels } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { postSaveTodos } from "@/lib/todo";
-import { TodoContext } from "@/provider/todo";
+import { useTodoContext } from "@/hook/useTodoContext";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import AppPageTemplate from "@/components/app-page-template";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -36,7 +36,7 @@ export default function Home() {
 
   const [isLocalMode, setIsLocalMode] = useState(false)
 
-  const config = useContext(TodoContext)
+  const config = useTodoContext()
   const [isLoginLoading, setIsLoginLoading] = useState(true)
   const [isLogin, setIsLogin] = useState(true)
   const router = useRouter();

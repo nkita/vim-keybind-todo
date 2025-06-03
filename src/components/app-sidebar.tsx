@@ -17,11 +17,11 @@ import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"
-import React, { useEffect, useState, useContext } from "react"
+import React, { useEffect, useState } from "react"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
 import { usePathname } from "next/navigation"
-import { TodoContext } from "@/provider/todo"
+import { useTodoContext } from "@/hook/useTodoContext"
 import { Modal } from "./ui/modal"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
@@ -44,7 +44,7 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    const { list, lists, isLoading, token, isLogin, error, setListId, setMode } = useContext(TodoContext)
+    const { list, lists, isLoading, token, isLogin, error, setListId, setMode } = useTodoContext()
     const [isListOpen, setIsListOpen] = useState(true)
 
     // モーダル関連の状態

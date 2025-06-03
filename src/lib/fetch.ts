@@ -28,6 +28,16 @@ export const postFetch = (url: string, token: string | null, body: Object) => {
     }).then(res => res.json());
 }
 
+export const deleteFetch = (url: string, token: string | null) => {
+    return fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+    }).then(res => res.json());
+}
+
 export const useFetch = <T>(url: string, token: string) => {
     const [data, setData] = useState<T | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(true);

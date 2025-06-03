@@ -1,10 +1,11 @@
 "use client"
-import { FC, PropsWithChildren, useState, useEffect } from "react";
+import { FC, PropsWithChildren, useState, useEffect, useRef } from "react";
 import { createContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { getFetch, postFetch, useFetchList } from "@/lib/fetch";
 import { mutate } from "swr";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
+import useSWR from "swr";
 
 type TodoConfigProps = {
     list: string | null
@@ -27,6 +28,12 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
     const [config, setConfig] = useState<TodoConfigProps>(defaultValue)
     const [listId, setListId] = useLocalStorage<string | null>("list_id", null)
     const [mode, setMode] = useState<string | null>(null)
+    
+    const baseUrl = `${process.env.NEXT_PUBLIC_API}/api/list`
+    const { data: fetchedLists, error: swrError } = useSWR(
+        config.token ? [baseUrl, config.token] : null,
+        ([url, token]) => getFetch<{ id: string, name: string }[]>(url, token)
+    )
 
     useEffect(() => {
         async function getToken() {
@@ -47,29 +54,35 @@ export const TodoProvider: FC<PropsWithChildren> = ({ children }) => {
         }
     }, [getAccessTokenSilently, user, isLoading])
 
+    const prevListsRef = useRef<{ id: string, name: string }[] | null>(null)
+    
+    // リスト一覧の取得と初期設定
     useEffect(() => {
-        if (config.token && config.isLoading) {
-            const getList = async (url: string, token: string) => await getFetch<any[]>(url, config.token)
-            const u = `${process.env.NEXT_PUBLIC_API}/api/list`
-            getList(u, config.token).then(l => {
-                if (l === null) {
-                    postFetch(u, config.token, { name: "first list" })
-                        .then(_ => {
-                            mutate(u)
-                            setConfig(prev => ({ ...prev, error: undefined }))
-                        })
-                        .catch(e => { setConfig(prev => ({ ...prev, error: "リストの作成に失敗しました" })) })
-                } else if (l && l.length > 0) {
-                    let _id = l[0].id
-                    if (listId && l.find(l => l.id === listId)) _id = listId
-                    setListId(_id)
-                    setConfig(prev => ({ ...prev, list: _id, lists: l, isLoading: false, error: undefined }))
-                }
-            }).catch(e => {
-                setConfig(prev => ({ ...prev, isLoading: false, error: "リストの取得に失敗しました。" }))
-            })
+        if (fetchedLists && fetchedLists.length > 0) {
+            // 前回のリストと比較して変更があった場合のみ処理
+            if (JSON.stringify(prevListsRef.current) !== JSON.stringify(fetchedLists)) {
+                prevListsRef.current = fetchedLists
+                
+                let _id = fetchedLists[0].id
+                if (listId && fetchedLists.find(l => l.id === listId)) _id = listId
+                
+                setListId(_id)
+                setConfig(prev => ({ ...prev, list: _id, lists: fetchedLists, isLoading: false, error: undefined }))
+            }
+        } else if (fetchedLists !== undefined && fetchedLists.length === 0 && config.token) {
+            // リストがない場合は初期リストを作成
+            postFetch(baseUrl, config.token, { name: "first list" })
+                .then(_ => {
+                    mutate([baseUrl, config.token])
+                    setConfig(prev => ({ ...prev, error: undefined }))
+                })
+                .catch(e => { setConfig(prev => ({ ...prev, error: "リストの作成に失敗しました" })) })
         }
-    }, [config.token, config.isLoading, listId, setListId])
+        
+        if (swrError) {
+            setConfig(prev => ({ ...prev, isLoading: false, error: "リストの取得に失敗しました。" }))
+        }
+    }, [fetchedLists, swrError])
 
     const handleSetListId = (id: string | null) => {
         console.log("setListId kokokita?" )

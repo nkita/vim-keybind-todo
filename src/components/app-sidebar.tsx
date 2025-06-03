@@ -28,7 +28,8 @@ import { Input } from "./ui/input"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { getFetch, postFetch, useFetchList } from "@/lib/fetch";
+import { getFetch, postFetch, deleteFetch, useFetchList } from "@/lib/fetch";
+import { mutate } from "swr";
 import { toast } from "sonner"
 
 const listSchema = z.object({
@@ -86,18 +87,21 @@ export function AppSidebar() {
         try {
             if (modalType === 'add') {
                 // リスト追加のロジック
-                const response = await postFetch(baseUrl, token, {
+                await postFetch(baseUrl, token, {
                     name: values.name
                 });
                 toast.success(`リスト「${values.name}」を追加しました`)
+                // リストを再読み込み
+                mutate([baseUrl, token])
             } else if (modalType === 'edit' && selectedList) {
                 // リスト編集のロジック
                 const editUrl = `${baseUrl}/${selectedList.id}`;
-                const response = await postFetch(editUrl, token, {
+                await postFetch(editUrl, token, {
                     name: values.name
                 });
                 toast.success(`リスト「${values.name}」を更新しました`)
                 // リストを再読み込み
+                mutate([baseUrl, token])
             }
             closeModal()
         } catch (error) {
@@ -106,14 +110,20 @@ export function AppSidebar() {
         }
     }
 
-    // 削除処理（将来の実装用にコメントアウト）
-    const handleDelete = () => {
+    // 削除処理
+    const handleDelete = async () => {
         if (selectedList) {
-            // TODO: 削除APIの実装を検討中
-            // const deleteUrl = `${baseUrl}/${selectedList.id}`;
-            // await deleteFetch(deleteUrl);
-            toast.success(`リスト「${selectedList.name}」を削除しました`)
-            closeModal()
+            try {
+                const deleteUrl = `${baseUrl}/${selectedList.id}`;
+                await deleteFetch(deleteUrl, token);
+                toast.success(`リスト「${selectedList.name}」を削除しました`)
+                // リストを再読み込み
+                mutate([baseUrl, token])
+                closeModal()
+            } catch (error) {
+                console.error('Delete failed:', error)
+                toast.error('削除処理中にエラーが発生しました')
+            }
         }
     }
 

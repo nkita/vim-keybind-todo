@@ -590,15 +590,17 @@ export const Todo = (
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
+        if (filteredTodos.length === 0) return
         setPrefix('projectId')
         setMode('modal')
-    }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
+    }, setKeyEnableDefine(keymap['editProject'].enable), [filteredTodos])
 
     // change to label edit mode
     useHotkeys(keymap['editLabel'].keys, (e) => {
+        if (filteredTodos.length === 0) return
         setPrefix('labelId')
         setMode('modal')
-    }, setKeyEnableDefine(keymap['editLabel'].enable))
+    }, setKeyEnableDefine(keymap['editLabel'].enable), [filteredTodos])
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {

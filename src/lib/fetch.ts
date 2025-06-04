@@ -65,8 +65,16 @@ export const useFetch = <T>(url: string, token: string) => {
 };
 
 export const useFetchList = (id: string | null, token: string | null) => useSWRImmutable(token && id ? [`${process.env.NEXT_PUBLIC_API}/api/list${id ? "/" + id : ""}`, token] : null, ([url, token]) => getFetch(url, token))
-export const useFetchTodo = (list_id: string | null, token: string | null) => useSWRImmutable<TodoProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo" : ""}`, token] : null, ([url, token]) => getFetch(url, token as string | null))
-export const useFetchProjects = (list_id: string | null, token: string | null) => useSWRImmutable<ProjectProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/project" : ""}`, token] : null, ([url, token]) => getFetch(url, token as string | null))
-export const useFetchLabels = (list_id: string | null, token: string | null) => useSWRImmutable<LabelProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/label" : ""}`, token] : null, ([url, token]) => getFetch(url, token as string | null))
+export const useFetchTodo = (list_id: string | null, token: string | null) => useSWRImmutable<TodoProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list/${list_id}/todo`, token] : null, ([url, token]) => getFetch(url, token as string | null))
+export const useFetchProjects = (list_id: string | null, token: string | null) => useSWR<ProjectProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list/${list_id}/project`, token] : null, ([url, token]) => getFetch(url, token as string | null), {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 0, // キャッシュを無効化してリスト切り替え時に毎回取得
+})
+export const useFetchLabels = (list_id: string | null, token: string | null) => useSWR<LabelProps[]>((token && list_id) ? [`${process.env.NEXT_PUBLIC_API}/api/list/${list_id}/label`, token] : null, ([url, token]) => getFetch(url, token as string | null), {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: true,
+    dedupingInterval: 0, // キャッシュを無効化してリスト切り替え時に毎回取得
+})
 export const useFetchCompletedTodo = (list_id: string | null, page: number = 1, token: string | null) => useSWR<TodoProps[]>(token && list_id ? [`${process.env.NEXT_PUBLIC_API}/api/list${list_id ? "/" + list_id + "/todo?completionOnly=true" : ""}`, token] : null, ([url, token]) => getFetch(url, token as string | null))
 export const useFetchPostList = (body: Object, token: string | null) => postFetch(`${process.env.NEXT_PUBLIC_API}/api/list`, token, body)

@@ -48,6 +48,8 @@ export const Todo = (
         exProjects,
         exLabels,
         loading,
+        projectsLoading,
+        labelsLoading,
         completionOnly,
         isSave,
         isUpdate,
@@ -64,6 +66,8 @@ export const Todo = (
         exProjects: ProjectProps[]
         exLabels: LabelProps[]
         loading: Boolean
+        projectsLoading?: boolean
+        labelsLoading?: boolean
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
@@ -226,6 +230,8 @@ export const Todo = (
     useEffect(() => {
         if (exProjects.length > 0) {
             setFilteredProjects(sortBy(exProjects.filter(p => p.isTabDisplay), "sort"))
+        } else {
+            setFilteredProjects([])
         }
     }, [exProjects])
 
@@ -1145,32 +1151,51 @@ export const Todo = (
                         style={{ height: HEADER_PROJECT_TAB_HEIGHT }}
                         className={cn(`hidden sm:block relative w-full border-b`)}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
-                            <div ref={projectTop} />
-                            {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
-                            <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filteredProjects={filteredProjects} exProjects={exProjects} setProjects={setExProjects} />
-                            <SortableContext items={filteredProjects.map(p => p.id)} strategy={rectSortingStrategy}>
-                                {!loading && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                            </SortableContext>
-                            <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
-                                <ProjectEditModal
-                                    buttonLabel={<Plus size={14} />}
-                                    className="outline-none  p-2 rounded-md hover:bg-primary/10"
-                                    mode={mode}
-                                    setMode={setMode}
-                                    exProjects={exProjects}
-                                    setExProjects={setExProjects}
-                                />
-                                <ProjectTabSettingModal
-                                    buttonLabel={<Settings2 size={14} />}
-                                    className="outline-none  p-2 rounded-md hover:bg-primary/10"
-                                    mode={mode}
-                                    setMode={setMode}
-                                    exProjects={exProjects}
-                                    setExProjects={setExProjects}
-                                />
+                        <div ref={projectTop} />
+                        {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
+                        <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filteredProjects={filteredProjects} exProjects={exProjects} setProjects={setExProjects} />
+                        <SortableContext items={filteredProjects.map(p => p.id)} strategy={rectSortingStrategy}>
+                            {!loading && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                        </SortableContext>
+                        {projectsLoading && (
+                            <div className="flex items-center px-4 h-full">
+                                <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                                    <div className="flex space-x-1">
+                                        {[0, 1, 2].map((index) => (
+                                            <div
+                                                key={index}
+                                                className="w-1 h-1 rounded-full bg-muted-foreground animate-bounce"
+                                                style={{
+                                                    animationDelay: `${index * 0.15}s`,
+                                                    animationDuration: '0.6s'
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span>読込中...</span>
+                                </div>
                             </div>
-                            <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
+                        )}
+                        <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
+                            <ProjectEditModal
+                                buttonLabel={<Plus size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
+                            />
+                            <ProjectTabSettingModal
+                                buttonLabel={<Settings2 size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
+                            />
                         </div>
+                        <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
+                    </div>
                     </div>
                     <div
                         style={{ height: `${HEADER_MENU_BAR_HEIGHT}px` }}

@@ -77,30 +77,39 @@ export default function Home() {
     }
   }, [fetch_todo, config, todosLoading])
 
+  // リスト切り替え時にデータをクリア
   useEffect(() => {
-    try {
-      if (fetch_projects !== undefined && config.token && config.list) {
-        setProjects(fetch_projects)
-        setProjectsLoading(false)
-      }
-    } catch (e) {
-      console.error(e)
+    if (config.list && config.token) {
+      setProjectsLoading(true)
+      setLabelsLoading(true)
+      setProjects([])
+      setLabels([])
+    }
+  }, [config.list])
+
+  // プロジェクトデータの更新
+  useEffect(() => {
+    if (fetch_projects !== undefined && config.token && config.list) {
+      setProjects(fetch_projects)
+      setProjectsLoading(false)
+    } else if (!fetch_projects_loading && config.token && config.list) {
+      // データが空の場合も明示的に設定
+      setProjects([])
       setProjectsLoading(false)
     }
-  }, [fetch_projects, config, projectsLoading])
+  }, [fetch_projects, fetch_projects_loading, config.token, config.list])
 
-
+  // ラベルデータの更新
   useEffect(() => {
-    try {
-      if (fetch_labels !== undefined && config.token && config.list) {
-        setLabels(fetch_labels)
-        setLabelsLoading(false)
-      }
-    } catch (e) {
-      console.error(e)
+    if (fetch_labels !== undefined && config.token && config.list) {
+      setLabels(fetch_labels)
+      setLabelsLoading(false)
+    } else if (!fetch_labels_loading && config.token && config.list) {
+      // データが空の場合も明示的に設定
+      setLabels([])
       setLabelsLoading(false)
     }
-  }, [fetch_labels, config, labelsLoading])
+  }, [fetch_labels, fetch_labels_loading, config.token, config.list])
 
   const handleSaveTodos = async (todos: TodoProps[],
     prevTodos: TodoProps[],
@@ -211,6 +220,8 @@ export default function Home() {
           isUpdate={isUpdate}
           contextMode={config.mode}
           loading={isLocalMode ? false : (todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading)}
+          projectsLoading={isLocalMode ? false : (projectsLoading || fetch_projects_loading)}
+          labelsLoading={isLocalMode ? false : (labelsLoading || fetch_labels_loading)}
           setTodos={isLocalMode ? setTodosLS : setTodos}
           setIsUpdate={setIsUpdate}
           setExProjects={isLocalMode ? setProjectsLS : setProjects}

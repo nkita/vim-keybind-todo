@@ -206,11 +206,6 @@ html {
 }
 
 /* Enhanced focus styles for accessibility */
-*:focus-visible {
-  outline: 2px solid hsl(var(--primary));
-  outline-offset: 2px;
-  border-radius: 4px;
-}
 
 /* Custom animations for landing page */
 @keyframes pulse-glow {

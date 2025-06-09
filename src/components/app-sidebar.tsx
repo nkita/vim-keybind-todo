@@ -22,6 +22,8 @@ import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
 import { usePathname } from "next/navigation"
 import { useTodoContext } from "@/hook/useTodoContext"
+import { useOfflineTodoContext } from "@/provider/offline-todo"
+import { createAppMode } from "@/types/todo-context"
 import { Modal } from "./ui/modal"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
 import { Input } from "./ui/input"
@@ -44,7 +46,18 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    const { list, lists, isLoading, token, isLogin, error, setListId, setMode } = useTodoContext()
+    // オフライン対応のコンテキストを使用
+    const context = useOfflineTodoContext()
+    const { currentList, lists, auth, mode, actions, computed } = context
+    
+    // 互換性のための変数マッピング
+    const list = currentList
+    const isLoading = computed.isLoading
+    const isLogin = computed.isAuthenticated
+    const isOffline = computed.isOffline || false
+    const listData = lists.status === 'success' ? lists.data : []
+    const setListId = actions.setListId
+    const setMode = actions.setMode
     const [isListOpen, setIsListOpen] = useState(true)
 
     // モーダル関連の状態
@@ -64,7 +77,7 @@ export function AppSidebar() {
         setModalType(type)
         setSelectedList(listItem || null)
         setIsModalOpen(true)
-        setMode('modal')
+        setMode(createAppMode('modal'))
 
         if (type === 'edit' && listItem) {
             form.setValue('name', listItem.name)
@@ -87,21 +100,24 @@ export function AppSidebar() {
         try {
             if (modalType === 'add') {
                 // リスト追加のロジック
-                await postFetch(baseUrl, token, {
-                    name: values.name
-                });
-                toast.success(`リスト「${values.name}」を追加しました`)
+                await actions.createList(values.name)
+                if (!isLogin || !navigator.onLine) {
+                    toast.success(`リスト「${values.name}」を追加しました（オフライン）`)
+                } else {
+                    toast.success(`リスト「${values.name}」を追加しました`)
+                }
                 // リストを再読み込み
-                mutate([baseUrl, token])
+                await actions.refreshLists()
             } else if (modalType === 'edit' && selectedList) {
                 // リスト編集のロジック
-                const editUrl = `${baseUrl}/${selectedList.id}`;
-                await postFetch(editUrl, token, {
-                    name: values.name
-                });
-                toast.success(`リスト「${values.name}」を更新しました`)
+                await actions.updateList(selectedList.id, values.name)
+                if (!isLogin || !navigator.onLine) {
+                    toast.success(`リスト「${values.name}」を更新しました（オフライン）`)
+                } else {
+                    toast.success(`リスト「${values.name}」を更新しました`)
+                }
                 // リストを再読み込み
-                mutate([baseUrl, token])
+                await actions.refreshLists()
             }
             closeModal()
         } catch (error) {
@@ -114,11 +130,14 @@ export function AppSidebar() {
     const handleDelete = async () => {
         if (selectedList) {
             try {
-                const deleteUrl = `${baseUrl}/${selectedList.id}`;
-                await deleteFetch(deleteUrl, token);
-                toast.success(`リスト「${selectedList.name}」を削除しました`)
+                await actions.deleteList(selectedList.id)
+                if (!isLogin || !navigator.onLine) {
+                    toast.success(`リスト「${selectedList.name}」を削除しました（オフライン）`)
+                } else {
+                    toast.success(`リスト「${selectedList.name}」を削除しました`)
+                }
                 // リストを再読み込み
-                mutate([baseUrl, token])
+                await actions.refreshLists()
                 closeModal()
             } catch (error) {
                 console.error('Delete failed:', error)
@@ -167,8 +186,8 @@ export function AppSidebar() {
                                 <span>実績</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarGroupLabel>List</SidebarGroupLabel>
-                        {isLogin && lists && lists.length > 0 && (
+                        <SidebarGroupLabel>List {(!isLogin || !navigator.onLine) && <span className="text-xs text-muted-foreground ml-1">(オフライン)</span>}</SidebarGroupLabel>
+                        {listData && listData.length > 0 && (
                             <>
                                 <SidebarMenuItem>
                                     <SidebarMenuButton onClick={() => setIsListOpen(!isListOpen)}>
@@ -179,7 +198,7 @@ export function AppSidebar() {
                                 </SidebarMenuItem>
                                 {isListOpen && open &&
                                     <>
-                                        {lists.map(l => (
+                                        {listData.map(l => (
                                             <SidebarMenuItem key={l.id} className="group relative">
                                                 <SidebarMenuButton onClick={() => setListId(l.id)} className={`${list === l.id ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""} pr-20`}>
                                                     <span className="w-4 h-4 flex items-center justify-center font-medium border rounded-full p-2">{l.name.charAt(0)}</span>
@@ -222,8 +241,8 @@ export function AppSidebar() {
                                 }
                             </>
                         )}
-                        {/* ログインしているがリストがない場合の表示 */}
-                        {isLogin && (!lists || lists.length === 0) && (
+                        {/* リストがない場合の表示 */}
+                        {(!listData || listData.length === 0) && (
                             <SidebarMenuItem>
                                 <SidebarMenuButton
                                     onClick={() => openModal('add')}

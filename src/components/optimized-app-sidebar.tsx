@@ -29,9 +29,10 @@ import { useOptimizedTodoContext } from "@/provider/optimized-todo";
 import { ListId } from "@/types/todo-context";
 import { performanceMonitor } from "@/utils/performance-monitor";
 
-// Lazy load heavy components
-const Modal = lazy(() => import("./ui/modal").then(m => ({ default: m.Modal })));
-const Form = lazy(() => import("./ui/form").then(m => ({ default: m.Form })));
+// Import components directly for now
+import { Modal } from "./ui/modal";
+import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
 
 // Validation schema with enhanced rules
 const listSchema = z.object({
@@ -134,15 +135,14 @@ const ListFormModal = memo<{
   }, [onSubmit]);
 
   return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Modal
-        buttonLabel=""
-        dialogTitle={title}
-        className="hidden"
-        open={isOpen}
-        onClickOpen={() => {}}
-        onClickChange={onClose}
-      >
+    <Modal
+      buttonLabel=""
+      dialogTitle={title}
+      className="hidden"
+      open={isOpen}
+      onClickOpen={() => {}}
+      onClickChange={onClose}
+    >
         {mode === 'delete' ? (
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
@@ -160,11 +160,22 @@ const ListFormModal = memo<{
             </div>
           </div>
         ) : (
-          <Suspense fallback={<div>Loading form...</div>}>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-                {/* Form fields would go here */}
-                <div className="flex justify-end space-x-2">
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>リスト名</FormLabel>
+                    <FormControl>
+                      <Input placeholder="リスト名を入力" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex justify-end space-x-2">
                   <Button type="button" variant="outline" onClick={onClose}>
                     キャンセル
                   </Button>
@@ -172,12 +183,10 @@ const ListFormModal = memo<{
                     {mode === 'add' ? '作成' : '更新'}
                   </Button>
                 </div>
-              </form>
-            </Form>
-          </Suspense>
+            </form>
+          </Form>
         )}
       </Modal>
-    </Suspense>
   );
 });
 

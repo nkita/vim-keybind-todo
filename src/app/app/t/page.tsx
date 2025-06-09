@@ -42,17 +42,18 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoginLoading && !config.isLoading) {
-      setIsLoginLoading(config.isLoading)
-      setIsLogin(config.isLogin)
-      setIsLocalMode(!config.isLoading && !config.isLogin)
+    if (isLoginLoading && !config.computed.isLoading) {
+      setIsLoginLoading(config.computed.isLoading)
+      setIsLogin(config.computed.isAuthenticated)
+      setIsLocalMode(!config.computed.isLoading && !config.computed.isAuthenticated)
     }
-  }, [isLoginLoading, config])
+  }, [isLoginLoading, config.computed.isLoading, config.computed.isAuthenticated])
 
 
-  const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(config.list, config.token)
-  const { data: fetch_projects, isLoading: fetch_projects_loading } = useFetchProjects(config.list, config.token)
-  const { data: fetch_labels, isLoading: fetch_labels_loading } = useFetchLabels(config.list, config.token)
+  const authToken = config.auth.type === 'authenticated' ? config.auth.token : null
+  const { data: fetch_todo, isLoading: fetch_todo_loading } = useFetchTodo(config.currentList, authToken)
+  const { data: fetch_projects, isLoading: fetch_projects_loading } = useFetchProjects(config.currentList, authToken)
+  const { data: fetch_labels, isLoading: fetch_labels_loading } = useFetchLabels(config.currentList, authToken)
 
   const { user, isLoading: userLoading, logout } = useAuth0();
   const { open } = useSidebar()
@@ -66,7 +67,7 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      if (fetch_todo !== undefined && config.token && config.list) {
+      if (fetch_todo !== undefined && authToken && config.currentList) {
         setTodos(fetch_todo)
         setPrevTodos(fetch_todo)
         setTodosLoading(false)
@@ -75,41 +76,41 @@ export default function Home() {
       console.error(e)
       setTodosLoading(false)
     }
-  }, [fetch_todo, config, todosLoading])
+  }, [fetch_todo, authToken, config.currentList, todosLoading])
 
   // リスト切り替え時にデータをクリア
   useEffect(() => {
-    if (config.list && config.token) {
+    if (config.currentList && authToken) {
       setProjectsLoading(true)
       setLabelsLoading(true)
       setProjects([])
       setLabels([])
     }
-  }, [config.list])
+  }, [config.currentList, authToken])
 
   // プロジェクトデータの更新
   useEffect(() => {
-    if (fetch_projects !== undefined && config.token && config.list) {
+    if (fetch_projects !== undefined && authToken && config.currentList) {
       setProjects(fetch_projects)
       setProjectsLoading(false)
-    } else if (!fetch_projects_loading && config.token && config.list) {
+    } else if (!fetch_projects_loading && authToken && config.currentList) {
       // データが空の場合も明示的に設定
       setProjects([])
       setProjectsLoading(false)
     }
-  }, [fetch_projects, fetch_projects_loading, config.token, config.list])
+  }, [fetch_projects, fetch_projects_loading, authToken, config.currentList])
 
   // ラベルデータの更新
   useEffect(() => {
-    if (fetch_labels !== undefined && config.token && config.list) {
+    if (fetch_labels !== undefined && authToken && config.currentList) {
       setLabels(fetch_labels)
       setLabelsLoading(false)
-    } else if (!fetch_labels_loading && config.token && config.list) {
+    } else if (!fetch_labels_loading && authToken && config.currentList) {
       // データが空の場合も明示的に設定
       setLabels([])
       setLabelsLoading(false)
     }
-  }, [fetch_labels, fetch_labels_loading, config.token, config.list])
+  }, [fetch_labels, fetch_labels_loading, authToken, config.currentList])
 
   const handleSaveTodos = async (todos: TodoProps[],
     prevTodos: TodoProps[],
@@ -166,17 +167,18 @@ export default function Home() {
   );
 
   useEffect(() => {
-    if (config.token && config.list && isUpdate && !isSave) {
+    if (authToken && config.currentList && isUpdate && !isSave) {
       // isUpdateを引数から除去
-      saveTodos(todos, prevTodos, config.list, config.token);
+      saveTodos(todos, prevTodos, config.currentList, authToken);
     }
-  }, [todos, config.token, config.list, isUpdate, isSave, saveTodos, prevTodos]);
+  }, [todos, authToken, config.currentList, isUpdate, isSave, saveTodos, prevTodos]);
 
   // エラー処理用のuseEffect
   useEffect(() => {
-    if (config.error && !isError) {
-      if (!config.token) {
-        toast.error(config.error, { duration: 5000, description: "ユーザーを認証できませんでした。ログアウトします。" })
+    const error = config.computed.error;
+    if (error && !isError) {
+      if (!authToken) {
+        toast.error(error, { duration: 5000, description: "ユーザーを認証できませんでした。ログアウトします。" })
         logout({
           logoutParams: {
             returnTo: `${window.location.origin}/app/t`
@@ -185,16 +187,16 @@ export default function Home() {
         setIsError(true)
         setIsLocalMode(true)
       } else {
-        toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
+        toast.error(error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
         setIsError(true)
         setIsLocalMode(true)
       }
     }
-    if (!config.error && isError) {
+    if (!error && isError) {
       setIsError(false)
       toast.success("エラーが解消されました。", { duration: 5000, description: "画面更新してください。" })
     }
-  }, [config.error, isError, config.token, logout]);
+  }, [config.computed.error, isError, authToken, logout]);
 
   useEffect(() => {
     if (!userLoading && !user && isUpdate) {
@@ -205,7 +207,7 @@ export default function Home() {
     }
   }, [user, userLoading, todosLS, isUpdate, projectsLS])
 
-  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.list, config.token, isUpdate)
+  const handleClickSaveButton = () => handleSaveTodos(todos, prevTodos, config.currentList, authToken, isUpdate)
 
   return (
     <AppPageTemplate>

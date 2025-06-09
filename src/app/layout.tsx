@@ -4,7 +4,7 @@ import { AuthProvider } from "@/provider/auth";
 import { Toaster } from "@/components/ui/sonner"
 
 import { Noto_Sans_JP } from "next/font/google";
-import { TodoProvider } from "@/provider/todo";
+import { OfflineTodoProvider } from "@/provider/offline-todo";
 
 
 import Script from "next/script";
@@ -57,7 +57,7 @@ export default function RootLayout({
   const gaid = process.env.GAID
   return (
     <AuthProvider>
-      <TodoProvider>
+      <OfflineTodoProvider>
         <html>
           <body className={noto.className}>
             <Script src={"https://www.googletagmanager.com/gtag/js?id=" + gaid} />
@@ -74,7 +74,7 @@ export default function RootLayout({
             <Toaster position="bottom-right" richColors closeButton />
           </body>
         </html>
-      </TodoProvider>
+      </OfflineTodoProvider>
     </AuthProvider>
   );
 }

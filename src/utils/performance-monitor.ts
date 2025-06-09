@@ -1,4 +1,4 @@
-import { memo, ComponentType, useEffect } from 'react';
+import { memo, ComponentType, useEffect, createElement } from 'react';
 
 interface PerformanceEntry {
   name: string;
@@ -210,15 +210,19 @@ export const withPerformanceMonitoring = <P extends object>(
 ) => {
   const name = componentName || Component.displayName || Component.name;
   
-  return memo((props: P) => {
+  const WrappedComponent = memo((props: P) => {
     const end = performanceMonitor.mark(`render:${name}`);
     
     useEffect(() => {
       end();
     });
 
-    return <Component {...props} />;
+    return createElement(Component, props);
   });
+  
+  WrappedComponent.displayName = `withPerformanceMonitoring(${name})`;
+  
+  return WrappedComponent;
 };
 
 // Performance debugging utilities

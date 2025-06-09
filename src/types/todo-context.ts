@@ -60,6 +60,7 @@ export interface TodoContextValue {
     readonly hasLists: boolean;
     readonly currentListName: string | null;
     readonly error: string | null;
+    readonly isOffline?: boolean;
   };
 }
 

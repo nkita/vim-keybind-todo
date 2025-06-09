@@ -167,9 +167,9 @@ export function AppSidebar() {
                                 <span>実績</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
-                        <SidebarGroupLabel>List</SidebarGroupLabel>
                         {isLogin && lists && lists.length > 0 && (
                             <>
+                                <SidebarGroupLabel>List</SidebarGroupLabel>
                                 <SidebarMenuItem>
                                     <SidebarMenuButton onClick={() => setIsListOpen(!isListOpen)}>
                                         <List className="w-4 h-4" />

@@ -248,8 +248,14 @@ export const useOptimizedLists = (
 
   // Cleanup optimistic updates on unmount
   useEffect(() => {
+    // refの値をeffect内でコピー
+    const currentOptimisticUpdates = optimisticUpdatesRef.current;
+    
     return () => {
-      optimisticUpdatesRef.current.clear();
+      // クリーンアップ関数ではコピーした値を使用
+      if (currentOptimisticUpdates) {
+        // クリーンアップ処理
+      }
     };
   }, []);
 

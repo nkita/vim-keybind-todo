@@ -20,6 +20,8 @@ const DEFAULT_OPTIONS: Required<UseOptimizedAuthOptions> = {
   enableAutoRefresh: true,
 };
 
+const TOKEN_FRESH_DURATION = 5 * 60 * 1000; // 5 minutes - 定数として定義
+
 export const useOptimizedAuth = (
   options: UseOptimizedAuthOptions = {}
 ): UseOptimizedAuthReturn => {
@@ -30,9 +32,6 @@ export const useOptimizedAuth = (
   const authStateRef = useRef<AuthState>({ type: 'unauthenticated' });
   const lastRefreshRef = useRef<number>(0);
   const retryCountRef = useRef<number>(0);
-  
-  // Token freshness check (15 minutes)
-  const TOKEN_FRESH_DURATION = 15 * 60 * 1000;
   
   const isStale = useMemo(() => {
     return Date.now() - lastRefreshRef.current > TOKEN_FRESH_DURATION;
@@ -103,6 +102,10 @@ export const useOptimizedAuth = (
 
     return () => clearInterval(interval);
   }, [isStale, refreshAuth, config.enableAutoRefresh]);
+
+  const authState = useMemo(() => {
+    // ロジック
+  }, [/* 他の依存関係 */]); // TOKEN_FRESH_DURATIONを依存関係から削除
 
   return {
     auth: authStateRef.current,

@@ -85,7 +85,7 @@ export default function Home() {
       setProjects([])
       setLabels([])
     }
-  }, [config.list])
+  }, [config.list, config.token])
 
   // プロジェクトデータの更新
   useEffect(() => {

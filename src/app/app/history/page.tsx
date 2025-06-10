@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge";
 import { getFetch, useFetch } from "@/lib/fetch";
-import { TodoContext } from "@/provider/todo";
+import { TodoContext, TodoContextValue } from "@/provider/todo";
 import { HistoryProjectProps, SummaryProps, UserInfoProp } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppPageTemplate from "@/components/app-page-template";

@@ -7,25 +7,36 @@ import {
     SidebarGroupLabel,
     SidebarHeader,
     SidebarMenu,
-    SidebarMenuAction,
     SidebarMenuBadge,
     SidebarMenuButton,
     SidebarMenuItem,
-    SidebarTrigger,
     useSidebar,
 } from "@/components/ui/sidebar"
-import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint } from "lucide-react"
+import { Bell, Bike, ExternalLink, GanttChart, LineChart, List, ListTodo, PanelLeftClose, PawPrint, ChevronDown, Pencil, Plus, Trash2 } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import Link from "next/link"
 import { NavUser } from "./app-sidebar-user"
 import React, { useEffect, useState } from "react"
-import useSWR from "swr"
-import { useLocalStorage } from "@/hook/useLocalStrorage"
 import { GitHubLogoIcon } from "@radix-ui/react-icons"
 import { FaXTwitter } from "react-icons/fa6"
 import { usePathname } from "next/navigation"
+import { useTodoContext } from "@/hook/useTodoContext"
+import { Modal } from "./ui/modal"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
+import { Input } from "./ui/input"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { getFetch, postFetch, deleteFetch, useFetchList } from "@/lib/fetch";
+import { mutate } from "swr";
 import { toast } from "sonner"
-import { Button } from "./ui/button"
+
+const listSchema = z.object({
+    name: z.string().min(1, { message: "リスト名を入力してください" }),
+})
+
+const baseUrl = `${process.env.NEXT_PUBLIC_API}/api/list`
 
 export function AppSidebar() {
     const {
@@ -33,42 +44,98 @@ export function AppSidebar() {
         toggleSidebar,
     } = useSidebar()
 
-    // const [checkInfoDate, setCheckInfoDate] = useLocalStorage<number | undefined>("todo_last_checked_date", undefined)
-    // const { data: pullRequests, error } = useSWR(
-    //     'https://api.github.com/repos/nkita/vim-keybind-todo/pulls?state=closed&per_page=20&sort=updated&direction=desc',
-    //     url => fetch(url).then(res => res.json())
-    // );
-    // const [isUpdateDialog, setIsUpdateDialog] = useState(false)
-    // useEffect(() => {
-    //     if (pullRequests && pullRequests.length > 0) {
-    //         const latestDate = new Date(pullRequests[0].closed_at).getTime()
+    const { list, lists, isLoading, token, isLogin, error, setListId, setMode } = useTodoContext()
+    const [isListOpen, setIsListOpen] = useState(true)
 
-    //         if (checkInfoDate === undefined) {
-    //             setCheckInfoDate(latestDate)
-    //             return
-    //         }
+    // モーダル関連の状態
+    const [modalType, setModalType] = useState<'add' | 'edit' | 'delete' | null>(null)
+    const [selectedList, setSelectedList] = useState<any>(null)
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
-    //         if (isUpdateDialog) return
+    const form = useForm<z.infer<typeof listSchema>>({
+        resolver: zodResolver(listSchema),
+        defaultValues: {
+            name: "",
+        },
+    })
 
-    //         if (latestDate > checkInfoDate) {
-    //             setIsUpdateDialog(true)
-    //             toast.custom((id) => {
-    //                 return (
-    //                     <div className="p-4 border-primary border rounded-lg">
-    //                         <span>最新バージョンがリリースされています🎉 <br /> 画面の更新をお願いします✨</span>
-    //                         <div className="flex justify-between pt-2">
-    //                             <Button variant={"outline"} onClick={() => toast.dismiss(id)}>閉じる</Button>
-    //                             <Button onClick={() => {
-    //                                 setCheckInfoDate(new Date(pullRequests[0].closed_at).getTime())
-    //                                 location.reload()
-    //                             }} className="w-full ml-4" >更新する</Button>
-    //                         </div>
-    //                     </div>
-    //                 )
-    //             }, { duration: Infinity, action: { label: "close", onClick: () => toast.dismiss() }, closeButton: true })
-    //         }
-    //     }
-    // }, [checkInfoDate, pullRequests, setCheckInfoDate, isUpdateDialog])
+    // モーダルを開く関数
+    const openModal = (type: 'add' | 'edit' | 'delete', listItem?: any) => {
+        setModalType(type)
+        setSelectedList(listItem || null)
+        setIsModalOpen(true)
+        setMode('modal')
+
+        if (type === 'edit' && listItem) {
+            form.setValue('name', listItem.name)
+        } else {
+            form.reset()
+        }
+    }
+
+    // モーダルを閉じる関数
+    const closeModal = () => {
+        setModalType(null)
+        setSelectedList(null)
+        setIsModalOpen(false)
+        setMode(null)
+        form.reset()
+    }
+
+    // フォーム送信処理
+    const onSubmit = async (values: z.infer<typeof listSchema>) => {
+        try {
+            if (modalType === 'add') {
+                // リスト追加のロジック
+                await postFetch(baseUrl, token, {
+                    name: values.name
+                });
+                toast.success(`リスト「${values.name}」を追加しました`)
+                // リストを再読み込み
+                mutate([baseUrl, token])
+            } else if (modalType === 'edit' && selectedList) {
+                // リスト編集のロジック
+                const editUrl = `${baseUrl}/${selectedList.id}`;
+                await postFetch(editUrl, token, {
+                    name: values.name
+                });
+                toast.success(`リスト「${values.name}」を更新しました`)
+                // リストを再読み込み
+                mutate([baseUrl, token])
+            }
+            closeModal()
+        } catch (error) {
+            console.error('API call failed:', error)
+            toast.error('処理中にエラーが発生しました')
+        }
+    }
+
+    // 削除処理
+    const handleDelete = async () => {
+        if (selectedList) {
+            try {
+                const deleteUrl = `${baseUrl}/${selectedList.id}`;
+                await deleteFetch(deleteUrl, token);
+                toast.success(`リスト「${selectedList.name}」を削除しました`)
+                // リストを再読み込み
+                mutate([baseUrl, token])
+                closeModal()
+            } catch (error) {
+                console.error('Delete failed:', error)
+                toast.error('削除処理中にエラーが発生しました')
+            }
+        }
+    }
+
+    // モーダルタイトルとボタンテキストを取得
+    const getModalTitle = () => {
+        switch (modalType) {
+            case 'add': return '新しいリスト'
+            case 'edit': return 'リストを編集'
+            case 'delete': return 'リストを削除'
+            default: return ''
+        }
+    }
 
     return (
         <Sidebar collapsible="icon" className="border-r-sidebar-border" >
@@ -100,12 +167,73 @@ export function AppSidebar() {
                                 <span>実績</span>
                             </ExSidebarMenuButton>
                         </SidebarMenuItem>
-                        {/* <SidebarMenuItem>
-                            <ExSidebarMenuButton href="#" disabled>
-                                <Settings className="w-4 h-4" />
-                                <span>設定</span>
-                            </ExSidebarMenuButton>
-                        </SidebarMenuItem> */}
+                        {isLogin && lists && lists.length > 0 && (
+                            <>
+                                <SidebarGroupLabel>List</SidebarGroupLabel>
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton onClick={() => setIsListOpen(!isListOpen)}>
+                                        <List className="w-4 h-4" />
+                                        <span>リスト</span>
+                                        <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${isListOpen ? "rotate-180" : ""}`} />
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                                {isListOpen && open &&
+                                    <>
+                                        {lists.map(l => (
+                                            <SidebarMenuItem key={l.id} className="group relative">
+                                                <SidebarMenuButton onClick={() => setListId(l.id)} className={`${list === l.id ? "bg-sidebar-accent text-sidebar-accent-foreground" : ""} pr-20`}>
+                                                    <span className="w-4 h-4 flex items-center justify-center font-medium border rounded-full p-2">{l.name.charAt(0)}</span>
+                                                    <span>{l.name}</span>
+                                                </SidebarMenuButton>
+                                                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+                                                    <button
+                                                        className="h-4 w-4 flex items-center justify-center transition-colors group"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            openModal('edit', l);
+                                                        }}
+                                                        title="リストを編集"
+                                                    >
+                                                        <Pencil className="h-4 w-4 hover:scale-110" />
+                                                    </button>
+                                                    <button
+                                                        className="h-4 w-4 flex items-center justify-center transition-colors group"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            openModal('delete', l);
+                                                        }}
+                                                        title="リストを削除"
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-destructive/90 hover:scale-110 transition-colors" />
+                                                    </button>
+                                                </div>
+                                            </SidebarMenuItem>
+                                        ))}
+                                        <SidebarMenuItem>
+                                            <SidebarMenuButton
+                                                onClick={() => openModal('add')}
+                                                className="text-accent hover:text-foreground hover:border-primary/50 transition-colors"
+                                            >
+                                                <Plus className="w-4 h-4" />
+                                                <span>新しいリスト</span>
+                                            </SidebarMenuButton>
+                                        </SidebarMenuItem>
+                                    </>
+                                }
+                            </>
+                        )}
+                        {/* ログインしているがリストがない場合の表示 */}
+                        {isLogin && (!lists || lists.length === 0) && (
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    onClick={() => openModal('add')}
+                                    className="text-sidebar-primary-foreground hover:text-foreground hover:border-primary/50 transition-colors"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                    <span>最初のリストを作成</span>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        )}
                     </SidebarMenu>
                 </SidebarGroup>
                 <SidebarGroup >
@@ -159,6 +287,60 @@ export function AppSidebar() {
                 </SidebarMenu>
                 <NavUser />
             </SidebarFooter>
+
+            {/* モーダル */}
+            <Modal
+                buttonLabel=""
+                dialogTitle={getModalTitle()}
+                className="hidden"
+                open={isModalOpen}
+                onClickOpen={() => { }}
+                onClickChange={closeModal}
+            >
+                {modalType === 'delete' ? (
+                    <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground">
+                            リスト「{selectedList?.name}」を削除しますか？
+                            <br />
+                            削除したリストは復元できません。
+                        </p>
+                        <div className="flex justify-end space-x-2">
+                            <Button variant="outline" onClick={closeModal}>
+                                キャンセル
+                            </Button>
+                            <Button variant="destructive" onClick={handleDelete}>
+                                削除する
+                            </Button>
+                        </div>
+                    </div>
+                ) : (
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>リスト名</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="リスト名を入力" {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <div className="flex justify-end space-x-2">
+                                <Button type="button" variant="outline" onClick={closeModal}>
+                                    キャンセル
+                                </Button>
+                                <Button type="submit">
+                                    {modalType === 'add' ? '作成' : '更新'}
+                                </Button>
+                            </div>
+                        </form>
+                    </Form>
+                )}
+            </Modal>
         </Sidebar>
     )
 }

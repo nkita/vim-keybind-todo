@@ -1,17 +1,18 @@
 'use client'
 
 import { Todo } from "@/components/todo";
-import { useState, useEffect, useContext, useRef, useMemo, useCallback } from "react"
+import { useState, useEffect, useRef, useMemo, useCallback } from "react"
 import { TodoProps, SaveTodosReturnProps, ProjectProps, LabelProps } from "@/types"
 import { useAuth0 } from "@auth0/auth0-react";
 import { useFetchTodo, postFetch, useFetchProjects, useFetchLabels } from "@/lib/fetch";
 import { debounce } from "@/lib/utils";
 import { postSaveTodos } from "@/lib/todo";
-import { TodoContext } from "@/provider/todo";
+import { useTodoContext } from "@/hook/useTodoContext";
 import { useLocalStorage } from "@/hook/useLocalStrorage";
 import AppPageTemplate from "@/components/app-page-template";
 import { useSidebar } from "@/components/ui/sidebar";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [todos, setTodos] = useState<TodoProps[]>([])
@@ -35,9 +36,11 @@ export default function Home() {
 
   const [isLocalMode, setIsLocalMode] = useState(false)
 
-  const config = useContext(TodoContext)
+  const config = useTodoContext()
   const [isLoginLoading, setIsLoginLoading] = useState(true)
   const [isLogin, setIsLogin] = useState(true)
+  const router = useRouter();
+
   useEffect(() => {
     if (isLoginLoading && !config.isLoading) {
       setIsLoginLoading(config.isLoading)
@@ -51,7 +54,7 @@ export default function Home() {
   const { data: fetch_projects, isLoading: fetch_projects_loading } = useFetchProjects(config.list, config.token)
   const { data: fetch_labels, isLoading: fetch_labels_loading } = useFetchLabels(config.list, config.token)
 
-  const { user, isLoading: userLoading } = useAuth0();
+  const { user, isLoading: userLoading, logout } = useAuth0();
   const { open } = useSidebar()
 
   useEffect(() => {
@@ -74,30 +77,39 @@ export default function Home() {
     }
   }, [fetch_todo, config, todosLoading])
 
+  // リスト切り替え時にデータをクリア
   useEffect(() => {
-    try {
-      if (fetch_projects !== undefined && config.token && config.list) {
-        setProjects(fetch_projects)
-        setProjectsLoading(false)
-      }
-    } catch (e) {
-      console.error(e)
+    if (config.list && config.token) {
+      setProjectsLoading(true)
+      setLabelsLoading(true)
+      setProjects([])
+      setLabels([])
+    }
+  }, [config.list, config.token])
+
+  // プロジェクトデータの更新
+  useEffect(() => {
+    if (fetch_projects !== undefined && config.token && config.list) {
+      setProjects(fetch_projects)
+      setProjectsLoading(false)
+    } else if (!fetch_projects_loading && config.token && config.list) {
+      // データが空の場合も明示的に設定
+      setProjects([])
       setProjectsLoading(false)
     }
-  }, [fetch_projects, config, projectsLoading])
+  }, [fetch_projects, fetch_projects_loading, config.token, config.list])
 
-
+  // ラベルデータの更新
   useEffect(() => {
-    try {
-      if (fetch_labels !== undefined && config.token && config.list) {
-        setLabels(fetch_labels)
-        setLabelsLoading(false)
-      }
-    } catch (e) {
-      console.error(e)
+    if (fetch_labels !== undefined && config.token && config.list) {
+      setLabels(fetch_labels)
+      setLabelsLoading(false)
+    } else if (!fetch_labels_loading && config.token && config.list) {
+      // データが空の場合も明示的に設定
+      setLabels([])
       setLabelsLoading(false)
     }
-  }, [fetch_labels, config, labelsLoading])
+  }, [fetch_labels, fetch_labels_loading, config.token, config.list])
 
   const handleSaveTodos = async (todos: TodoProps[],
     prevTodos: TodoProps[],
@@ -163,15 +175,26 @@ export default function Home() {
   // エラー処理用のuseEffect
   useEffect(() => {
     if (config.error && !isError) {
-      toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
-      setIsError(true)
-      setIsLocalMode(true)
+      if (!config.token) {
+        toast.error(config.error, { duration: 5000, description: "ユーザーを認証できませんでした。ログアウトします。" })
+        logout({
+          logoutParams: {
+            returnTo: `${window.location.origin}/app/t`
+          }
+        })
+        setIsError(true)
+        setIsLocalMode(true)
+      } else {
+        toast.error(config.error, { duration: 5000, description: "ローカルモードに移行します。オンラインモードへの切り替えは画面更新か、時間をおいてから再度お試しください。" })
+        setIsError(true)
+        setIsLocalMode(true)
+      }
     }
     if (!config.error && isError) {
       setIsError(false)
       toast.success("エラーが解消されました。", { duration: 5000, description: "画面更新してください。" })
     }
-  }, [config.error, isError]);
+  }, [config.error, isError, config.token, logout]);
 
   useEffect(() => {
     if (!userLoading && !user && isUpdate) {
@@ -195,7 +218,10 @@ export default function Home() {
           isLocalMode={isLocalMode}
           isSave={isSave}
           isUpdate={isUpdate}
+          contextMode={config.mode}
           loading={isLocalMode ? false : (todosLoading || isLoginLoading || fetch_todo_loading || fetch_projects_loading)}
+          projectsLoading={isLocalMode ? false : (projectsLoading || fetch_projects_loading)}
+          labelsLoading={isLocalMode ? false : (labelsLoading || fetch_labels_loading)}
           setTodos={isLocalMode ? setTodosLS : setTodos}
           setIsUpdate={setIsUpdate}
           setExProjects={isLocalMode ? setProjectsLS : setProjects}

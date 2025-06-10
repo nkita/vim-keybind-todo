@@ -48,10 +48,13 @@ export const Todo = (
         exProjects,
         exLabels,
         loading,
+        projectsLoading,
+        labelsLoading,
         completionOnly,
         isSave,
         isUpdate,
         isLocalMode,
+        contextMode,
         setTodos,
         setExProjects,
         setExLabels,
@@ -63,10 +66,13 @@ export const Todo = (
         exProjects: ProjectProps[]
         exLabels: LabelProps[]
         loading: Boolean
+        projectsLoading?: boolean
+        labelsLoading?: boolean
         completionOnly?: boolean
         isSave: boolean
         isUpdate: boolean
         isLocalMode: boolean
+        contextMode: string | null
         setTodos: Dispatch<SetStateAction<TodoProps[]>>
         setExProjects: Dispatch<SetStateAction<ProjectProps[]>>
         setExLabels: Dispatch<SetStateAction<LabelProps[]>>
@@ -120,6 +126,15 @@ export const Todo = (
             return () => window.removeEventListener('resize', handleResize)
         }
     }, [])
+
+    // contextModeからmodeを同期
+    useEffect(() => {
+        if (contextMode === 'modal') {
+            setMode('modal')
+        } else if (contextMode === null && mode === 'modal') {
+            setMode('normal')
+        }
+    }, [contextMode, mode])
 
     // 初期値を0に設定
     const mainHeight = windowHeight === 0 ? 0 : windowHeight - (
@@ -215,6 +230,8 @@ export const Todo = (
     useEffect(() => {
         if (exProjects.length > 0) {
             setFilteredProjects(sortBy(exProjects.filter(p => p.isTabDisplay), "sort"))
+        } else {
+            setFilteredProjects([])
         }
     }, [exProjects])
 
@@ -573,15 +590,17 @@ export const Todo = (
 
     // change to project edit mode
     useHotkeys(keymap['editProject'].keys, (e) => {
+        if (filteredTodos.length === 0) return
         setPrefix('projectId')
         setMode('modal')
-    }, { ...setKeyEnableDefine(keymap['editProject'].enable) })
+    }, setKeyEnableDefine(keymap['editProject'].enable), [filteredTodos])
 
     // change to label edit mode
     useHotkeys(keymap['editLabel'].keys, (e) => {
+        if (filteredTodos.length === 0) return
         setPrefix('labelId')
         setMode('modal')
-    }, setKeyEnableDefine(keymap['editLabel'].enable))
+    }, setKeyEnableDefine(keymap['editLabel'].enable), [filteredTodos])
 
     // change to edit mode
     useHotkeys(keymap['completion'].keys, (e) => {
@@ -1134,32 +1153,51 @@ export const Todo = (
                         style={{ height: HEADER_PROJECT_TAB_HEIGHT }}
                         className={cn(`hidden sm:block relative w-full border-b`)}>
                         <div className={`w-full h-full flex justify-start  items-end overflow-x-auto overflow-y-hidden flex-nowrap text-nowrap hidden-scrollbar text-foreground`}  >
-                            <div ref={projectTop} />
-                            {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
-                            <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filteredProjects={filteredProjects} exProjects={exProjects} setProjects={setExProjects} />
-                            <SortableContext items={filteredProjects.map(p => p.id)} strategy={rectSortingStrategy}>
-                                {!loading && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
-                            </SortableContext>
-                            <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
-                                <ProjectEditModal
-                                    buttonLabel={<Plus size={14} />}
-                                    className="outline-none  p-2 rounded-md hover:bg-primary/10"
-                                    mode={mode}
-                                    setMode={setMode}
-                                    exProjects={exProjects}
-                                    setExProjects={setExProjects}
-                                />
-                                <ProjectTabSettingModal
-                                    buttonLabel={<Settings2 size={14} />}
-                                    className="outline-none  p-2 rounded-md hover:bg-primary/10"
-                                    mode={mode}
-                                    setMode={setMode}
-                                    exProjects={exProjects}
-                                    setExProjects={setExProjects}
-                                />
+                        <div ref={projectTop} />
+                        {isDragging && isOverlay && <ExOverlay id="overlay" isDragging={isDragging} clickPosition={clickPosition} />}
+                        <ProjectTab tabId={"all"} currentProjectId={currentProjectId} index={-1} onClick={handleClickElement} filteredProjects={filteredProjects} exProjects={exProjects} setProjects={setExProjects} />
+                        <SortableContext items={filteredProjects.map(p => p.id)} strategy={rectSortingStrategy}>
+                            {!loading && filteredProjects.map((p, i) => <ProjectTab key={p.id} tabId={p.id} currentProjectId={currentProjectId} index={i} filteredProjects={filteredProjects} exProjects={exProjects} onClick={handleClickElement} project={p} setProjects={setExProjects} />)}
+                        </SortableContext>
+                        {projectsLoading && (
+                            <div className="flex items-center px-4 h-full">
+                                <div className="flex items-center gap-2 text-muted-foreground text-xs">
+                                    <div className="flex space-x-1">
+                                        {[0, 1, 2].map((index) => (
+                                            <div
+                                                key={index}
+                                                className="w-1 h-1 rounded-full bg-muted-foreground animate-bounce"
+                                                style={{
+                                                    animationDelay: `${index * 0.15}s`,
+                                                    animationDuration: '0.6s'
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                    <span>読込中...</span>
+                                </div>
                             </div>
-                            <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
+                        )}
+                        <div className="sticky right-0 top-0 h-full bg-muted/60 backdrop-blur-sm  flex items-center px-2" >
+                            <ProjectEditModal
+                                buttonLabel={<Plus size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
+                            />
+                            <ProjectTabSettingModal
+                                buttonLabel={<Settings2 size={14} />}
+                                className="outline-none  p-2 rounded-md hover:bg-primary/10"
+                                mode={mode}
+                                setMode={setMode}
+                                exProjects={exProjects}
+                                setExProjects={setExProjects}
+                            />
                         </div>
+                        <div ref={projectLast} className="text-transparent  min-w-[80px] h-[10px]" />
+                    </div>
                     </div>
                     <div
                         style={{ height: `${HEADER_MENU_BAR_HEIGHT}px` }}
@@ -1224,12 +1262,11 @@ export const Todo = (
                         </div>
                     </div>
                 </header >
-                <div style={{ height: contentHeight + BOTTOM_MENU_HEIGHT }} className="w-full bg-muted relative">
+                <div style={{ height: contentHeight + BOTTOM_MENU_HEIGHT }} className="w-full  relative">
                     <div style={{ height: contentHeight }} className="w-full" onMouseDown={handleMainMouseDown}>
                         {loading &&
-                            <div
-                                className="flex flex-col gap-6 justify-center items-center h-full w-full">
-                                <div className="flex space-x-2">
+                            <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <div className="flex w-full justify-center space-x-2">
                                     {[0, 1, 2, 3].map((index) => (
                                         <div
                                             key={index}
@@ -1246,6 +1283,9 @@ export const Todo = (
                                     <span className="text-sm text-muted-foreground">少々お待ちください...</span>
                                 </div>
                             </div>
+                            // <div
+                            //     className="flex flex-col gap-6 justify-center items-center w-full">
+                            // </div>
                         }
                         {!loading && displayMode === "Ganttc" &&
                             <>
@@ -1316,7 +1356,7 @@ export const Todo = (
                                         />
                                     </div>
                                 </ResizablePanel>
-                                <ResizableHandle tabIndex={-1} className="hidden sm:block w-[3px] bg-transparent hover:bg-primary/20  cursor-col-resize " />
+                                <ResizableHandle tabIndex={-1} className="hidden sm:block w-[1px] bg-primary/20 hover:bg-primary/20  cursor-col-resize " />
                                 <ResizablePanel ref={resizeRef} defaultSize={40} minSize={20} className={`relative  bg-card ${mode === "editDetail" ? "block px-2 sm:px-0" : "hidden sm:block"}`} collapsible>
                                     {loading ? (
                                         <></>

@@ -1,11 +1,11 @@
 import { TodoProps, ProjectProps, LabelProps } from "@/types"
 import { getTimeAgo } from "@/lib/time"
-import { FaRegCircle, FaCircleCheck, FaTag, FaSitemap, FaReceipt, FaCircleInfo } from "react-icons/fa6";
+import { FaRegCircle, FaCircleCheck } from "react-icons/fa6";
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
-import { useState, MouseEvent, useEffect, Dispatch, SetStateAction } from "react"
+import { useState, MouseEvent, useEffect } from "react"
 import TextareaAutosize from 'react-textarea-autosize';
 import jaJson from "@/dictionaries/ja.json"
-import { Box, CircleX, Plus, SquareXIcon, Tag, X } from "lucide-react";
+import { Box, Tag, X } from "lucide-react";
 import { find as lfind } from "lodash"
 import { ExTextarea } from "./ui/ex-textarea";
 
@@ -62,7 +62,7 @@ export const Detail = ({
 
     return (
         <>
-            <div className="w-full h-full text-card-foreground relative" onMouseDown={onMouseDownEvent}>
+            <div className="w-full h-full text-card-foreground relative bg-background " onMouseDown={onMouseDownEvent}>
                 <div className="w-full h-full overflow-auto scroll-bar">
                     <div className={`flex sticky top-0 w-full text-default border-b-2 border-muted font-bold items-center gap-2 bg-card px-5 z-30 h-[50px] `} onMouseDown={e => e.stopPropagation()} >
                         <span className=" flex items-center hover:cursor-pointer" onClick={_ => onClick("completion")}>
@@ -98,8 +98,8 @@ export const Detail = ({
 
                         </div>
                     </div>
-                    <div className={`w-full p-5 bg-background relative`} >
-                        <div className="relative h-full w-full border pt-1 mt-2  rounded-md focus-within:border-primary bg-card">
+                    <div className={`w-full p-5 relative`} >
+                        <div className="relative h-full w-full border pt-1 mt-2  rounded-md focus-within:border-primary">
                             <div className="absolute bottom-2 right-5 flex text-black/80 items-center justify-end text-3sm">
                                 {mode === "editDetail" ? (
                                     <span><kbd className="opacity-80">Esc</kbd>でもどる</span>
@@ -131,7 +131,7 @@ export const Detail = ({
                                 </div>
                             </div>
                         </div>
-                        <div className="flex justify-end pb-4 text-3sm text-muted-foreground">※URLは自動的にリンクへ変換します。</div>
+                        <div className="flex justify-end py-2 text-3sm text-muted-foreground" />
                         <div className="flex flex-wrap gap-2">
                             {todo.labelId ? (
                                 <BottomLabel type={"labelId"} onClick={_ => onClick("labelId")} handleClick={handleClickDelete}>
@@ -156,7 +156,7 @@ export const Detail = ({
                     <div className="h-16 sm:h-0"></div>
                 </div>
                 <div
-                    className={`absolute bottom-0 border-muted border-x-0 w-full text-xs px-5 py-2 flex justify-between text-muted-foreground bg-card ${zIndex}`} >
+                    className={`absolute bottom-0 border-muted border-x-0 w-full text-xs px-5 py-2 flex justify-between text-muted-foreground ${zIndex}`} >
                     <span>{creationDate && `${creationDateLabel} に作成`}</span><span> {compDate && `${compDateLabel}に完了`}</span>
                 </div>
             </div >

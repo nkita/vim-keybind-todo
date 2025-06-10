@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 import { Input } from "./ui/input"
 import { Mode, ProjectProps } from "@/types"
 import { useEffect, useState, useContext } from "react"
-import { TodoContext } from "@/provider/todo";
+import { TodoContext, TodoContextValue } from "@/provider/todo";
 import { postSaveProjects } from "@/lib/todo"
 
 const formSchema = z.object({

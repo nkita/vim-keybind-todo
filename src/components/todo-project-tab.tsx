@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import React, { useContext } from "react"
 import { List, Box, X } from "lucide-react"
 import { postSaveProjects } from "@/lib/todo"
-import { TodoContext } from "@/provider/todo";
+import { TodoContext, TodoContextValue } from "@/provider/todo";
 import { ProjectProps } from "@/types"
 import { useDroppable } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";

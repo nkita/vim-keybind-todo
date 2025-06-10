@@ -2,7 +2,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useState, useContext } from "react"
 import { TodoProps, Sort, Mode, ProjectProps, LabelProps } from "@/types"
 import { UseFormRegister, FieldValues, UseFormSetValue } from "react-hook-form"
-import { TodoContext } from "@/provider/todo";
+import { TodoContext, TodoContextValue } from "@/provider/todo";
 import { postSaveLabels, postSaveProjects } from "@/lib/todo"
 import { TodoListRow } from "./list-row"
 import {

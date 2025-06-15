@@ -131,10 +131,10 @@ export const Todo = (
     useEffect(() => {
         if (contextMode === 'modal') {
             setMode('modal')
-        } else if (contextMode === null && mode === 'modal') {
-            setMode('normal')
         }
-    }, [contextMode, mode])
+        // contextModeがnullの場合は、手動でモーダルを開いている可能性があるため
+        // 強制的にnormalに戻さない
+    }, [contextMode])
 
     // 初期値を0に設定
     const mainHeight = windowHeight === 0 ? 0 : windowHeight - (
